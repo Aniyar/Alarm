@@ -1,0 +1,41 @@
+﻿<h4>Доп. параметры</h4>
+ <div style="max-height: 300px; overflow-y: scroll; width: 100%; height: calc(100% - (50px))">
+    <table>
+        <tr style="background: " #75d2ff")>
+            <th style="border-right: 1px solid grey; border-left: 1px solid grey; width: 50px;">N</th>
+            <th style="border-right: 1px solid grey; border-left: 1px solid grey; width: 50px;">Км</th>
+            <th style="border-right: 1px solid grey; border-left: 1px solid grey; width: 50px;">Метр</th>
+            <th style="border-right: 1px solid grey; width: 125px;">Отступление</th>
+            <th style="border-right: 1px solid grey; width: 50px;">Степень</th>
+            <th style="border-right: 1px solid grey; width: 50px;">Длина</th>
+            <th style="border-right: 1px solid grey; width: 50px;">Кол-во</th>
+            <th style="border-right: 1px solid grey; width: 125px;">Огр. ск.</th>
+        </tr>
+        @if (kilometers != null)
+        {
+
+            {
+                int rowIndex = 0;
+                foreach (var km in kilometers)
+                {
+                   
+                        foreach (var digression in km.AdditionalDigressions)
+                        {
+                            <tr>
+                                <th>@rowIndex</th>
+                                <th>@digression.Kmetr</th>
+                                <th>@digression.Meter</th>
+                                <th>@digression.DigName</th>
+                                <th>@digression.Typ</th>
+                                <th>@digression.Length</th>
+                                <th>@digression.Count</th>
+                                <th>@digression.FullSpeed</th>
+                            </tr>
+                    }
+                    rowIndex++;
+
+                }
+            }
+        }
+    </table>
+     </div>

@@ -9,6 +9,15 @@ namespace ALARm.Core.AdditionalParameteres
 {
     public class CrosProf : RdObject
     {
+ 
+        public int Kmetr { get; set; }
+        public int Meter { get; set; }
+        public string DigName { get; set; }
+        public int Typ { get; set; }
+        public int Count { get; set; }
+        public int Length { get; set; }
+        public string FullSpeed { get; set; }
+    
         public string Start_ { get; set; }
         public string Final_ { get; set; }
         public string Rail_type { get; set; }

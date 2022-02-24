@@ -61,7 +61,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeviationinsleepersService"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RailCrossSectionService", "services\RailCrossSectionService\RailCrossSectionService.csproj", "{72202074-8627-4E4B-A8E5-8561208D2D6B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnlinePhotoBoltsService", "ALARm.Services\OnlinePhotoBoltsService\OnlinePhotoBoltsService.csproj", "{5273964C-5BCE-4D12-A862-9456F7531CA1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnlinePhotoBoltsService", "ALARm.Services\OnlinePhotoBoltsService\OnlinePhotoBoltsService.csproj", "{5273964C-5BCE-4D12-A862-9456F7531CA1}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -188,7 +188,7 @@ Global
 		{5273964C-5BCE-4D12-A862-9456F7531CA1} = {E37316E4-1978-41E6-9EDD-6F5FFA6572A8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {D0ED8846-31BA-4919-B919-96969F0347CF}
 		VisualSVNWorkingCopyRoot = .
+		SolutionGuid = {D0ED8846-31BA-4919-B919-96969F0347CF}
 	EndGlobalSection
 EndGlobal

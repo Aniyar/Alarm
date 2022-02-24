@@ -468,45 +468,48 @@
     @*<DigRailImage RailImage="AppData.RailImage"></DigRailImage>*@
     @if (AppData.WorkMode == Services.WorkMode.Online)
     {
-        <div class="float-left h-100">
+    <div class="float-left h-100">
 
-            <MatButton TrailingIcon="@(OnlineModeData.RouteEditable ? "check" : "edit")" OnClick="_=> RouteEditableChange(AppData.Trip)">@(OnlineModeData.RouteEditable ? "Сохранить маршрут" : "Изменить маршрут")</MatButton>
-            <Route Short="true" Editable="OnlineModeData.RouteEditable" Source="AppData.Trip.Route"></Route>
+        <MatButton TrailingIcon="@(OnlineModeData.RouteEditable ? "check" : "edit")" OnClick="_=> RouteEditableChange(AppData.Trip)">@(OnlineModeData.RouteEditable ? "Сохранить маршрут" : "Изменить маршрут")</MatButton>
+        <Route Short="true" Editable="OnlineModeData.RouteEditable" Source="AppData.Trip.Route"></Route>
 
-            <AlarmImage Bitmap="AppData.CurrentFrame"></AlarmImage>
-        </div>
-        <div div class="float-left h-100">
-            <EscortList Style="margin:5px"></EscortList>
-        </div>
-        <div class="float-left">
+        <AlarmImage Bitmap="AppData.CurrentFrame"></AlarmImage>
+    </div>
+    <div div class="float-left h-100">
+        <EscortList Style="margin:5px"></EscortList>
+    </div>
+    <div class="float-left">
 
-            <p>
-                <PointChart ViewBox="@AppData.ViewBoxLeft" Side="Side.Left" Points="@AppData.PointsLeft" NominalRail="@AppData.NominalRailScheme" NominalRailRotate="@AppData.NominalRotateLeft" NominalRailTranslate="@AppData.NominalTranslateLeft" Width="400" Heigth="400" Style="@($"transform:rotate({AppData.CalibrConstLeft}deg); margin-right: 50px;")" />
-                <PointChart ViewBox="@AppData.ViewBoxRight" Side="Side.Right" Points="@AppData.PointsRight" NominalRail="@AppData.NominalRailScheme" NominalRailRotate="@AppData.NominalRotateRight" NominalRailTranslate="@AppData.NominalTranslateRight" Width="400" Heigth="400" Style="@($"transform:rotate(-{AppData.CalibrConstRight}deg);")" />
-            </p>
-        </div>
-        <div style="float:left; height:100%; overflow-y:scroll">
-            @foreach (var correction in OnlineModeData.CorrectionsList)
+        <p>
+            <PointChart ViewBox="@AppData.ViewBoxLeft" Side="Side.Left" Points="@AppData.PointsLeft" NominalRail="@AppData.NominalRailScheme" NominalRailRotate="@AppData.NominalRotateLeft" NominalRailTranslate="@AppData.NominalTranslateLeft" Width="400" Heigth="400" Style="@($"transform:rotate({AppData.CalibrConstLeft}deg); margin-right: 50px;")" />
+            <PointChart ViewBox="@AppData.ViewBoxRight" Side="Side.Right" Points="@AppData.PointsRight" NominalRail="@AppData.NominalRailScheme" NominalRailRotate="@AppData.NominalRotateRight" NominalRailTranslate="@AppData.NominalTranslateRight" Width="400" Heigth="400" Style="@($"transform:rotate(-{AppData.CalibrConstRight}deg);")" />
+        </p>
+    </div>
+    <div style="float:left; height:100%; overflow-y:scroll">
+        @foreach (var correction in OnlineModeData.CorrectionsList)
             {
-                <p>@correction</p>
-                <br />
+        <p>@correction</p>
+        <br />
             }
 
-        </div>
+    </div>
     }
     else
     {
-        <div class="float-left">
+    <div class="float-left">
 
-            <p>
-                <PointChart ViewBox="@AppData.ViewBoxLeft" DownHill="@AppData.DownHillLeftValue" Tilt="@AppData.TiltLeftValue" Side="Side.Left" Points="@AppData.PointsLeft" NominalRail="@AppData.NominalRailScheme" NominalRailRotate="@AppData.NominalRotateLeft" NominalRailTranslate="@AppData.NominalTranslateLeft" Width="400" Heigth="400" Style="@($"transform:rotate({AppData.CalibrConstLeft}deg); margin-right: 50px;")" />
-                <PointChart ViewBox="@AppData.ViewBoxRight" DownHill="@AppData.DownHillRightValue" Tilt="@AppData.TiltRightValue" Side="Side.Right" Points="@AppData.PointsRight" NominalRail="@AppData.NominalRailScheme" NominalRailRotate="@AppData.NominalRotateRight" NominalRailTranslate="@AppData.NominalTranslateRight" Width="400" Heigth="400" Style="@($"transform:rotate(-{AppData.CalibrConstRight}deg);")" />
-            </p>
-        </div>
+        <p>
+            <PointChart ViewBox="@AppData.ViewBoxLeft" DownHill="@AppData.DownHillLeftValue" Tilt="@AppData.TiltLeftValue" Side="Side.Left" Points="@AppData.PointsLeft" NominalRail="@AppData.NominalRailScheme" NominalRailRotate="@AppData.NominalRotateLeft" NominalRailTranslate="@AppData.NominalTranslateLeft" Width="400" Heigth="400" Style="@($"transform:rotate({AppData.CalibrConstLeft}deg); margin-right: 50px;")" />
+            <PointChart ViewBox="@AppData.ViewBoxRight" DownHill="@AppData.DownHillRightValue" Tilt="@AppData.TiltRightValue" Side="Side.Right" Points="@AppData.PointsRight" NominalRail="@AppData.NominalRailScheme" NominalRailRotate="@AppData.NominalRotateRight" NominalRailTranslate="@AppData.NominalTranslateRight" Width="400" Heigth="400" Style="@($"transform:rotate(-{AppData.CalibrConstRight}deg);")" />
+        </p>
+    </div>
 
     }
     <div class="float-left">
         <Alarmcheck kilometers="@AppData.Kilometers"></Alarmcheck>
+    </div>
+    <div class="float-left">
+        <AdditionalParams kilometers="@AppData.Kilometers"></AdditionalParams>
     </div>
 </div>
 <MatDialog @bind-IsOpen="@StopDialog" Stacked="true">
