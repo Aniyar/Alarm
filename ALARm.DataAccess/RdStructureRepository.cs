@@ -3302,6 +3302,32 @@ namespace ALARm.DataAccess
             }
         }
 
+        public List<Digression> GetAdditional(int km)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                try
+                {
+                    if (db.State == ConnectionState.Closed)
+                        db.Open();
+
+                    return db.Query<Digression>($@"
+                    SELECT *
+                    FROM s3_additional 
+                    WHERE
+	                    km = {km}
+                    ORDER BY
+	                    s3_additional.km,
+	                    s3_additional.meter").ToList();
+                }
+                catch (Exception e)
+                {
+                    Console.Error.WriteLine("getRefrenceDataError:" + e.StackTrace);
+                    return null;
+                }
+            }
+        }
+
         public List<DigressionMark> GetDigressionMarks(long trip_id, int km, long track_id, int[] type)
         {
             using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
@@ -4316,13 +4342,69 @@ namespace ALARm.DataAccess
                 {
                     db.Close();
                 }
-
-
             }
             return -1;
         }
 
+        public int UpdateAdditionalBase(Digression digression, Kilometer kilometer, RdAction action)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                NpgsqlTransaction transaction = (NpgsqlTransaction)db.BeginTransaction();
+                var command_hist = new NpgsqlCommand();
+                command_hist.Connection = (NpgsqlConnection)db;
+                command_hist.Transaction = transaction;
+                var command_edit = new NpgsqlCommand();
+                command_edit.Connection = (NpgsqlConnection)db;
+                command_edit.Transaction = transaction;
+                var command_del = new NpgsqlCommand();
+                command_del.Connection = (NpgsqlConnection)db;
+                command_del.Transaction = transaction;
+                command_hist.CommandText = $@"
+                                INSERT INTO s3_additional_history(original_id, km, meter, typ, digname,direction_num,founddate,threat,r_threat,length,location,norma,r_digname,value,count,allowspeed,primech,modi_date,editor,editreason,action)
+                                SELECT
+                                   id, km, meter, typ, digname,direction_num,founddate,threat,r_threat,length,location,norma,r_digname,value,count,allowspeed,primech,CURRENT_TIMESTAMP,'{digression.Editor}', '{digression.EditReason}', {(int)action}
+                                FROM s3_additional WHERE s3_additional.id = {digression.Id} AND s3_additional.km = {digression.Km}
+                                ";
+                command_edit.CommandText = $@"
+                                UPDATE s3_additional
+                                    SET length = {digression.Length}, count = {digression.Count}, allowspeed = '{digression.AllowSpeed}', modi_date=CURRENT_TIMESTAMP
+                                WHERE 
+                                    id = {digression.Id} AND s3_additional.km = {digression.Km}
+                                ";
+                command_del.CommandText = $"DELETE FROM s3_additional WHERE s3_additional.id = {digression.Id} AND s3_additional.km = {digression.Km}";
+                command_hist.ExecuteNonQuery();
+                try
+                {
+                    if (action == RdAction.Delete)
+                    {
+                        command_del.ExecuteNonQuery();
+                        kilometer.AdditionalDigressions.Remove(digression);
+                    }
+                    else
+                    {
+                        command_edit.ExecuteNonQuery();
+                    }
+                    kilometer.CalcPoint();
+                    transaction.Commit();
+                    return 1;
+                }
+                catch (Exception e)
+                    {
+                        transaction.Rollback();
+                        Console.WriteLine($"UpdateDigression error: {e.Message}");
+                        return -1;
 
+                    }
+                finally
+                {
+                    db.Close();
+                }
+            }
+
+        }
         public int UpdateDigressionBase(Digression digression, int type, Kilometer kilometer, RdAction action)
         {
             using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))

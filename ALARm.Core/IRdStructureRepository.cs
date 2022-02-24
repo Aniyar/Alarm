@@ -103,6 +103,8 @@ namespace ALARm.Core
         List<Curve> GetCurvesAsTripElems(long trackId, DateTime date, int start_km, int start_m, int final_km, int final_m);
         object GetTripSections(long trackId, DateTime date, int type);
         object GetTripSections(long trackId, DateTime date, int start_km, int start_m, int final_km, int final_m, int type);
+        List<Digression> GetAdditional(int km);
+
         List<Trips> GetTripsByRoad(Int64 road_id, ReportPeriod period, int trip_type);
         List<ReportPeriod> GetTripPeriodsByRoad(long road_id);
         List<OutData> GetNextOutDatas(int meter, int count, long trip_id);
@@ -170,6 +172,7 @@ namespace ALARm.Core
         public int InsertCorrection(long trip_id, int track_id, int Number, int coord, int CorrectionValue);
         public List<CorrectionNote> GetCorrectionNotes(long trip_id, int track_id, int Number, int coord, int CorrectionValue);
         public int UpdateDigressionBase(Digression digression, int type, Kilometer kilometer, RdAction action);
+        public int UpdateAdditionalBase(Digression digression, Kilometer kilometer, RdAction action);
 
     }
 }

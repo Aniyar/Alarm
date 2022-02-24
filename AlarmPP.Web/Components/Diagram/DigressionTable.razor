@@ -2,6 +2,7 @@
 @inject IJSRuntime JSRuntime
 @inject IMatToaster Toaster
 @using ALARm.Core.Report
+
 <table style="height:100%;border-collapse: collapse;">
     <thead style="display:block; height:25px;">
         <tr>
@@ -107,9 +108,9 @@
                                     color = "red";
                                 }
                                 <tr style="background:@(CurrentRow == index ? "#75d2ff" : color)" @onmousedown="@(_ => GoToMark(pos, index))">
-                                    <td style="border-right: 1px solid grey; text-align: right; width: 35px;">@rowIndex</td>
-                                    <td style="border-right: 1px solid grey; text-align: right; width: 35px;">@kilometer.Number</td>
-                                    <td style="border-right: 1px solid grey;  width:35px;text-align:right">@digression.Meter</td>
+                                    <td style="border-right: 1px solid grey; text-align: left; width: 35px;">@rowIndex</td>
+                                    <td style="border-right: 1px solid grey; text-align: left; width: 35px;">@kilometer.Number</td>
+                                    <td style="border-right: 1px solid grey;  width:35px;text-align:left">@digression.Meter</td>
                                     <td style="border-right: 1px solid grey;  width:110px;">@(  digression.DigName != ""  ? digression.DigName : digression.Digression.Name )</td>
                                     <td style="border-right: 1px solid grey;   width:90px; text-align:right">@digression.Degree</td>
                                     <td style="border-right: 1px solid grey; width: 125px;">@digression.Value</td>

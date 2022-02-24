@@ -1360,8 +1360,9 @@ namespace ALARm.Core
                             var kp = 0.01;
                             if (Points_manyR_str_LeftY.Count > 1)//&& Points_manyR_str_LeftY.Count > 1
                             { kp = 0.1; }
+
                             if (Points_manyR_str_LeftY.Count < 1 && Math.Abs(item.Y[Head1]) < 15)//&& Points_manyR_str_LeftY.Count > 1
-                            { kp = 0.25; }
+                            { kp = 0.125; }
                             for (int k = 0; k < 12; k++)
                             {
                                 Ss_list.Clear();

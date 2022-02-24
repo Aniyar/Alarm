@@ -525,7 +525,7 @@ namespace ALARm.Core
         public int CorrectionMeter { get; set; } = -1;
         public CorrectionType CorrectionType { get; set; } = CorrectionType.None;
         public List<DigressionMark> Digressions { get; set; } = new List<DigressionMark>();
-        public List<CrosProf> AdditionalDigressions { get; set; } = new List<CrosProf>();
+        public List<Digression> AdditionalDigressions { get; set; } = new List<Digression>();
         //List<> GetCrossRailProfileFromDBbyKm(int kilometer, long trip_id);
         public List<CorrectionNote> CorrectionNotes = new List<CorrectionNote>();
         public List<Gap> Gaps { get; set; } = new List<Gap>();

@@ -50,6 +50,13 @@ namespace AlarmPP.Web.Pages
             this.digFilterMenu.OpenAsync();
         }
 
+        public MatMenu digFilterMenu2 { get; set; }
+        public ForwardRef digFilterMenuRef2 { get; set; } = new ForwardRef();
+        public void OnDigFilterMenuClick2(MouseEventArgs e)
+        {
+            this.digFilterMenu2.OpenAsync();
+        }
+
         public bool selectRegion { get; set; } = false;
         public bool selectRect { get; set; } = false;
         protected override void OnInitialized()
@@ -63,7 +70,7 @@ namespace AlarmPP.Web.Pages
             AppData.Show1DegreeDigressions = RdStructureRepository.GetButtonState(ShowButtons.FirstDegreeDigression.ToString());
             AppData.Show2DegreeDigressions = RdStructureRepository.GetButtonState(ShowButtons.SecondDegreeDigression.ToString());
             AppData.Show3DegreeDigressions = RdStructureRepository.GetButtonState(ShowButtons.ThirdDegreeDigressions.ToString());
-            AppData.ShowCloseToDangerous =RdStructureRepository.GetButtonState(ShowButtons.CloseToDangerous.ToString());
+            AppData.ShowCloseToDangerous = RdStructureRepository.GetButtonState(ShowButtons.CloseToDangerous.ToString());
             AppData.ShowGapsCloseToDangerous = RdStructureRepository.GetButtonState(ShowButtons.GapCloseToDangerous.ToString());
             AppData.ShowDangerousForEmtyWagon = RdStructureRepository.GetButtonState(ShowButtons.DangerousForEmtyWagon.ToString());
             AppData.ShowOthersDigressions = RdStructureRepository.GetButtonState(ShowButtons.OthersDigressions.ToString());
@@ -82,6 +89,22 @@ namespace AlarmPP.Web.Pages
             {
                 AppData.DigressionChecked = true;
             }
+            // additional
+            AppData.ShowPU = RdStructureRepository.GetButtonState(ShowButtons.PU.ToString());
+            AppData.ShowNPK = RdStructureRepository.GetButtonState(ShowButtons.NPK.ToString());
+            AppData.ShowIznosPriv = RdStructureRepository.GetButtonState(ShowButtons.IznosPriv.ToString());
+            AppData.ShowIznosBok = RdStructureRepository.GetButtonState(ShowButtons.IznosBok.ToString());
+            AppData.ShowIznosVert = RdStructureRepository.GetButtonState(ShowButtons.IznosVert.ToString());
+            AppData.ShowLongWaves = RdStructureRepository.GetButtonState(ShowButtons.LongWaves.ToString());
+            AppData.ShowMediumWaves = RdStructureRepository.GetButtonState(ShowButtons.MediumWaves.ToString());
+            AppData.ShowShortWaves = RdStructureRepository.GetButtonState(ShowButtons.ShortWaves.ToString());
+            if (AppData.ShowPU || AppData.ShowNPK || AppData.ShowIznosPriv ||
+                AppData.ShowIznosVert || AppData.ShowLongWaves || AppData.ShowMediumWaves ||
+                AppData.ShowShortWaves)
+            {
+                AppData.AddDigressionChecked = true;
+            }
+        
         }
         private void Refresh()
         {
@@ -398,6 +421,62 @@ namespace AlarmPP.Web.Pages
                     {
                         AppData.DigressionChecked = false;
                     }
+                    break;
+                case ShowButtons.PU:
+                    AppData.ShowPU = !AppData.ShowPU;
+                    if (AppData.ShowPU)
+                        AppData.AddDigressionChecked = true;
+                    else
+                        AppData.AddDigressionChecked = false;
+                    break;
+                case ShowButtons.NPK:
+                    AppData.ShowNPK = !AppData.ShowNPK;
+                    if (AppData.ShowNPK)
+                        AppData.AddDigressionChecked = true;
+                    else
+                        AppData.AddDigressionChecked = false;
+                    break;
+                case ShowButtons.LongWaves:
+                    AppData.ShowLongWaves = !AppData.ShowLongWaves;
+                    if (AppData.ShowLongWaves)
+                        AppData.AddDigressionChecked = true;
+                    else
+                        AppData.AddDigressionChecked = false;
+                    break;
+                case ShowButtons.MediumWaves:
+                    AppData.ShowMediumWaves = !AppData.ShowMediumWaves;
+                    if (AppData.ShowMediumWaves)
+                        AppData.AddDigressionChecked = true;
+                    else
+                        AppData.AddDigressionChecked = false;
+                    break;
+                case ShowButtons.ShortWaves:
+                    AppData.ShowShortWaves = !AppData.ShowShortWaves;
+                    if (AppData.ShowShortWaves)
+                        AppData.AddDigressionChecked = true;
+                    else
+                        AppData.AddDigressionChecked = false;
+                    break;
+                case ShowButtons.IznosBok:
+                    AppData.ShowIznosBok = !AppData.ShowIznosBok;
+                    if (AppData.ShowIznosBok)
+                        AppData.AddDigressionChecked = true;
+                    else
+                        AppData.AddDigressionChecked = false;
+                    break;
+                case ShowButtons.IznosPriv:
+                    AppData.ShowIznosBok = !AppData.ShowIznosBok;
+                    if (AppData.ShowIznosPriv)
+                        AppData.AddDigressionChecked = true;
+                    else
+                        AppData.AddDigressionChecked = false;
+                    break;
+                case ShowButtons.IznosVert:
+                    AppData.ShowIznosVert = !AppData.ShowIznosVert;
+                    if (AppData.ShowIznosVert)
+                        AppData.AddDigressionChecked = true;
+                    else
+                        AppData.AddDigressionChecked = false;
                     break;
             }
 
