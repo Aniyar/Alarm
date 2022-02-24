@@ -1,0 +1,42 @@
+﻿<svg>
+    @{
+        int middleByX = Width / 2;
+        int middleByY = Height / 2;
+    }
+    <rect x="@(middleByX - RuleWidth/2)" width="@RuleWidth" y="0" height="@Height" fill="black" opacity="0.5" />
+    <rect x="@(Width - RuleWidth)" width="@RuleWidth" y="0" height="@Height" fill="black" opacity="0.5" />
+    <rect x="0" width="@RuleWidth" y="0" height="@Height" fill="black" opacity="0.5" />
+    @{
+        <line y1="@(middleByY-3)" y2="0" stroke-width="@Width" stroke="white" stroke-dasharray="0.3,9.7" stroke-opacity="0.1" x1="@middleByX" x2="@middleByX"></line>
+        <line y1="@(middleByY - 4)" y2="@Height" stroke-width="@Width" stroke="white" stroke-dasharray="0.3,9.7" stroke-opacity="0.1" x1="@middleByX" x2="@middleByX"></line>
+
+        <line y1="@(middleByY-3)" y2="0" stroke-width="6" stroke="white" stroke-dasharray="1,49" x1="@(27)" x2="@(27)"></line>
+        <line y1="@(middleByY - 4)" y2="@Height" stroke-width="6" stroke="white" stroke-dasharray="1,49" x1="@(27)" x2="@(27)"></line>
+        <line y1="@(middleByY-3)" y2="0" stroke-width="6" stroke="white" stroke-dasharray="1,49" x1="@(middleByX-12)" x2="@(middleByX-12)"></line>
+        <line y1="@(middleByY - 4)" y2="@Height" stroke-width="6" stroke="white" stroke-dasharray="1,49" x1="@(middleByX - 12)" x2="@(middleByX - 12)"></line>
+        <line y1="@(middleByY-3)" y2="0" stroke-width="6" stroke="white" stroke-dasharray="1,49" x1="@(middleByX+12)" x2="@(middleByX+12)"></line>
+        <line y1="@(middleByY - 4)" y2="@Height" stroke-width="6" stroke="white" stroke-dasharray="1,49" x1="@(middleByX + 12)" x2="@(middleByX + 12)"></line>
+        <line y1="@(middleByY-3)" y2="0" stroke-width="6" stroke="white" stroke-dasharray="1,49" x1="@(Width - 27)" x2="@(Width - 27)"></line>
+        <line y1="@(middleByY - 4)" y2="@Height" stroke-width="6" stroke="white" stroke-dasharray="1,49" x1="@(Width - 27)" x2="@(Width - 27)"></line>
+        for (int i = middleByY; i > 0; i = i - 50)
+        {
+            <text>
+
+
+                <text x="@middleByX" y="@i" fill="white" text-anchor="middle" font-size="12">@((middleByY - i) / 10)</text>
+                <text x="@(Width-RuleWidth/2)" y="@i" fill="white" text-anchor="middle" font-size="12">@((middleByY - i) / 10)</text>
+                <text x="@(RuleWidth/2)" y="@i" fill="white" text-anchor="middle" font-size="12">@((middleByY - i) / 10)</text>
+
+            </text>
+        }
+        for (int i = middleByY + 50; i < Height; i = i + 50)
+        {
+            <text>
+
+                <text x="@middleByX" y="@i" fill="white" text-anchor="middle" font-size="14">@((i - middleByY) / 10)</text>
+                <text x="@(Width - RuleWidth/2)" y="@i" fill="white" text-anchor="middle" font-size="12">@((i - middleByY) / 10)</text>
+                <text x="@(RuleWidth/2)" y="@i" fill="white" text-anchor="middle" font-size="12">@((i - middleByY) / 10)</text>
+            </text>
+        }
+    }
+</svg>

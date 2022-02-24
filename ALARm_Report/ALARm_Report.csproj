@@ -1,0 +1,805 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+  </PropertyGroup>
+  <Import Project="..\packages\EntityFramework.6.4.0\build\EntityFramework.props" Condition="Exists('..\packages\EntityFramework.6.4.0\build\EntityFramework.props')" />
+  <PropertyGroup>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{B27828F5-D120-4702-B3D5-6CC723FF2CB9}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>ALARm_Report</RootNamespace>
+    <AssemblyName>ALARm_Report</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Accord, Version=3.8.2.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Accord.3.8.2-alpha\lib\net462\Accord.dll</HintPath>
+    </Reference>
+    <Reference Include="Accord.Imaging, Version=3.8.2.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Accord.Imaging.3.8.2-alpha\lib\net462\Accord.Imaging.dll</HintPath>
+    </Reference>
+    <Reference Include="Accord.Math, Version=3.8.2.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Accord.Math.3.8.2-alpha\lib\net462\Accord.Math.dll</HintPath>
+    </Reference>
+    <Reference Include="Accord.Math.Core, Version=3.8.2.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Accord.Math.3.8.2-alpha\lib\net462\Accord.Math.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Accord.Statistics, Version=3.8.2.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Accord.Statistics.3.8.2-alpha\lib\net462\Accord.Statistics.dll</HintPath>
+    </Reference>
+    <Reference Include="AngleSharp, Version=0.14.0.0, Culture=neutral, PublicKeyToken=e83494dcdc6d31ea, processorArchitecture=MSIL">
+      <HintPath>..\packages\AngleSharp.0.14.0\lib\net472\AngleSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="AngleSharp.Css, Version=0.14.2.0, Culture=neutral, PublicKeyToken=e83494dcdc6d31ea, processorArchitecture=MSIL">
+      <HintPath>..\packages\AngleSharp.Css.0.14.2\lib\net472\AngleSharp.Css.dll</HintPath>
+    </Reference>
+    <Reference Include="Dapper, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dapper.2.0.35\lib\net461\Dapper.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.4.0\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.4.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="MetroFramework, Version=1.2.0.3, Culture=neutral, PublicKeyToken=5f91a84759bf584a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MetroModernUI.1.4.0.0\lib\net\MetroFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="MetroFramework.Fonts, Version=1.2.0.3, Culture=neutral, PublicKeyToken=5f91a84759bf584a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MetroModernUI.1.4.0.0\lib\net\MetroFramework.Fonts.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.5.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Configuration, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Configuration.5.0.0\lib\net461\Microsoft.Extensions.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Configuration.Abstractions, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Configuration.Abstractions.5.0.0\lib\net461\Microsoft.Extensions.Configuration.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Configuration.FileExtensions, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Configuration.FileExtensions.5.0.0\lib\net461\Microsoft.Extensions.Configuration.FileExtensions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Configuration.Json, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Configuration.Json.5.0.0\lib\net461\Microsoft.Extensions.Configuration.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.FileProviders.Abstractions, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.FileProviders.Abstractions.5.0.0\lib\net461\Microsoft.Extensions.FileProviders.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.FileProviders.Physical, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.FileProviders.Physical.5.0.0\lib\net461\Microsoft.Extensions.FileProviders.Physical.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.FileSystemGlobbing, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.FileSystemGlobbing.5.0.0\lib\net461\Microsoft.Extensions.FileSystemGlobbing.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Primitives, Version=5.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Primitives.5.0.0\lib\net461\Microsoft.Extensions.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Office.Interop.Word, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Office.Interop.Word.15.0.4797.1003\lib\net20\Microsoft.Office.Interop.Word.dll</HintPath>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Npgsql, Version=5.0.7.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Npgsql.5.0.7\lib\netstandard2.0\Npgsql.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="PdfSharp, Version=1.32.3057.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\PDFsharp.1.32.3057.0\lib\net20\PdfSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="PdfSharp.Charting, Version=1.32.3057.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\PDFsharp.1.32.3057.0\lib\net20\PdfSharp.Charting.dll</HintPath>
+    </Reference>
+    <Reference Include="Spire.Doc, Version=7.11.0.41046, Culture=neutral, PublicKeyToken=663f351905198cb3, processorArchitecture=MSIL">
+      <HintPath>..\packages\FreeSpire.Doc.7.11.0\lib\net46\Spire.Doc.dll</HintPath>
+    </Reference>
+    <Reference Include="Spire.License, Version=1.3.7.46, Culture=neutral, PublicKeyToken=b1144360237c8b3f, processorArchitecture=MSIL">
+      <HintPath>..\packages\FreeSpire.Doc.7.11.0\lib\net46\Spire.License.dll</HintPath>
+    </Reference>
+    <Reference Include="Spire.Pdf, Version=5.11.0.2046, Culture=neutral, PublicKeyToken=663f351905198cb3, processorArchitecture=MSIL">
+      <HintPath>..\packages\FreeSpire.Doc.7.11.0\lib\net46\Spire.Pdf.dll</HintPath>
+    </Reference>
+    <Reference Include="Svg, Version=3.1.0.0, Culture=neutral, PublicKeyToken=12a0bac221edeae2, processorArchitecture=MSIL">
+      <HintPath>..\packages\Svg.3.1.1\lib\net452\Svg.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Collections.Specialized, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Collections.Specialized.4.3.0\lib\net46\System.Collections.Specialized.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Configuration.ConfigurationManager, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Configuration.ConfigurationManager.5.0.0\lib\net461\System.Configuration.ConfigurationManager.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.OracleClient" />
+    <Reference Include="System.Drawing.Common, Version=4.0.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Drawing.Common.4.7.0\lib\net461\System.Drawing.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.4.3.0\lib\net462\System.IO.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Linq, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Linq.4.3.0\lib\net463\System.Linq.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Management" />
+    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Runtime, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.4.3.0\lib\net462\System.Runtime.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.5.0.0\lib\net45\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Extensions, Version=4.1.1.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.Extensions.4.3.1\lib\net462\System.Runtime.Extensions.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security" />
+    <Reference Include="System.Security.AccessControl, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.AccessControl.5.0.0\lib\net461\System.Security.AccessControl.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Algorithms, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.Algorithms.4.3.1\lib\net463\System.Security.Cryptography.Algorithms.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Encoding, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.Encoding.4.3.0\lib\net46\System.Security.Cryptography.Encoding.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Primitives, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.Primitives.4.3.0\lib\net46\System.Security.Cryptography.Primitives.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Permissions, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Permissions.5.0.0\lib\net461\System.Security.Permissions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Principal.Windows, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Principal.Windows.5.0.0\lib\net461\System.Security.Principal.Windows.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Text.Encoding.CodePages, Version=4.1.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Encoding.CodePages.4.7.1\lib\net461\System.Text.Encoding.CodePages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Encodings.Web, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Encodings.Web.5.0.0\lib\net461\System.Text.Encodings.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Json, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Json.5.0.0\lib\net461\System.Text.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.RegularExpressions, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.RegularExpressions.4.3.1\lib\net463\System.Text.RegularExpressions.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Threading.Channels, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Channels.4.7.0\lib\netstandard2.0\System.Threading.Channels.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms.DataVisualization" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Ude, Version=0.1.1.0, Culture=neutral, PublicKeyToken=dd537652db4726a9, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ude.Signed.0.1.1\lib\net40\Ude.dll</HintPath>
+    </Reference>
+    <Reference Include="websocket-sharp, Version=1.0.1.0, Culture=neutral, PublicKeyToken=5660b08a1845a91e, processorArchitecture=MSIL">
+      <HintPath>..\packages\WebSocketSharp-netstandard.1.0.1\lib\net45\websocket-sharp.dll</HintPath>
+    </Reference>
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="controls\admControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="controls\admControl.Designer.cs">
+      <DependentUpon>admControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\CatalogListBox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="controls\CatalogListBox.Designer.cs">
+      <DependentUpon>CatalogListBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\CatalogComboBox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="controls\CatalogComboBox.Designer.cs">
+      <DependentUpon>CatalogComboBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\ChoiseForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="controls\ChoiseForm.Designer.cs">
+      <DependentUpon>ChoiseForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\CompareTripsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="controls\CompareTripsForm.Designer.cs">
+      <DependentUpon>CompareTripsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\CurveChart.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="controls\CurveChart.Designer.cs">
+      <DependentUpon>CurveChart.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\FilterForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="controls\FilterForm.Designer.cs">
+      <DependentUpon>FilterForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\MainParametersProcessPeriod.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="controls\MainParametersProcessPeriod.Designer.cs">
+      <DependentUpon>MainParametersProcessPeriod.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\PeriodComboBox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="controls\PeriodComboBox.Designer.cs">
+      <DependentUpon>PeriodComboBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\rdVideoObjectsControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="controls\rdVideoObjectsControl.Designer.cs">
+      <DependentUpon>rdVideoObjectsControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\tripsControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="controls\tripsControl.Designer.cs">
+      <DependentUpon>tripsControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\tripsFilesControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="controls\tripsFilesControl.Designer.cs">
+      <DependentUpon>tripsFilesControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\UserControl1.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="controls\UserControl1.Designer.cs">
+      <DependentUpon>UserControl1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\AdditionalParameters\AdditionalParameters.cs" />
+    <Compile Include="Forms\AdditionalParameters\CKOParamGRK.cs" />
+    <Compile Include="Forms\AdditionalParameters\GDSummaryOfAditionalParameters_new2.cs" />
+    <Compile Include="Forms\AdditionalParameters\GDSummaryOfAditionalParameters_new.cs" />
+    <Compile Include="Forms\AdditionalParameters\GDSummaryOfAditionalParameters.cs" />
+    <Compile Include="Forms\AdditionalParameters\GD_iznos_relsov.cs" />
+    <Compile Include="Forms\AdditionalParameters\AdditionalParameters_new.cs" />
+    <Compile Include="Forms\AdditionalParameters\GD_PR.cs" />
+    <Compile Include="Forms\AdditionalParameters\GD_iznos_relsov_new.cs" />
+    <Compile Include="Forms\AdditionalParameters\GD_NN_new.cs" />
+    <Compile Include="Forms\AdditionalParameters\IntegartedIndicators WORKversion.cs" />
+    <Compile Include="Forms\AdditionalParameters\IntegartedIndicators - Копировать.cs" />
+    <Compile Include="Forms\AdditionalParameters\IntegartedIndicators.cs" />
+    <Compile Include="Forms\AdditionalParameters\GD_PR_new.cs" />
+    <Compile Include="Forms\CurveParameters\CurveCardMulti.cs" />
+    <Compile Include="Forms\CurveParameters\CurveCardFastSpeed.cs" />
+    <Compile Include="Forms\CurveParameters\CurveCard1.cs" />
+    <Compile Include="Forms\CurveParameters\CurveCard.cs" />
+    <Compile Include="Forms\CurveParameters\CurveCardWear.cs" />
+    <Compile Include="Forms\CurveParameters\CurveDeviceCharacterstics.cs" />
+    <Compile Include="Forms\CurveParameters\CurveDisorders.cs" />
+    <Compile Include="Forms\CurveParameters\CurveGreatWear.cs" />
+    <Compile Include="Forms\CurveParameters\CurveRanking.cs" />
+    <Compile Include="Forms\CurveParameters\CurveSpeedCharacterstics.cs" />
+    <Compile Include="Forms\GraphicDiagrams.cs" />
+    <Compile Include="Forms\longitudinalProfile\GraphDeviationsInProfile_final.cs" />
+    <Compile Include="Forms\longitudinalProfile\GraphDeviationsInProfile.cs" />
+    <Compile Include="Forms\longitudinalProfile\GraphLongitudinalProfile.cs" />
+    <Compile Include="Forms\longitudinalProfile\LongitudinalProfileElements.cs" />
+    <Compile Include="Forms\longitudinalProfile\TripCurveDeviceCharacterstics.cs" />
+    <Compile Include="Forms\longitudinalProfile\TripPlanElements.cs" />
+    <Compile Include="Forms\longitudinalProfile\TripPlanProfileIrregularity.cs" />
+    <Compile Include="Forms\PU32\printall.cs" />
+    <Compile Include="Forms\PU32\AverageScoreDepartments.cs" />
+    <Compile Include="Forms\PU32\BlindStateGaps.cs" />
+    <Compile Include="Forms\PU32\BY_KILOMETER_SHEET.cs" />
+    <Compile Include="Forms\PU32\ControlAdjustmentProtocol.cs" />
+    <Compile Include="Forms\PU32\DefectSheetOfIncBut.cs" />
+    <Compile Include="Forms\PU32\DerogationsIsostsAndJointless.cs" />
+    <Compile Include="Forms\PU32\fp51.cs" />
+    <Compile Include="Forms\PU32\MainParametersGRKSpeedMove.cs" />
+    <Compile Include="Forms\works\GRK_param.cs" />
+    <Compile Include="Forms\works\Listofdigretionrailjoints.cs" />
+    <Compile Include="Forms\works\Listofdeviationsrailjoints.cs" />
+    <Compile Include="Forms\works\Listo_faccelerations_long_bumps.cs" />
+    <Compile Include="Forms\works\Deviation3and4.cs" />
+    <Compile Include="Forms\PU32\DeviationOf2CloseTo3.cs" />
+    <Compile Include="Forms\PU32\DeviationOfPRZH.cs" />
+    <Compile Include="Forms\PU32\DeviationsPassportPositionPlan.cs" />
+    <Compile Include="Forms\PU32\DeviationsRailHeadWear.cs" />
+    <Compile Include="Forms\PU32\DeviationsRailRailing.cs" />
+    <Compile Include="Forms\PU32\DeviationsToDangerous.cs" />
+    <Compile Include="Forms\PU32\DF310.cs" />
+    <Compile Include="Forms\PU32\Dfi1.cs" />
+    <Compile Include="Forms\PU32\DFi2.cs" />
+    <Compile Include="Forms\PU32\Dfpr1.cs" />
+    <Compile Include="Forms\PU32\Dfz2.cs" />
+    <Compile Include="Forms\PU32\Dfz2LET.cs" />
+    <Compile Include="Forms\PU32\Dfz3.cs" />
+    <Compile Include="Forms\PU32\EscortList.cs" />
+    <Compile Include="Forms\PU32\EscortScreen.cs" />
+    <Compile Include="Forms\PU32\ExcludedArea.cs" />
+    <Compile Include="Forms\PU32\FligfhtHaulageStatement.cs" />
+    <Compile Include="Forms\PU32\fp51_11.cs" />
+    <Compile Include="Forms\PU32\fp52.cs" />
+    <Compile Include="Forms\PU32\fp53.cs" />
+    <Compile Include="Forms\AdditionalParameters\GD_NN.cs" />
+    <Compile Include="Forms\PU32\Level.cs" />
+    <Compile Include="Forms\PU32\ListOgDerogations.cs" />
+    <Compile Include="Forms\PU32\LongPathProfilAndPlan.cs" />
+    <Compile Include="Forms\PU32\MainParameters.cs" />
+    <Compile Include="Forms\PU32\OpOrder.cs" />
+    <Compile Include="Forms\PU32\OsnovParam.cs" />
+    <Compile Include="Forms\PU32\PatternDrawdown.cs" />
+    <Compile Include="Forms\PU32\PoorKilometers.cs" />
+    <Compile Include="Forms\PU32\ProvenPathDoNot.cs" />
+    <Compile Include="Forms\PU32\ProvenPath.cs" />
+    <Compile Include="Forms\PU32\PU32H.cs" />
+    <Compile Include="Forms\PU32\PU32.cs" />
+    <Compile Include="Forms\PU32\Pu32dbd.cs" />
+    <Compile Include="Forms\PU32\pu32dris.cs" />
+    <Compile Include="Forms\PU32\pu32dsh.cs" />
+    <Compile Include="Forms\PU32\pu32kompl.cs" />
+    <Compile Include="Forms\PU32\rd_epur.cs" />
+    <Compile Include="Forms\PU32\rd_gaps_ogr.cs" />
+    <Compile Include="Forms\PU32\RideSurfaceSlope.cs" />
+    <Compile Include="Forms\PU32\sheetsOfPulseWeldedJoints.cs" />
+    <Compile Include="Forms\PU32\StatemButtGapsTemperaturesRails.cs" />
+    <Compile Include="Forms\PU32\StatementOfDefectiveSleepers.cs" />
+    <Compile Include="Forms\PU32\rd_gaps.cs" />
+    <Compile Include="Forms\PU32\StatementStateGaps.cs" />
+    <Compile Include="Forms\PU32\StatementStateGapsSpeedLimit.cs" />
+    <Compile Include="Forms\PU32\Straightening.cs" />
+    <Compile Include="Forms\PU32\SummarySheetForAssessingRailsJoints.cs" />
+    <Compile Include="Forms\PU32\SummaryTableOfIdentifiedDeviations.cs" />
+    <Compile Include="Forms\PU32\SUMMARY_OF_THE_DEPARTURES.cs" />
+    <Compile Include="Forms\PU32\ChecklistVerificationSheet.cs" />
+    <Compile Include="Forms\PU32\TrackConditionAfterRepair.cs" />
+    <Compile Include="Forms\PU32\TrackDeviations.cs" />
+    <Compile Include="Forms\works\DN.cs" />
+    <Compile Include="Forms\works\Long_profile_irregularities.cs" />
+    <Compile Include="Forms\works\insufficient_elevation.cs" />
+    <Compile Include="Forms\works\excess_elevation.cs" />
+    <Compile Include="Forms\works\GRK_param111.cs" />
+    <Compile Include="Forms\works\izo_prosadka.cs" />
+    <Compile Include="Forms\works\Deviation_close_to_the_limit.cs" />
+    <Compile Include="Forms\works\speed_limits.cs" />
+    <Compile Include="Forms\works\SBIZ.cs" />
+    <Compile Include="Forms\works\iznos_porog.cs" />
+    <Compile Include="Forms\works\AbsenceBoltJoint.cs" />
+    <Compile Include="Forms\works\AbsenceDefectOverlay.cs" />
+    <Compile Include="Forms\works\BadFastening.cs" />
+    <Compile Include="Forms\AdditionalParameters\ChartShortRoughness.cs" />
+    <Compile Include="Forms\works\CrossSectionRail.cs" />
+    <Compile Include="Forms\works\CurveCardWithSideWear.cs" />
+    <Compile Include="Forms\works\DefectSleepers.cs" />
+    <Compile Include="Forms\works\DeviationDegree2.cs" />
+    <Compile Include="Forms\works\BPD.cs" />
+    <Compile Include="Forms\works\Abnormal_rd_gaps.cs" />
+    <Compile Include="Forms\works\RSHCH.cs" />
+    <Compile Include="Forms\works\RHK.cs" />
+    <Compile Include="Forms\works\PRU.cs" />
+    <Compile Include="Forms\works\DeviationDegree3.cs" />
+    <Compile Include="Forms\works\DeviationDegree4.cs" />
+    <Compile Include="Forms\works\DeviationsByKm.cs" />
+    <Compile Include="Forms\works\DeviationsInBallast.cs" />
+    <Compile Include="Forms\works\DeviationsInFastening.cs" />
+    <Compile Include="Forms\works\DeviationsInRailJoint.cs" />
+    <Compile Include="Forms\works\DeviationsInRails.cs" />
+    <Compile Include="Forms\works\DeviationsInSleepers.cs" />
+    <Compile Include="Forms\works\DeviationsSpeedLimit.cs" />
+    <Compile Include="Forms\works\DiffTypeSleepers.cs" />
+    <Compile Include="Forms\works\EpureOnLinks.cs" />
+    <Compile Include="Forms\works\EpureSleepers.cs" />
+    <Compile Include="Forms\works\FasteningUnderRailSole.cs" />
+    <Compile Include="Forms\works\GDIrregularities.cs" />
+    <Compile Include="Forms\works\GraphDeviationsGaps.cs" />
+    <Compile Include="Forms\works\MissingAntiTheft.cs" />
+    <Compile Include="Forms\works\NotEnoughBallast.cs" />
+    <Compile Include="Forms\works\OutputRailSole.cs" />
+    <Compile Include="Forms\works\PRandNPKpiketCharacteristics.cs" />
+    <Compile Include="Forms\works\PRandNPKsiteCharacteristics.cs" />
+    <Compile Include="Forms\works\ProfileElementsDeviations.cs" />
+    <Compile Include="Forms\works\RailThreadMovement.cs" />
+    <Compile Include="Forms\works\RoughnessImpulseStatistic.cs" />
+    <Compile Include="Forms\works\SettingJointGaps.cs" />
+    <Compile Include="Forms\works\SleepersFilingBallast.cs" />
+    <Compile Include="Forms\works\Statistics.cs" />
+    <Compile Include="Forms\works\SummaryStatementMainDirection.cs" />
+    <Compile Include="Forms\works\SurfaceRailsIntegral.cs" />
+    <Compile Include="Forms\works\UnfitnessSectional.cs" />
+    <Compile Include="Forms\works\DefShpal.cs" />
+    <Compile Include="Forms\works\NoBolt.cs" />
+    <Compile Include="Forms\works\ViolationPerpendicularity.cs" />
+    <Compile Include="Forms\works\Wear3and4TripSection.cs" />
+    <Compile Include="Forms\works\WeldJoint.cs" />
+    <Compile Include="Forms\works\WideningTrackInCurve.cs" />
+    <Compile Include="Main.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Main.Designer.cs">
+      <DependentUpon>Main.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="controls\admControl.resx">
+      <DependentUpon>admControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\CatalogListBox.resx">
+      <DependentUpon>CatalogListBox.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\CatalogComboBox.resx">
+      <DependentUpon>CatalogComboBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\ChoiseForm.resx">
+      <DependentUpon>ChoiseForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\CompareTripsForm.resx">
+      <DependentUpon>CompareTripsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\CurveChart.resx">
+      <DependentUpon>CurveChart.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\FilterForm.resx">
+      <DependentUpon>FilterForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\MainParametersProcessPeriod.resx">
+      <DependentUpon>MainParametersProcessPeriod.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\PeriodComboBox.resx">
+      <DependentUpon>PeriodComboBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\rdVideoObjectsControl.resx">
+      <DependentUpon>rdVideoObjectsControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\tripsControl.resx">
+      <DependentUpon>tripsControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\UserControl1.resx">
+      <DependentUpon>UserControl1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Main.resx">
+      <DependentUpon>Main.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="packages.config" />
+    <None Include="Properties\DataSources\ALARm.Core.AdmDirection.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.AdmDistance.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.AdmRoad.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.Report.Filter.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.Report.ReportTemplate.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.Report.TestReportTemplate.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.ReportPeriod.datasource" />
+    <None Include="Properties\DataSources\ALARm_Report.Core.RdObject.datasource" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <None Include="xls\ЦДИ-960_р от 03 12 2020.docx" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ALARm.Core\ALARm.Core.csproj">
+      <Project>{f624c805-109b-4330-b0b1-cd4dff9a9d33}</Project>
+      <Name>ALARm.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ALARm.DataAccess\ALARm.DataAccess.csproj">
+      <Project>{DFBEF14E-4CA6-4DAA-BDA8-526B86293F11}</Project>
+      <Name>ALARm.DataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ALARm.Services\ALARm.Services.csproj">
+      <Project>{DBAF0C4F-958A-4495-BF63-16ED2121918B}</Project>
+      <Name>ALARm.Services</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.7.2 %28x86 и x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="xls\A4Duplicate - Копировать %282%29.xslt" />
+    <Content Include="xls\Straightening.xslt" />
+    <Content Include="xls\MainParametersGRKSpeedMove.xslt" />
+    <Content Include="xls\LongPathProfilAndPlan.xslt" />
+    <Content Include="xls\DeviationsPassportPositionPlan.xslt" />
+    <Content Include="xls\PatternDrawdown.xslt" />
+    <Content Include="xls\Level.xslt" />
+    <Content Include="xls\MainParameters.xslt" />
+    <Content Include="xls\AdditionalParameters_new.xslt" />
+    <Content Include="xls\MainParametersOnline.xslt" />
+    <Content Include="xls\AdditionalParameters.xslt" />
+    <Content Include="xls\GDSummaryOfAditionalParameters_new2.xslt" />
+    <Content Include="xls\GD_PR_new.xslt" />
+    <Content Include="xls\GDSummaryOfAditionalParameters_new.xslt" />
+    <Content Include="xls\ChartShortRoughness.xslt" />
+    <Content Include="xls\GD_NN.xslt" />
+    <Content Include="xls\GD_iznos_relsov_new.xslt" />
+    <Content Include="xls\GD_iznos_relsov.xslt" />
+    <Content Include="xls\NoBolt.xslt" />
+    <Content Include="xls\Dfz3.xslt" />
+    <Content Include="xls\DF310.xslt" />
+    <Content Include="xls\PRandNPKsiteCharacteristics.xslt" />
+    <Content Include="xls\IntegartedIndicators.xslt" />
+    <Content Include="xls\PRandNPKpiketCharacteristics.xslt" />
+    <Content Include="xls\PU32H.xslt" />
+    <Content Include="xls\pu32dris.xslt" />
+    <Content Include="xls\pu32dsh.xslt" />
+    <Content Include="xls\pu32kompl.xslt" />
+    <Content Include="xls\StatementStateGaps.xslt" />
+    <Content Include="xls\StatemButtGapsTemperaturesRails.xslt" />
+    <Content Include="xls\CKOParamGRK.xslt" />
+    <Content Include="xls\Dfpr1.xslt" />
+    <Content Include="xls\RoughnessImpulseStatistic.xslt" />
+    <Content Include="xls\CrossSectionRail.xslt" />
+    <Content Include="xls\sheetsOfPulseWeldedJoints.xslt" />
+    <Content Include="xls\Dfi1.xslt" />
+    <Content Include="xls\DFi2.xslt" />
+    <Content Include="xls\FasteningUnderRailSole.xslt" />
+    <Content Include="xls\Statistics.xslt" />
+    <Content Include="xls\EpureSleepers.xslt" />
+    <Content Include="xls\SleepersFilingBallast.xslt">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="xls\DeviationsInSleepers.xslt" />
+    <Content Include="xls\Listofdeviationsrailjoints.xslt" />
+    <Content Include="xls\OutputRailSole.xslt" />
+    <Content Include="xls\DefectSheetOfIncBut.xslt" />
+    <Content Include="xls\WeldJoint.xslt" />
+    <Content Include="xls\FligfhtHaulageStatement.xslt" />
+    <Content Include="xls\rd_gaps.xslt" />
+    <Content Include="xls\ListOgDerogations.xslt" />
+    <Content Include="xls\DeviationsInBallast.xslt" />
+    <Content Include="xls\BY_KILOMETER_SHEET.xslt" />
+    <Content Include="xls\DeviationsInFastening.xslt" />
+    <Content Include="xls\SUMMARY_OF_THE_DEPARTURES.xslt" />
+    <Content Include="xls\BlindStateGaps.xslt" />
+    <Content Include="xls\DefShpal.xslt" />
+    <Content Include="xls\DiffTypeSleepers.xslt" />
+    <Content Include="xls\ViolationPerpendicularity.xslt" />
+    <Content Include="xls\GraphLongitudinalProfile.xslt" />
+    <Content Include="xls\BPD.xslt" />
+    <Content Include="xls\TripPlanProfileIrregularity.xslt" />
+    <Content Include="xls\GraphDeviationsInProfile.xslt" />
+    <Content Include="xls\LongitudinalProfileElements.xslt" />
+    <Content Include="xls\TripPlanElements.xslt" />
+    <Content Include="xls\MissingAntiTheft.xslt" />
+    <Content Include="xls\AbsenceDefectOverlay.xslt" />
+    <Content Include="xls\Listofdigretionrailjoints.xslt" />
+    <Content Include="xls\BadFastening.xslt" />
+    <Content Include="xls\AbsenceBoltJoint.xslt" />
+    <Content Include="xls\NotEnoughBallast.xslt" />
+    <Content Include="xls\rd_epur.xslt" />
+    <Content Include="xls\izo_prosadka.xslt" />
+    <Content Include="xls\DN.xslt" />
+    <Content Include="xls\Abnormal_rd_gaps.xslt" />
+    <Content Include="xls\speed_limits.xslt" />
+    <Content Include="xls\Deviation_close_to_the_limit.xslt" />
+    <Content Include="xls\GRK_param.xslt" />
+    <Content Include="xls\PRU.xslt" />
+    <Content Include="xls\Long_profile_irregularities.xslt" />
+    <Content Include="xls\RSHCH.xslt" />
+    <Content Include="xls\fp52.xslt" />
+    <Content Include="xls\DeviationOf2CloseTo3.xslt" />
+    <Content Include="xls\RHK.xslt" />
+    <Content Include="xls\SBIZ.xslt" />
+    <Content Include="xls\CurveSpeedCharacterstics.xslt" />
+    <Content Include="xls\Listo_faccelerations_long_bumps.xslt" />
+    <Content Include="xls\iznos_porog.xslt" />
+    <Content Include="xls\WideningTrackInCurve.xslt" />
+    <Content Include="xls\DeviationDegree2.xslt" />
+    <Content Include="xls\Pu32dbd.xslt" />
+    <Content Include="xls\TrackDeviations.xslt" />
+    <Content Include="xls\EscortList.xslt" />
+    <Content Include="xls\ChecklistVerificationSheet.xslt" />
+    <Content Include="xls\ProvenPathDoNot.xslt" />
+    <Content Include="xls\TrackConditionAfterRepair.xslt" />
+    <Content Include="xls\fp53.xslt" />
+    <Content Include="xls\SummaryTableOfIdentifiedDeviations.xslt" />
+    <Content Include="xls\PU32.xslt" />
+    <Content Include="xls\DeviationDegree3.xslt" />
+    <Content Include="xls\ControlAdjustmentProtocol.xslt" />
+    <Content Include="xls\DerogationsIsostsAndJointless.xslt" />
+    <Content Include="xls\ProvenPath.xslt" />
+    <Content Include="xls\EscortScreen.xslt" />
+    <Content Include="xls\OpOrder.xslt" />
+    <Content Include="xls\fp51.xslt" />
+    <Content Include="xls\DeviationDegree4.xslt" />
+    <Content Include="xls\PU32%28F.SRED%29.xslt" />
+    <Content Include="xls\PU32%28F.NEUD%29.xslt" />
+    <Content Include="xls\DeviationsRailHeadWear.xslt" />
+    <Content Include="xls\DeviationsToDangerous.xslt" />
+    <Content Include="xls\Deviation3and4.xslt" />
+    <Content Include="xls\A4Duplicate.xslt" />
+    <Content Include="xls\CurveCard.xslt">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="xls\CurveRanking.xslt">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="xls\CurveGreatWear.xslt">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="xls\CurveDeviceCharacterstics.xslt">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="xls\CurveCardWear.xslt">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="xls\excess_elevation.xslt">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="xls\insufficient_elevation.xslt">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="xls\CurveDisorders.xslt">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="xls\CurveCard1.xslt">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="xls\DeviationOfPRZH.xslt">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="xls\GDA4 - Копировать %289%29.xslt">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="xls\GDA4 - Копировать.xslt">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="xls\GDA4.xslt">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="xls\pu32.xsl">
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <PropertyGroup>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+  </PropertyGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\EntityFramework.6.4.0\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.4.0\build\EntityFramework.props'))" />
+    <Error Condition="!Exists('..\packages\EntityFramework.6.4.0\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.4.0\build\EntityFramework.targets'))" />
+    <Error Condition="!Exists('..\packages\Accord.3.8.2-alpha\build\Accord.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Accord.3.8.2-alpha\build\Accord.targets'))" />
+    <Error Condition="!Exists('..\packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets'))" />
+  </Target>
+  <PropertyGroup>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+  </PropertyGroup>
+  <Import Project="..\packages\EntityFramework.6.4.0\build\EntityFramework.targets" Condition="Exists('..\packages\EntityFramework.6.4.0\build\EntityFramework.targets')" />
+  <Import Project="..\packages\Accord.3.8.2-alpha\build\Accord.targets" Condition="Exists('..\packages\Accord.3.8.2-alpha\build\Accord.targets')" />
+  <Import Project="..\packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets" Condition="Exists('..\packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets')" />
+</Project>

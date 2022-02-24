@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:msxsl="urn:schemas-microsoft-com:xslt"
+    version="1.0" exclude-result-prefixes="msxsl">
+    <xsl:output method="html" />
+    <xsl:template match="/">
+        <html>
+
+        <head>
+            <title>ФП-5.1 График изменения СССП</title>
+            <style>
+                @media print {
+                    .addparam {
+                        width: 760px;
+                        margin: auto;
+                    }
+                }
+
+                .addparam {
+                    width: 760px;
+                    margin: auto;
+                }
+
+                .pickets {
+                    transform: rotate(90deg);
+                    position: relative;
+                    top: -476;
+                    height: 11px;
+                    font-size: 10;
+                    width: 865;
+                    right: 262px;
+                }
+
+                .picket {
+                    float: left;
+                    margin-right: 65;
+                }
+
+                .bottom-labels {
+                    transform: rotate(90deg);
+                    top: -273;
+                    font-size: 9px;
+                    left: 422px;
+                    width: 20px;
+                    height: 550px;
+                    position: relative;
+                    margin-bottom: -550px;
+                    text-align: right;
+                }
+
+                .top-title {
+                    margin-right: 15px;
+                    border-color: black;
+                    border: solid;
+                    width: 574.1px;
+                    border-width: thin;
+                    padding-right: 10px;
+                    font-size: 11;
+                    margin-left: auto;
+                }
+
+                .top-c {
+                    /* margin-right: 85px; */
+                    border-color: black;
+                    /* width: 575px; */
+                    /* height: 12px; */
+                    border-width: thin;
+                    text-align: center;
+                    padding-right: 10px;
+                    margin-left: auto;
+                    margin-bottom: 20px;
+                }
+
+                .top-r {
+                    margin-top: 50px;
+                    border-color: black;
+                    width: 575px;
+                    height: 12px;
+                    border-width: thin;
+                    text-align: RIGHT;
+                    margin-left: auto;
+                    margin-bottom: 10px;
+                }
+
+                .label-name {
+                    margin-right: 15px;
+                    border-color: black;
+                    width: 575px;
+                    height: 12px;
+                    border-width: thin;
+                    text-align: center;
+                    padding-right: 10px;
+                    margin-left: auto;
+                    margin-bottom: 20px;
+                    font-size: 98%;
+                }
+
+                .main-chart {
+                    height: 300px;
+                    width: 720;
+                    /* margin-right: auto; */
+                    margin-left: auto;
+                    preserveAspectRatio: none;
+                    /* padding: 0px; */
+                    /* transform: scale(1.5) rotate(90deg); */
+                    /* position: absolute; */
+                    top: 400px;
+                }
+
+                .chart {
+                    margin-right: auto;
+                    margin-left: auto;
+                    width: 1000;
+                    height: 250;
+                    margin-bottom: 0.5px solid;
+                }
+
+                .right-title {
+                    position: relative;
+                    left: 373;
+                    top: 390px;
+                    transform: rotate(90deg);
+                    font-size: 12;
+                    font-family: Arial;
+                }
+
+                .button {
+                    background-color: #4CAF50;
+                    /* Green */
+                    border: none;
+                    color: white;
+                    padding: 8px 16px;
+                    text-align: center;
+                    text-decoration: none;
+                    display: inline-block;
+                    font-size: 12px;
+                    margin: 2px 3px;
+                    -webkit-transition-duration: 0.4s;
+                    /* Safari */
+                    transition-duration: 0.4s;
+                    cursor: pointer;
+                    background-color: white;
+                    color: black;
+                    border: 2px solid #4CAF50;
+                    position: fixed;
+                    right: 10px;
+                    top: 10px;
+                }
+
+                .button:hover {
+                    background-color: #4CAF50;
+                    color: white;
+                }
+
+                .nkm {
+                    font-size: 14;
+                    font-family: Arial;
+                    text-align: right;
+                    margin-right: 5px;
+                }
+
+                .text2 {
+                    position: absolute;
+                    right: 16px;
+                    top: 40px;
+                    background: #fff;
+                    padding: 0 10px;
+                }
+            </style>
+            <style type="text/css" media="print">
+                .dontprint {
+                    display: none;
+                }
+
+                #container {
+                    width: 600px;
+                    margin: 0 auto;
+                }
+
+                #center {
+                    width: 200px;
+                    height: 100px;
+                    float: left;
+                    background: rgb(255, 0, 0);
+                }
+            </style>
+            <script type="text/javascript">
+
+                function hidetitle() {
+                    var divs = document.querySelectorAll('.top-title');
+                    divs.forEach(function (div) {
+                        div.style.display = div.style.display == "none" ? "block" : "none";
+                    });
+                }
+
+            </script>
+        </head>
+
+        <body>
+            <xsl:for-each select="report/addparam">
+                <table style="font-size: 2 px;" align="left">
+                    <tr>
+                        <th>
+                            <xsl:value-of select="@ALARmReport" />
+                        </th>
+                    </tr>
+                </table>
+
+                <div id="tab" class="addparam;" style="text-align: center;">
+                    <div class="top-c" style="page-break-before:always; margin:50px 0px 0px">
+                        <b>График изменения СССП (ФП-5.1)</b>
+                    </div>
+                    <table style="width:90%" align="center">
+                        <tr>
+                            <td> ПС:
+                                <xsl:value-of select="@ps" />
+                            </td>
+
+                            <td> Дорога:
+                                <xsl:value-of select="@road" />
+                            </td>
+                            <td>
+                                Направление:
+                                <xsl:value-of select="@direction" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td> ПЧ:
+                                <xsl:value-of select="@pch" />
+                            </td>
+                            <td> Проверка:
+                                <xsl:value-of select="@check" />
+                            </td>
+                            <td>
+                                Путь:
+                                <xsl:value-of select="@track" />
+                            </td>
+                            <td>
+                                <xsl:value-of select="@periodDate" />
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="top-c">
+                        <b>Оценка состояния пути по статическим характеристикам вертикальных неровностей</b>
+                    </div>
+
+
+                    <div style="display: table; margin: 0 auto; text-align: centre;" class="main-chart">
+                        <svg class="chart" style="width: 1200px;height: 400px;">
+                            <xsl:attribute name="viewBox">
+                                <xsl:value-of select="@viewbox" />
+                            </xsl:attribute>
+
+                            <xsl:for-each select="graphics/CCCPspeedBYpiket">
+                                <rect width="10" stroke="black" stroke-width="0.5">
+                                    <xsl:attribute name="height">
+                                        <xsl:value-of select="@h" />
+                                    </xsl:attribute>
+                                    <xsl:attribute name="x">
+                                        <xsl:value-of select="@x" />
+                                    </xsl:attribute>
+                                    <xsl:attribute name="y">
+                                        <xsl:value-of select="@y" />
+                                    </xsl:attribute>
+                                    <xsl:attribute name="style">
+                                        <xsl:value-of select="@style" />
+                                    </xsl:attribute>
+                                </rect>
+                            </xsl:for-each>
+
+                            <xsl:for-each select="km/text">
+                                <text transform="rotate(-90)" style="font-size: 9px" font-weight="bold">
+                                    <xsl:attribute name="x">
+                                        <xsl:value-of select="@x" />
+                                    </xsl:attribute>
+                                    <xsl:attribute name="y">
+                                        <xsl:value-of select="@y" />
+                                    </xsl:attribute>
+
+                                    <xsl:value-of select="." />
+                                </text>
+                            </xsl:for-each>
+                            <xsl:for-each select="speedlimit/text">
+                                <text style="font-size: 9px" font-weight="bold">
+                                    <xsl:attribute name="x">
+                                        <xsl:value-of select="@x" />
+                                    </xsl:attribute>
+                                    <xsl:attribute name="y">
+                                        <xsl:value-of select="@y" />
+                                    </xsl:attribute>
+
+                                    <xsl:value-of select="." />
+                                </text>
+                            </xsl:for-each>
+
+
+                            <xsl:for-each select="MaxSpeedLimit">
+                                <line x1="7" x2="7" y2="-5" stroke="black" stroke-width="5" stroke-dasharray="1,9">
+                                    <xsl:attribute name="y1">
+                                        <xsl:value-of select="." />
+                                    </xsl:attribute>
+                                </line>
+                            </xsl:for-each>
+
+                            <xsl:for-each select="cccpsred">
+                                <line x1="5" stroke-width="0.5" stroke="green" fill="none">
+                                    <xsl:attribute name="y1">
+                                        <xsl:value-of select="@v" />
+                                    </xsl:attribute>
+                                    <xsl:attribute name="y2">
+                                        <xsl:value-of select="@v" />
+                                    </xsl:attribute>
+                                    <xsl:attribute name="x2">
+                                        <xsl:value-of select="@dlina" />
+                                    </xsl:attribute>
+                                </line>
+                                <text x="20" y="@v" class="small" font-color="green" stroke="green">
+                                    <xsl:attribute name="y">
+                                        <xsl:value-of select="@v" />
+                                    </xsl:attribute>
+                                    CCCП сред
+                                </text>
+                            </xsl:for-each>
+
+                            <xsl:for-each select="vpass">
+                                <line x1="5" stroke-width="0.5" stroke="yellow" fill="none">
+                                    <xsl:attribute name="y1">
+                                        <xsl:value-of select="@v" />
+                                    </xsl:attribute>
+                                    <xsl:attribute name="y2">
+                                        <xsl:value-of select="@v" />
+                                    </xsl:attribute>
+                                    <xsl:attribute name="x2">
+                                        <xsl:value-of select="@dlina" />
+                                    </xsl:attribute>
+                                </line>
+                                <text x="20" y="" class="small" font-color="yellow" stroke="yellow">
+                                    <xsl:attribute name="y">
+                                        <xsl:value-of select="@v" />
+                                    </xsl:attribute>
+                                    Vпасс
+                                </text>
+                            </xsl:for-each>
+
+                            <xsl:for-each select="vgruz">
+                                <line x1="5" stroke-width="0.5" stroke="red" fill="none">
+                                    <xsl:attribute name="y1">
+                                        <xsl:value-of select="@v" />
+                                    </xsl:attribute>
+                                    <xsl:attribute name="y2">
+                                        <xsl:value-of select="@v" />
+                                    </xsl:attribute>
+                                    <xsl:attribute name="x2">
+                                        <xsl:value-of select="@dlina" />
+                                    </xsl:attribute>
+                                </line>
+                                <text x="20" class="small" font-color="red" stroke="red">
+                                    <xsl:attribute name="y">
+                                        <xsl:value-of select="@v" />
+                                    </xsl:attribute>
+                                    Vгруз
+                                </text>
+                            </xsl:for-each>
+
+                        </svg>
+                    </div>
+                </div>
+            </xsl:for-each>
+        </body>
+        </html>
+    </xsl:template>
+</xsl:stylesheet>

@@ -1,0 +1,523 @@
+﻿@using MatBlazor
+@inject IJSRuntime JSRuntime
+@inject AlarmPP.Web.Services.AppData AppData
+@inject AlarmPP.Web.Services.OnlineModeData OnlineModeData
+@inject IMainTrackStructureRepository MainTrackStructureRepository
+@inject IRdStructureRepository RdStructureRepository
+@inject IAdmStructureRepository AdmStructureRepository
+@inject IMatToaster Toaster
+@inject NavigationManager NavManager
+@using ALARm.Core
+
+@*<Loader IsLoading="AppData.Loading" />*@
+<div class="loading d-none" id="trackpanel-loader">@AppData.LoadingText</div>
+<div class="dg-row">
+    @if (AppData.WorkMode == Services.WorkMode.Postprocessing)
+    {
+        <div class="dg-left">
+            <div class="dg-label">
+                <br />
+            </div>
+            <div class="dg-label">Оценка</div>
+            <div class="dg-label">Км</div>
+        </div>
+        <div id="dgscroll" class="dg-right" @onscroll="OnScroll">
+            @if (MousePressed)
+            {
+                <svg preserveAspectRatio="none" width="@(AppData.GetLength() / 10)" height="54" class="dg-svg" @onmousemove="OnMouseMove" @onmousedown="OnMouseMove" viewBox="0 0 @AppData.GetLength() 54">
+                    <SVGMarkers></SVGMarkers>
+                    @if (AppData.Kilometers != null)
+                    {
+                        int x = 0;
+
+                        foreach (var kilometer in AppData.Kilometers)
+                        {
+                            <rect x="@x" y="18" width="@kilometer.Length" stroke="#eceff1" stroke-width="3" height="18" fill="@(kilometer.GetFill())"></rect>
+                            x = x + kilometer.Length;
+                            <text>
+                                <g transform="scale(10,1)">
+                                    <text font-size="10" transform="" x="@(x / 10 - (int)(kilometer.Number.ToString().Length * 6) - 2)" y="44">@kilometer.Number╷@((AppData.Kilometers.Count - 1) > AppData.Kilometers.IndexOf(kilometer) ? AppData.Kilometers[AppData.Kilometers.IndexOf(kilometer) + 1].Number.ToString() : "")</text>
+                                </g>
+                            </text>
+
+                        }
+                    }
+                    <marker id="rectmarker" refX="3" refY="2" markerUnits="strokeWidth" markerWidth="6" markerHeight="4" orient="0">
+                        <rect width="7" height="2" x="0" y="0.75" fill="black"></rect>
+                    </marker>
+
+                    <rect transform="scale(10 1)" rx="5" ry="5" stroke="#FFF933" stroke-width="1" stroke-opacity="1" class="dg-slider-button" x="@AppData.SliderXPosition" y="0" width="50" height="54" fill="#DAF7A6" opacity="0.40"></rect>
+                    <line transform="scale(10 1)" style="cursor:col-resize" x1="@AppData.SliderCenterXPosition" x2="@AppData.SliderCenterXPosition" y1="0" y2="54" stroke="black" stroke-width="1" marker-start="url(#rectmarker)" marker-end="url(#rectmarker)"></line>
+                </svg>
+            }
+            else
+            {
+                <svg preserveAspectRatio="none" width="@(AppData.GetLength() / 10)" height="54" class="dg-svg" @onmousedown="OnMouseMove" viewBox="0 0 @AppData.GetLength() 54">
+                    }
+                    }
+                    <SVGMarkers></SVGMarkers>
+                    @if (AppData.Kilometers != null)
+                    {
+                        int x = 0;
+
+                        foreach (var kilometer in AppData.Kilometers)
+                        {
+                            <rect x="@x" y="18" width="@kilometer.Length" stroke="#eceff1" stroke-width="3" height="18" fill="@(kilometer.GetFill())"></rect>
+                            x = x + kilometer.Length;
+                            <text>
+                                <g transform="scale(10,1)">
+                                    <text font-size="10" transform="" x="@(x / 10 - (int)(kilometer.Number.ToString().Length * 6)-2)" y="44">@kilometer.Number╷@((AppData.Kilometers.Count -1) > AppData.Kilometers.IndexOf(kilometer) ? AppData.Kilometers[AppData.Kilometers.IndexOf(kilometer)+1].Number.ToString() : "")</text>
+                                </g>
+                            </text>
+                        }
+                    }
+                    <marker id="rectmarker" refX="3" refY="2" markerUnits="strokeWidth" markerWidth="6" markerHeight="4" orient="0">
+                        <rect width="7" height="2" x="0" y="0.75" fill="black"></rect>
+                    </marker>
+
+                    <rect transform="scale(10 1)" rx="5" ry="5" stroke="#FFF933" stroke-width="1" stroke-opacity="1" class="dg-slider-button" x="@AppData.SliderXPosition" y="0" width="50" height="54" fill="#DAF7A6" opacity="0.40"></rect>
+                    <line transform="scale(10 1)" style="cursor:col-resize" x1="@AppData.SliderCenterXPosition" x2="@AppData.SliderCenterXPosition" y1="0" y2="54" stroke="black" stroke-width="1" marker-start="url(#rectmarker)" marker-end="url(#rectmarker)"></line>
+                </svg>
+            }
+        </div>
+    }
+
+    <div class="dg-right">
+        @if (AppData.WorkMode == Services.WorkMode.Online)
+        {
+            <MatSlideToggle Style="margin-top:30px" @bind-Value="@OnlineModeData.AutoScroll"></MatSlideToggle>
+            <span>Автопрокрутка</span>
+            <MatSlideToggle Style="margin-top:30px" @bind-Value="@OnlineModeData.AutoPrint"></MatSlideToggle>
+            <span>Автоматическая печать</span>
+
+            <MatButton Style="height:30px" OnClick="_=>{ StopDialog = true; AppData.Processing = true; }">
+                <i class="demo-icon icon-done">&#xe819;</i>завершить
+            </MatButton>
+        }
+    </div>
+</div>
+
+<div style="width:100%; height:48px; overflow:hidden;">
+    <div id="dgrowtitle" class="dg-title-row">
+
+        @if (AppData.GetData(AppData.SliderYPosition))
+        {
+            string levelValue = "", rihtLeftValue = "", rihtRightValue = "", gaugeValue = "", drawdownLeftValue = "", drawdownRightValue = "", StrightAvgTrapezoid = "", LevelAvgTrapezoid = "";
+
+            if (AppData.ShowSignals)
+            {
+                levelValue += "с.: " + AppData.Data[(int)Services.Series.LevelSignal] + " ";
+                rihtLeftValue += "с.: " + AppData.Data[(int)Services.Series.StrightLeftSignal] + " ";
+                rihtRightValue += "с.: " + AppData.Data[(int)Services.Series.StrightRightSignal] + " ";
+                gaugeValue += "с.: " + AppData.Data[(int)Services.Series.GaugeSignal] + " ";
+                drawdownLeftValue = AppData.Data[(int)Services.Series.DrawdownLeft];
+                drawdownRightValue = AppData.Data[(int)Services.Series.DrwadownRight];
+            }
+            if (AppData.ShowPasport)
+            {
+
+                levelValue += "п.: " + AppData.Data[(int)Services.Series.LevelPasport] + " ";
+                rihtLeftValue += "п.: " + AppData.Data[(int)Services.Series.StrightLeftPasport] + " ";
+                rihtRightValue += "п.: " + AppData.Data[(int)Services.Series.StrightRightPasport] + " ";
+                gaugeValue += "п.: " + AppData.Data[(int)Services.Series.GaugePasport] + " ";
+            }
+            if (AppData.ShowZeroLines)
+            {
+                levelValue += "н.: " + AppData.Data[(int)Services.Series.LevelZero] + " ";
+                rihtLeftValue += "н.: " + AppData.Data[(int)Services.Series.StrightLeftZero] + " ";
+                rihtRightValue += "н.: " + AppData.Data[(int)Services.Series.StrightRightZero] + " ";
+            }
+            @if (AppData.ShowTestSignals)
+            {
+                <MatNumericUpDownField Label="k1" Style="width:100px;" DecimalPlaces="2" Step="0.1" @bind-Value="@AppData.Koefs[0]"></MatNumericUpDownField>
+                <MatNumericUpDownField Label="k2" Style="width:100px;" DecimalPlaces="2" Step="0.1" @bind-Value="@AppData.Koefs[1]"></MatNumericUpDownField>
+                <MatNumericUpDownField Label="k3" Style="width:100px;" DecimalPlaces="2" Step="0.1" @bind-Value="@AppData.Koefs[2]"></MatNumericUpDownField>
+                <MatNumericUpDownField Label="k4" Style="width:100px;" DecimalPlaces="2" Step="0.1" @bind-Value="@AppData.Koefs[3]"></MatNumericUpDownField>
+                <MatNumericUpDownField Label="k5" Style="width:100px;" DecimalPlaces="2" Step="0.1" @bind-Value="@AppData.Koefs[4]"></MatNumericUpDownField>
+                <MatNumericUpDownField Label="k6" Style="width:100px;" DecimalPlaces="2" Step="0.1" @bind-Value="@AppData.Koefs[5]"></MatNumericUpDownField>
+                <MatNumericUpDownField Label="k7" Style="width:100px;" DecimalPlaces="2" Step="0.1" @bind-Value="@AppData.Koefs[6]"></MatNumericUpDownField>
+                <MatNumericUpDownField Label="k8" Style="width:100px;" DecimalPlaces="2" Step="0.1" @bind-Value="@AppData.Koefs[7]"></MatNumericUpDownField>
+                <MatNumericUpDownField Label="k9" Style="width:100px;" DecimalPlaces="2" Step="0.1" @bind-Value="@AppData.Koefs[8]"></MatNumericUpDownField>
+                <MatNumericUpDownField Label="k10" Style="width:100px;" DecimalPlaces="2" Step="0.1" @bind-Value="@AppData.Koefs[9]"></MatNumericUpDownField>
+            }
+            <svg width="@Width" height="48">
+                <!--Pasport-->
+
+                <DgTitleCol X="@AppData.PasportPosition" Width="@AppData.PasportWidth" Heigth="@AppData.TitleRowHeigth" Title="Проезд" ShowValue="true" Value="@AppData.Data[(int)Services.Series.Pasport]"></DgTitleCol>
+                <DgTitleCol X="@AppData.SpeedPosition" Width="@AppData.SpeedWidth" Heigth="@AppData.TitleRowHeigth" Title="Скорость" ShowValue="true" Value="@AppData.Data[(int)Services.Series.Speed]"></DgTitleCol>
+                <!--Events-->
+                @if (AppData.ShowEvents)
+                {
+                    <DgTitleCol X="@AppData.EventPosition" Width="@AppData.EventWidth" Heigth="@AppData.TitleRowHeigth" Title="События" ShowValue="false"></DgTitleCol>
+                }
+                <!--Signals-->
+                @if (AppData.ShowMainParams)
+                {
+                    <DgTitleCol X="@AppData.MainParamsPosition" Width="@AppData.LevelWidth" Heigth="@AppData.TitleRowHeigth" Title="Уровень" ShowValue="true" Value="@levelValue"></DgTitleCol>
+                    <DgTitleCol X="@(AppData.CombinationPosition)" Width="@AppData.СombinationWidth" Heigth="@AppData.TitleRowHeigth" Title="Соч." ShowValue="false"></DgTitleCol>
+                    <DgTitleCol X="@(AppData.StrightLeftPosition)" Width="@AppData.StrightWidth" Heigth="@AppData.TitleRowHeigth" Title="Рихтовка Л." ShowValue="true" Value="@rihtLeftValue"></DgTitleCol>
+                    <DgTitleCol X="@(AppData.StrgihtRightPosition)" Width="@AppData.StrightWidth" Heigth="@AppData.TitleRowHeigth" Title="Рихтовка Пр." ShowValue="true" Value="@rihtRightValue"></DgTitleCol>
+                    <DgTitleCol X="@(AppData.GaugePosition)" Width="@AppData.GaugeWidth" Heigth="@AppData.TitleRowHeigth" Title="Шаблон" ShowValue="true" Value="@gaugeValue"></DgTitleCol>
+                    <DgTitleCol X="@(AppData.DrawdownLeftPosition)" Width="@AppData.DrawdownWidth" Heigth="@AppData.TitleRowHeigth" Title="Прос. Л." ShowValue="true" Value="@drawdownLeftValue"></DgTitleCol>
+                    <DgTitleCol X="@(AppData.DrawdownRightPosition)" Width="@AppData.DrawdownWidth" Heigth="@AppData.TitleRowHeigth" Title="Прос. Пр." ShowValue="true" Value="@drawdownRightValue"></DgTitleCol>
+                }
+                @if (AppData.ShowJoints)
+                {
+                    <DgTitleCol X="@(AppData.JointPosition)" Width="@AppData.HeatWidth" Heigth="@AppData.TitleRowHeigth" Title="Забег" ShowValue="false" Value=""></DgTitleCol>
+                    <DgTitleCol X="@(AppData.JointLeftPosition)" Width="@AppData.JointWidth" Heigth="@AppData.TitleRowHeigth" Title="Зазор Л." ShowValue="true" Value="@AppData.Data[(int)Services.Series.GapLeft]"></DgTitleCol>
+                    <DgTitleCol X="@(AppData.JointRightPosition)" Width="@AppData.JointWidth" Heigth="@AppData.TitleRowHeigth" Title="Зазор Пр." ShowValue="true" Value="@AppData.Data[(int)Services.Series.GapRight]"></DgTitleCol>
+                }
+
+                @if (AppData.ShowRailProfile)
+                {
+                    <DgTitleCol X="@(AppData.RailProfilePosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Износ бок. Л." ShowValue="true" Value="@AppData.Data[(int)Services.Series.SideWearLeft]"></DgTitleCol>
+                    <DgTitleCol X="@(AppData.SideWearRightPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Износ бок. Пр." ShowValue="true" Value="@AppData.Data[(int)Services.Series.SideWearRight]"></DgTitleCol>
+                    <DgTitleCol X="@(AppData.VertWearLeftPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Износ верт. Л." ShowValue="true" Value="@AppData.Data[(int)Services.Series.VertWearLeft]"></DgTitleCol>
+                    <DgTitleCol X="@(AppData.VertWearRightPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Износ верт. Пр." ShowValue="true" Value="@AppData.Data[(int)Services.Series.VertWearRight]"></DgTitleCol>
+                    <DgTitleCol X="@(AppData.GivenWearLeftPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Износ прив. Л." ShowValue="true" Value="@AppData.Data[(int)Services.Series.GivenWearLeft]"></DgTitleCol>
+                    <DgTitleCol X="@(AppData.GivenWearRightPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Износ прив. Пр." ShowValue="true" Value="@AppData.Data[(int)Services.Series.GivenWearRight]"></DgTitleCol>
+                    <DgTitleCol X="@(AppData.TreadTiltLeftPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Наклон ПК Л." ShowValue="true" Value="@AppData.Data[(int)Services.Series.TreadTiltLeft]"></DgTitleCol>
+                    <DgTitleCol X="@(AppData.TreadTiltRightPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Наклон ПК Пр." ShowValue="true" Value="@AppData.Data[(int)Services.Series.TreadTiltRight]"></DgTitleCol>
+                    <DgTitleCol X="@(AppData.DownhillLeftPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Подуклонка Л." ShowValue="true" Value="@AppData.Data[(int)Services.Series.DownHillLeft]"></DgTitleCol>
+                    <DgTitleCol X="@(AppData.DownhillRightPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Подуклонка Пр." ShowValue="true" Value="@AppData.Data[(int)Services.Series.DownHillRight]"></DgTitleCol>
+                    <DgTitleCol X="@(AppData.HeadWear45LeftPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Износ 45° Л." ShowValue="true" Value="@AppData.Data[(int)Services.Series.HeadWear45Left]"></DgTitleCol>
+                    <DgTitleCol X="@(AppData.HeadWear45RightPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Износ 45° Пр." ShowValue="true" Value="@AppData.Data[(int)Services.Series.HeadWear45Right]"></DgTitleCol>
+                }
+            </svg>
+        }
+    </div>
+</div>
+
+<div id="dgmainscroll" class="dg-main" @onscroll="OnMainScroll">
+
+    <svg preserveAspectRatio="none" width="@Width" height="@(AppData.GetLength()+300)" @onmousedown="OnMainMouseMove">
+        <rect x="0" y="0" width="60" height="@AppData.GetLength()" fill="#eceff1">
+
+        </rect>
+        @if (AppData.Kilometers != null)
+        {
+            int y = 0;
+            int length = AppData.GetLength();
+            int index = 0;
+            @foreach (var kilometer in AppData.Kilometers)
+            {
+                <polyline transform="translate(@(AppData.SpeedPosition), @y)" fill="none" stroke-width="0.5" stroke="black" points="@kilometer.SpeedSeries"></polyline>
+                <MinorGrid MinorPositions="(new int[] { AppData.SpeedPosition + AppData.SpeedWidth })" y1="0" y2="length" StrokeWidth="0.1" Zero="AppData.MainParamsPosition + AppData.LevelZero" StrokeDashArray="" Color="grey"></MinorGrid>
+                <!--Events-->
+                if (AppData.ShowEvents)
+                {
+                    <line x1="@AppData.MainParamsPosition" x2="@AppData.MainParamsPosition" y1="0" y2="@length" stroke="grey" stroke-width="0.1" fill="none" />
+                }
+                if (AppData.ShowMainParams)
+                {
+                    <!--level grid-->
+                    <MinorGrid MinorPositions="(new int[] { AppData.MainParamsPosition + AppData.LevelZero + 6, AppData.MainParamsPosition + AppData.LevelZero, AppData.MainParamsPosition + AppData.LevelZero - 6 })" y1="0" y2="length" StrokeWidth="0.1" Zero="AppData.MainParamsPosition + AppData.LevelZero" StrokeDashArray="0.1 5"></MinorGrid>
+                    <MinorGrid MinorPositions="(new int[] { AppData.CombinationPosition, AppData.StrightLeftPosition, AppData.StrgihtRightPosition, AppData.GaugePosition, AppData.DrawdownLeftPosition, AppData.DrawdownRightPosition, AppData.JointPosition })" y1="0" y2="length" StrokeWidth="0.1" Zero="AppData.MainParamsPosition + AppData.LevelZero" StrokeDashArray="" Color="grey"></MinorGrid>
+
+                    <!--stright grid-->
+                    <MinorGrid MinorPositions="(new int[] { AppData.StrightLeftPosition + AppData.StrightLeftZero, AppData.StrgihtRightPosition + AppData.StrightRightZero, AppData.DrawdownLeftPosition + AppData.DrawdownZero, AppData.DrawdownRightPosition + AppData.DrawdownZero })" y1="0" y2="length" StrokeWidth="0.1" Zero="0" StrokeDashArray="0.1 5" Color="grey"></MinorGrid>
+                    <!--gauge grid-->
+                    <!--Signals-->
+                    <MinorGrid MinorPositions="(new int[] { AppData.GaugePosition + 4, AppData.GaugePosition + AppData.GaugeWidth - 4 })" y1="0" y2="length" StrokeWidth="0.1" Zero="AppData.GaugePosition + AppData.GaugeZero" StrokeDashArray="0.1 5"></MinorGrid>
+                    @foreach (var correction in OnlineModeData.Corrections)
+                    {
+                        <line fill="none" stroke-width="0.5" stroke="green" x1="0" x2="10000" y1="@correction" y2="@correction"></line>
+                    }
+
+                    //пасспорт
+                    if (AppData.ShowPasport)
+                    {
+                        <polyline transform="translate(@(AppData.MainParamsPosition + AppData.LevelZero), @y)" fill="none" stroke-width="0.5" stroke="blue" points="@kilometer.PasportLevel"></polyline>
+                        <polyline transform="translate(@(AppData.StrightLeftPosition + AppData.StrightLeftZero), @y)" fill="none" stroke-width="0.5" stroke="blue" points="@kilometer.PasportStraightLeft"></polyline>
+                        <polyline transform="translate(@(AppData.StrgihtRightPosition + AppData.StrightRightZero), @y)" fill="none" stroke-width="0.5" stroke="blue" points="@kilometer.PasportStraightLeft"></polyline>
+                        <polyline transform="translate(@(AppData.GaugePosition + AppData.GaugeZero), @y)" fill="none" stroke-width="0.5" stroke="blue" points="@kilometer.PasportGauge"></polyline>
+                    }
+
+                    //трапеция
+
+                    if (AppData.ShowZeroLines)
+                    {
+                        <polyline transform="translate(@(AppData.MainParamsPosition + AppData.LevelZero), @y)" fill="none" stroke-width="0.5" stroke="blue" points="@kilometer.ZeroLevel"
+                                  style="fill: none;
+                                         stroke: dimgray;
+                                         vector-effect: non-scaling-stroke;
+                                         stroke-linejoin: round;
+                                         stroke-width: 0.7;
+                                         stroke-dasharray: 0.7 0.6;"></polyline>
+                        <polyline transform="translate(@(AppData.StrightLeftPosition + AppData.StrightLeftZero), @y)" fill="none" stroke-width="0.5" stroke="blue" points="@kilometer.ZeroStraightLeft"
+                                  style="fill: none;
+                                         stroke: dimgray;
+                                         vector-effect: non-scaling-stroke;
+                                         stroke-linejoin: round;
+                                         stroke-width: 0.7;
+                                         stroke-dasharray: 0.7 0.6;"></polyline>
+                        <polyline transform="translate(@(AppData.StrgihtRightPosition + AppData.StrightRightZero), @y)" fill="none" stroke-width="0.5" stroke="blue" points="@kilometer.ZeroStraightRight"
+                                  style="fill: none;
+                                         stroke: dimgray;
+                                         vector-effect: non-scaling-stroke;
+                                         stroke-linejoin: round;
+                                         stroke-width: 0.7;
+                                         stroke-dasharray: 0.7 0.6;"></polyline>
+                    }
+
+                    //натурные линий
+                    if (AppData.ShowSignals)
+                    {
+                        <polyline transform="translate(@(AppData.MainParamsPosition + AppData.LevelZero), @y)" fill="none" stroke-width="0.5" stroke="green" points="@kilometer.TrapezLevel"></polyline>
+
+                        <polyline transform="translate(@(AppData.MainParamsPosition + AppData.LevelZero), @y)" fill="none" stroke-width="0.5" stroke="red" points="@kilometer.SignalLevel"></polyline>
+                        <polyline transform="translate(@(AppData.StrightLeftPosition + AppData.StrightLeftZero), @y)" stroke-linejoin="round" stroke-linecap="round" fill="none" stroke-width="0.5" stroke="red" points="@kilometer.SignalStraightLeft"></polyline>
+                        <polyline transform="translate(@(AppData.StrgihtRightPosition + AppData.StrightRightZero), @y)" fill="none" stroke-width="0.5" stroke="red" points="@kilometer.SignalStraightRight"></polyline>
+                        <polyline transform="translate(@(AppData.GaugePosition + AppData.GaugeZero), @y)" fill="none" stroke-width="0.5" stroke="red" points="@kilometer.SignalGauge"></polyline>
+                        <polyline transform="translate(@(AppData.DrawdownLeftPosition + AppData.DrawdownZero), @y)" fill="none" stroke-width="0.5" stroke="red" points="@kilometer.SignalDrawdownLeft"></polyline>
+                        <polyline transform="translate(@(AppData.DrawdownRightPosition + AppData.DrawdownZero), @y)" fill="none" stroke-width="0.5" stroke="red" points="@kilometer.SignalDrawdownRight"></polyline>
+                    }
+
+
+                    //проверка 5 видов уровня и 5 видов рихтовки
+                    if (AppData.ShowTestSignals)
+                    {
+                        <polyline transform="translate(@(AppData.JointPosition + 1 * AppData.LevelWidth), @y)" fill="none" stroke-width="0.5" stroke="red" points="@kilometer.Level1"></polyline>
+                        <polyline transform="translate(@(AppData.JointPosition + 2 * AppData.LevelWidth), @y)" fill="none" stroke-width="0.5" stroke="red" points="@kilometer.Level2"></polyline>
+                        <polyline transform="translate(@(AppData.JointPosition + 3 * AppData.LevelWidth), @y)" fill="none" stroke-width="0.5" stroke="red" points="@kilometer.Level3"></polyline>
+                        <polyline transform="translate(@(AppData.JointPosition + 4 * AppData.LevelWidth), @y)" fill="none" stroke-width="0.5" stroke="red" points="@kilometer.Level4"></polyline>
+                        <polyline transform="translate(@(AppData.JointPosition + 5 * AppData.LevelWidth), @y)" fill="none" stroke-width="0.5" stroke="red" points="@kilometer.Level5"></polyline>
+
+                        <polyline transform="translate(@(AppData.JointPosition + 5 * AppData.LevelWidth + 1 * AppData.StrightWidth), @y)" fill="none" stroke-width="0.5" stroke="red" points="@kilometer.Stright1"></polyline>
+                        <polyline transform="translate(@(AppData.JointPosition + 5 * AppData.LevelWidth + 2 * AppData.StrightWidth), @y)" fill="none" stroke-width="0.5" stroke="red" points="@kilometer.Stright2"></polyline>
+                        <polyline transform="translate(@(AppData.JointPosition + 5 * AppData.LevelWidth + 3 * AppData.StrightWidth), @y)" fill="none" stroke-width="0.5" stroke="red" points="@kilometer.Stright3"></polyline>
+                        <polyline transform="translate(@(AppData.JointPosition + 5 * AppData.LevelWidth + 4 * AppData.StrightWidth), @y)" fill="none" stroke-width="0.5" stroke="red" points="@kilometer.Stright4"></polyline>
+                        <polyline transform="translate(@(AppData.JointPosition + 5 * AppData.LevelWidth + 5 * AppData.StrightWidth), @y)" fill="none" stroke-width="0.5" stroke="red" points="@kilometer.Stright5"></polyline>
+                    }
+
+                    //отступления
+                    if (AppData.ShowDigressions)
+                    {
+                        if (kilometer.Digressions != null)
+                            foreach (var digression in kilometer.Digressions)
+                            {
+                                if ((digression.Degree == 4) && (AppData.ShowDangerousDigressions) ||
+                                    (digression.Degree == 3) && (AppData.Show3DegreeDigressions) ||
+                                    (digression.Degree == 2) && (AppData.Show2DegreeDigressions) ||
+                                    (digression.Degree == 1) && (AppData.Show1DegreeDigressions))
+                                {
+                                    if (digression.DigName != null)
+                                        digression.DigNameToDigression(digression.DigName);
+
+                                    index = kilometer.Direction == ALARm.Core.Direction.Direct ? 0 : kilometer.Length;
+
+                                    <line transform="translate(@(GetXByDigressionName(digression)), @y)" stroke="@(digression.Degree == 4 ? "red" : digression.Degree == 3 ? "darkorange" : digression.Degree == 2 ? "aqua" : "coral")" stroke-width="@(digression.Degree * 4)" stroke-dasharray="1 1" x1="0" x2="0" y1="@(index + (int)kilometer.Direction * (digression.Meter - (digression.Length / 2)))" y2="@(index + (int)kilometer.Direction * (digression.Meter + digression.Length / 2 + 1))"></line>
+                                }
+                            }
+                    }
+                    //Показать отступления стыки
+                    if (AppData.ShowJoints)
+                    {
+                        var GapKoef = 140.0 / 40.0; //окошко для стыка
+
+                        <MinorGrid MinorPositions="(new int[] { AppData.JointPosition + AppData.JointWidth, AppData.JointLeftPosition + AppData.JointWidth, AppData.JointRightPosition + AppData.JointWidth })" y1="0" y2="length" StrokeWidth="0.1" Zero="AppData.MainParamsPosition + AppData.LevelZero" StrokeDashArray="" Color="grey"></MinorGrid>
+                        <MinorGrid MinorPositions="(new int[] { AppData.JointLeftPosition + (int)(25 * GapKoef), AppData.JointLeftPosition + (int)(30 * GapKoef) })" y1="0" y2="length" StrokeWidth="0.1" Zero="AppData.JointLeftPosition" StrokeDashArray="0.1 5"></MinorGrid>
+                        <MinorGrid MinorPositions="(new int[] { AppData.JointRightPosition + (int)(25 * GapKoef), AppData.JointRightPosition + (int)(30 * GapKoef) })" y1="0" y2="length" StrokeWidth="0.1" Zero="AppData.JointRightPosition" StrokeDashArray="0.1 5"></MinorGrid>
+
+                        if (kilometer.Gaps != null)
+                        {
+                            //kilometer.Gaps = kilometer.Gaps.Where(o => o.Km == kilometer.Number).ToList();
+                            foreach (var gap in kilometer.Gaps.Where(o => o.Km == kilometer.Number).ToList())
+                            {
+                                index = kilometer.Direction == Direction.Direct ? 0 : kilometer.Length;
+                                <line transform="translate(0, @y)" stroke="red" stroke-width="3" x1="@AppData.JointLeftPosition" x2="@(AppData.JointLeftPosition + (int)(gap.Zazor * GapKoef))" y1="@(index + (int)kilometer.Direction * gap.Meter)" y2="@(index + (int)kilometer.Direction * gap.Meter)"></line>
+                                <line transform="translate(0, @y)" stroke="red" stroke-width="3" x1="@AppData.JointRightPosition" x2="@(AppData.JointRightPosition + (int)(gap.R_zazor * GapKoef))" y1="@(index + (int)kilometer.Direction * gap.Meter)" y2="@(index + (int)kilometer.Direction * gap.Meter)"></line>
+                            }
+                        }
+                    }
+                }
+
+                //поперечные данные рельса
+                if (AppData.ShowRailProfile)
+                {
+                    //Прямая черная линия разделитель
+                    <MinorGrid MinorPositions="(new int[] {
+                                                   //Износ бок. Пр
+                                                   AppData.RailProfilePosition + AppData.WearWidth, AppData.SideWearRightPosition + AppData.WearWidth,
+                                                   //Износ верт. Л
+                                                   AppData.VertWearLeftPosition + AppData.WearWidth,  AppData.VertWearRightPosition + AppData.WearWidth,
+                                                   //Износ прив. Л
+                                                   AppData.GivenWearLeftPosition + AppData.WearWidth, AppData.GivenWearRightPosition + AppData.WearWidth,
+                                                   //нпк
+                                                   AppData.TreadTiltLeftPosition + AppData.WearWidth,  AppData.TreadTiltRightPosition + AppData.WearWidth,
+                                                   //Пу
+                                                   AppData.DownhillLeftPosition + AppData.WearWidth,  AppData.DownhillRightPosition + AppData.WearWidth,
+                                                   //износ45
+                                                   AppData.HeadWear45LeftPosition + AppData.WearWidth, AppData.HeadWear45RightPosition + AppData.WearWidth
+                                               })" y1="0" y2="length" StrokeWidth="0.1" Zero="AppData.MainParamsPosition + AppData.LevelZero" StrokeDashArray="" Color="grey"></MinorGrid>
+
+                    //Верт износ разделители значении
+                    float bokIznosKoef = 70 / 20f;
+                    <MinorGrid MinorPositionsFloat="(new float[] {
+                                                        AppData.RailProfilePosition + 8 * bokIznosKoef,
+                                                        AppData.RailProfilePosition + 13 * bokIznosKoef,
+                                                        AppData.RailProfilePosition + 14 * bokIznosKoef,
+                                                        AppData.RailProfilePosition + 20 * bokIznosKoef
+                                                    })" y1="0" y2="length" StrokeWidth="0.1" Zero="AppData.RailProfilePosition" StrokeDashArray="0.1 5"></MinorGrid>
+                    <MinorGrid MinorPositionsFloat="(new float[] {
+                                                        AppData.SideWearRightPosition + 8 * bokIznosKoef,
+                                                        AppData.SideWearRightPosition + 13 * bokIznosKoef,
+                                                        AppData.SideWearRightPosition + 14 * bokIznosKoef,
+                                                        AppData.SideWearRightPosition + 20 * bokIznosKoef
+                                                    })" y1="0" y2="length" StrokeWidth="0.1" Zero="AppData.SideWearRightPosition" StrokeDashArray="0.1 5"></MinorGrid>
+
+                    float iznosKoefVert = 70 / 13f;
+                    <MinorGrid MinorPositionsFloat="(new float[] {
+                                                        AppData.VertWearLeftPosition + 4 * iznosKoefVert,
+                                                        AppData.VertWearLeftPosition + 13 * iznosKoefVert
+                                                    })" y1="0" y2="length" StrokeWidth="0.1" Zero="AppData.VertWearLeftPosition" StrokeDashArray="0.1 5"></MinorGrid>
+                    <MinorGrid MinorPositionsFloat="(new float[] {
+                                                        AppData.VertWearRightPosition + 4 * iznosKoefVert,
+                                                        AppData.VertWearRightPosition + 13 * iznosKoefVert
+                                                    })" y1="0" y2="length" StrokeWidth="0.1" Zero="AppData.VertWearRightPosition" StrokeDashArray="0.1 5"></MinorGrid>
+
+                    //Прив износ разделители значении
+                    float iznosKoefRedused = 70 / 16f;
+                    <MinorGrid MinorPositionsFloat="(new float[] {
+                                                        AppData.GivenWearLeftPosition + 8 * iznosKoefRedused,
+                                                        AppData.GivenWearLeftPosition + 16 * iznosKoefRedused
+                                                    })" y1="0" y2="length" StrokeWidth="0.1" Zero="AppData.GivenWearLeftPosition" StrokeDashArray="0.1 5"></MinorGrid>
+                    <MinorGrid MinorPositionsFloat="(new float[] {
+                                                        AppData.GivenWearRightPosition + 8 * iznosKoefRedused,
+                                                        AppData.GivenWearRightPosition + 16 * iznosKoefRedused
+                                                    })" y1="0" y2="length" StrokeWidth="0.1" Zero="AppData.GivenWearRightPosition" StrokeDashArray="0.1 5"></MinorGrid>
+
+                    //45 износ разделители значении
+                    float iznosKoef45 = 70 / 18f;
+                    <MinorGrid MinorPositionsFloat="(new float[] {
+                                                        AppData.HeadWear45LeftPosition + 8 * iznosKoef45,
+                                                        AppData.HeadWear45LeftPosition + 15 * iznosKoef45,
+                                                        AppData.HeadWear45LeftPosition + 18 * iznosKoef45
+                                                    })" y1="0" y2="length" StrokeWidth="0.1" Zero="AppData.HeadWear45LeftPosition" StrokeDashArray="0.1 5"></MinorGrid>
+                    <MinorGrid MinorPositionsFloat="(new float[] {
+                                                        AppData.HeadWear45RightPosition + 8 * iznosKoef45,
+                                                        AppData.HeadWear45RightPosition + 15 * iznosKoef45,
+                                                        AppData.HeadWear45RightPosition + 18 * iznosKoef45
+                                                    })" y1="0" y2="length" StrokeWidth="0.1" Zero="AppData.HeadWear45RightPosition" StrokeDashArray="0.1 5"></MinorGrid>
+
+                    //todo ПУ и НПК разделители значении
+                    <MinorGrid MinorPositionsFloat="(new float[] {
+                                                   AppData.TreadTiltLeftPosition + 20 + AppData.GetDIstanceFrom1div60(60),
+                                                   AppData.TreadTiltLeftPosition + 20 + AppData.GetDIstanceFrom1div60(20),
+                                                   AppData.TreadTiltLeftPosition + 20 + AppData.GetDIstanceFrom1div60(16),
+                                                   AppData.TreadTiltLeftPosition + 20 + AppData.GetDIstanceFrom1div60(12)
+                                               })" y1="0" y2="length" StrokeWidth="0.1" Zero="AppData.TreadTiltLeftPosition" StrokeDashArray="0.1 5"></MinorGrid>
+                    <MinorGrid MinorPositionsFloat="(new float[] {
+                                                   AppData.TreadTiltRightPosition + 20 + AppData.GetDIstanceFrom1div60(60),
+                                                   AppData.TreadTiltRightPosition + 20 + AppData.GetDIstanceFrom1div60(20),
+                                                   AppData.TreadTiltRightPosition + 20 + AppData.GetDIstanceFrom1div60(16),
+                                                   AppData.TreadTiltRightPosition + 20 + AppData.GetDIstanceFrom1div60(12)
+                                               })" y1="0" y2="length" StrokeWidth="0.1" Zero="AppData.TreadTiltRightPosition" StrokeDashArray="0.1 5"></MinorGrid>
+                    <MinorGrid MinorPositionsFloat="(new float[] {
+                                                   AppData.DownhillLeftPosition + 20 + AppData.GetDIstanceFrom1div60(60),
+                                                   AppData.DownhillLeftPosition + 20 + AppData.GetDIstanceFrom1div60(20),
+                                                   AppData.DownhillLeftPosition + 20 + AppData.GetDIstanceFrom1div60(16),
+                                                   AppData.DownhillLeftPosition + 20 + AppData.GetDIstanceFrom1div60(12)
+                                               })" y1="0" y2="length" StrokeWidth="0.1" Zero="AppData.DownhillLeftPosition" StrokeDashArray="0.1 5"></MinorGrid>
+                    <MinorGrid MinorPositionsFloat="(new float[] {
+                                                        AppData.DownhillRightPosition + 20 + AppData.GetDIstanceFrom1div60(60),
+                                                        AppData.DownhillRightPosition + 20 + AppData.GetDIstanceFrom1div60(20),
+                                                        AppData.DownhillRightPosition + 20 + AppData.GetDIstanceFrom1div60(16),
+                                                        AppData.DownhillRightPosition + 20 + AppData.GetDIstanceFrom1div60(12)
+                                                    })" y1="0" y2="length" StrokeWidth="0.1" Zero="AppData.DownhillRightPosition" StrokeDashArray="0.1 5"></MinorGrid>
+
+                    <polyline transform="translate(@(AppData.RailProfilePosition), @y)" fill="none" stroke-width="0.5" stroke="black" points="@kilometer.SideWearLeft"></polyline>
+                    <polyline transform="translate(@(AppData.SideWearRightPosition), @y)" fill="none" stroke-width="0.5" stroke="black" points="@kilometer.SideWearRight"></polyline>
+
+                    <polyline transform="translate(@(AppData.VertWearLeftPosition), @y)" fill="none" stroke-width="0.5" stroke="black" points="@kilometer.VertWearLeft"></polyline>
+                    <polyline transform="translate(@(AppData.VertWearRightPosition), @y)" fill="none" stroke-width="0.5" stroke="black" points="@kilometer.VertWearRight"></polyline>
+
+                    <polyline transform="translate(@(AppData.GivenWearLeftPosition), @y)" fill="none" stroke-width="0.5" stroke="black" points="@kilometer.GivenWearLeft"></polyline>
+                    <polyline transform="translate(@(AppData.GivenWearRightPosition), @y)" fill="none" stroke-width="0.5" stroke="black" points="@kilometer.GivenWearRight"></polyline>
+
+                    <polyline transform="translate(@(AppData.TreadTiltLeftPosition + 20), @y)" fill="none" stroke-width="0.5" stroke="black" points="@kilometer.TreadTiltLeft"></polyline>
+                    <polyline transform="translate(@(AppData.TreadTiltRightPosition + 20), @y)" fill="none" stroke-width="0.5" stroke="black" points="@kilometer.TreadTiltRight"></polyline>
+                    <polyline transform="translate(@(AppData.DownhillLeftPosition + 20), @y)" fill="none" stroke-width="0.5" stroke="black" points="@kilometer.DownHillLeft"></polyline>
+                    <polyline transform="translate(@(AppData.DownhillRightPosition + 20), @y)" fill="none" stroke-width="0.5" stroke="black" points="@kilometer.DownHillRight"></polyline>
+
+                    <polyline transform="translate(@(AppData.HeadWear45LeftPosition), @y)" fill="none" stroke-width="0.5" stroke="black" points="@kilometer.HeadWear45Left"></polyline>
+                    <polyline transform="translate(@(AppData.HeadWear45RightPosition), @y)" fill="none" stroke-width="0.5" stroke="black" points="@kilometer.HeadWear45Right"></polyline>
+                }
+                <!--Сторона паспорта-->
+                <Pasport Kilometer="kilometer" Width="Width" Y="y"></Pasport>
+                y += kilometer.GetLength();
+                index += kilometer.GetLength();
+            }
+        }
+        <rect style="cursor:row-resize" x="0" width="@Width" height="20" opacity="0" y="@(AppData.SliderYPosition-10)"></rect>
+        <line style="cursor:row-resize" x1="0" x2="@Width" y1="@AppData.SliderYPosition" y2="@AppData.SliderYPosition" stroke="black" stroke-width="1" marker-start="url(#rectmarker)" marker-end="url(#rectmarker)"></line>
+    </svg>
+
+</div>
+
+
+<div class="dg-footer">
+    <div style="float:left; height:100%">
+        @if (AppData != null && AppData.Data != null)
+        {
+        <p>@AppData.Data[(int)Services.Series.Section] Путь: @AppData.Kilometers[0].Track_name Км: @AppData.CurrentKm М:@AppData.CurrentKmMeter</p>
+        }
+        <DigressionTable @ref="digressionTable" Kilometers="@AppData.Kilometers"></DigressionTable>
+    </div>
+
+    @*<DigRailImage RailImage="AppData.RailImage"></DigRailImage>*@
+    @if (AppData.WorkMode == Services.WorkMode.Online)
+    {
+        <div class="float-left h-100">
+
+            <MatButton TrailingIcon="@(OnlineModeData.RouteEditable ? "check" : "edit")" OnClick="_=> RouteEditableChange(AppData.Trip)">@(OnlineModeData.RouteEditable ? "Сохранить маршрут" : "Изменить маршрут")</MatButton>
+            <Route Short="true" Editable="OnlineModeData.RouteEditable" Source="AppData.Trip.Route"></Route>
+
+            <AlarmImage Bitmap="AppData.CurrentFrame"></AlarmImage>
+        </div>
+        <div div class="float-left h-100">
+            <EscortList Style="margin:5px"></EscortList>
+        </div>
+        <div class="float-left">
+
+            <p>
+                <PointChart ViewBox="@AppData.ViewBoxLeft" Side="Side.Left" Points="@AppData.PointsLeft" NominalRail="@AppData.NominalRailScheme" NominalRailRotate="@AppData.NominalRotateLeft" NominalRailTranslate="@AppData.NominalTranslateLeft" Width="400" Heigth="400" Style="@($"transform:rotate({AppData.CalibrConstLeft}deg); margin-right: 50px;")" />
+                <PointChart ViewBox="@AppData.ViewBoxRight" Side="Side.Right" Points="@AppData.PointsRight" NominalRail="@AppData.NominalRailScheme" NominalRailRotate="@AppData.NominalRotateRight" NominalRailTranslate="@AppData.NominalTranslateRight" Width="400" Heigth="400" Style="@($"transform:rotate(-{AppData.CalibrConstRight}deg);")" />
+            </p>
+        </div>
+        <div style="float:left; height:100%; overflow-y:scroll">
+            @foreach (var correction in OnlineModeData.CorrectionsList)
+            {
+                <p>@correction</p>
+                <br />
+            }
+
+        </div>
+    }
+    else
+    {
+        <div class="float-left">
+
+            <p>
+                <PointChart ViewBox="@AppData.ViewBoxLeft" DownHill="@AppData.DownHillLeftValue" Tilt="@AppData.TiltLeftValue" Side="Side.Left" Points="@AppData.PointsLeft" NominalRail="@AppData.NominalRailScheme" NominalRailRotate="@AppData.NominalRotateLeft" NominalRailTranslate="@AppData.NominalTranslateLeft" Width="400" Heigth="400" Style="@($"transform:rotate({AppData.CalibrConstLeft}deg); margin-right: 50px;")" />
+                <PointChart ViewBox="@AppData.ViewBoxRight" DownHill="@AppData.DownHillRightValue" Tilt="@AppData.TiltRightValue" Side="Side.Right" Points="@AppData.PointsRight" NominalRail="@AppData.NominalRailScheme" NominalRailRotate="@AppData.NominalRotateRight" NominalRailTranslate="@AppData.NominalTranslateRight" Width="400" Heigth="400" Style="@($"transform:rotate(-{AppData.CalibrConstRight}deg);")" />
+            </p>
+        </div>
+
+    }
+    <div class="float-left">
+        <Alarmcheck kilometers="@AppData.Kilometers"></Alarmcheck>
+    </div>
+</div>
+<MatDialog @bind-IsOpen="@StopDialog" Stacked="true">
+    <MatDialogContent>Завершить проезд?</MatDialogContent>
+    <MatDialogActions>
+        <MatProgressBar Indeterminate="true" Style=@(loading ? "display:block":"display:none")></MatProgressBar>
+        <MatButton Raised="true" Style="margin-right:5px;" OnClick="_=>StopTripAsync()">Да</MatButton>
+        <MatButton Raised="true" OnClick="_=> { StopDialog = false; loading = false; OnTimedEventAsync(); }">Нет</MatButton>
+    </MatDialogActions>
+</MatDialog>
+
+
+
+

@@ -1,0 +1,992 @@
+﻿
+
+using ALARm.Core;
+using ALARm.Core.AdditionalParameteres;
+using ALARm.DataAccess.Properties;
+using Dapper;
+using Newtonsoft.Json;
+using Npgsql;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Text;
+using ALARm.Core.Report;
+
+
+namespace ALARm.DataAccess
+{
+    public class AdditionalParametersRepository : IAdditionalParametersRepository
+    {
+        public List<Gap> Check_gap_state(long trip_id, int templ_id)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                try
+                {
+                    return db.Query<Gap>($@"SELECT
+	                                            * , zazor_r as r_zazor, zazor_l as zazor, m as meter, vpz as fullSpeed
+                                            FROM
+	                                            report_gaps
+                                            WHERE
+	                                            trip_id = {trip_id} 
+	                                            AND template_id = {templ_id}
+                                            ", commandType: CommandType.Text).ToList();
+                }
+                catch
+                {
+                    return null;
+                }
+
+            }
+        }
+        public string Insert_gap(long trip_id, int template_id, List<Gap> gaps)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+
+                int i = 1;
+                try
+                {
+                    foreach( var gap in gaps)
+                    {
+                        
+                        i++;
+
+                        var txt = $@"INSERT INTO report_gaps (
+	                                        trip_id,
+	                                        pdb_section,
+	                                        fragment,
+	                                        km,
+	                                        piket,
+	                                        M,
+	                                        vpz,
+	                                        zazor_r,
+	                                        zazor_l,
+	                                        zabeg,
+	                                        vdop,
+	                                        otst,
+	                                        file_id,
+	                                        fnum,
+	                                        ms,
+	                                        r_file_id,
+	                                        r_fnum,
+	                                        r_ms,
+	                                        template_id 
+                                        )
+                                        VALUES
+	                                       (
+                                            '{trip_id}', 
+                                            '{gap.Pdb_section}', 
+                                            '{gap.Fragment}',
+                                            '{gap.Km}',
+                                            '{(gap.Meter / 100 + 1)}',
+                                            '{gap.Meter}',
+                                            '{gap.FullSpeed}',
+                                            '{gap.R_zazor}',
+                                            '{gap.Zazor}',
+                                            '{gap.Zabeg}',
+                                            '{gap.Vdop}',
+                                            '{gap.Otst}',
+                                            '{gap.File_Id}',
+                                            '{gap.Fnum}',
+                                            '{gap.Ms}',
+                                            '{gap.R_file_id}',
+                                            '{gap.R_fnum}',
+                                            '{gap.R_ms}',
+                                            '{template_id}');";
+                        db.Execute(txt);
+                    }
+                    return "Удачно записано!";
+                }
+                catch(Exception e)
+                {
+                    Console.WriteLine("Ошибка записи в БД " + e.Message);
+                    return $"Ошибка на {i} записи";
+                }
+
+            }
+        }
+        public List<Gap> GetdefISGap(long id)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                return db.Query<Gap>(@"SELECT mtr as meter, * FROM public.rd_video_objects
+                                    where rd_video_objects.oid=12 and rd_video_objects.trip_id=" + id +
+                                    " order by km, meter,fnum" , commandType: CommandType.Text).ToList();
+            }
+        }
+        public List<Gap> GetGaps(Int64 process_id, int direction, int kilometer)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                string orderby = direction == 1 ? " asc " : " desc ";
+                return db.Query<Gap>($@"select 
+                                        distinct 
+                                        *, (l.local_fnum*300 - l.y ) - (r.r_local_fnum*300-r.r_y )zabeg
+                                        from lside_gap l 
+	                                        full outer join 
+	                                        rside_gap r on l.km = r.r_km and r.r_meter = l.meter and r.r_trip_id = l.trip_id
+	                                        where
+		                                        l.trip_id = {process_id} order by km, meter
+                                                --LIMIT 200" , commandType: CommandType.Text).ToList();
+            }
+        }
+        public List<Gap> GetMaech(long trip_id, int direction)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                string orderby = direction == 1 ? " asc " : " desc ";
+                try
+                {
+                    return db.Query<Gap>($@"SELECT fnum, km, mtr as meter, local_fnum, files.threat_id as Threat, oid, * FROM public.rd_video_objects
+                                    inner join trip_files as files on files.id = file_id
+                                    where oid in (13,14) and files.trip_id = {trip_id}
+                                    order by fnum, km, mtr, local_fnum, files.threat_id, oid", commandType: CommandType.Text).ToList();
+                }
+                catch
+                {
+                    return null;
+                }
+                
+            }
+        }
+        public List<Gap> GetGaps(Int64 trip_id, int kilometer)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                
+                return db.Query<Gap>(@"
+                select gaps.nkm as km, max(frame_number) as frame_number, ((gaps.picket-1)*100 + gaps.meter) as meter, max(final-start) as length, max(start) as start, 
+                    files.threat_id as threat, speed.passenger as passspeed, speed.freight as FreightSpeed, files.id as file_id
+                from rd_gaps as gaps
+                    inner join trip_files as files on files.id = gaps.file_id
+                    inner join trips as trip on trip.id = files.trip_id
+                    inner join tpl_period as sp on trip.trip_date between sp.start_date and sp.final_date
+				    inner join apr_speed as speed on speed.period_id = sp.id
+                where trip.id = " + trip_id + " and gaps.nkm = " + kilometer + @" and (final-start) between 0 and 60
+                    group by gaps.nkm, gaps.picket, gaps.meter, files.threat_id , trip.direction_id, files.id, speed.passenger, speed.freight
+                    order by gaps.nkm, ((gaps.picket-1)*100 + gaps.meter) ", commandType: CommandType.Text).ToList();
+            }
+        }
+        public List<Gap> GetGap(long process_id, int direction)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                string orderby = " asc ";
+                return db.Query<Gap>(@"
+                select track.code as put, trip.direction_id as direct, gaps.nkm as km, gaps.picket as picket, ((gaps.picket-1)*100 + gaps.meter) as meter, 
+max(final-start) as zazor, max(final-start) as Length, max(start) as start,
+                files.threat_id as thread
+                from rd_gaps as gaps
+                inner join trip_files as files on files.id = gaps.file_id
+                inner join trips as trip on trip.id = files.trip_id
+                inner join adm_track as track on track.adm_direction_id=trip.direction_id
+                where gaps.process_id =" + process_id + @" and (final-start) between 0 and 60
+                group by track.code, gaps.nkm, gaps.picket, gaps.meter, thread , direct
+                order by track.code " + orderby + ", gaps.nkm  " + orderby + ", gaps.picket  " + orderby + ", gaps.meter  " + orderby, commandType: CommandType.Text).ToList();
+            }
+        }
+
+        public List<Gap> RDGetGap(long process_id, int direction, int track_id)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                try
+                {
+                    return db.Query<Gap>($@"
+						select 
+                        distinct 
+                        *, coalesce(l_km, r_km) as km, (l.local_fnum*300 - l.y ) - (r.r_local_fnum*300-r.r_y )zabeg
+                        from lside_gap l 
+	                        full outer join 
+	                        rside_gap r on l.l_km = r.r_km and r.r_meter = l.meter and r.r_trip_id = l.trip_id
+	                        where
+<<<<<<< .mine
+		                        l.trip_id = {process_id} order by km, meter
+                                --LIMIT 200
+||||||| .r10
+		                        l.trip_id = {process_id} order by km, meter
+                                LIMIT 200
+=======
+		                        l.trip_id = {process_id} or r_trip_id = {process_id} order by km, meter
+                                --LIMIT 2000
+>>>>>>> .r12
+                        ", commandType: CommandType.Text).ToList();
+                }
+                catch(Exception e)
+                {
+                    Console.Out.WriteLine(e.Message);
+                    return null;
+                }
+            }
+        }
+        public List<Gap> RDGetShpal(long process_id, int direction)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                return db.Query<Gap>($@"
+                SELECT fnum as Frame_Number, km, pt as Picket, ((pt-1)*100 + mtr) as meter,oid,x,file_id as Thread
+                FROM RD_VIDEO_OBJECTS as rvo
+                inner join trip_files as tfile on tfile.id = rvo.file_Id
+                where 
+                oid in (3,4,11,12,15,16,17,18,20,27,28) and tfile.trip_id = {process_id}
+                --and km=1678 --and pt=10 and mtr>74
+                group by Frame_Number, km, Picket, meter,oid,x,Thread
+                order by Frame_Number, km, Picket, meter,oid,x
+                limit 1000
+                ", commandType: CommandType.Text).ToList();
+            }
+        }
+
+        public List<Gap> GetFusGap(Int64 process_id, int direction)
+        {
+             using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                string orderby = " asc ";
+                return db.Query<Gap>(@"
+                select track.code as put, trip.direction_id as direct, gaps.nkm as km, gaps.picket as picket, ((gaps.picket-1)*100 + gaps.meter) as meter, 
+max(final-start) as zazor, max(final-start) as Length, max(start) as start,
+                files.threat_id as thread
+                from rd_gaps as gaps
+                inner join trip_files as files on files.id = gaps.file_id
+                inner join trips as trip on trip.id = files.trip_id
+                inner join adm_track as track on track.adm_direction_id=trip.direction_id
+                where gaps.process_id =" + process_id + @" and (final-start) between 0 and 60 and (final-start) = 0
+                group by track.code, gaps.nkm, gaps.picket, gaps.meter, thread , direct
+                order by track.code " + orderby + ", gaps.nkm  " + orderby + ", gaps.picket  " + orderby + ", gaps.meter  " + orderby, commandType: CommandType.Text).ToList();
+            }
+        }
+        public List<Heat> GetHeats(Int64 trip_id, int kilometer)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+           
+                return db.Query<Heat>(@"
+                select km, case when threat = -1 then meter else nextmeter end as meter,
+                      (meter*1000 + start) - (nextmeter*1000+nextstart) as value
+                from (
+                    select gaps.nkm as km, ((gaps.picket-1)*100 + gaps.meter) as meter, max(final-start) as length, max(start) as start, 
+                        case when abs((coalesce(lead((gaps.picket-1)*100 + gaps.meter) OVER(ORDER BY  gaps.nkm, ((gaps.picket-1)*100 + gaps.meter)),-1) - ((gaps.picket-1)*100 + gaps.meter)))<=1 then 
+	                    lead((gaps.picket-1)*100 + gaps.meter) OVER(ORDER BY  gaps.nkm, ((gaps.picket-1)*100 + gaps.meter)) ELSE -1 END	as nextmeter,
+	                    case when abs((coalesce(lead((gaps.picket-1)*100 + gaps.meter) OVER(ORDER BY  gaps.nkm, ((gaps.picket-1)*100 + gaps.meter)),-1) - ((gaps.picket-1)*100 + gaps.meter)))<=1 then 
+	                    coalesce(lead(max(start)) OVER(ORDER BY  gaps.nkm, ((gaps.picket-1)*100 + gaps.meter)),-1) ELSE -1 END as nextstart,
+	                    case when abs((coalesce(lead((gaps.picket-1)*100 + gaps.meter) OVER(ORDER BY  gaps.nkm, ((gaps.picket-1)*100 + gaps.meter)),-1) - ((gaps.picket-1)*100 + gaps.meter)))<=1 then 
+	                    coalesce(lead(files.threat_id) OVER(ORDER BY  gaps.nkm, ((gaps.picket-1)*100 + gaps.meter)),0) ELSE 0 END  as nextthreat,
+                        files.threat_id as threat 
+                    from rd_gaps as gaps
+                        inner join trip_files as files on files.id = gaps.file_id
+                        inner join trips as trip on trip.id = files.trip_id
+                    where trip.id = " + trip_id + " and gaps.nkm = " + kilometer + @" and ((final-start) between 0 and 60) 
+                        group by gaps.nkm, gaps.picket, gaps.meter, files.threat_id , trip.direction_id
+                        order by gaps.nkm, ((gaps.picket-1)*100 + gaps.meter)) as steptable
+				 where nextmeter != -1", commandType: CommandType.Text).ToList();
+            }
+
+        }
+        public List<Gap> DirectName(Int64 process_id, int distance_id)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                return db.Query<Gap>($@"
+                SELECT distinct
+                 --frag.id,
+                concat(direction.name
+                ,' (', direction.code, ' )') as name
+                ,direction.code
+                --,direction.id as direction_id
+                ,track.code as put
+                ,distance.code as pch
+
+
+                FROM public.fragments as frag
+                inner join (
+                             select id, case when start_km < final_km then 1 else -1 end as direct from fragments
+                            ) as frag_dir on frag_dir.id = frag.id
+                inner join adm_track as track on track.id = frag.adm_track_id
+                inner join adm_direction as direction on direction.id = track.adm_direction_id
+                inner join generate_series(frag.start_km, frag.final_km, case when frag.start_km < frag.final_km then 1 else -1 end) as km on true
+                inner join trips as trip on trip.id = frag.trip_id 
+                left join (
+	                        select adm_track_id,km, len, start_date, final_date 
+		                       from tpl_nst_km as nest 
+                               inner join tpl_period as nest_period on nest_period.id = nest.period_id   
+                           ) as nonst on nonst.adm_track_id = frag.adm_track_id and nonst.km = km.km and trip.trip_date between nonst.start_date and nonst.final_date
+                left join (
+	                        select adm_track_id, km, start_date, final_date 
+		                       from tpl_non_ext_km as non 
+                               inner join tpl_period as non_period on non_period.id = non.period_id  
+                           ) as nonexist on nonexist.adm_track_id = frag.adm_track_id and nonexist.km = km.km and trip.trip_date between nonexist.start_date and nonexist.final_date
+					 
+                INNER JOIN (
+	                SELECT DISTINCT
+		                period.adm_track_id,
+		                period.start_date,
+		                period.final_date,
+		                dist.code,
+		                dist.NAME,
+		                dist.ID,
+		                SECTION.start_km,
+		                SECTION.final_km 
+	                FROM
+		                tpl_dist_section
+		                AS SECTION INNER JOIN tpl_period AS period ON period.ID = SECTION.period_id
+		                INNER JOIN adm_distance AS dist ON dist.ID = SECTION.adm_distance_id 
+	                ) AS distance ON distance.adm_track_id = track.ID and km.km BETWEEN distance.start_km and distance.final_km
+                    where trip.id = { process_id } and distance.id ={distance_id}", commandType: CommandType.Text).ToList();
+            }
+        }
+		public List<int> GetKilometersByTripId(Int64 process_id)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                return db.Query<int>($@"select DISTINCT  kilom.number
+                                    from kilometers as kilom
+                                    inner join adm_track as track on track.id = kilom.track_id
+                                    inner join adm_direction as direction on direction.id = track.adm_direction_id
+                                    inner join bedemost as bed on bed.naprav = direction.name and kilom.number = bed.kmtrue
+                                    inner join trips on trips.id = kilom.trip_id
+                                    inner join rd_process process on process.trip_id = trips.id
+                                    where process.id = {process_id} 
+                                    order by kilom.number ", commandType: CommandType.Text).ToList();
+            }
+        }
+		public List<int> GetKilometersByTripId(long process_id, long trackId)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                return db.Query<int>($@"select DISTINCT  kilom.number
+                                    from kilometers as kilom
+                                    inner join adm_track as track on track.id = kilom.track_id and track.id = {trackId}
+                                    inner join adm_direction as direction on direction.id = track.adm_direction_id
+                                    inner join bedemost as bed on bed.naprav = direction.name and kilom.number = bed.kmtrue
+                                    inner join trips on trips.id = kilom.trip_id
+                                    inner join rd_process process on process.trip_id = trips.id
+                                    where process.id = {process_id} 
+                                    order by kilom.number ", commandType: CommandType.Text).ToList();
+            }
+        }
+        public List<int> GetStationByTripId(long process_id, long trackId)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                return db.Query<int>($@"select DISTINCT  station.name
+                                    from kilometers as kilom
+                                    inner join adm_station as station on id = kilom.track_id and name = {trackId}
+                                    inner join adm_direction as direction on direction.id = track.adm_direction_id
+                                    inner join bedemost as bed on bed.naprav = direction.name and kilom.number = bed.kmtrue
+                                    inner join trips on trips.id = kilom.trip_id
+                                    inner join rd_process process on process.trip_id = trips.id
+                                    where process.id = {process_id} 
+                                    order by kilom.number ", commandType: CommandType.Text).ToList();
+            }
+        }
+        public CrossRailProfile vertIznos(int nkm)
+        {
+            var crossRailProfile = new CrossRailProfile();
+            using (var file = new StreamReader("D:/work_shifrovka/dop/" + nkm.ToString() + "_1.add_dat", Encoding.GetEncoding(1251)))
+            {
+                crossRailProfile.NKm = nkm;
+                string line = "";
+                file.ReadLine();
+                file.ReadLine();
+                file.ReadLine();
+                file.ReadLine();
+                file.ReadLine();
+                line = file.ReadLine();
+                crossRailProfile.TravelDirection = line.Equals("Обратный")
+                    ? Direction.Reverse
+                    : Direction.Direct;
+                file.ReadLine();
+                file.ReadLine();
+                file.ReadLine();
+
+
+                while ((line = file.ReadLine()) != null) crossRailProfile.ParsevertIznos(line);
+            }
+
+            return crossRailProfile;
+        }
+
+        public List<int> GetKilometers(Int64 process_id, int direction)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                string orderby = direction == 1 ? " asc " : " desc ";
+                return db.Query<int>(@"select distinct gaps.nkm from rd_gaps as gaps
+                inner join trip_files as files on files.id = gaps.file_id
+                inner join trips as trip on trip.id = files.trip_id
+                where gaps.process_id = " + process_id + @"
+                group by gaps.nkm, gaps.picket, gaps.meter, files.threat_id , trip.direction_id
+                order by gaps.nkm " + orderby , commandType: CommandType.Text).ToList();
+            }
+        }
+        public List<CrosProf> GetCrossRailProfileFromDB(int nkm, long trip_id)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                try
+                {
+                    return db.Query<CrosProf>($@"SELECT 
+                                                * 
+                                             FROM 
+                                                public.profiledata_{ trip_id }
+                                            where 
+                                                km = { nkm }
+                                                and id < 3980
+                                            order by 
+                                                id desc,
+                                                km desc, 
+                                                meter desc ", commandType: CommandType.Text).ToList();
+                }
+                catch
+                {
+                    return null;
+                }
+                
+            }
+        }
+        public List<CrosProf> GetCrossRailProfileFromDB(Curve elem, long trip_id)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                try
+                {
+                    return db.Query<CrosProf>($@"   SELECT
+	                                                    * 
+                                                    FROM
+	                                                    PUBLIC.profiledata_{trip_id} 
+                                                    WHERE
+	                                                    km >= {elem.Start_Km} 
+	                                                    AND meter >= {elem.Start_M} 
+	                                                    AND km <= {elem.Final_Km}
+	                                                    AND meter <= {elem.Final_M} 
+                                                    ORDER BY
+	                                                    km,
+	                                                    meter ", commandType: CommandType.Text).ToList();
+                }
+                catch
+                {
+                    return null;
+                }
+
+            }
+        }
+        public List<CrosProf> GetCrossRailProfileDFPR3(long trip_id)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                try
+                {
+                    return db.Query<CrosProf>($@"SELECT
+	                                                km,
+	                                                meter / 100+1 AS piket,
+	                                                AVG ( pu_l ) AS avg_pu_l,
+	                                                SQRT ( VARIANCE( pu_l ) ) AS sko_pu_l,
+	                                                AVG ( pu_r ) AS avg_pu_r,
+	                                                SQRT ( VARIANCE( pu_r ) ) AS sko_pu_r,
+	                                                AVG ( npk_l ) AS avg_npk_l,
+	                                                SQRT ( VARIANCE( npk_l ) ) AS sko_npk_l,
+	                                                AVG ( npk_r ) AS avg_npk_r,
+	                                                SQRT ( VARIANCE( npk_r ) ) AS sko_npk_r 
+                                                FROM
+	                                                PUBLIC.profiledata_{trip_id} --WHERE km = 4
+	
+                                                GROUP BY
+	                                                km,
+	                                                piket
+	
+                                                ORDER BY
+	                                                km,
+	                                                piket ", commandType: CommandType.Text).ToList();
+                }
+                catch
+                {
+                    return null;
+                }
+
+            }
+        }
+        public CrossRailProfile GetCrossRailProfileFromDBParse(List<CrosProf> DBcrossRailProfile)
+        {
+            var crossRailProfile = new CrossRailProfile();
+            foreach (var elem in DBcrossRailProfile)
+            {
+                crossRailProfile.ParseDB(elem);
+            } 
+
+            return crossRailProfile;
+        }
+
+        public CrossRailProfile GetCrossRailProfileFromText(int nkm)
+        {
+            var crossRailProfile = new CrossRailProfile();
+            using (var file = new StreamReader(@"D:\work_shifrovka\dop\" + nkm.ToString() + "_1.add_dat", Encoding.ASCII))
+            {
+                crossRailProfile.NKm = nkm;
+                string line = "";
+                file.ReadLine();
+                file.ReadLine();
+                file.ReadLine();
+                file.ReadLine();
+                file.ReadLine();
+                line = file.ReadLine();
+                crossRailProfile.TravelDirection = line.Equals("Обратный")
+                    ? Direction.Direct
+                    : Direction.Reverse;
+                file.ReadLine();
+                file.ReadLine();
+                file.ReadLine();
+
+                
+                while ((line = file.ReadLine()) != null) crossRailProfile.ParseTextLine(line);
+            }
+
+            return crossRailProfile;
+        }
+        public ShortRoughness GetShortRoughnessFromDBParse(List<CrosProf> DBcrossRailProfile)
+        {
+            var result = new ShortRoughness();
+            foreach (var elem in DBcrossRailProfile)
+            {
+                result.ParseDB(elem);
+                result.ParseDB2(elem);
+            }
+            //result.Correct();
+            return result;
+        }
+        public ShortRoughness GetShortRoughnessFromText(int km)
+        {
+            var result = new ShortRoughness();
+            string line;
+            //чтение измерительных данных
+            using (var file = new StreamReader("D:/work_shifrovka/dop/" + km.ToString() + ".svgpdat", Encoding.GetEncoding(1251)))
+            {
+                line = file.ReadLine();
+                result.Direction = "Обратный";
+                result.Car = new CarParameters { ChiefName = "CheffName", CurrentPosition = CarPosition.Boiler };
+                //line = file.ReadLine();
+                result.TrackNumber = line != null && line.Length <= 3 ? line : line != null && line.Equals(Resources.even) ? "2" : "1";
+                result.TravelDirection = line != null && line.Equals(Resources.reverse) ? Direction.Direct : Direction.Reverse;
+                //line = file.ReadLine();
+                //result.TravelDate = DateTime.ParseExact(line, "dd.mm.yyyy", System.Globalization.CultureInfo.InvariantCulture);
+                result.TravelDate = DateTime.Now;
+                result.Car.CarNumber = "0001";
+                result.KilometrNumber = int.Parse(line ?? throw new InvalidOperationException());
+                while ((line = file.ReadLine()) != null) result.Parse(line);
+            }
+            using (var file = new StreamReader("D:/work_shifrovka/dop/" + km.ToString() + "_2.svgpdat", Encoding.GetEncoding(1251)))
+            {
+                line = file.ReadLine();
+                result.Direction = "Обратный";
+                result.Car = new CarParameters { ChiefName = "CheffName", CurrentPosition = CarPosition.Boiler };
+                //line = file.ReadLine();
+                result.TrackNumber = line != null && line.Length <= 3 ? line : line != null && line.Equals(Resources.even) ? "2" : "1";
+                result.TravelDirection = line != null && line.Equals(Resources.reverse) ? Direction.Direct : Direction.Reverse;
+                //line = file.ReadLine();
+                //result.TravelDate = DateTime.ParseExact(line, "dd.mm.yyyy", System.Globalization.CultureInfo.InvariantCulture);
+                result.TravelDate = DateTime.Now;
+                result.Car.CarNumber = "0001";
+                result.KilometrNumber = int.Parse(line ?? throw new InvalidOperationException());
+                while ((line = file.ReadLine()) != null) result.Parse2(line);
+            }
+
+            result.Correct();
+
+
+            return result;
+        }
+
+        public Bitmap GetFrame(int frameNumber, Int64 file_id)
+        {
+
+            string filePath = GetFilePathById(file_id);
+            if (filePath == string.Empty)
+                return null;
+            
+            filePath = @"D:\common\DATA\IN\2019_04\2019_04_03__19_42_26.s1";
+            //filePath = @"C:\Data\2019_04\2019_04_03__19_42_26.s1";
+            var leftImageInnerSide = GetBitMap(filePath, frameNumber);
+            filePath = @"D:\common\DATA\IN\2019_04\2019_04_03__19_42_26.s2";
+            //filePath = @"C:\DATA\2019_04\2019_04_03__19_42_26.s2";
+            var leftImageOuterSide = GetBitMap(filePath, frameNumber);
+            if ((leftImageInnerSide == null) || (leftImageOuterSide == null))
+                    return null;
+            leftImageInnerSide.RotateFlip(RotateFlipType.Rotate90FlipNone);
+            leftImageOuterSide.RotateFlip(RotateFlipType.Rotate270FlipNone);
+            Bitmap result = new Bitmap(leftImageInnerSide.Width + leftImageOuterSide.Width, leftImageInnerSide.Height);
+            Graphics g = Graphics.FromImage(result);
+            g.DrawImageUnscaled(leftImageOuterSide, 0, 0);
+            g.DrawImageUnscaled(leftImageInnerSide, leftImageOuterSide.Width, 0);
+            return result;
+        }
+
+        private string GetFilePathById(long file_id)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                try
+                {
+                    return db.QueryFirst<string>("SELECT file_name as file_path  FROM public.trip_files where id = " + file_id, commandType: CommandType.Text);
+                }
+                catch
+                {
+                    return string.Empty;
+                }
+            }
+        }
+        private List<Dictionary<String,object>> getFilesPathById(long fileId)
+        {
+            var result = new List<Dictionary<String, object>>();
+            using (NpgsqlConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                try
+                {
+                    string sqlText =
+                    @"select 
+                            file_name as fileName, trip_files.id as fId,
+                            case when description = 'StykiKupeVneshn' then 0
+                                when description = 'StykiKupeVnutr' then 1
+                                when description = 'SredCHastSHpaly' then 2
+                                when description = 'StykiKoridorVnutr' then 3
+                                when description = 'StykiKoridorVneshn' then 4 else 5 end as descId
+
+                                  
+                        from 
+	                        trip_files 
+		                        where trip_id = (select trip_id from trip_files where id = " + fileId + @") 
+			                        and right(file_name,4) = (select right(file_name,4) from trip_files where id ="+fileId+@"  ) and description in (
+				                        'StykiKupeVneshn','StykiKupeVnutr','SredCHastSHpaly','StykiKoridorVnutr','StykiKoridorVneshn'
+			                        ) order by descId
+                        ";
+                    NpgsqlCommand cmd = new NpgsqlCommand(sqlText, db);
+                    using (var reader = cmd.ExecuteReader())
+                    {
+
+                        while (reader.Read())
+                        {
+                            var fileName = reader.GetString(reader.GetOrdinal("fileName"));
+                            var fId = reader.GetInt64(reader.GetOrdinal("fId"));
+                            result.Add(new Dictionary<string, object>() { { "fileName", fileName }, { "fileId", fId} });
+                        }
+                        
+                    }
+                    return result;
+                }
+                catch (Exception e){
+                    Console.Error.WriteLine(e.Message);
+                    return null;
+                }
+            }
+        }
+        public Bitmap GetBitMap(String filePath, int frameNumber)
+        {
+            using (BinaryReader reader = new BinaryReader(File.Open(filePath, FileMode.Open)))
+            {
+                try
+                {
+                    var data = reader.ReadBytes(2);
+                    Array.Reverse(data);
+                    int width = BitConverter.ToInt16(data, 0);
+                    data = reader.ReadBytes(2);
+                    Array.Reverse(data);
+                    reader.ReadByte();
+                    int height = BitConverter.ToInt16(data, 0);
+
+                    int frameSize = width * height;
+                    long position = (long)frameNumber * (long)frameSize + 5;
+                    reader.BaseStream.Seek(position, SeekOrigin.Begin);
+                    byte[] by = reader.ReadBytes(frameSize);
+                    
+                    var res = Convert2Bitmap(by, width, height);
+                    return res;
+                }
+                catch (Exception e)
+                {
+                    System.Console.WriteLine(e.Message);
+                    return null;
+                }
+            }
+        }
+        public Bitmap GetBitMap(long fileId, long ms, int fnum)
+        {
+            var filePath = GetFilePathById(fileId);
+            using (BinaryReader reader = new BinaryReader(File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)))
+            {
+                try
+                {
+
+                    int width = reader.ReadInt32();
+                                      
+                    int height = reader.ReadInt32();
+
+                    int frameSize = width * height;
+                    long position = (long)0 * (long)frameSize + 8;
+                    reader.BaseStream.Seek(position, SeekOrigin.Begin);
+                    byte[] by = reader.ReadBytes(frameSize);
+                    var arr = by.Skip(8).Take(4).ToArray();
+                    //Array.Reverse(arr);
+                    var encoderCounter_1 = BitConverter.ToInt32(arr,0);
+                  position = (long)(Math.Abs(ms-encoderCounter_1) / 200) * (long)frameSize + 8;
+                  reader.BaseStream.Seek(position, SeekOrigin.Begin);
+                    by = reader.ReadBytes(frameSize);
+                    encoderCounter_1 = BitConverter.ToInt32(by.Skip(8).Take(4).ToArray(), 0);
+                    if (encoderCounter_1 == ms)
+                        return Convert2Bitmap(by, width, height);
+                    
+                        position = (long)fnum * (long)frameSize + 8;
+                        reader.BaseStream.Seek(position, SeekOrigin.Begin);
+                        by = reader.ReadBytes(frameSize);
+                    return Convert2Bitmap(by, width, height);
+
+
+                }
+                catch (Exception e)
+                {
+                    System.Console.WriteLine(e.Message);
+                    return null;
+                }
+            }
+        }
+        public List<Bitmap> getBitMaps(long fileId, long ms, int fnum){
+            List<Bitmap> bitMaps = new List<Bitmap>();
+            var filePaths = getFilesPathById(fileId);
+            filePaths.ForEach(filePath =>{
+                using (BinaryReader reader = new BinaryReader(File.Open(filePath["fileName"] as string, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))){
+                    try{
+
+                        int width = reader.ReadInt32();
+
+                        int height = reader.ReadInt32();
+
+                        int frameSize = width * height;
+                        long position = (long)0 * (long)frameSize + 8;
+                        reader.BaseStream.Seek(position, SeekOrigin.Begin);
+                        byte[] by = reader.ReadBytes(frameSize);
+                        var arr = by.Skip(8).Take(4).ToArray();
+                        //Array.Reverse(arr);
+                        var encoderCounter_1 = BitConverter.ToInt32(arr, 0);
+                        position = (long)(Math.Abs(ms - encoderCounter_1) / 200) * (long)frameSize + 8;
+                        reader.BaseStream.Seek(position, SeekOrigin.Begin);
+                        by = reader.ReadBytes(frameSize);
+                        encoderCounter_1 = BitConverter.ToInt32(by.Skip(8).Take(4).ToArray(), 0);
+                        //if (encoderCounter_1 == ms)
+                        //{
+                        //    Bitmap bitMap = Convert2Bitmap(by, width, height);
+
+                        //    Graphics gr = Graphics.FromImage(bitMap);
+                        //    using (Pen selPen = new Pen(Color.White))
+                        //    {
+                        //        var objects = GetObjectsByFrameNumber((long)filePath["fileId"], ms, fnum);
+                        //        foreach (var vo in objects)
+                        //            gr.DrawRectangle(selPen, vo.X-25, vo.Y-50, vo.W, vo.H);
+                        //    }
+
+
+                        //    bitMaps.Add(bitMap);
+                        //}
+                        //else
+                        {
+                            position = (long)fnum * (long)frameSize + 8;
+                            reader.BaseStream.Seek(position, SeekOrigin.Begin);
+                            by = reader.ReadBytes(frameSize);
+                            Bitmap bitMapL = Convert2Bitmap(by, width, height);
+                            Graphics grl = Graphics.FromImage(bitMapL);
+                            using (Pen selPen = new Pen(Color.White))
+                            {
+                                var objects = GetObjectsByFrameNumber((long)filePath["fileId"], ms, fnum);
+                                foreach (var vo in objects)
+                                    grl.DrawRectangle(selPen, vo.X-25, vo.Y-50, vo.W, vo.H);
+                            }
+                            bitMaps.Add(bitMapL);
+                        }
+
+                    }
+                    catch (Exception e)
+                    {
+                        System.Console.WriteLine(e.StackTrace);
+                    }
+                }
+            });
+            return bitMaps;
+            
+        }
+
+
+
+
+        public Bitmap Convert2Bitmap(byte[] DATA, int width, int height)
+        {
+
+            var arr = Array.ConvertAll(DATA, Convert.ToInt32);
+            var result = ConvertMatrix(arr, height, width).ToBitmap();
+           
+
+
+            return Crop(result);
+        }
+        public Bitmap Crop(Image myImage)
+        {
+            Bitmap croppedBitmap = new Bitmap(myImage);
+            croppedBitmap = croppedBitmap.Clone(
+                            new Rectangle(25, 50, myImage.Width-50, myImage.Height - 50),
+                            System.Drawing.Imaging.PixelFormat.DontCare);
+            return croppedBitmap;
+        }
+        static int[,] ConvertMatrix(int[] flat, int m, int n)
+        {
+            if (flat.Length != m * n)
+            {
+                throw new ArgumentException("Invalid length");
+            }
+            int[,] ret = new int[m, n];
+            // BlockCopy uses byte lengths: a double is 8 bytes
+            Buffer.BlockCopy(flat, 0, ret, 0, flat.Length * sizeof(Int32));
+            return ret;
+        }
+
+        public List<VideoObject> GetObjectsByFrameNumber(int frame_Number, Int64 trip_id)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                string sqlText =
+                    @"select distinct rvo.*,cl.obj_name as name, tfile.threat_id as threat from public.rd_video_objects as rvo
+                        inner join classes as cl on cl.class_id = rvo.oid
+                        inner join trip_files as tfile on tfile.id = rvo.fileId  where fnum = " +
+                    frame_Number + " and rvo.trip_id = " + trip_id;
+                return db.Query<VideoObject>(sqlText, commandType: CommandType.Text).ToList();
+
+            }
+        }
+
+        public List<Gap> GetGapsByFrameNumber(int frame_Number, Int64 trip_id)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+
+                return db.Query<Gap>(@"
+                select gaps.nkm as km, max(frame_number) as frame_number, ((gaps.picket-1)*100 + gaps.meter) as meter, max(final-start) as length, max(start) as start, 
+                    files.threat_id as threat, speed.passenger as passspeed, speed.freight as FreightSpeed, files.id as file_id
+                from rd_gaps as gaps
+                    inner join trip_files as files on files.id = gaps.file_id
+                    inner join trips as trip on trip.id = files.trip_id
+                    inner join tpl_period as sp on trip.trip_date between sp.start_date and sp.final_date
+				    inner join apr_speed as speed on speed.period_id = sp.id
+                where trip.id = " + trip_id + " and gaps.frame_number =" + frame_Number + @"  and (final-start) between 0 and 60
+                    group by gaps.nkm, gaps.picket, gaps.meter, files.threat_id , trip.direction_id, files.id, speed.passenger, speed.freight
+                    order by gaps.nkm, ((gaps.picket-1)*100 + gaps.meter) ", commandType: CommandType.Text).ToList();
+            }
+        }
+        
+        public System.Drawing.Bitmap MatrixToTimage(int[,] matrix)
+        {
+            
+            return matrix.ToBitmap();
+        }
+
+        public List<RailFastener> GetRailFasteners(long tripId, int kilometer)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+
+                var videoObjects = db.Query<VideoObject>(
+                    $@"select distinct rvo.*, cl.obj_name as name, tfile.threat_id as threat from public.rd_video_objects as rvo
+                         inner join classes as cl on cl.class_id = rvo.oid
+                         inner join trip_files as tfile on tfile.id = rvo.fileId 
+                        where rvo.oid in (22, 28,8,10,4,6,7,26) and rvo.trip_id = {tripId} and rvo.km <= {kilometer}
+                        order by rvo.km, threat, rvo.mtr").ToList();
+                var result = new List<RailFastener>();
+                foreach (var videoObject in videoObjects)
+                {
+                    var serialized = JsonConvert.SerializeObject(videoObject);
+                    switch ((FastenerEnum)videoObject.Oid)
+                    {
+                        case FastenerEnum.D65:
+                            result.Add(JsonConvert.DeserializeObject <D65>(serialized));
+                            break;
+                        case FastenerEnum.GBR:
+                            result.Add(JsonConvert.DeserializeObject<GBR>(serialized));
+                            break;
+                        case FastenerEnum.KB65:
+                            result.Add(JsonConvert.DeserializeObject<KB65>(serialized));
+                            break;
+                        case FastenerEnum.KD65:
+                            result.Add(JsonConvert.DeserializeObject<KD65>(serialized));
+                            break;
+                        case FastenerEnum.SKL:
+                            result.Add(JsonConvert.DeserializeObject<SKL>(serialized));
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                return result;
+            }
+        }
+        public List<VideoObject> GetObjectsByFrameNumber(long fileId, long ms, int fnum)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                
+             
+                return db.Query<VideoObject>(
+                    $@"select distinct rvo.* from public.rd_video_objects as rvo
+                       where rvo.file_id = {fileId} and rvo.fnum = {fnum} ").ToList();
+            }
+        }
+
+        
+    }
+}

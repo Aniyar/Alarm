@@ -1,0 +1,74 @@
+﻿@inherits LayoutComponentBase
+@using Microsoft.AspNetCore.Components
+<MatThemeProvider Theme="@theme1">
+    <div class="mat-blazor-demo-theme-app-row">
+
+        <MatButton Label="Данные" OnClick="@OnDataMenuClick" RefBack="@dataMenuRef"></MatButton>
+        <MatMenu @ref="DataMenu" TargetForwardRef="@dataMenuRef" Style="@menuTopMargin">
+            <MatList Style="@menuFontSize">
+                <MatListItem Style="@menuHeigth" >Открыть</MatListItem>
+                <MatDivider></MatDivider>
+                <MatListItem Style="@menuHeigth">Настройки</MatListItem>
+                <MatDivider></MatDivider>
+                <MatListItem Style="@menuHeigth">Информация о проезде</MatListItem>
+                <MatDivider></MatDivider>
+                <MatListItem Style="@menuHeigth">Помощь</MatListItem>
+                <MatListItem Style="@menuHeigth">О программе</MatListItem>
+            </MatList>
+        </MatMenu>
+
+        <MatButton Label="Вид" OnClick="@OnViewMenuClick" RefBack="@viewMenuRef"></MatButton>
+        <MatMenu @ref="ViewMenu" TargetForwardRef="@viewMenuRef" Style="@menuTopMargin">
+            <MatList Style="@menuFontSize">
+                <MatListItem Style="@menuHeigth">
+                    <MatCheckbox Style="@(menuFontSize+checkBoxDisplay)" @bind-Value="@showMessages" Label="Показывать зоны протяженных объектов"></MatCheckbox>
+                </MatListItem>
+                <MatListItem Style="@menuHeigth">
+                    <MatCheckbox Style="@(menuFontSize+checkBoxDisplay)" @bind-Value="@showLongedObjects" Label="Показать все сообщения"></MatCheckbox>
+                </MatListItem>
+                <MatListItem Style="@menuHeigth"><span style="white-space: pre;">             Удалить сообщения</span></MatListItem>
+
+            </MatList>
+        </MatMenu>
+    </div>
+    <MatDivider></MatDivider>
+
+</MatThemeProvider>
+
+<div style="position:absolute; top:35px; width:100%; height:100%;">
+    @Body
+</div>
+@code
+{
+    string menuHeigth = "height:23px;";
+    string menuFontSize = "font-size:small;";
+    string menuTopMargin = "margin-top:35px;";
+    string checkBoxDisplay = "display:table;";
+    MatTheme theme1 = new MatTheme()
+    {
+        Primary = MatThemeColors.Grey._900.Value,
+        Secondary = MatThemeColors.BlueGrey._500.Value
+    };
+    ForwardRef dataMenuRef = new ForwardRef();
+    BaseMatMenu DataMenu;
+    bool showMessages = true;
+    bool showLongedObjects = true;
+
+    public void OnDataMenuClick(MouseEventArgs e)
+    {
+        this.DataMenu.OpenAsync();
+    }
+    ForwardRef viewMenuRef = new ForwardRef();
+    BaseMatMenu ViewMenu;
+
+    public void OnViewMenuClick(MouseEventArgs e)
+    {
+        this.ViewMenu.OpenAsync();
+    }
+
+
+}
+
+
+
+

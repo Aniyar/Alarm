@@ -1,0 +1,134 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using ALARm.Core.Report;
+
+namespace ALARm.Core.AdditionalParameteres
+{
+    public class Gap : RdObject
+    {
+        public int Length { get; set; }
+        public int Threat { get; set; }
+        public int Direction { get; set; }
+        public new int Km { get; set; }
+        public new int Meter { get; set; }
+        public int Picket { get; set; }
+        public int Zazor { get; set; }
+        public int Thread { get; set; }
+        public int Start { get; set; }
+        public string Name { get; set; }
+        public int Code { get; set; }
+        public int Put { get; set; }
+        public int Pch { get; set; }
+        public int PassSpeed { get; set; }
+        public int FreightSpeed { get; set; }
+        public int File_Id { get; set; }
+        public int Fnum { get; set; }
+        public string AllowSpeed { get; set; }
+        public int Frame_Number { get; set; }
+        public int X { get; set; }
+        public int W { get; set; }
+        public int Y { get; set; }
+        public int H { get; set; }
+        public int Oid { get; set; }
+        public int Local_fnum { get; set; }
+
+        public int Length2 { get; set; }
+        public int Threat2 { get; set; }
+        public int Direction2 { get; set; }
+        public new int Km2 { get; set; }
+        public new int Meter2 { get; set; }
+        public int Picket2 { get; set; }
+        public int Zazor2 { get; set; }
+        public int Thread2 { get; set; }
+        public int Start2 { get; set; }
+        public string Name2 { get; set; }
+        public int Code2 { get; set; }
+        public int Put2 { get; set; }
+        public int Pch2 { get; set; }
+        public int PassSpeed2 { get; set; }
+        public int FreightSpeed2 { get; set; }
+        public int File_Id2 { get; set; }
+        public int Fnum2 { get; set; }
+        public string AllowSpeed2 { get; set; }
+        public int Frame_Number2 { get; set; }
+        public int X2 { get; set; }
+        public int W2 { get; set; }
+        public int Y2 { get; set; }
+        public int H2 { get; set; }
+        public int Oid2 { get; set; }
+        public int Local_fnum2 { get; set; }
+        public Digression GetDigressions()
+        {
+            Digression digression = new Digression();
+            digression.FullSpeed = PassSpeed + "/" + FreightSpeed;
+            digression.Meter = Meter;
+            digression.Kmetr = Km;
+            digression.Threat = (Threat)Thread;
+            digression.Velich = Length;
+            switch (Length)
+            {
+                case 0:
+                    digression.AllowSpeed = "";
+                    digression.DigName = DigressionName.FusingGap;
+                    break;
+                case int gap when gap > 24 && gap <= 26:
+                    digression.AllowSpeed = (PassSpeed > 100 ? "100" : "-") + "/" + (FreightSpeed > 100 ? "100" : "-");
+                    digression.DigName = digression.AllowSpeed.Equals("-/-") ? DigressionName.AnomalisticGap : DigressionName.Gap;
+                    break;
+                case int gap when gap > 26 && gap <= 30:
+                    digression.AllowSpeed = (PassSpeed > 60 ? "60" : "-") + "/" + (FreightSpeed > 60 ? "60" : "-");
+                    digression.DigName = digression.AllowSpeed.Equals("-/-") ? DigressionName.AnomalisticGap : DigressionName.Gap;
+                    break;
+                case int gap when gap > 30 && gap <= 35:
+                    digression.AllowSpeed = (PassSpeed > 25 ? "25" : "-") + "/" + (FreightSpeed > 25 ? "25" : "-");
+                    digression.DigName = digression.AllowSpeed.Equals("-/-") ? DigressionName.AnomalisticGap : DigressionName.Gap;
+                    break;
+                case int gap when gap > 35:
+                    digression.AllowSpeed = "0/0";
+                    digression.DigName = DigressionName.Gap;
+                    break;
+            }
+            return digression;
+        }
+        public Digression GetDigressions2()
+        {
+            Digression digression = new Digression();
+            digression.FullSpeed = PassSpeed2 + "/" + FreightSpeed2;
+            digression.Meter = Meter2;
+            digression.Kmetr= Km2;
+            digression.Threat = (Threat)Thread2;
+            digression.Velich = Length2;
+            switch (Length2)
+            {
+                case 0:
+                    digression.AllowSpeed = "";
+                    digression.DigName = DigressionName.FusingGap;
+                    break;
+                case int gap when gap > 24 && gap <= 26:
+                    digression.AllowSpeed = (PassSpeed > 100 ? "100" : "-") + "/" + (FreightSpeed > 100 ? "100" : "-");
+                    digression.DigName = digression.AllowSpeed.Equals("-/-") ? DigressionName.AnomalisticGap : DigressionName.Gap;
+                    break;
+                case int gap when gap > 26 && gap <= 30:
+                    digression.AllowSpeed = (PassSpeed > 60 ? "60" : "-") + "/" + (FreightSpeed > 60 ? "60" : "-");
+                    digression.DigName = digression.AllowSpeed.Equals("-/-") ? DigressionName.AnomalisticGap : DigressionName.Gap;
+                    break;
+                case int gap when gap > 30 && gap <= 35:
+                    digression.AllowSpeed = (PassSpeed > 25 ? "25" : "-") + "/" + (FreightSpeed > 25 ? "25" : "-");
+                    digression.DigName = digression.AllowSpeed.Equals("-/-") ? DigressionName.AnomalisticGap : DigressionName.Gap;
+                    break;
+                case int gap when gap > 35:
+                    digression.AllowSpeed = "0/0";
+                    digression.DigName = DigressionName.Gap;
+                    break;
+            }
+            return digression;
+        }
+    }
+    public class Heat : RdObject
+    {
+        public int Value { get; set; }
+    }
+}

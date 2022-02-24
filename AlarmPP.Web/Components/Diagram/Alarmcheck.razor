@@ -1,0 +1,36 @@
+﻿<h4>Прибивки</h4>
+ <div style="max-height: 300px; overflow-y: scroll; width: 100%; height: calc(100% - (50px))">
+    <table>
+        <tr style="background: " #75d2ff")>
+            <th style="border-right: 1px solid grey; border-left: 1px solid grey; width: 125px;">Км</th>
+
+            @* <th>тип корректировки</th>*@
+            <th style="border-right: 1px solid grey; width: 125px;">Значение</th>
+            <th style="border-right: 1px solid grey; width: 125px;">Координата</th>
+
+        </tr>
+        @if (kilometers != null)
+        {
+
+            {
+                foreach (var km in kilometers)
+                {
+                   
+                        foreach (var corectnion in km.CorrectionNotes)
+                        {
+                        <tr>
+                            <th>@corectnion.Km</th>
+                            @*<th>@corectnion.Meter</th>*@
+                            @*<th>@(corectnion.Type == 0 ? "RP" : "AP" )</th>*@
+                            @*<th>@( "Рп ,Ап" )</th>*@
+                            <th>@corectnion.CorrectionValue</th>
+                            <th>@corectnion.coord</th>
+
+                        </tr>
+                        }
+                  
+                }
+            }
+        }
+    </table>
+     </div>

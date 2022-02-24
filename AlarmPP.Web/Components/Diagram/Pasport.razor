@@ -1,0 +1,213 @@
+﻿@using ALARm.Core;
+@if (Y == 0)
+{
+    <text>
+        <text font-size="10" stroke-width="0.5" stroke="#000000" transform="" y="@(Y + 10)" text-anchor="end" x="80">@Kilometer.Number</text>
+    </text>
+}
+
+@if (Kilometer.Direction == ALARm.Core.Direction.Direct)
+{
+    var pikIndex = 1;
+    for (int i = Kilometer.Start_m / 100 + 1; i <= Kilometer.Final_m / 100; i++)
+    {
+
+        <text>
+            <text font-size="10" transform="" y="@(Y + pikIndex * 100 - Kilometer.Start_m % 100 - 2)" text-anchor="end" x="56">@i</text>
+            <text font-size="10" transform="" y="@(Y + pikIndex * 100 - Kilometer.Start_m % 100 + 3)" text-anchor="end" x="60">⚊</text>
+        </text>
+        pikIndex++;
+    }
+}
+else
+{
+    int remains = Kilometer.GetLength() % 100;
+    var pikIndex = 0;
+    for (int i = Kilometer.Final_m / 100; i > Kilometer.Start_m /100 ; i--)
+    {
+        <text>
+            <text font-size="10" transform="" y="@(Y + pikIndex * 100 + Kilometer.Final_m % 100 -2 )" text-anchor="end" x="56">@(i + 1)</text>
+            <text font-size="10" transform="" y="@(Y + pikIndex * 100 + Kilometer.Final_m % 100 +3)" text-anchor="end" x="60">⚊</text>
+        </text>
+        pikIndex++;
+    }
+}
+@{
+    int x = 20;
+};
+
+<!--рисуем шпалы -->
+@if (Kilometer.CrossTies != null)
+    @foreach (var crossTie in Kilometer.CrossTies)
+    {
+        int start = crossTie.Start_Km == Kilometer.Number ? crossTie.Start_M : 0;
+        int final = crossTie.Final_Km == Kilometer.Number ? crossTie.Final_M : Kilometer.GetLength();
+        string ctype = "1,8";
+        switch (crossTie.Crosstie_type_id)
+        {
+            case (int)CrosTieType.Before96:
+                ctype = "1,8,1,2,1,2";
+                break;
+            case (int)CrosTieType.Concrete:
+                ctype = "1,8,1,2";
+                break;
+        }
+        if (Kilometer.Direction== ALARm.Core.Direction.Reverse)
+        {
+            start = Kilometer.GetLength() - start;
+            final = Kilometer.GetLength() - final;
+        }
+
+        <line stroke="black" vector-effect="non-scaling-stroke" fill="none" stroke-width="0.5" y1="@(Y+start)" y2="@(Y+final)" x1="@(x-4)" x2="@(x-4)"></line>
+        <line stroke="black" vector-effect="non-scaling-stroke" fill="none" stroke-width="8" stroke-dasharray="@ctype" y1="@(Y+start)" y2="@(Y+final)" x1="20" x2="20"></line>
+        <line stroke="black" vector-effect="non-scaling-stroke" fill="none" stroke-width="0.5" y1="@(Y+start)" y2="@(Y+final)" x1="@(x+4)" x2="@(x+4)"></line>
+    }
+@if (Kilometer.Artificials != null)
+    @foreach (var artificialConstruction in Kilometer.Artificials)
+    {
+        
+        if (artificialConstruction.Type_Id == 3)
+        {
+            int start1 = Kilometer.Direction== ALARm.Core.Direction.Direct ? artificialConstruction.AxisM : Kilometer.GetLength() - artificialConstruction.AxisM;
+            <line stroke="blue" vector-effect="non-scaling-stroke" fill="none" stroke-width="3" stroke-dasharray="0,3,1,2" y1="@(Y + start1)" y2="@(Y + start1) " x1="@(x - 10)" x2="@(x + 10)"></line>
+            <line stroke="blue" vector-effect="non-scaling-stroke" fill="none" stroke-width="1" y1="@(Y + start1-2)" y2="@(Y + start1-2) " x1="@(x - 10)" x2="@(x + 10)"></line>
+            <line stroke="blue" vector-effect="non-scaling-stroke" fill="none" stroke-width="1" y1="@(Y + start1+2)" y2="@(Y + start1+2) " x1="@(x - 10)" x2="@(x + 10)"></line>
+
+
+            continue;
+        }
+
+        var start = artificialConstruction.Start_Km == Kilometer.Number ? artificialConstruction.Start_M : 0;
+        var final = artificialConstruction.Final_Km == Kilometer.Number ? artificialConstruction.Final_M : Kilometer.GetLength();
+        if (Kilometer.Direction == ALARm.Core.Direction.Reverse)
+        {
+            start = Kilometer.GetLength() - start;
+            final = Kilometer.GetLength() - final;
+        }
+
+        string pointsLeft = GetArtificialLinePoints(-1, start, final, x, Y);
+        string pointsRight = GetArtificialLinePoints(1, start, final, x, Y);
+
+        <polyline stroke="black" vector-effect="non-scaling-stroke" fill="none" stroke-width="1" points="@pointsLeft"></polyline>
+        <polyline stroke="black" vector-effect="non-scaling-stroke" fill="none" stroke-width="1" points="@pointsRight"></polyline>
+        if (!IsBoundary(start))
+        {
+            <line stroke="black" vector-effect="non-scaling-stroke" fill="none" stroke-width="0.5" y1="@(Y + start)" y2="@(Y + start - (int)AppData.Trip.Travel_Direction*(Math.Abs(start-final)>100 ? 500 : 200))" x1="@(x + -1*7)" x2="@(x + -1*7)"></line>
+            <line stroke="black" vector-effect="non-scaling-stroke" fill="none" stroke-width="0.5" y1="@(Y + start)" y2="@(Y + start - (int)AppData.Trip.Travel_Direction*(Math.Abs(start-final)>100 ? 500 : 200))" x1="@(x + 1*7)" x2="@(x + 1*7)"></line>
+        }
+
+        if (!IsBoundary(final))
+        {
+            <line stroke="black" vector-effect="non-scaling-stroke" fill="none" stroke-width="0.5" y1="@(Y + final)" y2="@(Y + final + (int)AppData.Trip.Travel_Direction*(Math.Abs(start-final)>100 ? 500 : 200))" x1="@(x + -1*7)" x2="@(x + -1*7)"></line>
+            <line stroke="black" vector-effect="non-scaling-stroke" fill="none" stroke-width="0.5" y1="@(Y + final)" y2="@(Y + final + (int)AppData.Trip.Travel_Direction*(Math.Abs(start-final)>100 ? 500 : 200))" x1="@(x + 1*7)" x2="@(x + 1*7)"></line>
+        }
+
+    }
+@if (Kilometer.CheckSections != null)
+    @foreach (var checkSection in Kilometer.CheckSections)
+    {
+        var start = checkSection.Start_Km == Kilometer.Number ? checkSection.Start_M : 0;
+        var final = checkSection.Final_Km == Kilometer.Number ? checkSection.Final_M : Kilometer.GetLength();
+        if (Kilometer.Direction== ALARm.Core.Direction.Reverse)
+        {
+            start = Kilometer.GetLength() - start;
+            final = Kilometer.GetLength() - final;
+        }
+        if (!IsBoundary(start))
+        {
+            <line stroke="black" vector-effect="non-scaling-stroke" fill="none" stroke-width="1" y1="@(Y + start)" y2="@(Y + final) " x1="@(x - 15)" x2="@(x - 15)"></line>
+        }
+    }
+
+<!--рисуем стрелочные переводы-->
+@if (Kilometer.Switches != null)
+    foreach (var switchh in Kilometer.Switches)
+    {
+        if ((switchh.Mark_Id >= 11) && (switchh.Mark_Id <= 13))
+        {
+            int y = Y + (Kilometer.Direction== ALARm.Core.Direction.Direct ? switchh.Meter : Kilometer.GetLength() - switchh.Meter);
+            <line marker-end="url(#marker-arrow-reverse)" marker-start="url(#marker-arrow-reverse)" stroke="#9439AB" vector-effect="non-scaling-stroke" fill="none" stroke-width="2" x1="@(x-11)" x2="@(x+11)" y1="@(y)" y2="@(y)"></line>
+            continue;
+        }
+        string points = string.Empty;
+        int ostryak = switchh.Meter + (int)switchh.Dir_Id * switchh.Length;
+        if (ostryak < 0)
+            ostryak = 0;
+
+
+        string center = $"{x},{Y + (Kilometer.Direction== ALARm.Core.Direction.Reverse ? ostryak : Kilometer.GetLength() - ostryak)} {x},{Y + (Kilometer.Direction== ALARm.Core.Direction.Reverse ? switchh.Meter : Kilometer.GetLength() - switchh.Meter)}";
+        int start = Y + (Kilometer.Direction== ALARm.Core.Direction.Reverse ? ostryak : Kilometer.GetLength() - ostryak);
+        string left = $"{x - 9},{(start - 3 * (int)switchh.Dir_Id)} {(x - 6)},{start} {(x + 9)},{start}";
+        string right = $"{x + 10},{(start + 3 * (int)switchh.Dir_Id)} {x + 6},{start} {x - 10},{start}";
+
+        if (switchh.Side_Id == Side.Left)
+        {
+            points = Kilometer.Direction== ALARm.Core.Direction.Reverse ? left : right;
+        }
+        else
+        {
+            points = Kilometer.Direction== ALARm.Core.Direction.Direct ? left : right;
+        }
+
+        var len = Kilometer.Direction== ALARm.Core.Direction.Direct ? -1 : -switchh.Length;
+        int tempx = (switchh.Dir_Id == SwitchDirection.Direct ? switchh.Meter : ostryak) + len;
+        <polyline marker-end="url(#marker-arrow)" stroke="#9439AB" vector-effect="non-scaling-stroke" fill="none" stroke-width="2" points="@points"></polyline>
+        <polyline stroke="#9439AB" vector-effect="non-scaling-stroke" fill="none" stroke-width="2" points="@center"></polyline>
+    }
+<!--рисуем рихтовочные нити-->
+@if (Kilometer.StraighteningThreads != null)
+    foreach (var strightThred in Kilometer.StraighteningThreads)
+    {
+        int start = strightThred.Start_Km < Kilometer.Number ? 0 : strightThred.Start_M;
+        int final = strightThred.Final_Km > Kilometer.Number ? Kilometer.GetLength() : strightThred.Final_M;
+        if (Kilometer.Direction== ALARm.Core.Direction.Reverse)
+        {
+            start = Kilometer.GetLength() - start;
+            final = Kilometer.GetLength() - final;
+        }
+        int position = strightThred.Side_Id == (int)Side.Left ? x - 5 : x + 5;
+        <line stroke="brown" vector-effect="non-scaling-stroke" fill="none" stroke-width="2" stroke-dasharray="1,2" y1="@(Y+start)" y2="@(Y+final)" x1="@position" x2="@position"></line>
+    }
+@if (Kilometer.Curves != null)
+    foreach (var curve in Kilometer.Curves)
+    {
+        int start = curve.Start_Km < Kilometer.Number ? 0 : curve.Start_M;
+        int final = curve.Final_Km > Kilometer.Number ? Kilometer.GetLength() : curve.Final_M;
+        if (Kilometer.Direction== ALARm.Core.Direction.Reverse)
+        {
+            start = Kilometer.GetLength() - start;
+            final = Kilometer.GetLength() - final;
+        }
+        int position = curve.Side_id == (int)Side.Left ? x - 5 : x + 5;
+        <line stroke="brown" vector-effect="non-scaling-stroke" fill="none" stroke-width="2" stroke-dasharray="1,2" y1="@(Y + start)" y2="@(Y + final)" x1="@position" x2="@position"></line>
+    }
+
+<!--Рисуем изосытки-->
+@if (Kilometer.IsoJoints != null)
+    foreach (var isojoint in Kilometer.IsoJoints)
+    {
+        int start = Y + (Kilometer.Direction== ALARm.Core.Direction.Direct ? isojoint.Meter : Kilometer.GetLength() - isojoint.Meter);
+        <line stroke="blue" vector-effect="non-scaling-stroke" fill="none" stroke-width="1" y1="@(start)" y2="@(start)" x1="@(x + 15)" x2="@(x + 27)" marker-end="url(#joint-head)"></line>
+    }
+}
+<!--Рисуем пучины-->
+@(Kilometer.Depths = new List<Deep> { new Deep { Start_Km = Kilometer.Number, Start_M = 650, Final_Km = Kilometer.Number, Final_M = 750 } })
+@if (Kilometer.Depths != null)
+    foreach (var depth in Kilometer.Depths)
+    {
+        var start = depth.Start_Km == Kilometer.Number ? depth.Start_M : 0;
+        var final = depth.Final_Km == Kilometer.Number ? depth.Final_M : Kilometer.GetLength();
+        if (Kilometer.Direction== ALARm.Core.Direction.Reverse)
+        {
+            start = Kilometer.GetLength() - start;
+            final = Kilometer.GetLength() - final;
+        }
+        if (!IsBoundary(start))
+        {
+            <line stroke="black" vector-effect="non-scaling-stroke" fill="none" stroke-width="1" y1="@(Y + start)" y2="@(Y + final) " x1="@(x + 28)" x2="@(x + 28)"></line>
+        }
+    }
+
+<text font-size="10" stroke-width="0.5" stroke="#000000" y="@(Y-2)" text-anchor="end" x="80">@Kilometer.Number</text>
+<line x1="60" x2="@Width" y1="@(Y)" y2="@(Y)" stroke-width="0.5" stroke="grey"></line>
+<!---<text font-size="10" stroke-width="0.5" transform="" stroke="#000000" y="@(Y+9)" text-anchor="end" x="60">@Kilometer.Next_Km</text>-->

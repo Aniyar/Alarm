@@ -1,0 +1,1 @@
+sc create AlarmService binpath="C:\SNTFI\Tolegen\ALARm\ALARmService\bin\release\netcoreapp3.1\publish\ALARmService.exe"

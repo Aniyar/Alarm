@@ -1,0 +1,1 @@
+G:\sntfi\ALARm5\ALARmService>sc create AlarmService binpath="G:\sntfi\ALARm5\ALARmService\bin\release\netcoreapp3.1\publish\ALARmService.exe"

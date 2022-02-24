@@ -1,0 +1,423 @@
+﻿using ALARm.Core;
+using AlarmPP.Web.Components.Diagram;
+using AlarmPP.Web.Services;
+using MatBlazor;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+ 
+
+namespace AlarmPP.Web.Pages
+{
+
+    public partial class Diagram : ComponentBase
+    {
+        [Inject]
+        public IRdStructureRepository RdStructureRepository { get; set; }
+        
+        [Parameter]
+        public MatTheme MainTheme { get; set; } = new MatTheme()
+        {
+            Primary = MatThemeColors.BlueGrey._500.Value,
+            Secondary = MatThemeColors.BlueGrey._500.Value
+        };
+
+        private TrackPanel TrackPanel;
+        public List<Kilometer> Kilometers { get; set; }
+        public MatMenu dropMenu { get; set; }
+        public ForwardRef dropMenuRef { get; set; } = new ForwardRef();
+        public TripChooserDialog chooserDialog;
+        public void OnDropMenuClick(MouseEventArgs e)
+        {
+            this.dropMenu.OpenAsync();
+        }
+
+        public MatMenu printMenu { get; set; }
+        public ForwardRef printMenuRef { get; set; } = new ForwardRef();
+        public void OnPrintMenuClick(MouseEventArgs e)
+        {
+            this.printMenu.OpenAsync();
+        }
+
+        public MatMenu digFilterMenu { get; set; }
+        public ForwardRef digFilterMenuRef { get; set; } = new ForwardRef();
+        public void OnDigFilterMenuClick(MouseEventArgs e)
+        {
+            this.digFilterMenu.OpenAsync();
+        }
+
+        public bool selectRegion { get; set; } = false;
+        public bool selectRect { get; set; } = false;
+        protected override void OnInitialized()
+        {
+            AppData.ShowSignals = RdStructureRepository.GetButtonState(ShowButtons.Signal.ToString());
+            AppData.ShowEvents = RdStructureRepository.GetButtonState(ShowButtons.Event.ToString());
+            AppData.ShowMainParams = RdStructureRepository.GetButtonState(ShowButtons.MainParams.ToString());
+            AppData.ShowDigressions = RdStructureRepository.GetButtonState(ShowButtons.Digression.ToString());
+            AppData.ShowZeroLines = RdStructureRepository.GetButtonState(ShowButtons.ZeroLines.ToString());
+            AppData.ShowPasport = RdStructureRepository.GetButtonState(ShowButtons.Pasport.ToString());
+            AppData.Show1DegreeDigressions = RdStructureRepository.GetButtonState(ShowButtons.FirstDegreeDigression.ToString());
+            AppData.Show2DegreeDigressions = RdStructureRepository.GetButtonState(ShowButtons.SecondDegreeDigression.ToString());
+            AppData.Show3DegreeDigressions = RdStructureRepository.GetButtonState(ShowButtons.ThirdDegreeDigressions.ToString());
+            AppData.ShowCloseToDangerous =RdStructureRepository.GetButtonState(ShowButtons.CloseToDangerous.ToString());
+            AppData.ShowGapsCloseToDangerous = RdStructureRepository.GetButtonState(ShowButtons.GapCloseToDangerous.ToString());
+            AppData.ShowDangerousForEmtyWagon = RdStructureRepository.GetButtonState(ShowButtons.DangerousForEmtyWagon.ToString());
+            AppData.ShowOthersDigressions = RdStructureRepository.GetButtonState(ShowButtons.OthersDigressions.ToString());
+            AppData.ShowDangerousDigressions = RdStructureRepository.GetButtonState(ShowButtons.DangerousDigression.ToString());
+            AppData.ShowJoints = RdStructureRepository.GetButtonState(ShowButtons.Joints.ToString());
+            AppData.ShowRailProfile = RdStructureRepository.GetButtonState(ShowButtons.RailProfile.ToString());
+            AppData.ShowGaps = RdStructureRepository.GetButtonState(ShowButtons.Gaps.ToString());
+            AppData.ShowBolts = RdStructureRepository.GetButtonState(ShowButtons.Bolts.ToString());
+            AppData.ShowFasteners = RdStructureRepository.GetButtonState(ShowButtons.Fasteners.ToString());
+            AppData.ShowPerShpals = RdStructureRepository.GetButtonState(ShowButtons.PerShpals.ToString());
+            AppData.ShowDefShpals = RdStructureRepository.GetButtonState(ShowButtons.DefShpals.ToString());
+            if (AppData.Show1DegreeDigressions || AppData.Show2DegreeDigressions || AppData.ShowGapsCloseToDangerous ||
+                AppData.Show3DegreeDigressions || AppData.ShowCloseToDangerous || AppData.ShowDangerousDigressions ||
+                AppData.ShowDangerousForEmtyWagon || AppData.ShowOthersDigressions || AppData.ShowGaps || AppData.ShowBolts ||
+                AppData.ShowFasteners || AppData.ShowPerShpals || AppData.ShowDefShpals)
+            {
+                AppData.DigressionChecked = true;
+            }
+        }
+        private void Refresh()
+        {
+            StateHasChanged();
+            TrackPanel.Refresh();
+        }
+
+        public void SetShowStatus(ShowButtons buttonName)
+        {
+            switch (buttonName)
+            {
+                case ShowButtons.Signal:
+                    AppData.ShowSignals = !AppData.ShowSignals;
+                    RdStructureRepository.SetButtonStatus(ShowButtons.Signal.ToString(), AppData.ShowSignals);
+                    break;
+                case ShowButtons.Event:
+                    AppData.ShowEvents = !AppData.ShowEvents;
+                    RdStructureRepository.SetButtonStatus(ShowButtons.Event.ToString(), AppData.ShowEvents);
+                    break;
+                case ShowButtons.ZeroLines:
+                    AppData.ShowZeroLines = !AppData.ShowZeroLines;
+                    RdStructureRepository.SetButtonStatus(ShowButtons.ZeroLines.ToString(), AppData.ShowZeroLines);
+                    break;
+                case ShowButtons.MainParams:
+                    AppData.ShowMainParams = !AppData.ShowMainParams;
+                    RdStructureRepository.SetButtonStatus(ShowButtons.MainParams.ToString(), AppData.ShowMainParams);
+                    break;
+                case ShowButtons.Pasport:
+                    AppData.ShowPasport = !AppData.ShowPasport;
+                    RdStructureRepository.SetButtonStatus(ShowButtons.Pasport.ToString(), AppData.ShowPasport);
+                    break; ;
+                case ShowButtons.Digression:
+                    AppData.ShowDigressions = !AppData.ShowDigressions;
+                    RdStructureRepository.SetButtonStatus(ShowButtons.Digression.ToString(), AppData.ShowDigressions);
+                    break;
+                case ShowButtons.DangerousDigression:
+                    AppData.ShowDangerousDigressions = !AppData.ShowDangerousDigressions;
+                    RdStructureRepository.SetButtonStatus(ShowButtons.DangerousDigression.ToString(), AppData.ShowDangerousDigressions);
+                    AppData.ShowGaps = false;
+                    AppData.ShowGapsCloseToDangerous = false;
+                    AppData.ShowBolts = false;
+                    AppData.ShowFasteners = false;
+                    AppData.ShowDefShpals = false;
+                    AppData.ShowPerShpals = false;
+                    if (AppData.ShowDangerousDigressions) {
+                        AppData.DigressionChecked = true;
+                        AppData.ShowDigressions = true;
+                    }
+                    else
+                    {
+                        AppData.DigressionChecked = false;
+                    }
+                        
+                    break;
+                case ShowButtons.DangerousForEmtyWagon:
+                    AppData.ShowDangerousForEmtyWagon = !AppData.ShowDangerousForEmtyWagon;
+                    RdStructureRepository.SetButtonStatus(ShowButtons.DangerousForEmtyWagon.ToString(), AppData.ShowDangerousForEmtyWagon);
+                    if (AppData.ShowDangerousForEmtyWagon)
+                        AppData.DigressionChecked = true;
+                    else
+                        AppData.DigressionChecked = false;
+                    break;
+                case ShowButtons.ThirdDegreeDigressions:
+                    AppData.Show3DegreeDigressions = !AppData.Show3DegreeDigressions;
+                    AppData.ShowGaps = false;
+                    AppData.ShowGapsCloseToDangerous = false;
+                    AppData.ShowBolts = false;
+                    AppData.ShowFasteners = false;
+                    AppData.ShowDefShpals = false;
+                    AppData.ShowPerShpals = false;
+                    RdStructureRepository.SetButtonStatus(ShowButtons.ThirdDegreeDigressions.ToString(), AppData.Show3DegreeDigressions);
+                    if (AppData.Show3DegreeDigressions)
+                    {
+                        AppData.DigressionChecked = true;
+                        AppData.ShowDigressions = true;
+                    }
+                    else
+                    {
+                        AppData.DigressionChecked = false;
+                    }
+                    break;
+                case ShowButtons.CloseToDangerous:
+                    AppData.ShowCloseToDangerous = !AppData.ShowCloseToDangerous;
+                    RdStructureRepository.SetButtonStatus(ShowButtons.CloseToDangerous.ToString(), AppData.ShowCloseToDangerous);
+                    AppData.ShowGaps = false;
+                    AppData.ShowGapsCloseToDangerous = false;
+                    AppData.ShowBolts = false;
+                    AppData.ShowFasteners = false;
+                    AppData.ShowDefShpals = false;
+                    AppData.ShowPerShpals = false;
+                    if (AppData.ShowCloseToDangerous)
+                    {
+                        
+                        AppData.DigressionChecked = true;
+                    }
+                    else
+                    {
+                        AppData.DigressionChecked = false;
+                    }
+                       
+                    break;
+                case ShowButtons.GapCloseToDangerous:
+
+                    AppData.ShowGapsCloseToDangerous = !AppData.ShowGapsCloseToDangerous;
+                    RdStructureRepository.SetButtonStatus(ShowButtons.GapCloseToDangerous.ToString(), AppData.ShowGapsCloseToDangerous);
+                    AppData.ShowDangerousDigressions = false;
+                    AppData.ShowCloseToDangerous = false;
+                    AppData.Show3DegreeDigressions = false;
+                    AppData.Show2DegreeDigressions = false;
+                    AppData.Show1DegreeDigressions = false;
+                    AppData.ShowBolts = false;
+                    AppData.ShowFasteners = false;
+                    AppData.ShowDefShpals = false;
+                    AppData.ShowPerShpals = false;
+                    if (AppData.ShowGapsCloseToDangerous)
+                    {
+                        
+                        AppData.DigressionChecked = true;
+                    }
+                    else
+                    {
+                        AppData.DigressionChecked = false;
+                    }
+                        
+                    break;
+                case ShowButtons.FirstDegreeDigression:
+                    AppData.Show1DegreeDigressions = !AppData.Show1DegreeDigressions;
+                    RdStructureRepository.SetButtonStatus(ShowButtons.FirstDegreeDigression.ToString(), AppData.Show1DegreeDigressions);
+                    AppData.ShowGaps = false;
+                    AppData.ShowBolts = false;
+                    AppData.ShowFasteners = false;
+                    AppData.ShowDefShpals = false;
+                    AppData.ShowPerShpals = false;
+                    AppData.ShowGapsCloseToDangerous = false;
+                    if (AppData.Show1DegreeDigressions)
+                    {
+                        AppData.DigressionChecked = true;
+                        AppData.ShowDigressions = true;
+
+                    }
+                    else
+                    {
+                        AppData.DigressionChecked = false;
+                    }
+                        
+                    break;
+                case ShowButtons.SecondDegreeDigression:
+                    AppData.Show2DegreeDigressions = !AppData.Show2DegreeDigressions;
+                    RdStructureRepository.SetButtonStatus(ShowButtons.SecondDegreeDigression.ToString(), AppData.Show2DegreeDigressions);
+                    AppData.ShowGaps = false;
+                    AppData.ShowBolts = false;
+                    AppData.ShowFasteners = false;
+                    AppData.ShowDefShpals = false;
+                    AppData.ShowPerShpals = false;
+                    AppData.ShowGapsCloseToDangerous = false;
+                    if (AppData.Show2DegreeDigressions)
+                    {
+                        AppData.DigressionChecked = true;
+                        AppData.ShowDigressions = true;
+                    }
+                    else
+                    {
+                        AppData.DigressionChecked = false;
+                    }
+                    break;
+
+                case ShowButtons.OthersDigressions:
+                    AppData.ShowOthersDigressions = !AppData.ShowOthersDigressions;
+                    RdStructureRepository.SetButtonStatus(ShowButtons.OthersDigressions.ToString(), AppData.ShowOthersDigressions);
+                    if (AppData.ShowOthersDigressions)
+                        AppData.DigressionChecked = true;
+                    else
+                        AppData.DigressionChecked = false;
+                    break;
+                case ShowButtons.ExcludedByOerator:
+                    AppData.ShowExcludedByOerator = !AppData.ShowExcludedByOerator;
+                    RdStructureRepository.SetButtonStatus(ShowButtons.ExcludedByOerator.ToString(), AppData.ShowExcludedByOerator);
+                    if (AppData.ShowExcludedByOerator)
+                        AppData.DigressionChecked = true;
+                    else
+                        AppData.DigressionChecked = false;
+                    break;
+                case ShowButtons.ExcludedOnSwitch:
+                    AppData.ShowExcludedOnSwitch = !AppData.ShowExcludedOnSwitch;
+                    RdStructureRepository.SetButtonStatus(ShowButtons.ExcludedOnSwitch.ToString(), AppData.ShowExcludedOnSwitch);
+                    if (AppData.ShowExcludedOnSwitch)
+                        AppData.DigressionChecked = true;
+                    else
+                        AppData.DigressionChecked = false;
+                    break;
+                case ShowButtons.NotTakenOnRating:
+                    AppData.ShowNotTakenOnRating = !AppData.ShowNotTakenOnRating;
+                    RdStructureRepository.SetButtonStatus(ShowButtons.NotTakenOnRating.ToString(), AppData.ShowNotTakenOnRating);
+                    if (AppData.ShowNotTakenOnRating)
+                        AppData.DigressionChecked = true;
+                    else
+                        AppData.DigressionChecked = false;
+                    break;
+                case ShowButtons.Joints:
+                    AppData.ShowJoints = !AppData.ShowJoints;
+                    RdStructureRepository.SetButtonStatus(ShowButtons.Joints.ToString(), AppData.ShowJoints);
+                    break;
+                case ShowButtons.RailProfile:
+                    AppData.ShowRailProfile = !AppData.ShowRailProfile;
+                    RdStructureRepository.SetButtonStatus(ShowButtons.RailProfile.ToString(), AppData.ShowRailProfile);
+                    break;
+                case ShowButtons.Gaps:
+                    AppData.ShowGaps = !AppData.ShowGaps;
+                    RdStructureRepository.SetButtonStatus(ShowButtons.Gaps.ToString(), AppData.ShowGaps);
+                    AppData.ShowDangerousDigressions = false;
+                    AppData.ShowCloseToDangerous = false;
+                    AppData.Show3DegreeDigressions = false;
+                    AppData.Show2DegreeDigressions = false;
+                    AppData.Show1DegreeDigressions = false;
+                    AppData.ShowBolts = false;
+                    AppData.ShowFasteners = false;
+                    AppData.ShowDefShpals = false;
+                    AppData.ShowPerShpals = false;
+                    if (AppData.ShowGaps)
+                    {
+                        AppData.DigressionChecked = true;
+                    }
+                    else
+                    {
+                        AppData.DigressionChecked = false;
+                    }
+                    break;
+                case ShowButtons.Bolts:
+                    AppData.ShowBolts = !AppData.ShowBolts;
+                    RdStructureRepository.SetButtonStatus(ShowButtons.Bolts.ToString(), AppData.ShowBolts);
+                    AppData.ShowDangerousDigressions = false;
+                    AppData.ShowCloseToDangerous = false;
+                    AppData.Show3DegreeDigressions = false;
+                    AppData.Show2DegreeDigressions = false;
+                    AppData.Show1DegreeDigressions = false;
+                    AppData.ShowGaps = false;
+                    AppData.ShowGapsCloseToDangerous = false;
+                    AppData.ShowFasteners = false;
+                    AppData.ShowDefShpals = false;
+                    AppData.ShowPerShpals = false;
+                    if (AppData.ShowBolts)
+                    {
+                        AppData.DigressionChecked = true;
+                    }
+                    else
+                    {
+                        AppData.DigressionChecked = false;
+                    }
+                    break;
+                case ShowButtons.Fasteners:
+                    AppData.ShowFasteners = !AppData.ShowFasteners;
+                    RdStructureRepository.SetButtonStatus(ShowButtons.Fasteners.ToString(), AppData.ShowFasteners);
+                    AppData.ShowDangerousDigressions = false;
+                    AppData.ShowCloseToDangerous = false;
+                    AppData.Show3DegreeDigressions = false;
+                    AppData.Show2DegreeDigressions = false;
+                    AppData.Show1DegreeDigressions = false;
+                    AppData.ShowGaps = false;
+                    AppData.ShowGapsCloseToDangerous = false;
+                    AppData.ShowBolts = false;
+                    AppData.ShowDefShpals = false;
+                    AppData.ShowPerShpals = false;
+                    if (AppData.ShowFasteners)
+                    {
+                        AppData.DigressionChecked = true;
+                    }
+                    else
+                    {
+                        AppData.DigressionChecked = false;
+                    }
+                    break;
+                case ShowButtons.PerShpals:
+                    AppData.ShowPerShpals = !AppData.ShowPerShpals;
+                    RdStructureRepository.SetButtonStatus(ShowButtons.PerShpals.ToString(), AppData.ShowPerShpals);
+                    AppData.ShowDangerousDigressions = false;
+                    AppData.ShowCloseToDangerous = false;
+                    AppData.Show3DegreeDigressions = false;
+                    AppData.Show2DegreeDigressions = false;
+                    AppData.Show1DegreeDigressions = false;
+                    AppData.ShowGaps = false;
+                    AppData.ShowGapsCloseToDangerous = false;
+                    AppData.ShowFasteners = false;
+                    AppData.ShowDefShpals = false;
+                    AppData.ShowBolts = false;
+                    if (AppData.ShowPerShpals)
+                    {
+                        AppData.DigressionChecked = true;
+                        
+                    }
+                    else
+                    {
+                        AppData.DigressionChecked = false;
+                    }
+                    break;
+                case ShowButtons.DefShpals:
+                    AppData.ShowDefShpals = !AppData.ShowDefShpals;
+                    RdStructureRepository.SetButtonStatus(ShowButtons.DefShpals.ToString(), AppData.ShowDefShpals);
+                    AppData.ShowDangerousDigressions = false;
+                    AppData.ShowCloseToDangerous = false;
+                    AppData.Show3DegreeDigressions = false;
+                    AppData.Show2DegreeDigressions = false;
+                    AppData.Show1DegreeDigressions = false;
+                    AppData.ShowGaps = false;
+                    AppData.ShowGapsCloseToDangerous = false;
+                    AppData.ShowFasteners = false;
+                    AppData.ShowBolts = false;
+                    AppData.ShowPerShpals = false;
+                    if (AppData.ShowDefShpals)
+                    {
+                        AppData.DigressionChecked = true;
+                        
+                    }
+                    else
+                    {
+                        AppData.DigressionChecked = false;
+                    }
+                    break;
+            }
+
+            Refresh();
+        }
+
+        public async Task OpenDialog()
+        {
+            AppData.IsDialogOpen = true;
+            StateHasChanged();
+        }
+
+        public async Task PrintCurrentKm()
+        {
+            await TrackPanel.PrintCurrentKm();
+        }
+
+        public async Task PrintRegion()
+        {
+            await TrackPanel.PrintRegion();
+        }
+    }
+}

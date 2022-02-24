@@ -1,0 +1,1750 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using ALARm.Core;
+using Npgsql;
+using System.Data;
+using Dapper;
+using ALARm.Core.Report;
+using ALARm.Core.AdditionalParameteres;
+using Newtonsoft.Json;
+using System.IO;
+
+namespace ALARm.DataAccess
+{
+    public class RdStructureRepository : IRdStructureRepository
+    {
+        public List<Int64> GetAdmDirectionIDs(Int64 distance_id)
+        {
+            System.Console.WriteLine(Helper.ConnectionString());
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                return db.Query<Int64>("Select admd.id from adm_direction admd " +
+                    "inner join adm_track admt on admt.adm_direction_id = admd.id " +
+                    "inner join tpl_period tplp on tplp.adm_track_id = admt.id " +
+                    "inner join tpl_dist_section tplds on tplds.period_id = tplp.id " +
+                    "where tplds.adm_distance_id = " + distance_id.ToString(), commandType: CommandType.Text).ToList();
+            }
+        }
+
+        public List<Catalog> GetCatalog(int catType)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                string catalogTableName = string.Empty;
+                switch (catType)
+                {
+                    case RdStructureConst.ReportCatalog:
+                        catalogTableName = "cat_report";
+                        break;
+
+
+                }
+                return catalogTableName.Equals(string.Empty) ? new List<Catalog>() : db.Query<Catalog>("Select * from " + catalogTableName, commandType: CommandType.Text).ToList();
+            }
+        }
+
+        public List<ReportTemplate> GeReportTemplates(int repType)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                return db.Query<ReportTemplate>("Select * from CAT_REPORT_TEMPLATE where rep_type = " + repType.ToString(), commandType: CommandType.Text)
+                    .ToList();
+            }
+        }
+
+        public List<RdClasses> GetRdClasses()
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                String sqltext = "SELECT * FROM classes ORDER BY class_id";
+                return db.Query<RdClasses>(sqltext, commandType: CommandType.Text).ToList();
+            }
+        }
+        public object GetS3all(Int64 processId, string pch)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                return db.Query<S3>(
+                    @"select road.code as roadcode, direct.code as directcode, process.date_vrem as date, trips.car as pscode, s3.put as nput, s3.km, s3.meter, s3.*
+                        from s3
+                        inner join rd_process process on process.id = s3.process_id
+                        inner join trips trips on trips.id = process.trip_id
+                        inner join adm_direction direct on direct.id = trips.direction_id
+                        inner join adm_distance dist on dist.code = s3.pch
+                        inner join adm_nod nod on nod.id = dist.adm_nod_id
+                        inner join adm_road road on road.id = nod.adm_road_id
+                        where process.id = @process_id and s3.pch = @pch_
+                        order by roadcode, directcode, date, pscode, nput, km, meter",
+                    new { process_id = processId, pch_ = pch }, commandType: CommandType.Text).ToList();
+            }
+        }
+        public object SumOfTheDep(long processId)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                return db.Query<SumOfTheDep>(
+                    @"SELECT * FROM rd_statement
+                        inner join rd_process process on process.id = rd_statement.process_id
+                        where process.id = @process_id ",
+                    new { process_id = processId }, commandType: CommandType.Text).ToList();
+            }
+        }
+        public object GetDBD(Int64 processId)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                return db.Query<S3>(
+                    @"select s3.put as nput, s3.pd, s3.pchu, s3.km, (s3.meter/100+1) as piket, s3.*
+                        from s3
+                        inner join rd_process process on process.id = s3.process_id
+                        where process.id = @process_id
+                        order by nput, pd, pchu, km, piket",
+                    new { process_id = processId }, commandType: CommandType.Text).ToList();
+            }
+        }
+
+        public RdClasses GetRdClasses(int class_id)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                String sqltext = "SELECT * FROM classes WHERE class_id=" + class_id.ToString();
+                return db.Query<RdClasses>(sqltext, commandType: CommandType.Text).Single();
+            }
+        }
+
+        public List<VideoObject> GetRdObject()
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                String sqltext = "SELECT * FROM rd_video_objects ORDER BY km, oid";
+                return db.Query<VideoObject>(sqltext, commandType: CommandType.Text).ToList();
+            }
+        }
+        public List<int> GetKilometerTrip(long Trip_id)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                try
+                {
+                    return db.Query<int>($@" select
+	                                                    DISTINCT kilom.num
+                                                    from
+	                                                    kilometers as kilom
+                                                    where
+	                                                    trip_id = { Trip_id }
+                                                    order by
+	                                                    kilom.num ").ToList();
+                }
+                catch
+                {
+                    return null;
+                }
+            }
+        }
+        public List<VideoObject> GetRdObject(int object_id, int km, Int64 file_id)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                String sqltext = "SELECT * FROM rd_video_objects WHERE oid=" + object_id.ToString() + " AND km=" + km.ToString() + " AND fileid=" + file_id.ToString();
+                return db.Query<VideoObject>(sqltext, commandType: CommandType.Text).ToList();
+            }
+        }
+
+        public List<VideoObject> GetRdObject(string object_id, string trip_files)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                String sqltext = "SELECT * FROM rd_video_objects WHERE (" + object_id + ") AND (" + trip_files + ") ORDER BY oid";
+                return db.Query<VideoObject>(sqltext, commandType: CommandType.Text).ToList();
+            }
+        }
+
+        public List<VideoObject> GetVideoObjects(string obj_name, MainParametersProcess process)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+
+                return db.Query<VideoObject>(@"select vidobj.*, classes.description as objname, ('ПЧУ-' || coalesce(pchu.CODE, 'неизвестный') || '/ПД-' || coalesce(pd.CODE, 'неизвестный') || '/ПДБ-' || coalesce(pdb.CODE, 'неизвестный')) as pdbname, coalesce(station.name, 'неизвестный') as stationname, (coalesce(to_char(speed.passenger, '999'), '-') || '/' || coalesce(to_char(speed.freight, 'FM999'), '-')) as speed
+                    from rd_video_objects as vidobj
+                    inner join classes on classes.class_id = vidobj.oid and position(classes.obj_name in @obj_name) != 0
+                    inner join rd_process on rd_process.trip_id = vidobj.trip_id and rd_process.id = @process_id
+                    inner join adm_track as track on track.id = @track_id
+                    left join tpl_period as stationperiod on stationperiod.adm_track_id = @track_id and stationperiod.mto_type = 10 
+                        and stationperiod.start_date = (select max(start_date) from tpl_period where tpl_period.adm_track_id = @track_id and tpl_period.mto_type = 10)
+                    left join tpl_station_section as stationsection on stationsection.period_id = stationperiod.id
+                        and abs(stationsection.axis_km * 1000 + stationsection.axis_m - vidobj.km * 1000 - vidobj.pt * 100 - vidobj.mtr) = (select min(abs(tpl_station_section.axis_km * 1000 + tpl_station_section.axis_m - vidobj.km * 1000 - vidobj.pt * 100 - vidobj.mtr)) from tpl_station_section where tpl_station_section.period_id = stationperiod.id)
+                    left join adm_station as station on station.id = stationsection.station_id
+                    left join tpl_period as pdbperiod on pdbperiod.adm_track_id = track.id and pdbperiod.mto_type = 9 
+                        and pdbperiod.start_date = (select max(start_date) from tpl_period where tpl_period.adm_track_id = track.id and tpl_period.mto_type = 9)
+                    left join tpl_pdb_section as pdbsection on pdbsection.period_id = pdbperiod.id 
+                        and ((vidobj.km * 1000 + vidobj.pt * 100 + vidobj.mtr) between (pdbsection.start_km * 1000 + pdbsection.start_m) and (pdbsection.final_km * 1000 + pdbsection.final_m))
+                    left join adm_pdb as pdb on pdb.id = pdbsection.adm_pdb_id
+                    left join adm_pd as pd on pd.id = pdb.adm_pd_id
+                    left join adm_pchu as pchu on pchu.id = pd.adm_pchu_id
+                    left join tpl_period as speedperiod on speedperiod.adm_track_id = @track_id and speedperiod.mto_type = 6
+                        and speedperiod.start_date = (select max(start_date) from tpl_period where tpl_period.adm_track_id = @track_id and tpl_period.mto_type = 6)
+					left join apr_speed as speed on speed.period_id = speedperiod.id
+						and ((vidobj.km * 1000 + vidobj.pt * 100 + vidobj.mtr) between (speed.start_km * 1000 + speed.start_m) and (speed.final_km * 1000 + speed.final_m))
+                    where vidobj.track_id = @track_id",
+                    new { obj_name, process_id = process.Id, track_id = process.TrackID }, commandType: CommandType.Text).ToList();
+            }
+        }
+
+        public List<VideoObjectCount> GetRdObjectCount(Int64 trip_files_id)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                String sqltext = "SELECT km, count(oid) FROM rd_video_objects WHERE fileid=" + trip_files_id.ToString() + " GROUP BY km ORDER BY km";
+                return db.Query<VideoObjectCount>(sqltext, commandType: CommandType.Text).ToList();
+            }
+        }
+
+        public List<VideoObjectCount> GetRdObjectCount(List<Int64> fileIDs)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                string idtext = "(";
+                foreach (Int64 fileID in fileIDs)
+                    idtext += fileID.ToString() + ", ";
+                idtext = idtext.TrimEnd(new char[] { ',', ' ' });
+                idtext += ")";
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                String sqltext = "SELECT km, count(oid) FROM rd_video_objects WHERE fileid in " + idtext + " GROUP BY km ORDER BY km";
+                return db.Query<VideoObjectCount>(sqltext, commandType: CommandType.Text).ToList();
+            }
+        }
+
+        public List<VideoObject> GetRdObjectKm(string km, string trip_files)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                string sqltext = "SELECT * FROM rd_video_objects WHERE (" + km + ") AND (" + trip_files + ") ORDER BY km";
+                return db.Query<VideoObject>(sqltext, commandType: CommandType.Text).ToList();
+            }
+        }
+
+        public List<Kilometer> GetKilometersByProcessId(long process_id)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                string sqltext = @"
+                select distinct direction.id as direction_id, concat(direction.name, '(', direction.code, ')') as direction_name, track.id as track_id,track.code as track_name, kilom.* from kilometers as kilom
+                inner join rd_process as rdp on rdp.trip_id = kilom.trip_id
+                inner join adm_track as track on track.id = kilom.track_id
+                inner join adm_direction as direction on direction.id = track.adm_direction_id
+                where rdp.id = " + process_id + " order by direction.id, track.id, kilom.id";
+                return db.Query<Kilometer>(sqltext).ToList();
+            }
+        }
+
+        public List<VideoObject> GetRdObjectKm(string object_id, string km, string trip_files)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                String sqltext = "SELECT * FROM rd_video_objects WHERE (" + object_id + ") AND (" + km + ") AND (" + trip_files + ") ORDER BY km";
+                return db.Query<VideoObject>(sqltext, commandType: CommandType.Text).ToList();
+            }
+        }
+
+        public object GetTrips(Int64 process_id)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                return db.Query<Trips>(@"select trips.*, (direction.name || ' (' || direction.code || ')') as direction from trips
+                    inner join adm_direction direction on direction.id = trips.direction_id
+                    inner join rd_process process on process.trip_id = trips.id and process.id = " + process_id.ToString(), commandType: CommandType.Text).ToList();
+            }
+        }
+        public List<Trips> GetTripsByRoad(Int64 road_id, ReportPeriod period, int trip_type)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                String sqltext = @"Select direction.name as direction_name,  s_station.name as start_station_name, f_station.name as final_station_name, trip.*  from trips as trip
+                        inner join adm_direction as direction on direction.id = trip.direction_id
+                        inner join road_direction as road on road.direction_id = direction.id
+                        left join adm_station as s_station on s_station.id = trip.start_station
+                        left join adm_station as f_station on f_station.id = trip.final_station
+                        where road.road_id = @road_id and trip.trip_date between @start and @final order by trip.trip_date desc";
+                return db.Query<Trips>(sqltext, new { road_id = road_id, start = period.StartDate, final = period.FinishDate }, commandType: CommandType.Text).ToList();
+            }
+        }
+        public object GetTrips(List<Int64> directionIDs, int rd_lvl)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                if (rd_lvl == 0)
+                {
+                    String sqltext = "SELECT trips.*, false as Checked_Status FROM trips WHERE direction_id in (";
+                    foreach (Int64 i in directionIDs)
+                    {
+                        sqltext += i.ToString() + ", ";
+                    }
+                    sqltext = sqltext.Remove(sqltext.Length - 2);
+                    sqltext += ")";
+                    return db.Query<Trips>(sqltext, commandType: CommandType.Text).ToList();
+                }
+                else
+                {
+                    String sqltext = "SELECT trip_files.*, false as Checked_Status FROM trip_files "
+                        + "inner join trips on trips.id = trip_files.trip_id "
+                        + "WHERE direction_id in (";
+                    foreach (Int64 i in directionIDs)
+                    {
+                        sqltext += i.ToString() + ", ";
+                    }
+                    sqltext = sqltext.Remove(sqltext.Length - 2);
+                    sqltext += ")";
+                    return db.Query<TripFiles>(sqltext, commandType: CommandType.Text).ToList();
+                }
+            }
+        }
+
+        public object GetAdmDirection(List<Int64> directionIDs)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                if (directionIDs.Count > 0)
+                {
+                    String sqltext = "SELECT * FROM adm_direction WHERE id in (";
+                    foreach (Int64 i in directionIDs)
+                    {
+                        sqltext += i.ToString() + ", ";
+                    }
+                    sqltext = sqltext.Remove(sqltext.Length - 2);
+                    sqltext += ") order by id";
+                    return db.Query<AdmDirection>(sqltext, commandType: CommandType.Text).ToList();
+                }
+                else
+                    return null;
+            }
+        }
+
+        public List<MainParametersProcess> GetMainParametersProcess()
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+
+                return db.Query<MainParametersProcess>("select * from rd_process order by id", commandType: CommandType.Text).ToList();
+            }
+        }
+
+        public MainParametersProcess GetMainParametersProcess(Int64 process_id)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+
+                return db.Query<MainParametersProcess>($@"select distinct rdp.*, trip.car_position as carposition, direction.name as directionname, direction.code as directioncode, trip.travel_direction as direction, coalesce(trip.chief, 'неизвестный') as chief,  coalesce(trip.car, 'неизвестный') as car, coalesce(to_char(trip.trip_date, 'DD.MM.YYYY'), 'неизвестный') as trip_date
+                    from rd_process as rdp
+                    inner join trips as trip on trip.id = rdp.trip_id
+                    inner join adm_direction as direction on direction.id = trip.direction_id
+                    where rdp.id = {process_id}", commandType: CommandType.Text).ToList()[0];
+            }
+        }
+
+        public List<ReportPeriod> GetReportPeriods(long distanceId)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                return db.Query<ReportPeriod>(
+                     $@"Select distinct date_part('year', process.date_vrem) as periodYear, date_part('month', process.date_vrem) as periodMonth  
+                    from rd_process process
+                    inner join trips on trips.id = process.trip_id
+                    inner join adm_direction direction on direction.id = trips.direction_id
+                    inner join adm_track track on track.adm_direction_id = direction.id
+                    inner join tpl_period dperiod on dperiod.adm_track_id = track.id
+                    inner join tpl_dist_section dsection on dsection.period_id = dperiod.id
+                    where dsection.adm_distance_id = {distanceId}
+                    order by periodYear, periodMonth DESC",
+                    commandType: CommandType.Text).ToList();
+            }
+        }
+        public List<ReportPeriod> GetTripPeriodsByRoad(long road_id)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                return db.Query<ReportPeriod>(
+                     @"Select distinct date_part('year', trip.trip_date) as periodYear, date_part('month', trip.trip_date) as periodMonth  from trips as trip
+                        inner join adm_direction as direction on direction.id = trip.direction_id
+                        inner join adm_track as track on track.adm_direction_id = direction.id
+                        inner join tpl_period as dist_period on dist_period.adm_track_id = track.id
+                        inner join tpl_dist_section as dsection on dsection.period_id = dist_period.id
+                        inner join adm_distance as distance on distance.id = dsection.adm_distance_id
+                        inner join adm_nod as nod on nod.id = distance.adm_nod_id
+                        inner join adm_road as road on road.id = nod.adm_road_id
+                        inner join adm_station as s_station on s_station.id = trip.start_station
+                        inner join adm_station as f_station on f_station.id = trip.final_station
+                        where road.id = " + road_id + " order by  periodYear, periodMonth DESC",
+                    commandType: CommandType.Text).ToList();
+            }
+        }
+        public List<MainParametersProcess> GetMainParametersProcesses(ReportPeriod period, Int64 distance_id)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+
+                return db.Query<MainParametersProcess>(
+                    @"select distinct rdp.*, trip.car_position as carposition, direction.name as directionname, direction.code as directioncode, trip.travel_direction as direction, coalesce(trip.chief, 'неизвестный') as chief,  coalesce(trip.car, 'неизвестный') as car, coalesce(to_char(trip.trip_date, 'DD.MM.YYYY'), 'неизвестный') as trip_date, track.code as trackname, track.id as trackid, adm_distance.name as distancename, rdp.trip_id
+                    from rd_process as rdp
+                    inner join trips as trip on trip.id = rdp.trip_id
+                    inner join adm_direction as direction on direction.id = trip.direction_id
+                    inner join adm_track as track on track.adm_direction_id = direction.id
+                    inner join tpl_period as period on period.adm_track_id = track.id and period.mto_type = 0 
+                        and is_newest_period(period.id, 0, period.adm_track_id)
+                    inner join tpl_dist_section as section on section.period_id = period.id and section.adm_distance_id = @distance
+                    inner join adm_distance on adm_distance.id = @distance
+                    where rdp.date_vrem between @startDate and @finishDate",
+                    new { distance = distance_id, startDate = period.StartDate, finishDate = period.FinishDate }, commandType: CommandType.Text).ToList();
+            }
+        }
+
+        public List<MainParametersProcess> GetMainParametersProcess(ReportPeriod period, string distanceName)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+
+                return db.Query<MainParametersProcess>(
+                    @"select distinct rdp.*, coalesce(trip.chief, 'неизвестный') as chief,  coalesce(trip.car, 'неизвестный') as car, coalesce(to_char(trip.trip_date, 'DD.MM.YYYY'), 'неизвестный') as trip_date 
+                    from rd_process as rdp
+                    INNER JOIN s3 on s3.process_id = rdp.id and s3.pch = @distname
+                    LEFT JOIN trips as trip on trip.id = rdp.trip_id
+                    where rdp.date_vrem between @startDate and @finishDate and rdp.process_type < 4 and rdp.process_type >-1",
+                    new { distName = distanceName, startDate = period.StartDate, finishDate = period.FinishDate }, commandType: CommandType.Text).ToList();
+            }
+        }
+
+        public List<MainParametersProcess> GetAdditionalParametersProcess(ReportPeriod period)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+
+                return db.Query<MainParametersProcess>(
+                    @"select distinct rdp.*, trip.car_position as carposition, dir.name as directionname, trip.travel_direction as direction, coalesce(trip.chief, 'неизвестный') as chief,  coalesce(trip.car, 'неизвестный') as car, coalesce(to_char(trip.trip_date, 'DD.MM.YYYY'), 'неизвестный') as trip_date 
+                    from rd_process as rdp
+                    LEFT JOIN trips as trip on trip.id = rdp.trip_id
+                    INNER join adm_direction as dir on dir.id = trip.direction_id
+                    where rdp.date_vrem between @startDate and @finishDate and (rdp.process_type = 100 or rdp.process_type = 0)",
+                    new { startDate = period.StartDate, finishDate = period.FinishDate }, commandType: CommandType.Text).ToList();
+            }
+        }
+
+        public List<Digression> GetDigressions(Int64 processId, string distanceName, int[] typ)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                return db.Query<Digression>(
+                    @"Select naprav as direction, put as track, pchu, pd, pdb, rdp.date_vrem as FoundDate, km, meter, ots as name, otkl as value, len as length, kol as count, typ from s3 
+                    INNER JOIN rd_process as rdp on rdp.id = s3.process_id
+                    where s3.process_id = @process_id and s3.pch = @distance_Name and s3.typ in ( " + string.Join(",", typ) + ") " + @"
+                    order by direction, track, pchu, pd, pdb, km, meter",
+                    new { process_id = processId, distance_Name = distanceName }, commandType: CommandType.Text).ToList();
+            }
+        }
+
+        public List<Digression> GetDigressions(MainParametersProcess process, int[] typ)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                return db.Query<Digression>(@"select s3.naprav as direction, s3.put as track, s3.pchu, s3.pd, s3.pdb, s3.km, s3.meter, s3.primech, s3.ots as name, s3.otkl as value, s3.len as length, s3.kol as count, s3.typ, coalesce(station.Name, 'неизвестный') as stationname, coalesce(bracetype.name, 'неизвестный') as bracetype, coalesce(threadside.name, 'Правая') as threadside,
+                    (coalesce(to_char(s3.uv, '999'), '-') || '/' || coalesce(to_char(s3.uvg, 'FM999'), '-')) as fullspeed, (coalesce(to_char(s3.ovp, '999'), '-') || '/' || coalesce(to_char(s3.ogp, 'FM999'), '-')) as allowspeed, coalesce(stcurve.radius, 0) as curveradius, coalesce(to_char(stcurve.width, '9999'), to_char(norma.norma_width, '9999'), '') as norma,
+                    coalesce(railtype.name, 'неизвестный') as railtype, coalesce(trackclassname.name, 'Первый') as trackclass
+                    from s3
+                    left join tpl_period as stationperiod on stationperiod.adm_track_id = @track_id and stationperiod.mto_type = 10 
+                        and stationperiod.start_date = (select max(start_date) from tpl_period where tpl_period.adm_track_id = @track_id and tpl_period.mto_type = 10)
+                    left join tpl_station_section as stationsection on stationsection.period_id = stationperiod.id
+                        and abs(stationsection.axis_km * 1000 + stationsection.axis_m - s3.km * 1000 - s3.meter) = (select min(abs(tpl_station_section.axis_km * 1000 + tpl_station_section.axis_m - s3.km * 1000 - s3.meter)) from tpl_station_section where tpl_station_section.period_id = stationperiod.id)
+                    left join adm_station as station on station.id = stationsection.station_id
+                    left join tpl_period as braceperiod on braceperiod.adm_track_id = @track_id and braceperiod.mto_type = 4
+                        and braceperiod.start_date = (select max(start_date) from tpl_period where tpl_period.adm_track_id = @track_id and tpl_period.mto_type = 4)
+					left join apr_rails_braces as brace on brace.period_id = braceperiod.id
+						and ((s3.km * 1000 + s3.meter) between (brace.start_km * 1000 + brace.start_m) and (brace.final_km * 1000 + brace.final_m))
+                    left join cat_brace_type as bracetype on bracetype.id = brace.brace_type_id
+                    left join tpl_period as curveperiod on curveperiod.adm_track_id = @track_id and curveperiod.mto_type = 11
+                        and curveperiod.start_date = (select max(start_date) from tpl_period where tpl_period.adm_track_id = @track_id and tpl_period.mto_type = 11)
+                    left join apr_curve as curve on curve.period_id = curveperiod.id
+                        and ((s3.km * 1000 + s3.meter) between (curve.start_km * 1000 + curve.start_m) and (curve.final_km * 1000 + curve.final_m))
+                    left join apr_stcurve as stcurve on stcurve.curve_id = curve.id
+                        and ((s3.km * 1000 + s3.meter) between (stcurve.start_km * 1000 + stcurve.start_m) and (stcurve.final_km * 1000 + stcurve.final_m))
+                    left join tpl_period as normaperiod on normaperiod.adm_track_id = @track_id and normaperiod.mto_type = 5
+                        and normaperiod.start_date = (select max(start_date) from tpl_period where tpl_period.adm_track_id = @track_id and tpl_period.mto_type = 5)
+                    left join apr_norma_width as norma on norma.period_id = normaperiod.id
+                        and ((s3.km * 1000 + s3.meter) between (norma.start_km * 1000 + norma.start_m) and (norma.final_km * 1000 + norma.final_m))
+                    left join tpl_period as threadperiod on threadperiod.adm_track_id = @track_id and threadperiod.mto_type = 13
+                        and threadperiod.start_date = (select max(start_date) from tpl_period where tpl_period.adm_track_id = @track_id and tpl_period.mto_type = 13)
+                    left join apr_straightening_thread as thread on thread.period_id = threadperiod.id
+                        and ((s3.km * 1000 + s3.meter) between (thread.start_km * 1000 + thread.start_m) and (thread.final_km * 1000 + thread.final_m))
+                    left join cat_side as threadside on threadside.id = thread.side_id
+                    left join tpl_period as railsperiod on railsperiod.adm_track_id = @track_id and railsperiod.mto_type = 17
+                        and railsperiod.start_date = (select max(start_date) from tpl_period where tpl_period.adm_track_id = @track_id and tpl_period.mto_type = 17)
+					left join apr_rails_sections as railsection on railsection.period_id = railsperiod.id
+						and ((s3.km * 1000 + s3.meter) between (railsection.start_km * 1000 + railsection.start_m) and (railsection.final_km * 1000 + railsection.final_m))
+                    left join cat_rails_type as railtype on railtype.id = railsection.type_id
+                    left join tpl_period as classperiod on classperiod.adm_track_id = @track_id and classperiod.mto_type = 3
+                        and classperiod.start_date = (select max(start_date) from tpl_period where tpl_period.adm_track_id = @track_id and tpl_period.mto_type = 3)
+					left join apr_trackclass as trackclass on trackclass.period_id = classperiod.id
+						and ((s3.km * 1000 + s3.meter) between (trackclass.start_km * 1000 + trackclass.start_m) and (trackclass.final_km * 1000 + trackclass.final_m))
+                    left join cat_trackclass as trackclassname on trackclassname.id = trackclass.class_id
+                    where s3.process_id = @process_id and s3.pch = @distance and s3.put = @track and s3.typ in (" + string.Join(",", typ) + ")",
+                    new { process_id = process.Id, distance = process.DistanceName, track = process.TrackName, track_id = process.TrackID }, commandType: CommandType.Text).ToList();
+            }
+        }
+        public List<Digression> GetViolPerpen(MainParametersProcess process, int[] typ)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                try
+                {
+                    return db.Query<Digression>($@"SELECT fnum, km, mtr as meter,local_fnum, files.threat_id as Threat,  * 
+                                                    FROM public.rd_video_objects_{process.Trip_id}
+                                                    inner join trip_files as files on files.id = file_id
+                                                    where oid in (3, 4, 13, 14, 15, 16, 17, 18)
+                                                    order by fnum, km, mtr",
+                    new { trip_id = process.Trip_id }, commandType: CommandType.Text).ToList();
+                }
+                catch
+                {
+                    return null;
+                }
+                
+            }
+        }
+        public List<Digression> NoBolt(MainParametersProcess process, int[] typ)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                try
+                {
+                    return db.Query<Digression>($@"SELECT distinct fnum, km, mtr as meter, oid 
+                                                    FROM public.rd_video_objects_{process.Trip_id}
+                                                    inner join trip_files as files on files.id = file_id
+                                                    where oid in (0,1,2)
+                                                    order by km, mtr, oid",
+                    new { trip_id = process.Trip_id }, commandType: CommandType.Text).ToList();
+                }
+                catch
+                {
+                    return null;
+                }
+
+            }
+        }
+        public List<Digression> GetShpal(MainParametersProcess process, int[] typ)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                try { 
+                    return db.Query<Digression>($@"SELECT fnum, km, mtr as meter,local_fnum, files.threat_id,  * FROM public.rd_video_objects_{process.Trip_id}
+                                                inner join trip_files as files on files.id = file_id
+                                                where oid in (16, 17)
+                                                order by fnum, km, mtr",
+                        new { trip_id = process.Trip_id }, commandType: CommandType.Text).ToList();
+                }
+                catch
+                {
+                    return null;
+                }
+            }
+        }
+        public List<int> GetKilometerTrip(long Trip_id)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                try
+                {
+                    return db.Query<int>($@" select
+	                                                    DISTINCT kilom.num
+                                                    from
+	                                                    kilometers as kilom
+                                                    where
+	                                                    trip_id = { Trip_id }
+                                                    order by
+	                                                    kilom.num ").ToList();
+                }
+                catch
+                {
+                    return null;
+                }
+            }
+        }
+
+        public List<Digression> GetDigressions3and4(Int64 processId, string distanceName, int[] typ)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                return db.Query<Digression>(
+                    @"Select distinct  naprav as direction, put as track, pchu, pd, pdb, rdp.date_vrem as FoundDate, km, meter, ots as name, otkl as value, len as length, kol as count, typ, coalesce(norma.norma_width,1520) as norma,
+                    CONCAT(CAST (coalesce(speed.passenger,-1) as text) ,'/' , CAST (coalesce(speed.freight,-1)  as text ), '/', CAST (coalesce(empty_freight,-1)  as text) ) as fullSpeed, 
+                    CONCAT(CAST (s3.ovp as text) ,'/' , CAST (s3.ogp  as text ), '/', CAST (s3.ogp  as text) ) as allowSpeed, typ from s3 
+                    INNER JOIN rd_process as rdp on rdp.id = s3.process_id
+                    INNER JOIN adm_distance as distance on distance.name = s3.pch
+                    INNER JOIN adm_track as track on track.code = s3.put
+                    INNER JOIN adm_direction as direction on direction.name = s3.naprav and direction.id = track.adm_direction_id
+
+                    Left JOIN tpl_period as speed_period on speed_period.adm_track_id = track.id and rdp.date_vrem between speed_period.start_date and speed_period.final_Date and speed_period.mto_type = 6
+                    Left JOIN apr_speed as speed on speed.period_id = speed_period.id and isbelong(s3.km,s3.meter, speed.start_km, speed.start_m, speed.final_km, speed.final_m)
+                    Left JOIN tpl_period as norma_period on norma_period.adm_track_id = track.id and rdp.date_vrem between norma_period.start_date and norma_period.final_Date and norma_period.mto_type = 5
+                    Left JOIN apr_norma_width as norma on norma.period_id = norma_period.id and isbelong(s3.km,s3.meter, norma.start_km, norma.start_m, norma.final_km, norma.final_m)
+                    where s3.process_id = @process_id and s3.pch = @distance_Name and s3.typ in ( " + string.Join(",", typ) + ") " + @"
+                    order by direction, track, pchu, pd, pdb, km, meter",
+                    new { process_id = processId, distance_Name = distanceName }, commandType: CommandType.Text).ToList();
+            }
+        }
+
+        public List<Digression> TrackDeviations(Int64 processId, string distanceName, int[] typ)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                return db.Query<Digression>(
+                    @"Select naprav as direction, put as track, pchu, pd, pdb, rdp.date_vrem as FoundDate, km, meter, ots as name, otkl as value, len as length, kol as count, typ, primech from s3 
+                    INNER JOIN rd_process as rdp on rdp.id = s3.process_id
+                    where s3.process_id = @process_id and s3.pch = @distance_Name and s3.typ in ( " + string.Join(",", typ) + ") " + @"
+                    order by direction, track, pchu, pd, pdb, km, meter",
+                    new { process_id = processId, distance_Name = distanceName }, commandType: CommandType.Text).ToList();
+            }
+        }
+
+        public List<Digression> DeviationsRailHeadWear(Int64 processId, string distanceName, int[] typ)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                return db.Query<Digression>(
+                    @"Select naprav as direction, put as track, pchu, pd, pdb, rdp.date_vrem as FoundDate, km, meter, ots as name, otkl as value, len as length, kol as count, typ, primech from s3 
+                    INNER JOIN rd_process as rdp on rdp.id = s3.process_id
+                    where s3.process_id = @process_id and s3.pch = @distance_Name and s3.typ in ( " + string.Join(",", typ) + ") " + @"
+                    order by direction, track, pchu, pd, pdb, km, meter ",
+                    new { process_id = processId, distance_Name = distanceName }, commandType: CommandType.Text).ToList();
+            }
+        }
+        public List<Digression> DerogationsIsostsAndJointless(Int64 processId, string distanceName, int[] typ)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                return db.Query<Digression>(
+                    @"Select distinct  naprav as direction, put as track, pchu, pd, pdb, rdp.date_vrem as FoundDate, km, meter, ots as name, otkl as value, len as length, kol as count, typ, coalesce(norma.norma_width,-1),
+                    CONCAT(CAST (coalesce(speed.passenger,-1) as text) ,'/' , CAST (coalesce(speed.freight,-1)  as text ), '/', CAST (coalesce(empty_freight,-1)  as text) ) as fullSpeed, 
+                    CONCAT(CAST (s3.ovp as text) ,'/' , CAST (s3.ogp  as text ), '/', CAST (s3.ogp  as text) ) as allowSpeed, typ, norma.norma_width as norma from s3 
+                    INNER JOIN rd_process as rdp on rdp.id = s3.process_id
+                    INNER JOIN adm_distance as distance on distance.name = s3.pch
+                    INNER JOIN adm_track as track on track.code = s3.put
+                    INNER JOIN adm_direction as direction on direction.name = s3.naprav and direction.id = track.adm_direction_id
+
+                    Left JOIN tpl_period as speed_period on speed_period.adm_track_id = track.id and rdp.date_vrem between speed_period.start_date and speed_period.final_Date
+                    INNER JOIN apr_speed as speed on speed.period_id = speed_period.id and isbelong(s3.km,s3.meter, speed.start_km, speed.start_m, speed.final_km, speed.final_m)
+                    Left JOIN tpl_period as norma_period on norma_period.adm_track_id = track.id and rdp.date_vrem between norma_period.start_date and norma_period.final_Date
+                    INNER JOIN apr_norma_width as norma on norma.period_id = norma_period.id and isbelong(s3.km,s3.meter, norma.start_km, norma.start_m, norma.final_km, norma.final_m)
+                    where s3.process_id = @process_id and s3.pch = @distance_Name and s3.typ in ( " + string.Join(",", typ) + ") " + @"
+                    order by direction, track, pchu, pd, pdb, km, meter",
+                    new { process_id = processId, distance_Name = distanceName }, commandType: CommandType.Text).ToList();
+            }
+        }
+        public List<Digression> DeviationOfPRZH(Int64 processId, string distanceName, int[] typ)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                return db.Query<Digression>(
+                    @"Select naprav as direction, put as track, pchu, pd, pdb, rdp.date_vrem as FoundDate, km, meter, ots as name, otkl as value, len as length, kol as count, typ from s3 
+                    INNER JOIN rd_process as rdp on rdp.id = s3.process_id
+                    where s3.process_id = @process_id and s3.pch = @distance_Name and s3.typ in ( " + string.Join(",", typ) + ") " + @"
+                    order by direction, track, pchu, pd, pdb, km, meter ",
+                    new { process_id = processId, distance_Name = distanceName }, commandType: CommandType.Text).ToList();
+            }
+        }
+        public List<Digression> DeviationsToDangerous(Int64 processId, string distanceName, int[] typ)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                return db.Query<Digression>(
+                    @"Select distinct  naprav as direction, put as track, pchu, pd, pdb, rdp.date_vrem as FoundDate, km, meter, ots as name, otkl as value, len as length, kol as count, typ, coalesce(norma.norma_width,-1),
+                    CONCAT(CAST (coalesce(speed.passenger,-1) as text) ,'/' , CAST (coalesce(speed.freight,-1)  as text ), '/', CAST (coalesce(empty_freight,-1)  as text) ) as fullSpeed, 
+                    CONCAT(CAST (s3.ovp as text) ,'/' , CAST (s3.ogp  as text ), '/', CAST (s3.ogp  as text) ) as allowSpeed, typ, norma.norma_width as norma from s3 
+                    INNER JOIN rd_process as rdp on rdp.id = s3.process_id
+                    INNER JOIN adm_distance as distance on distance.name = s3.pch
+                    INNER JOIN adm_track as track on track.code = s3.put
+                    INNER JOIN adm_direction as direction on direction.name = s3.naprav and direction.id = track.adm_direction_id
+
+                    Left JOIN tpl_period as speed_period on speed_period.adm_track_id = track.id and rdp.date_vrem between speed_period.start_date and speed_period.final_Date
+                    INNER JOIN apr_speed as speed on speed.period_id = speed_period.id and isbelong(s3.km,s3.meter, speed.start_km, speed.start_m, speed.final_km, speed.final_m)
+                    Left JOIN tpl_period as norma_period on norma_period.adm_track_id = track.id and rdp.date_vrem between norma_period.start_date and norma_period.final_Date
+                    INNER JOIN apr_norma_width as norma on norma.period_id = norma_period.id and isbelong(s3.km,s3.meter, norma.start_km, norma.start_m, norma.final_km, norma.final_m)
+                    where s3.process_id = @process_id and s3.pch = @distance_Name and s3.ots = 'Уш' and s3.otkl >='1539' and s3.otkl <= '1512'
+                    order by direction, track, pchu, pd, pdb, km, meter",
+                    new { process_id = processId, distance_Name = distanceName }, commandType: CommandType.Text).ToList();
+            }
+        }
+        public List<Digression> DeviationsRailRailing(Int64 processId, string distanceName, int[] typ)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                return db.Query<Digression>(
+                    @"Select distinct  naprav as direction, put as track, pchu, pd, pdb, rdp.date_vrem as FoundDate, km, meter, ots as name, otkl as value, len as length, kol as count, typ, coalesce(norma.norma_width,-1),
+                    CONCAT(CAST (coalesce(speed.passenger,-1) as text) ,'/' , CAST (coalesce(speed.freight,-1)  as text ), '/', CAST (coalesce(empty_freight,-1)  as text) ) as fullSpeed, 
+                    CONCAT(CAST (s3.ovp as text) ,'/' , CAST (s3.ogp  as text ), '/', CAST (s3.ogp  as text) ) as allowSpeed, typ, norma.norma_width as norma from s3 
+                    INNER JOIN rd_process as rdp on rdp.id = s3.process_id
+                    INNER JOIN adm_distance as distance on distance.name = s3.pch
+                    INNER JOIN adm_track as track on track.code = s3.put
+                    INNER JOIN adm_direction as direction on direction.name = s3.naprav and direction.id = track.adm_direction_id
+
+                    Left JOIN tpl_period as speed_period on speed_period.adm_track_id = track.id and rdp.date_vrem between speed_period.start_date and speed_period.final_Date
+                    INNER JOIN apr_speed as speed on speed.period_id = speed_period.id and isbelong(s3.km,s3.meter, speed.start_km, speed.start_m, speed.final_km, speed.final_m)
+                    Left JOIN tpl_period as norma_period on norma_period.adm_track_id = track.id and rdp.date_vrem between norma_period.start_date and norma_period.final_Date
+                    INNER JOIN apr_norma_width as norma on norma.period_id = norma_period.id and isbelong(s3.km,s3.meter, norma.start_km, norma.start_m, norma.final_km, norma.final_m)
+                    where s3.process_id = @process_id and s3.pch = @distance_Name and s3.typ in ( " + string.Join(",", typ) + ") " + @"
+                    order by direction, track, pchu, pd, pdb, km, meter",
+                    new { process_id = processId, distance_Name = distanceName }, commandType: CommandType.Text).ToList();
+            }
+        }
+        public List<Digression> ControlAdjustmentProtocol(Int64 processId, string distanceName, int[] typ)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                return db.Query<Digression>(
+                    @"Select naprav as direction, put as track, pchu, pd, pdb, rdp.date_vrem as FoundDate, km, meter, ots as name, otkl as value, len as length, kol as count, typ from s3 
+                    INNER JOIN rd_process as rdp on rdp.id = s3.process_id
+                    where s3.process_id = @process_id and s3.pch = @distance_Name and s3.typ in ( " + string.Join(",", typ) + ") " + @"
+                    order by direction, track, pchu, pd, pdb, km, meter ",
+                    new { process_id = processId, distance_Name = distanceName }, commandType: CommandType.Text).ToList();
+            }
+        }
+        public List<Digression> AverageScoreDepartments(Int64 processId, string distanceName, int[] typ)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                return db.Query<Digression>(
+                    @"SELECT pch, PD, count(pd) as pdCount, sum(ball)/count(pd) as avgBall 
+                    FROM bedemost 
+                    INNER JOIN rd_process as rdp on rdp.id = bedemost.process_id
+                    where bedemost.process_id = @process_id and bedemost.pch = @distance_Name
+                    group by process_id, naprav, pch, pchu, pd",
+                    new { process_id = processId, distance_Name = distanceName }, commandType: CommandType.Text).ToList();
+            }
+        }
+        public List<Digression> PoorKilometers(Int64 processId, string distanceName, int[] typ)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                return db.Query<Digression>(
+                    @"Select bedemost.pch,  bedemost.naprav as direction, bedemost.put as track, bedemost.km as kmetr, s3.meter as m, s3.ovp, s3.ovp,
+                     CONCAT(CAST (uv as text) ,'/' , CAST (uvg  as text ), '/', CAST (uvg  as text )) as allowSpeed, 
+                     CONCAT(CAST (ovp as text) ,'/' , CAST (ogp  as text ), '/', CAST (ogp  as text )) as FullSpeed, lkm, bedemost.primech,
+					 s3.otkl, s3.len
+                    from bedemost 
+                    INNER JOIN rd_process as rdp on rdp.id = bedemost.process_id
+                    INNER join s3 on s3.process_id = rdp.id
+                    where ball > 180 
+                    and bedemost.kmtrue = s3.km and bedemost.process_id = @process_id and bedemost.pch =  @distance_Name
+                    and (s3.ovp <> -1 or s3.ogp <> -1)  
+                    order by direction, track, kmetr, m",
+                    new { process_id = processId, distance_Name = distanceName }, commandType: CommandType.Text).ToList();
+            }
+        }
+        public object GetS3(Int64 trip_id)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                return db.Query<S3>(
+                    $@"select direction.code as Directcode, s3.*, trips.trip_date as TripDateTime from s3 
+                        inner join adm_track as track on track.id = s3.track_id
+						inner join adm_direction as direction on direction.id = track.adm_direction_id
+                        inner join trips on s3.trip_id = trips.id 
+                        where trips.id = {trip_id} and s3.typ in (3, 4)
+                        order by naprav, pd, put, km, meter", commandType: CommandType.Text).ToList();
+            }
+        }
+
+        public object GetS3(Int64 processId, int type)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                return db.Query<S3>(
+                    @"select direction.code as Directcode, s3.*, process.date_vrem as TripDateTime, (coalesce(direction.name, '-') || '(' || coalesce(direction.code, '-') || ')') as Direction_Full from s3 
+                        inner join adm_track as track on track.id = s3.track_id
+						inner join adm_direction as direction on direction.id = track.adm_direction_id
+                        inner join rd_process process on process.id = s3.process_id 
+                        left join adm_direction direction on direction.name = s3.naprav
+                        where process.id = @process_id and s3.typ = @type_
+                        order by naprav, put, pchu, pd, pdb, put, km, meter",
+                    new { process_id = processId, type_ = type }, commandType: CommandType.Text).ToList();
+            }
+        }
+
+        public object GetBedemost(Int64 trip_id)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                return db.Query<Bedemost>(
+                    $@"select bed.* from bedemost bed where bed.trip_id = {trip_id} 
+                        order by naprav, pchu, pd, put, kmtrue", commandType: CommandType.Text).ToList();
+            }
+        }
+
+        public List<Curve> GetCurves(Int64 processId)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                return db.Query<Curve>(
+                    @"select apr_curve.*, min(curve.passspeed) as passspeed, min(curve.freightspeed) as freightspeed from apr_curve 
+                        inner join rd_curve curve on curve.curve_id = apr_curve.id and curve.process_id = @process_id
+                        group by (apr_curve.id)",
+                    new { process_id = processId }, commandType: CommandType.Text).ToList();
+            }
+        }
+
+        /// <summary>
+        /// Взять стыки между двумя координатами
+        /// </summary>
+        /// <param name="processId">ID процесса</param>
+        /// <param name="trackId">ID пути</param>
+        /// <param name="coordStart">Координата начала (Km * 10000 + Meter + Mm / 1000.0)</param>
+        /// <param name="coordFinal">Координата конца (Km * 10000 + Meter + Mm / 1000.0)</param>
+        /// <returns>Лист стыков</returns>
+        public List<Gaps> GetGapsBetweenCoords(long processId, long trackId, double coordStart, double coordFinal)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                return db.Query<Gaps>($@"select gaps.* from rd_gaps gaps
+                    where gaps.track_id = {trackId} and gaps.process_id = {processId}
+                    and gaps.nkm * 10000 + (gaps.picket - 1) * 100 + gaps.meter + ((gaps.start + gaps.final) / 2) / 1000.0 between {coordStart} and {coordFinal}").ToList();
+            }
+        }
+
+        /// <summary>
+        /// Взять стыки и изостыки пути
+        /// </summary>
+        /// <param name="processId">ID процесса</param>
+        /// <param name="trackId">ID пути</param>
+        /// <returns>Лист стыков и изостыков</returns>
+        public List<Gaps> GetGapsAndIsoGaps(long processId, long trackId)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                return db.Query<Gaps>($@"select files.threat_id, gaps.nkm, gaps.picket, gaps.meter, gaps.start, gaps.final, '' as ifiso from rd_gaps gaps
+                    inner join trip_files files on files.id = gaps.file_id
+                    where gaps.track_id = {trackId} and gaps.process_id = {processId}
+                    union all
+                    select files.threat_id, rvo.km as nkm, rvo.pt as picket, (rvo.pt - 1) * 100 + rvo.mtr as meter, least(firstCoord.mm, secondCoord.mm) as start, greatest(firstCoord.mm, secondCoord.mm) as final, 'изолирующий' as ifiso from rd_video_objects rvo
+                    inner join trip_files files on files.id = rvo.fileid
+                    inner join trips on trips.id = rvo.trip_id
+                    inner join getrealcoords_videoobjects(rvo.km, rvo.pt, rvo.mtr, rvo.x, rvo.mm, files.coef_camera, trips.travel_direction) firstCoord on true
+                    inner join getrealcoords_videoobjects(rvo.km, rvo.pt, rvo.mtr, rvo.x + rvo.h, rvo.mm, files.coef_camera, trips.travel_direction) secondCoord on true
+                    where rvo.track_id = {trackId} and rvo.oid = {(int)VideoObjectType.IzoStyk}
+                    order by nkm, picket, meter, start").ToList();
+            }
+        }
+        public List<Gaps> GetGaps(Int64 processId)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                return db.Query<Gaps>(
+                    $@"select gaps.*, files.threat_id, (direction.name || ' (' || direction.code || ')') as direction_full, track.code as track from rd_gaps gaps
+                        inner join trip_files files on files.id = gaps.file_id
+                        inner join adm_track track on track.id = gaps.track_id
+                        inner join adm_direction direction on direction.id = track.adm_direction_id
+                        where gaps.process_id={processId}
+                        order by gaps.nkm, gaps.picket, gaps.meter", commandType: CommandType.Text).ToList();
+            }
+        }
+
+        public object GetRdProfileObjects(long trackId, DateTime date, int type, int start_km, int start_m, int final_km, int final_m)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+
+                switch (type)
+                {
+                    case 0:
+                        return db.Query<Curve>($@"select curves.*, max(stcurve.radius) as maxradius, coalesce(max(abs(elcurve.lvl)), 0) as maxlvl from apr_curve curves
+                            inner join apr_stcurve stcurve on stcurve.curve_id = curves.id
+                            left join apr_elcurve elcurve on elcurve.curve_id = curves.id
+                            inner join tpl_period curveperiod on curveperiod.id = curves.period_id and '{date.ToString("dd-MM-yyyy")}' between curveperiod.start_date and curveperiod.final_date
+                            inner join adm_track track on track.id = curveperiod.adm_track_id and track.id = {trackId}
+                            where (curves.start_km * 1000 + curves.start_m < {final_km * 1000 + final_m}) and (curves.start_km * 1000 + curves.start_m > {start_km * 1000 + start_m}) and (curves.final_km * 1000 + curves.final_m > {start_km * 1000 + start_m}) and (curves.final_km * 1000 + curves.final_m < {final_km * 1000 + final_m})
+                            group by curves.id, stcurve.id, elcurve.id", commandType: CommandType.Text).ToList();
+                    case 1:
+                        return db.Query<ArtificialConstruction>($@"select bridges.* from apr_artificial_construction bridges
+                            inner join tpl_period bridgeperiod on bridgeperiod.id = bridges.period_id and '{date.ToString("dd-MM-yyyy")}' between bridgeperiod.start_date and bridgeperiod.final_date
+							inner join adm_track track on track.id = bridgeperiod.adm_track_id and track.id = {trackId} 
+                            where isbelong(bridges.km, bridges.meter, {start_km}, {start_m}, {final_km}, {final_m})
+                            and bridges.type_id = 1",
+                            commandType: CommandType.Text).ToList();
+                    case 2:
+                        return db.Query<Switch>($@"select switches.* from tpl_switch switches
+                            inner join tpl_period switchperiod on switchperiod.id = switches.period_id and '{date.ToString("dd-MM-yyyy")}' between switchperiod.start_date and switchperiod.final_date
+                            inner join adm_track track on track.id = switchperiod.adm_track_id and track.id = {trackId}
+                            where isbelong(switches.km, switches.meter, {start_km}, {start_m}, {final_km}, {final_m})",
+                            commandType: CommandType.Text).ToList();
+                    case 3:
+                        return db.Query<StationSection>($@"select section.*, station.name as Station from tpl_station_section section
+                            inner join adm_station station on station.id = section.station_id
+                            inner join tpl_period stationperiod on stationperiod.id = section.period_id and '{date.ToString("dd-MM-yyyy")}' between stationperiod.start_date and stationperiod.final_date
+                            inner join adm_track track on track.id = stationperiod.adm_track_id and track.id = {trackId}
+                            where (section.start_km * 1000 + section.start_m < {final_km * 1000 + final_m}) and (section.final_km * 1000 + section.final_m > {start_km * 1000 + start_m})",
+                            commandType: CommandType.Text).ToList();
+                    default:
+                        return null;
+                }
+            }
+        }
+
+        public object GetRdTables(MainParametersProcess process, int type_id)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                switch (type_id)
+                {
+                    case 0: //RdIrregularity
+                        return db.Query<RdIrregularity>($@"select irregularity.*, track.code as trackname, (direction.name || '(' || direction.code || ')') as Direction,
+                            is_artificial_construction(irregularity.track_id, '{process.Date_Vrem.ToString("dd-MM-yyyy")}', irregularity.km, irregularity.meter) as isbridge, is_station(irregularity.track_id, '{process.Date_Vrem.ToString("dd-MM-yyyy")}', irregularity.km, irregularity.meter) as isstation, is_switch(irregularity.track_id, '{process.Date_Vrem.ToString("dd-MM-yyyy")}', irregularity.km, irregularity.meter) as isswitch
+                            from rd_irregularity as irregularity
+                            inner join adm_track track on track.id = irregularity.track_id
+                            inner join adm_direction direction on direction.id = track.adm_direction_id
+                            where irregularity.process_id = {process.Id}", commandType: CommandType.Text).ToList();
+                    case 1: //RdProfile
+                        return db.Query<RdProfile>($@"select profile.*, track.code as Track, (direction.name || '(' || direction.code || ')') as Direction from rd_profile profile
+                            inner join adm_track track on track.id = profile.track_id
+                            inner join adm_direction direction on direction.id = track.adm_direction_id
+                            where profile.process_id = {process.Id}",
+                            commandType: CommandType.Text).ToList();
+                    case 2: //RdStatisticRoughnessImpulse
+                        return db.Query<RdStatisticRoughnessImpulse>(@"select impulse.*, track.code as Track, (direction.name || '(' || direction.code || ')') as Direction from rd_statistic_roughness_impulse impulse
+                            inner join adm_track track on track.id = impulse.track_id
+                            inner join adm_direction direction on direction.id = track.adm_direction_id
+                            inner join rd_process process on process.id = impulse.process_id
+                            where process.id = @mainProcessId", new { mainProcessId = process.Id }, commandType: CommandType.Text).ToList();
+                    case 3: //RdIntegralSurfaceRails
+                        return db.Query<RdIntegralSurfaceRails>(@"select impulse.*, track.code as Track, (direction.name || '(' || direction.code || ')') as Direction from rd_integral_surface_rails impulse
+                            inner join adm_track track on track.id = impulse.track_id
+                            inner join adm_direction direction on direction.id = track.adm_direction_id
+                            inner join rd_process process on process.id = impulse.process_id
+                            where process.id = @mainProcessId", new { mainProcessId = process.Id }, commandType: CommandType.Text).ToList();
+                    case 4: //RdStatistics
+                        return db.Query<RdStatistics>(@"select statistics.* from rd_statistics as statistics
+                            where statistics.process_id = @process_id",
+                            new { process_id = process.Id }, commandType: CommandType.Text).ToList();
+                    case 5: //RdEpure
+                        return db.Query<RdEpure>(@"select epure.* from rd_epure as epure
+                            where epure.process_id = @process_id and epure.track_id = @track_id",
+                            new { process_id = process.Id, track_id = process.TrackID }, commandType: CommandType.Text).ToList();
+                    case 6: //RdRailSlope
+                        return db.Query<RdRailSlope>($@"select slope.*, track.code as Track, (direction.name || '(' || direction.code || ')') as Direction, files.threat_id from rd_rail_slope as slope
+                            inner join trip_files files on files.id = slope.file_id
+                            inner join adm_track track on track.id = slope.track_id
+                            inner join adm_direction direction on direction.id = track.adm_direction_id
+                            where slope.process_id = {process.Id}",
+                            commandType: CommandType.Text).ToList();
+                    case 7: //RdSurfaceSlope
+                        return db.Query<RdSurfaceSlope>($@"select slope.*, track.code as Track, (direction.name || '(' || direction.code || ')') as Direction, files.threat_id from rd_surface_slope as slope
+                            inner join trip_files files on files.id = slope.file_id
+                            inner join adm_track track on track.id = slope.track_id
+                            inner join adm_direction direction on direction.id = track.adm_direction_id
+                            where slope.process_id = {process.Id}",
+                            commandType: CommandType.Text).ToList();
+                    case 8: //RdMovementThread
+                        return db.Query<RdMovementThread>($@"select movement.*, track.code as Track, (direction.name || '(' || direction.code || ')') as Direction, files.threat_id from rd_movement_thread as movement
+                            inner join trip_files files on files.id = movement.file_id
+                            inner join adm_track track on track.id = movement.track_id
+                            inner join adm_direction direction on direction.id = track.adm_direction_id
+                            where movement.process_id = {process.Id}",
+                            commandType: CommandType.Text).ToList();
+                    case 9: //RdCurve
+                        return db.Query<RDCurve>($@"select rdcurve.* from rd_curve as rdcurve
+                            where rdcurve.process_id = {process.Id}",
+                            commandType: CommandType.Text).ToList();
+                    default:
+                        return null;
+                }
+            }
+        }
+
+        public bool CleanTables(int type)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+
+                switch (type)
+                {
+                    case 0:
+                        return db.Execute(@"delete from station_possible_paths where true",
+                            new { type }, commandType: CommandType.Text) != 0;
+                    default:
+                        return false;
+                }
+            }
+        }
+
+        public List<Kilometer> GetKilometersByTripId(long trip_id)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                var maintrackrep = new MainTrackStructureRepository();
+                string sqltext = @"
+                select distinct direction.id as direction_id, concat(direction.name, '(', direction.code, ')') as direction_name, track.id as track_id,track.code as track_name, kilom.*,  bed.ball as point from kilometers as kilom
+                inner join adm_track as track on track.id = kilom.track_id
+                inner join adm_direction as direction on direction.id = track.adm_direction_id
+                left join bedemost as bed on bed.naprav = direction.name and kilom.number = bed.kmtrue
+                where kilom.trip_id = " + trip_id + $" order by direction.id, track.id, kilom.id";
+                var result = db.Query<Kilometer>(sqltext).ToList();
+                foreach (var kilomerter in result)
+                {
+                    kilomerter.LoadPasport(maintrackrep);
+                }
+                return result;
+            }
+        }
+
+        public bool GetButtonState(string name)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                string sqltext = @"
+                SELECT pressed
+	                FROM public.pp_diagram_button_state where name = '" + name + "'";
+                try
+                {
+                    return db.QueryFirst<bool>(sqltext);
+                }
+                catch
+                {
+                    db.Execute("INSERT INTO public.pp_diagram_button_state(name, pressed) VALUES(@bname, false) ", new { bname = name }, commandType: CommandType.Text);
+                }
+                return false;
+            }
+        }
+
+        public void SetButtonStatus(string name, bool status)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+
+                db.Execute(@"
+                UPDATE public.pp_diagram_button_state
+	            SET pressed=@state
+	            WHERE name = @bname", new { state = status, bname = name }, commandType: CommandType.Text);
+
+            }
+        }
+
+        public int InsertTrip(Trips trip)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+
+                var trip_id = db.QueryFirst<int>(@"
+                    INSERT INTO trips(
+                        direction_id, car, chief, travel_direction, car_position, start_station, final_station, trip_type, trip_date, 
+                        current, start_position, track_id, rail_profile, longitudinal_profile, short_irregularities, joint_gaps, georadar, 
+                        dimensions, beacon_marks, embankment, rail_temperature, geolocation, rail_video_monitoring, video_monitoring)
+
+                    VALUES(@direction_id, @car, @chief, @travel_direction, @car_position, @start_station, @final_station, @trip_type, @trip_date, 
+                        true, @start_position, @track_id, @rail_profile, @longitudinal_profile, @short_irregularities, @joint_gaps, @georadar, 
+                        @dimensions, @beacon_marks, @embankment, @rail_temperature, @geolocation, @rail_video_monitoring, @video_monitoring) RETURNING id", new
+                {
+                    direction_id = trip.Direction_id,
+                    car = trip.Car,
+                    chief = trip.Chief,
+                    travel_direction = (int)trip.Travel_Direction,
+                    car_position = (int)trip.Car_Position,
+                    start_station = trip.Start_station,
+                    final_station = trip.Final_station,
+                    trip_type = (int)trip.Trip_Type,
+                    trip_date = DateTime.Now,
+                    start_position = trip.Start_Position,
+                    track_id = trip.Track_Id,
+                    rail_profile = trip.Rail_Profile,
+                    longitudinal_profile = trip.Longitudinal_Profile,
+                    short_irregularities = trip.Short_Irregularities,
+                    joint_gaps = trip.Joint_Gaps,
+                    georadar = trip.Georadar,
+                    dimensions = trip.Dimensions,
+                    beacon_marks = trip.Beacon_Marks,
+                    embankment = trip.Embankment,
+                    rail_temperature = trip.Rail_Temperature,
+                    geolocation = trip.Geolocation,
+                    rail_video_monitoring = trip.Rail_Video_Monitoring,
+                    video_monitoring = trip.Video_Monitoring
+                }, commandType: CommandType.Text);
+
+                db.Execute(@"CREATE TABLE public.outdata_" + trip_id + @"
+                (
+                    id serial,
+                    speed smallint NOT NULL,
+                    km smallint ,
+                    meter smallint ,
+                    gauge real ,
+                    x101_kupe real ,
+                    x102_koridor real,
+                    y101_kupe real ,
+                    y102_koridor real,
+                    gauge_correction real,
+                    level real,
+                    level_correction real,
+                    stright_left real ,
+                    stright_right real ,
+                    stright_avg real ,
+                    stright_avg_70 real ,
+                    stright_avg_100 real ,
+                    stright_avg_120 real ,
+                    stright_avg_150 real,
+                    drawdown_left real ,
+                    drawdown_right real ,
+                    _meters integer ,
+                    level_avg real ,
+                    level_avg_70 real ,
+                    level_avg_100 real ,
+                    level_avg_120 real ,
+                    level_avg_150 real ,
+                    drawdown_avg real ,
+                    drawdown_avg_70 real ,
+                    drawdown_avg_100 real ,
+                    drawdown_avg_120 real ,
+                    drawdown_avg_150 real ,
+                    drawdown_left_SKO real ,
+                    drawdown_right_SKO real ,
+                    level_SKO real ,
+                    skewness_PXI real ,
+                    skewness_SKO real ,
+                    SSSP_before real ,
+                    SSSP_speed real ,
+                    latitude real ,
+                    longitude real ,
+                    heigth real ,
+                    level_zero real ,
+                    enc_on_meter_begin double precision,
+                    val01 real,
+                    val02 real,
+                    val03 real,
+                    val04 real,
+                    val05 real,
+                    val06 real,
+                    val07 real,
+                    val08 real,
+                    val09 real,
+                    val10 real,
+                    trip_id integer,
+                    rail_temp_kupe smallint,
+                    rail_temp_koridor smallint,
+                    ambient_temp smallint,
+                    accelerometer_y_axis real,
+                    correction smallint NOT NULL DEFAULT 0,
+                    CONSTRAINT outdata_" + trip_id + @"_fkey PRIMARY KEY (id),
+                    CONSTRAINT trip_" + trip_id + @"fkey FOREIGN KEY (trip_id)
+                        REFERENCES public.trips (id) MATCH SIMPLE
+                        ON UPDATE NO ACTION
+                        ON DELETE CASCADE
+                )
+                ");
+
+                foreach (var fragment in trip.Route)
+                {
+
+                    db.Execute(@"
+                        INSERT INTO public.fragments(
+	                        trip_id, adm_track_id, start_km, start_m, final_km, final_m, start_switch_id, final_switch_id, belong_id)
+	                        VALUES (@tripid, @admtrackid, @startkm, @startm, @finalkm, @finalm, @ssid, @fsid, @belong);", new
+                    {
+                        tripid = trip_id,
+                        admtrackid = fragment.Track_Id,
+                        startkm = fragment.Start_Km,
+                        startm = fragment.Start_M,
+                        finalkm = fragment.Final_Km,
+                        finalm = fragment.Final_M,
+                        ssid = fragment.Start_Switch_Id,
+                        fsid = fragment.Final_Switch_Id,
+                        belong = fragment.Belong_Id
+
+                    });
+                }
+                return trip_id;
+            }
+        }
+        public Trips GetCurrentTrip()
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+
+                string sqltext = @"
+                SELECT trip.*, direction.name as direction_name FROM trips as trip 
+                INNER JOIN adm_direction as direction on direction.id = trip.direction_id
+                WHERE
+                  --trip.id = 153   
+                current = true";
+
+
+
+
+
+
+
+
+                try
+                {
+                    return db.QueryFirst<Trips>(sqltext);
+                }
+                catch
+                {
+                    System.Console.WriteLine();
+                }
+                return null;
+
+            }
+        }
+
+        public void CloseTrip(long tripId)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+
+                db.Execute(@"
+                    UPDATE trips
+	                SET current=false
+	                WHERE id = @trip_id", new { trip_id = tripId }, commandType: CommandType.Text);
+            }
+        }
+
+        public List<Fragment> GetTripFragments(long trip_id)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                return db.Query<Fragment>(
+                    @"select fragments.*, fragments.adm_track_id as track_id from fragments 
+                        where trip_id = @tripid 
+                        order by id",
+                    new { tripid = trip_id }, commandType: CommandType.Text).ToList();
+            }
+        }
+        public List<MainParametersProcess> GetProcess(ReportPeriod period, long distanceId, ProcessType processType)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+
+                return db.Query<MainParametersProcess>(
+                    $@"select 
+                        distinct rdp.*, trip.car_position as carposition, dir.name as directionname, dir.code as DirectionCode, track.code as TrackName, distance.name as DistanceName, trip.travel_direction as direction, 
+                        coalesce(trip.chief, 'неизвестный') as chief,  coalesce(trip.car, 'неизвестный') as car, 
+                        coalesce(to_char(trip.trip_date, 'DD.MM.YYYY'), 'неизвестный') as trip_date 
+                    from rd_process as rdp
+                    LEFT JOIN trips as trip on trip.id = rdp.trip_id
+                    INNER join adm_direction as dir on dir.id = trip.direction_id
+                    inner join adm_track as track on track.adm_direction_id = dir.id
+                    inner join tpl_period as period on period.adm_track_id = track.id and period.mto_type = 0
+                        and period.start_date = (select max(start_date) from tpl_period where tpl_period.adm_track_id = track.id and tpl_period.mto_type = 0)
+                    inner join tpl_dist_section as section on section.period_id = period.id and section.adm_distance_id = {distanceId}
+                    inner join adm_distance as distance on distance.id = section.adm_distance_id
+                    where rdp.date_vrem between @startDate and @finishDate and (rdp.process_type = {(int)processType})",
+                    new { startDate = period.StartDate, finishDate = period.FinishDate }, commandType: CommandType.Text).ToList();
+
+
+            }
+        }
+        /// <summary>
+        /// Вернуть негодные скрепления:
+        /// - Д65 - отсутствие 2 или более основных костилей; (TODO - учет внутренную сторону рельса)
+        /// - ЖБР - остуствие гибкой клеммы
+        /// - КВ65 - отсутствие клеммы
+        /// - СКЛ - сломанная гибкая клемма
+        /// </summary>
+        /// <param name="tripId"></param>
+        /// <returns></returns>
+        public List<RailFastener> GetBadRailFasteners(long tripId, bool orderBySide)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+
+                var videoObjects = db.Query<VideoObject>(
+                    $@"SELECT distinct oid,fnum,concat(files.description, files.file_name) as filepath, km, pt, mtr, rvo.fileid, threat_id as threat,  
+                    (max(x) - min(x)) as x, (max(y) - min(y)) as y  FROM public.rd_video_objects as rvo
+                    inner join trip_files as files on files.id = rvo.fileid
+                    where oid = {(int)VideoObjectType.D65_MissingSpike} 
+                    group by fnum, km, pt, mtr, fileid, filepath, threat_id, oid
+                    Having count(fnum)=2 and (max(x) - min(x)) < 100 and (max(y) - min(y)) < 10
+                    union all
+                    Select  distinct oid, fnum, concat(files1.description, files1.file_name) as filepath, km, pt, mtr, rvo1.fileid, threat_id as threat, x, y
+                    FROM public.rd_video_objects as rvo1
+                    inner join trip_files as files1 on files1.id = rvo1.fileid
+                    where rvo1.oid in ({(int)VideoObjectType.KB65_MissingClamp}, {(int)VideoObjectType.GBR_MissinfArcClamp}, {(int)VideoObjectType.SKL_Broken}) " +
+                    (orderBySide ? "  order by fileid, km, pt, mtr" : " order by km, pt, mtr, fileid")).ToList();
+                var result = new List<RailFastener>();
+                foreach (var videoObject in videoObjects)
+                {
+                    var serialized = JsonConvert.SerializeObject(videoObject);
+                    RailFastener fastener = null;
+                    switch ((VideoObjectType)videoObject.Oid)
+                    {
+                        case VideoObjectType.D65_MissingSpike:
+                            fastener = JsonConvert.DeserializeObject<D65>(serialized);
+                            fastener.AddDigression(new Digression() { DigName = DigressionName.Missing2OrMoreMainSpikes });
+
+                            break;
+                        case VideoObjectType.GBR_MissinfArcClamp:
+                            fastener = JsonConvert.DeserializeObject<GBR>(serialized);
+                            fastener.AddDigression(new Digression() { DigName = DigressionName.MissingArsClamp });
+                            break;
+                        case VideoObjectType.KB65_MissingClamp:
+                            fastener = JsonConvert.DeserializeObject<KB65>(serialized);
+                            fastener.AddDigression(new Digression() { DigName = DigressionName.MissingClamp });
+                            break;
+                        case VideoObjectType.SKL_Broken:
+                            fastener = JsonConvert.DeserializeObject<SKL>(serialized);
+                            fastener.AddDigression(new Digression() { DigName = DigressionName.BrokenArsClamp });
+                            break;
+                        default:
+                            break;
+                    }
+                    result.Add(fastener);
+                }
+                return result;
+            }
+        }
+
+        public List<Sleepers> GetSleepers()
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+
+                var videoObjects = db.Query<VideoObject>($@"select rvo.oid, concat(files.description, files.file_name) as filepath, realcoord.km as km, realcoord.mtr as mtr, realcoord.mm as mm,
+                    rvo.fileid, files.threat_id as threat
+                    from rd_video_objects rvo
+                    inner join trip_files files on files.id = rvo.fileid
+                    inner join trips on trips.id = rvo.trip_id
+                    inner join getrealcoords_videoobjects(rvo.km, rvo.pt, rvo.mtr, rvo.x, rvo.mm, files.coef_camera, trips.travel_direction) as realcoord on true
+                    where oid in ({(int)VideoObjectType.GBR}, {(int)VideoObjectType.kpp}, {(int)VideoObjectType.SKL}, {(int)VideoObjectType.D65}, {(int)VideoObjectType.KD65}, {(int)VideoObjectType.KB65}, {(int)VideoObjectType.NKPPO1}, {(int)VideoObjectType.GBR_MissinfArcClamp}, {(int)VideoObjectType.WKPPO2})
+                    group by realcoord.km, realcoord.mtr, realcoord.mm, rvo.fileid, filepath, threat, rvo.oid
+                    order by realcoord.km, realcoord.mtr, realcoord.mm, rvo.fileid").ToList();
+                var result = new List<Sleepers>();
+                foreach (var videoObject in videoObjects)
+                {
+                    result.Add(new Sleepers {
+                        Km = videoObject.Km,
+                        Mtr = videoObject.Mtr,
+                        Mm = videoObject.Mm,
+                        Threat = videoObject.Threat
+                    });
+                }
+                return result;
+            }
+        }
+		
+		public CurveParams GetCurveParams(long curveId)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+
+                return db.Query<CurveParams>(@"select coalesce(btype.name, 'нет данных') as fastening, coalesce(ctype.name, 'нет данных') as brace from apr_curve curve
+                    inner join tpl_period cperiod on cperiod.id = curve.period_id
+                    left join tpl_period bperiod on bperiod.adm_track_id = cperiod.adm_track_id
+                    left join apr_rails_braces braces on braces.period_id = bperiod.id and isbelong(curve.start_km, curve.start_m, braces.start_km, braces.start_m, braces.final_km, braces.final_m) and isbelong(curve.final_km, curve.final_m, braces.start_km, braces.start_m, braces.final_km, braces.final_m)
+                    left join cat_brace_type btype on btype.id = braces.brace_type_id
+                    left join apr_crosstie crosstie on crosstie.period_id = bperiod.id and isbelong(curve.start_km, curve.start_m, crosstie.start_km, crosstie.start_m, crosstie.final_km, crosstie.final_m) and isbelong(curve.final_km, curve.final_m, crosstie.start_km, crosstie.start_m, crosstie.final_km, crosstie.final_m)
+                    left join cat_crosstie_type ctype on ctype.id = crosstie.crosstie_type_id
+                    where curve.id = @curveId", new { curveId }, commandType: CommandType.Text).FirstOrDefault();
+            }
+        }
+
+        public SiteInfo GetSiteInfo(long trackId, int startKm, int finalKm)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+
+                return db.Query<SiteInfo>(@"select coalesce(station.name, 'Неизвестный') as StationStart, coalesce(station2.name, 'Неизвестный') as StationFinal, (stationSection.axis_km - @start_km) as st1, (stationSection2.axis_km - @final_km) as st2
+                    from adm_track track
+                    inner join tpl_period stationPeriod on stationPeriod.adm_track_id = track.id 
+                    left join tpl_station_section stationSection on stationSection.period_id = stationPeriod.id and (stationSection.axis_km - @start_km) < 1
+                    left join adm_station station on station.id = stationSection.station_id 
+                    left join tpl_station_section stationSection2 on stationSection2.period_id = stationPeriod.id and (stationSection2.axis_km - @final_km) > -1
+                    left join adm_station station2 on station2.id = stationSection2.station_id
+                    where track.id=@track_id order by track.id, st1, st2 limit 1", new { track_id = trackId, start_km = startKm, final_km = finalKm }, commandType: CommandType.Text).FirstOrDefault();
+            }
+        }
+
+        public List<AdmTrack> GetTracksOnTrip(long tripId)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+
+                return db.Query<AdmTrack>($@"select track.*, False as Accept, coalesce(track.adm_direction_id, -1) as Parent_id from adm_track track
+                    inner join trips on trips.id = {tripId}
+                    inner join adm_direction direction on direction.id = track.adm_direction_id and direction.id = trips.direction_id
+                    order by track.code", commandType: CommandType.Text).ToList();
+            }
+        }
+
+        public List<Trips> GetTripsOnDistance(long distanceId, ReportPeriod period)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+
+                return db.Query<Trips>($@"select trips.*, (direction.name || ' (' || direction.code || ')') as direction from trips
+                    inner join adm_direction direction on direction.id = trips.direction_id
+                    inner join adm_track track on track.adm_direction_id = direction.id
+                    inner join tpl_period dperiod on dperiod.adm_track_id = track.id
+                    inner join tpl_dist_section dsection on dsection.period_id = dperiod.id
+                    where dsection.adm_distance_id = {distanceId} and trips.trip_date between '{period.StartDate.ToString("dd-MM-yyyy")}' and '{period.FinishDate.ToString("dd-MM-yyyy")}'
+                    group by trips.id, direction.id
+                    order by trips.trip_date", commandType: CommandType.Text).ToList();
+            }
+        }
+
+        public List<Curve> GetCurvesAsTripElems(long trackId, DateTime date, int start_km, int start_m, int final_km, int final_m)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+
+                return db.Query<Curve>($@"select curve.*, side.name as side from apr_curve curve
+                    inner join cat_side side on side.id = curve.side_id
+                    inner join tpl_period cperiod on cperiod.id = curve.period_id and ('{date.ToString("dd-MM-yyyy")}' between cperiod.start_date and cperiod.final_date)
+                    inner join adm_track track on track.id = cperiod.adm_track_id and track.id = {trackId}
+                    where (curve.start_km * 1000 + curve.start_m between {start_km * 1000 + start_m} and {final_km * 1000 + final_m})
+                        and (curve.final_km * 1000 + curve.final_m between {start_km * 1000 + start_m} and {final_km * 1000 + final_m})
+                    order by curve.start_km * 1000 + curve.start_m, curve.final_km * 1000 + curve.final_m", commandType: CommandType.Text).ToList();
+            }
+        }
+
+        public object GetTripSections(long trackId, DateTime date, int type)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+
+                switch (type)
+                {
+                    case MainTrackStructureConst.MtoLongRails:
+                        return db.Query<LongRails>($@"select longrails.* from apr_long_rails longrails
+                            inner join tpl_period lperiod on lperiod.id = longrails.period_id and '{date.ToString("dd-MM-yyyy")}' between lperiod.start_date and lperiod.final_date
+                            inner join cat_longrails catrails on catrails.id = longrails.type_id and catrails.id = 3
+                            where lperiod.adm_track_id = {trackId}",
+                            commandType: CommandType.Text).ToList();
+                    default:
+                        return null;
+                }
+            }
+        }
+
+        public object GetTripSections(long trackId, DateTime date, int start_km, int start_m, int final_km, int final_m, int type)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+
+                switch (type)
+                {
+                    case MainTrackStructureConst.MtoRailsBrace:
+                        return db.Query<RailsBrace>($@"select braces.*, btype.name as brace_type from apr_rails_braces braces
+                            inner join cat_brace_type btype on btype.id = braces.brace_type_id
+                            inner join tpl_period speriod on speriod.id = braces.period_id and '{date.ToString("dd-MM-yyyy")}' between speriod.start_date and speriod.final_date
+                            inner join adm_track track on track.id = speriod.adm_track_id and track.id = {trackId}
+                            where (braces.start_km * 1000 + braces.start_m < {final_km * 1000 + final_m}) and (braces.final_km * 1000 + braces.final_m > {start_km * 1000 + start_m})",
+                            commandType: CommandType.Text).ToList();
+                    case MainTrackStructureConst.MtoRailSection:
+                        return db.Query<RailsSections>($@"select rsection.*, rtype.name as type from apr_rails_sections rsection
+                            inner join cat_rails_type rtype on rtype.id = rsection.type_id
+                            inner join tpl_period speriod on speriod.id = rsection.period_id and '{date.ToString("dd-MM-yyyy")}' between speriod.start_date and speriod.final_date
+                            inner join adm_track track on track.id = speriod.adm_track_id and track.id = {trackId}
+                            where (rsection.start_km * 1000 + rsection.start_m < {final_km * 1000 + final_m}) and (rsection.final_km * 1000 + rsection.final_m > {start_km * 1000 + start_m})",
+                            commandType: CommandType.Text).ToList();
+                    case MainTrackStructureConst.MtoSpeed:
+                        return db.Query<Speed>($@"select speed.* from apr_speed speed
+                            inner join tpl_period speriod on speriod.id = speed.period_id and '{date.ToString("dd-MM-yyyy")}' between speriod.start_date and speriod.final_date
+                            inner join adm_track track on track.id = speriod.adm_track_id and track.id = {trackId}
+                            where (speed.start_km * 1000 + speed.start_m < {final_km * 1000 + final_m}) and (speed.final_km * 1000 + speed.final_m > {start_km * 1000 + start_m})",
+                            commandType: CommandType.Text).ToList();
+                    case MainTrackStructureConst.MtoCurve:
+                        return db.Query<Curve>($@"select curve.*, max(stcurve.radius) as maxradius from apr_curve curve
+                            inner join apr_stcurve stcurve on stcurve.curve_id = curve.id
+                            inner join tpl_period speriod on speriod.id = curve.period_id and '{date.ToString("dd-MM-yyyy")}' between speriod.start_date and speriod.final_date
+                            inner join adm_track track on track.id = speriod.adm_track_id and track.id = {trackId}
+                            where (curve.start_km * 1000 + curve.start_m < {final_km * 1000 + final_m}) and (curve.final_km * 1000 + curve.final_m > {start_km * 1000 + start_m})
+                            group by curve.id, stcurve.id",
+                            commandType: CommandType.Text).ToList();
+                    default:
+                        return null;
+                }
+            }
+        }
+
+        public Trips GetTrip(long trip_id)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                return db.Query<Trips>($@"select * from trips
+                    where trips.id = {trip_id}", commandType: CommandType.Text).First();
+            }
+        }
+
+        public List<OutData>
+            GetNextOutDatas(int meter, int count, long trip_id)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                return db.Query<OutData>($@"select * from outdata_{trip_id} where id > {meter}  order by id limit {count}").ToList();
+                //return db.Query<OutData>($@"select * from outdata_49_20200625_201801 where id > {meter}  order by id limit {count}").ToList();
+            }
+        }
+
+        public int GetDistanceBetweenCoordinates(int start_km, int start_m, int final_km, int final_m, long track_id, DateTime trip_date)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                return db.QueryFirst<int>($@"select * from getDistanceFrom({start_km},{start_m},{final_km}, {final_m}, {track_id}, {trip_date}");
+            }
+
+        }
+        public ReportTemplate GetReportTemplate(string className)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                var result = db.QueryFirst<ReportTemplate>($"Select * from CAT_REPORT_TEMPLATE where classname = '{className}'");
+                return result;
+            }
+        }
+
+        public void ClearBedemost(long trip_id)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                db.Execute($"Delete from s3 where trip_id = '{trip_id}'");
+                db.Execute($"Delete from bedemost where trip_id = '{trip_id}'");
+
+            }
+        }
+        public List<Trips> GetTrips(int count = 10)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                return db.Query<Trips>($@"select trips.*, start_st.name  as Start_station_name, final_st.name as Final_station_name from trips 
+                    inner join adm_station as start_st on start_st.id = start_station
+                    inner join adm_station as final_st on final_st.id = final_station order by trip_date desc limit {count}", commandType: CommandType.Text).ToList();
+            }
+        }
+        public int InsertKilometer(Kilometer km)
+        {
+
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (km._Meters.Count == 0)
+                    return -1;
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                try
+                {
+                    return db.Execute($@"
+                    Delete from kilometers where track_id = {km.Track_id} and num = {km.Number};
+                    INSERT INTO kilometers(trip_id, direction_id, length, track_id, passage_time, start, final, start_index, final_index, num)
+	                VALUES (@Trip_id, @Direction_id, @Length, @Track_Id, @Ptime, @Start_m, @Final_m, @Si, @Fi,@Num)",
+                    new { Trip_Id = km.Trip_id, Direction_id = km.Direction_id, Length = km.GetLength(), Track_Id = km.Track_id, Ptime = km.Passage_time,
+                        Start_m = km.Start_m, Final_m = km.Final_m, Si = km._Meters[0], Fi = km._Meters[km._Meters.Count - 1], Num = km.Number
+                    }
+
+                    );
+                }
+                catch (Exception e)
+                {
+                    System.Console.WriteLine(e.Message);
+                    return -1;
+                }
+
+            }
+        }
+
+        public List<DigressionMark> GetDigressionMarks(long trip_id, int km, long track_id, int[] type)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                
+                    return db.Query<DigressionMark>($@"
+                    SELECT
+	                    s3.km,
+                        s3.ots as digname,
+	                    s3.meter,
+	                    s3.typ AS DEGREE,
+	                    s3.len AS LENGTH,
+	                    s3.otkl AS VALUE,
+	                    s3.kol AS COUNT,
+	                    replace(concat ( s3.ovp, '/', s3.ogp ), '-1', '-') AS LimitSpeed 
+                    FROM
+	                    s3 
+                    WHERE
+	                    trip_id = {trip_id} and s3.typ in ({string.Join(",", type)}) and s3.km = {km}
+                    ORDER BY
+	                    s3.km,
+	                    s3.meter"
+
+                    ).ToList();
+            }
+        }
+
+        public List<Gap> GetGaps(long tripId, GapSource source, int km)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                string sql ="";
+                switch (source)
+                {
+                    case GapSource.Laser:
+                        sql = $"select * from surfacegap_153 where km={km}";
+                        break;
+                    default:
+                        break;
+
+                }
+                return db.Query<Gap>(sql, commandType: CommandType.Text).ToList();
+            }
+        }
+    }
+    
+}

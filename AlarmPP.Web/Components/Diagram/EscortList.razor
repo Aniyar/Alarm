@@ -1,0 +1,33 @@
+﻿@inject Services.AppData AppData
+@inject IMatToaster Toaster
+<div style="@Style">
+    <AlarmButton Text="Сопровождающие" Symbol="" Tooltip="Добавить" OnClick="_=>dialogIsOpen=true"></AlarmButton>
+    <br />
+    @if (AppData.Trip.Escort != null) {
+        foreach (var escort in AppData.Trip.Escort) {
+        <p class="margin-1">
+            <MatTextField ReadOnly="true" @bind-Value="escort.Distance_Name" Label="ПЧ"></MatTextField>
+            <MatTextField ReadOnly="true" @bind-Value="escort.FullName" Label="Сопровождающий"></MatTextField>
+        </p>
+        }
+        }
+    <MatDialog @bind-IsOpen="@dialogIsOpen">
+        <MatDialogTitle>Сопровождающий</MatDialogTitle>
+        <MatDialogContent>
+            <MatSelect Label="ПЧ" TValue="long" Value="newEscort.Distance_Id" ValueChanged="@((long distance_id) => { newEscort.Distance_Id = distance_id; newEscort.Distance_Name = AppData.Trip.Distances.FindLast(distance => distance.Id == newEscort.Distance_Id).Name; })" Style="background-color:white;">
+            @if (AppData.Trip.Distances != null)
+                foreach (var distance in AppData.Trip.Distances)
+                {
+                    <MatOption Value="@distance.Id">@distance.Name</MatOption>
+                }
+            </MatSelect>
+           <MatTextField Label="ФИО" @bind-Value="@newEscort.FullName"></MatTextField>
+
+
+        </MatDialogContent>
+        <MatDialogActions>
+            <MatButton OnClick="@(e => { dialogIsOpen = false; })">Отмена</MatButton>
+            <MatButton OnClick="@AddEscort">OK</MatButton>
+        </MatDialogActions>
+    </MatDialog>
+</div>

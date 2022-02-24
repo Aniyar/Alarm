@@ -1,0 +1,10 @@
+﻿@inject IJSRuntime JSRuntime
+@if (Gap != null)
+{
+    <text>
+        <rect style="@CursorStyle" x="@Width" y="@Gap.Start" width="@Width" height="@Gap.Length" fill="yellow" fill-opacity="0.2" stroke="yellow" stroke-dasharray="2,2"  stroke-width="1" @onmousemove="OnMouseMove" />
+        <rect x="@XPosition" y="@LabelY" width="20" height="@RuleHeaderHeight" fill="gold"></rect>
+        <polygon points="@(Width * 2 - (RuleHeaderWidth + 10)),@(LabelY + 8) @(Width * 2 - RuleHeaderWidth),@LabelY @(Width * 2 - RuleHeaderWidth),@(LabelY + RuleHeaderHeight)" fill="gold" />
+        <text x="@(Width*2-RuleHeaderWidth)" y="@(LabelY+12)" font-size="10">@Gap.Length</text>
+    </text>
+}

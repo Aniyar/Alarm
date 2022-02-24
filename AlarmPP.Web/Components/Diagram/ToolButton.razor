@@ -1,0 +1,6 @@
+﻿@inject Services.AppData AppData
+<MatTooltip Tooltip="@Tooltip" Wrap="true">
+    <MatFAB Mini="true" Style="border-radius:10%;box-shadow:none;" OnClick="@(_ => SetShowStatus(@ShowButton))">
+        <i class="demo-icon @IconClass" style="@(Pressed ? AppData.PressedButtonState : "")">&#@IconCode;</i>
+    </MatFAB>
+</MatTooltip>

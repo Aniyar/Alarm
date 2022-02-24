@@ -1,0 +1,119 @@
+﻿using ALARm.Core.Report;
+using System;
+using System.Collections.Generic;
+
+namespace ALARm.Core
+{
+    public class VideoObject
+    {
+        public Int64 Id { get; set; }
+        public int Oid { get; set; }
+        public int Fnum { get; set; }
+        public int Km { get; set; }
+        public int Pt { get; set; }
+        public int Mtr { get; set; }
+        public int X { get; set; }
+        public int Y { get; set; }
+        public int W { get; set; }
+        public int H { get; set; }
+        public int Prb { get; set; }
+        public long Ms { get; set; }
+        public Int64 Tripid { get; set; }
+        public Int64 Fileid { get; set; }
+        public String FilePath { get; set; }
+        public Threat Threat { get; set; }
+        public int[,] Frame { get; set; }
+        public string Objname { get; set; }
+        public string StationName { get; set; }
+        public string PdbName { get; set; }
+        public string Name { get; set; }
+        public string Speed { get; set; }
+    }
+    public enum VideoObjectType
+    {
+
+        CWWI = 0,
+        ati,
+        bolt_M24,
+        //отсутсвие упругой клеммы
+        GBR_MissinfArcClamp = 17,
+        BM24OUT2,
+        D65,
+        kpp,
+        KD65,
+        //отсутствие костылей
+        D65_MissingSpike = 9,
+        KB65,
+        LSO,
+        //сломана упругая клемма
+        SKL_Broken = 28,
+        IzoStyk,
+        //отсутствие клеммы
+        KB65_MissingClamp = 13,
+        bnro,
+        no_bolt_M24
+    }
+    public class VideoObjectCount : VideoObject
+    {
+        public long Count { get; set; }
+    }
+
+    public class TripFiles
+    {
+        public long Id { get; set; }
+        public string Description { get; set; }
+        public string File_name { get; set; }
+        public long Trip_id { get; set; }
+        public int Threat_id { get; set; }
+        public int Type_id { get; set; }
+        public bool Checked_Status { get; set; }
+    }
+
+    public class Trips
+    {
+        public string Direction_Name { get; set; }
+
+        public long Id { get; set; }
+        public DateTime Trip_date { get; set; }
+        public long Direction_id { get; set; } = -1;
+        public bool Checked_Status { get; set; }
+        public string Car { get; set; }
+        public string Chief { get; set; }
+        public string Start_station_name { get; set; }
+        public string Final_station_name { get; set; }
+        public long Start_station { get; set; } = -1;
+        public long Final_station { get; set; } = -1;
+        public Direction Travel_Direction { get; set; }
+        public TripType Trip_Type { get; set; }
+        public CarPosition Car_Position { get; set; }
+        public double Start_Position { get; set; }
+        public long Track_Id { get; set; } = -1;
+        public bool Longitudinal_Profile { get; set; } = true;
+        public bool Short_Irregularities { get; set; } = true;
+        public bool Joint_Gaps { get; set; } = true;
+        public bool Georadar { get; set; } = false;
+        public bool Rail_Profile { get; set; } = true;
+        public bool Dimensions { get; set; } = false;
+        public bool Beacon_Marks { get; set; } = true;
+        public bool Embankment { get; set; } = false;
+        public bool Rail_Temperature { get; set; } = true;
+        public bool Geolocation { get; set; } = true;
+        public bool Rail_Video_Monitoring { get; set; } = true;
+        public bool Video_Monitoring { get; set; } = true;
+        public int Start_Km { get; set; }
+        public int Start_M { get; set; }
+        public List<Fragment> Route;
+        public string ShortInfrom { get {
+                return $"{Start_station_name}-{Final_station_name} {Trip_date.ToString("dd.MM.yyyy hh:mm")}";
+            } }
+
+    }
+
+    public class RdClasses
+    {
+        public int Id { get; set; }
+        public int Class_id { get; set; }
+        public string Description { get; set; }
+        public string Obj_name { get; set; }
+    }
+}

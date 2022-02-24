@@ -1,0 +1,190 @@
+﻿@page "/diagram"
+@using AlarmPP.Web.Components.Diagram
+@inject Services.AppData AppData
+
+
+<MatThemeProvider Theme="@MainTheme">
+    <MatAppBarContainer Style="height:100%;">
+        <MatAppBar Fixed="false" Style="height:42px;">
+            <MatAppBarRow>
+                <MatAppBarSection Style="height:42px;">
+
+                    <MatTooltip Tooltip="Настройки" Wrap="true">
+                        <MatFAB Mini="true" Style="border-radius:10%;box-shadow:none;">
+                            <i class="demo-icon icon-dg-settings">&#xf1de;</i>
+                        </MatFAB>
+                    </MatTooltip>
+                    @if (AppData.WorkMode == AlarmPP.Web.Services.WorkMode.Postprocessing)
+                    {
+                        <MatTooltip Tooltip="Отметить позицию" Wrap="true">
+
+                            <MatFAB Mini="true" @onclick="OnDropMenuClick" Style="border-radius:10%;box-shadow:none;">
+                                <i class="demo-icon icon-dg-check">&#xe805;</i>
+                            </MatFAB>
+                            <MatMenu @ref="dropMenu" TargetForwardRef="@dropMenuRef">
+                                <MatList>
+                                    <MatListItem>
+                                        <MatCheckbox @bind-Value="@selectRegion" Label="Отметить позицию"></MatCheckbox>
+                                    </MatListItem>
+                                    <MatListItem>
+                                        <MatCheckbox @bind-Value="@selectRect" Label="Отметить область"></MatCheckbox>
+                                    </MatListItem>
+                                </MatList>
+                            </MatMenu>
+                        </MatTooltip>
+                        <MatTooltip Tooltip="Перейти к..." Wrap="true">
+                            <MatFAB Mini="true" Style="border-radius:10%;box-shadow:none;">
+                                <i class="demo-icon icon-dg-goto5">&#xe81c;</i>
+                            </MatFAB>
+                        </MatTooltip>
+                        <span>|</span>
+                        <MatTooltip Tooltip="Печать" Wrap="true">
+
+                            <MatFAB Mini="true" @onclick="OnPrintMenuClick" Style="border-radius:10%;box-shadow:none;">
+                                <i class="demo-icon icon-dg-printer5">&#xe81d;</i>
+                            </MatFAB>
+                            <MatMenu @ref="printMenu" TargetForwardRef="@printMenuRef">
+                                <MatList>
+                                    <MatListItem OnClick="PrintCurrentKm">
+                                        Печать дубликата графической диаграммы
+                                    </MatListItem>
+                                    <MatListItem OnClick="PrintRegion">
+                                        Печать участка графической диаграммы
+                                    </MatListItem>
+                                </MatList>
+                            </MatMenu>
+                        </MatTooltip>
+                    }
+                    <MatTooltip Tooltip="Фильтры отображения отступлений" Wrap="true">
+                        <MatFAB Mini="true" @onclick="OnDigFilterMenuClick" Style="border-radius:10%;box-shadow:none;">
+                            <i class="demo-icon icon-dg-dig-filter" style="@(AppData.DigressionChecked ? AppData.PressedButtonState : "")">&#xe808;</i>
+                        </MatFAB>
+                        <MatMenu @ref="digFilterMenu" TargetForwardRef="@digFilterMenuRef">
+                            <MatList>
+                                <MatListItem OnClick="(_ => SetShowStatus(Services.ShowButtons.DangerousDigression))">
+                                    <MatCheckbox Value="@AppData.ShowDangerousDigressions" Label="Опасные отступления" Style="color: red; width: 100%;" ValueChanged="@((bool value) => SetShowStatus(Services.ShowButtons.DangerousDigression))"></MatCheckbox>
+                                </MatListItem>
+
+                                @*<MatListItem OnClick="(_ => SetShowStatus(Services.ShowButtons.DangerousForEmtyWagon))">
+            <MatCheckbox Value="@AppData.ShowDangerousForEmtyWagon" Label="Опасные для порожных вагонов" Style="color:hotpink;width:100%;" ValueChanged="@((bool value) => SetShowStatus(Services.ShowButtons.DangerousForEmtyWagon))"></MatCheckbox>
+        </MatListItem>*@
+
+                                <MatListItem OnClick="(_ => SetShowStatus(Services.ShowButtons.CloseToDangerous))">
+                                    <MatCheckbox Value="@AppData.ShowCloseToDangerous" Label="Отступления близкие к опасным" Style="color: red; width: 100%;" ValueChanged="@((bool value) => SetShowStatus(Services.ShowButtons.CloseToDangerous))"></MatCheckbox>
+                                </MatListItem>
+                                <MatListItem OnClick="(_ => SetShowStatus(Services.ShowButtons.ThirdDegreeDigressions))">
+                                    <MatCheckbox Value="@AppData.Show3DegreeDigressions" Label="Отступления 3 степени" Style="color: red; width: 100%;" ValueChanged="@((bool value) => SetShowStatus(Services.ShowButtons.ThirdDegreeDigressions))"></MatCheckbox>
+                                </MatListItem>
+
+                                <MatListItem OnClick="(_ => SetShowStatus(Services.ShowButtons.SecondDegreeDigression))">
+                                    <MatCheckbox Value="@AppData.Show2DegreeDigressions" Label="Отступления 2 степени" Style="color: red; width: 100%;" ValueChanged="@((bool value) => SetShowStatus(Services.ShowButtons.SecondDegreeDigression))"></MatCheckbox>
+                                </MatListItem>
+                                <MatListItem OnClick="(_ => SetShowStatus(Services.ShowButtons.FirstDegreeDigression))">
+                                    <MatCheckbox Value="@AppData.Show1DegreeDigressions" Label="Отступления 1 степени" Style="color: red; width: 100%;" ValueChanged="@((bool value) => SetShowStatus(Services.ShowButtons.FirstDegreeDigression))"></MatCheckbox>
+                                </MatListItem>
+                                @* ////.........новые кнопки*@
+                                <MatListItem OnClick="(_ => SetShowStatus(Services.ShowButtons.OthersDigressions))">
+                                    <MatCheckbox Value="@AppData.ShowOthersDigressions" Label="Прочие" Style="color:grey; width:100%;" ValueChanged="@((bool value) => SetShowStatus(Services.ShowButtons.OthersDigressions))"></MatCheckbox>
+                                </MatListItem>
+                                <MatListItem OnClick="(_ => SetShowStatus(Services.ShowButtons.ExcludedOnSwitch))">
+                                    <MatCheckbox Value="@AppData.ShowExcludedOnSwitch" Label="Исключенные на стрелке" Style="color:black; width:100%;" ValueChanged="@((bool value) => SetShowStatus(Services.ShowButtons.ExcludedOnSwitch))"></MatCheckbox>
+                                </MatListItem>
+                                @* ////.........*@
+                                <MatListItem OnClick="(_ => SetShowStatus(Services.ShowButtons.ExcludedByOerator))">
+                                    <MatCheckbox Value="@AppData.ShowExcludedByOerator" Label="Исключеннные оператором" Style="color:orange; width:100%;" ValueChanged="@((bool value) => SetShowStatus(Services.ShowButtons.ExcludedByOerator))"></MatCheckbox>
+                                </MatListItem>
+                                @* ////.........*@
+                                <MatListItem OnClick="(_ => SetShowStatus(Services.ShowButtons.Gaps))">
+                                    <MatCheckbox Value="@AppData.ShowGaps" Label="Стыковые зазоры" Style="color:blue; width:100%;" ValueChanged="@((bool value) => SetShowStatus(Services.ShowButtons.Gaps))"></MatCheckbox>
+                                </MatListItem>
+                                <MatListItem OnClick="(_ => SetShowStatus(Services.ShowButtons.GapCloseToDangerous))">
+                                    <MatCheckbox Value="@AppData.ShowGapsCloseToDangerous" Label="Стыковые зазоры, близкие к опасным" Style="color: red; width: 100%;" ValueChanged="@((bool value) => SetShowStatus(Services.ShowButtons.GapCloseToDangerous))"></MatCheckbox>
+                                </MatListItem>
+                                <MatListItem OnClick="(_ => SetShowStatus(Services.ShowButtons.Bolts))">
+                                    <MatCheckbox Value="@AppData.ShowBolts" Label="Болты" Style="color: blue; width: 100%;" ValueChanged="@((bool value) => SetShowStatus(Services.ShowButtons.Bolts))"></MatCheckbox>
+                                </MatListItem>
+                                @* ////.........новые кнопки*@
+                                <MatListItem OnClick="(_ => SetShowStatus(Services.ShowButtons.Fasteners))">
+                                    <MatCheckbox Value="@AppData.ShowFasteners" Label="Скрепления" Style="color: blue; width: 100%;" ValueChanged="@((bool value) => SetShowStatus(Services.ShowButtons.Fasteners))"></MatCheckbox>
+                                </MatListItem>
+                                <MatListItem OnClick="(_ => SetShowStatus(Services.ShowButtons.PerShpals))">
+                                    <MatCheckbox Value="@AppData.ShowPerShpals" Label="Перпендикулярные шпалы" Style="color: blue; width: 100%;" ValueChanged="@((bool value) => SetShowStatus(Services.ShowButtons.PerShpals))"></MatCheckbox>
+                                </MatListItem>
+                                <MatListItem OnClick="(_ => SetShowStatus(Services.ShowButtons.DefShpals))">
+                                    <MatCheckbox Value="@AppData.ShowDefShpals" Label="Деффектные шпалы" Style="color: blue; width: 100%;" ValueChanged="@((bool value) => SetShowStatus(Services.ShowButtons.DefShpals))"></MatCheckbox>
+                                </MatListItem>
+                                @* ////.........*@
+                            </MatList>
+                        </MatMenu>
+                    </MatTooltip>
+
+                    <MatTooltip Tooltip="Сигналы" Wrap="true">
+                        <MatFAB Mini="true" Style="border-radius:10%;box-shadow:none;" OnClick="@(_ => SetShowStatus(Services.ShowButtons.Signal))">
+                            <i class="demo-icon icon-dg-signal" style="@(AppData.ShowSignals ? AppData.PressedButtonState : "")">&#xe806;</i>
+                        </MatFAB>
+                    </MatTooltip>
+                    <MatTooltip Tooltip="Отступления" Wrap="true">
+                        <MatFAB Mini="true" Style="border-radius:10%;box-shadow:none;" OnClick="@(_ => SetShowStatus(Services.ShowButtons.Digression))">
+                            <i class="demo-icon icon-dg-digressions" style="@(AppData.ShowDigressions ? AppData.PressedButtonState : "")">&#xe807;</i>
+                        </MatFAB>
+                    </MatTooltip>
+                    <MatTooltip Tooltip="Нулевые линии" Wrap="true">
+                        <MatFAB Mini="true" Style="border-radius:10%;box-shadow:none;" OnClick="@(_ => SetShowStatus(Services.ShowButtons.ZeroLines))">
+                            <i class="demo-icon icon-chart-line" style="@(AppData.ShowZeroLines ? AppData.PressedButtonState : "")">&#xe81b;</i>
+                        </MatFAB>
+                    </MatTooltip>
+                    <MatTooltip Tooltip="Паспортные данные" Wrap="true">
+                        <MatFAB Mini="true" Style="border-radius:10%;box-shadow:none;" OnClick="@(_ => SetShowStatus(Services.ShowButtons.Pasport))">
+                            <i class="demo-icon icon-dgdatabase1" style="@(AppData.ShowPasport ? AppData.PressedButtonState : "")">&#xe800;</i>
+                        </MatFAB>
+                    </MatTooltip>
+                    <MatTooltip Tooltip="Основные параметры" Wrap="true">
+                        <MatFAB Mini="true" Style="border-radius:10%;box-shadow:none;" OnClick="@(_ => SetShowStatus(Services.ShowButtons.MainParams))">
+                            <i class="demo-icon icon-dg-main-param" style="@(AppData.ShowMainParams ? AppData.PressedButtonState : "")">&#xe80d;</i>
+                        </MatFAB>
+                    </MatTooltip>
+                    <MatTooltip Tooltip="События" Wrap="true">
+                        <MatFAB Mini="true" Style="border-radius:10%;box-shadow:none;" OnClick="@(_ => SetShowStatus(Services.ShowButtons.Event))">
+                            <i class="demo-icon icon-dg-tags" style="@(AppData.ShowEvents ? AppData.PressedButtonState : "")">&#xe803;</i>
+                        </MatFAB>
+                    </MatTooltip>
+                    <MatTooltip Tooltip="Стыки" Wrap="true">
+                        <MatFAB Mini="true" Style="border-radius:10%;box-shadow:none;" OnClick="@(_ => SetShowStatus(Services.ShowButtons.Joints))">
+                            <i class="demo-icon icon-dg-joint" style="@(AppData.ShowJoints ? AppData.PressedButtonState : "")">&#xe812;</i>
+                        </MatFAB>
+                    </MatTooltip>
+                 
+                    <MatTooltip Tooltip="Поперечный профиль рельса" Wrap="true">
+                        <MatFAB Mini="true" Style="border-radius:10%;box-shadow:none;" OnClick="@(_ => SetShowStatus(Services.ShowButtons.RailProfile))">
+                            <i class="demo-icon icon-dg-rail-profile" style="@(AppData.ShowRailProfile ? AppData.PressedButtonState : "")">&#xe813;</i>
+                        </MatFAB>
+                    </MatTooltip>
+
+
+                </MatAppBarSection>
+
+
+
+
+            </MatAppBarRow>
+            <MatAppBar Style="top:70px; height:0px; ">
+                <MatAppBarSection>
+                    <MatFAB Mini="true" Style="height:0px;"></MatFAB>
+                    <MatFAB Mini="true" RefBack="@dropMenuRef" Style="height:0px;"></MatFAB>
+                    <MatFAB Mini="true" Style="height:0px;"></MatFAB>
+                    <MatFAB Mini="true" RefBack="@printMenuRef" Style="height:0px;"></MatFAB>
+                    <MatFAB Mini="true" RefBack="@digFilterMenuRef" Style="height:0px;"></MatFAB>
+                </MatAppBarSection>
+            </MatAppBar>
+        </MatAppBar>
+
+        <MatAppBarContent Style="height:100%;">
+            <TrackPanel @ref="TrackPanel" Kilometers="@Kilometers"></TrackPanel>
+            <TripChooserDialog Theme="@MainTheme"  Kilometers="@Kilometers" OnlineModeStarted="_=>Refresh()"></TripChooserDialog>
+            
+            
+            
+        </MatAppBarContent>
+    </MatAppBarContainer>
+</MatThemeProvider>
+

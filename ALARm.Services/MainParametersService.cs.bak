@@ -1,0 +1,39 @@
+﻿using ALARm.Core;
+using ALARm.DataAccess;
+using Autofac;
+
+namespace ALARm.Services
+{
+    public class MainParametersService
+    {
+        static IContainer _container;
+        static MainParametersService()
+        {
+            var builder = new ContainerBuilder();
+            builder.RegisterType<MainParametersRepository>().As<IMainParametersRepository>();
+            _container = builder.Build();
+        }
+        public static MainParameters GetMainParameters(int kilometer) {
+            return _container.Resolve<IMainParametersRepository>().GetMainParameters(kilometer);
+        }
+
+        public static ShortRoughness GetAppParameters(int km)
+        {
+            return _container.Resolve<IMainParametersRepository>().GetAppParameters(km);
+        }
+		public static MainParameters GetMainParametersSKO(int kilometer)
+        {
+            return _container.Resolve<IMainParametersRepository>().GetMainParametersSKO(kilometer);
+        }
+
+        public static MainParameters DevPlan(int kilometer)
+        {
+            return _container.Resolve<IMainParametersRepository>().DevPlan(kilometer);
+        }
+
+        public static MainParameters GetMainParametersSKOvedom(int kilometer)
+        {
+            return _container.Resolve<IMainParametersRepository>().GetMainParametersSKOvedom(kilometer);
+        }
+    }
+}

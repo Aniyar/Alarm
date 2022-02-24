@@ -1,0 +1,802 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{7AEA55D2-1E74-4C6C-BE4D-19CD7F592FE6}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>ALARm</RootNamespace>
+    <AssemblyName>ALARMBase</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>19.13.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Accord, Version=3.8.2.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Accord.3.8.2-alpha\lib\net462\Accord.dll</HintPath>
+    </Reference>
+    <Reference Include="Accord.Imaging, Version=3.8.2.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Accord.Imaging.3.8.2-alpha\lib\net462\Accord.Imaging.dll</HintPath>
+    </Reference>
+    <Reference Include="Accord.Math, Version=3.8.2.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Accord.Math.3.8.2-alpha\lib\net462\Accord.Math.dll</HintPath>
+    </Reference>
+    <Reference Include="Accord.Math.Core, Version=3.8.2.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Accord.Math.3.8.2-alpha\lib\net462\Accord.Math.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Accord.Statistics, Version=3.8.2.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Accord.Statistics.3.8.2-alpha\lib\net462\Accord.Statistics.dll</HintPath>
+    </Reference>
+    <Reference Include="AutoMapper, Version=8.0.0.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoMapper.8.0.0\lib\net461\AutoMapper.dll</HintPath>
+    </Reference>
+    <Reference Include="Dapper, Version=1.50.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dapper.1.50.5\lib\net451\Dapper.dll</HintPath>
+    </Reference>
+    <Reference Include="MetroFramework, Version=1.4.0.0, Culture=neutral, PublicKeyToken=5f91a84759bf584a, processorArchitecture=MSIL">
+      <HintPath>..\packages\MetroModernUI.1.4.0.0\lib\net\MetroFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="MetroFramework.Design, Version=1.4.0.0, Culture=neutral, PublicKeyToken=5f91a84759bf584a, processorArchitecture=MSIL">
+      <HintPath>..\packages\MetroModernUI.1.4.0.0\lib\net\MetroFramework.Design.dll</HintPath>
+    </Reference>
+    <Reference Include="MetroFramework.Fonts, Version=1.4.0.0, Culture=neutral, PublicKeyToken=5f91a84759bf584a, processorArchitecture=MSIL">
+      <HintPath>..\packages\MetroModernUI.1.4.0.0\lib\net\MetroFramework.Fonts.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.6.0.0-preview.5.21301.5\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Bcl.HashCode, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.HashCode.1.1.1\lib\net461\Microsoft.Bcl.HashCode.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Configuration, Version=6.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Configuration.6.0.0-preview.5.21301.5\lib\net461\Microsoft.Extensions.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Configuration.Abstractions, Version=6.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Configuration.Abstractions.6.0.0-preview.5.21301.5\lib\net461\Microsoft.Extensions.Configuration.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Configuration.FileExtensions, Version=6.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Configuration.FileExtensions.6.0.0-preview.5.21301.5\lib\net461\Microsoft.Extensions.Configuration.FileExtensions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Configuration.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Configuration.Json.6.0.0-preview.5.21301.5\lib\net461\Microsoft.Extensions.Configuration.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.FileProviders.Abstractions, Version=6.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.FileProviders.Abstractions.6.0.0-preview.5.21301.5\lib\net461\Microsoft.Extensions.FileProviders.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.FileProviders.Physical, Version=6.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.FileProviders.Physical.6.0.0-preview.5.21301.5\lib\net461\Microsoft.Extensions.FileProviders.Physical.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.FileSystemGlobbing, Version=6.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.FileSystemGlobbing.6.0.0-preview.5.21301.5\lib\net461\Microsoft.Extensions.FileSystemGlobbing.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Primitives, Version=6.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Primitives.6.0.0-preview.5.21301.5\lib\net461\Microsoft.Extensions.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="Npgsql, Version=6.0.0.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Npgsql.6.0.0-preview5\lib\netstandard2.0\Npgsql.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Collections.Immutable, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Collections.Immutable.5.0.0\lib\net461\System.Collections.Immutable.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Configuration.ConfigurationManager, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Configuration.ConfigurationManager.6.0.0-preview.5.21301.5\lib\net461\System.Configuration.ConfigurationManager.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.OracleClient" />
+    <Reference Include="System.IO, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.4.3.0\lib\net462\System.IO.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.4.3.0\lib\net462\System.Runtime.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.0.0-preview.5.21301.5\lib\net45\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security" />
+    <Reference Include="System.Security.AccessControl, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.AccessControl.6.0.0-preview.5.21301.5\lib\net461\System.Security.AccessControl.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Algorithms, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.Algorithms.4.3.1\lib\net463\System.Security.Cryptography.Algorithms.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Encoding, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.Encoding.4.3.0\lib\net46\System.Security.Cryptography.Encoding.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Primitives, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.Primitives.4.3.0\lib\net46\System.Security.Cryptography.Primitives.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Permissions, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Permissions.6.0.0-preview.5.21301.5\lib\net461\System.Security.Permissions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Principal.Windows, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Principal.Windows.6.0.0-preview.5.21301.5\lib\net461\System.Security.Principal.Windows.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Text.Encodings.Web, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Encodings.Web.6.0.0-preview.5.21301.5\lib\net461\System.Text.Encodings.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Json.6.0.0-preview.5.21301.5\lib\net461\System.Text.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Channels, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Channels.5.0.0\lib\net461\System.Threading.Channels.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="websocket-sharp, Version=1.0.1.0, Culture=neutral, PublicKeyToken=5660b08a1845a91e, processorArchitecture=MSIL">
+      <HintPath>..\packages\WebSocketSharp-netstandard.1.0.1\lib\net45\websocket-sharp.dll</HintPath>
+    </Reference>
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\ALARm.Core\Report\CurveCard\Transition.cs">
+      <Link>Transition.cs</Link>
+    </Compile>
+    <Compile Include="controls\AdmListBox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="controls\AdmListBox.Designer.cs">
+      <DependentUpon>AdmListBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\AdmUnitControls.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="controls\AdmUnitControls.Designer.cs">
+      <DependentUpon>AdmUnitControls.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\DimensionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="controls\DimensionForm.Designer.cs">
+      <DependentUpon>DimensionForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\ExportForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="controls\ExportForm.Designer.cs">
+      <DependentUpon>ExportForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\ImportAndExport.cs" />
+    <Compile Include="controls\ImportForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="controls\ImportForm.Designer.cs">
+      <DependentUpon>ImportForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\AdmUnitForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="controls\AdmUnitForm.Designer.cs">
+      <DependentUpon>AdmUnitForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\ArtificialConstructionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="controls\ArtificialConstructionForm.Designer.cs">
+      <DependentUpon>ArtificialConstructionForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\CatalogListBox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="controls\CatalogListBox.Designer.cs">
+      <DependentUpon>CatalogListBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\DistanceBetweenTracksForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="controls\DistanceBetweenTracksForm.Designer.cs">
+      <DependentUpon>DistanceBetweenTracksForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\DefectsEarthForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="controls\DefectsEarthForm.Designer.cs">
+      <DependentUpon>DefectsEarthForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\CommunicationForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="controls\CommunicationForm.Designer.cs">
+      <DependentUpon>CommunicationForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\CheckSectionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="controls\CheckSectionForm.Designer.cs">
+      <DependentUpon>CheckSectionForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\CoordinateGNSSForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="controls\CoordinateGNSSForm.Designer.cs">
+      <DependentUpon>CoordinateGNSSForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\StCurveForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="controls\StCurveForm.Designer.cs">
+      <DependentUpon>StCurveForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\MainParametersProcessPeriod.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="controls\MainParametersProcessPeriod.Designer.cs">
+      <DependentUpon>MainParametersProcessPeriod.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\ProfmarksForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="controls\ProfmarksForm.Designer.cs">
+      <DependentUpon>ProfmarksForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\RfidForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="controls\RfidForm.Designer.cs">
+      <DependentUpon>RfidForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\RefPointForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="controls\RefPointForm.Designer.cs">
+      <DependentUpon>RefPointForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\RepairProjectForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="controls\RepairProjectForm.Designer.cs">
+      <DependentUpon>RepairProjectForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\SwitchListBox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="controls\SwitchListBox.Designer.cs">
+      <DependentUpon>SwitchListBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\DeepForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="controls\DeepForm.Designer.cs">
+      <DependentUpon>DeepForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\BallastForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="controls\BallastForm.Designer.cs">
+      <DependentUpon>BallastForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\WaycatForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="controls\WaycatForm.Designer.cs">
+      <DependentUpon>WaycatForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\TrafficForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="controls\TrafficForm.Designer.cs">
+      <DependentUpon>TrafficForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\CoordControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="controls\CoordControl.Designer.cs">
+      <DependentUpon>CoordControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\CrosstieForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="controls\CrosstieForm.Designer.cs">
+      <DependentUpon>CrosstieForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\CurveForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="controls\CurveForm.Designer.cs">
+      <DependentUpon>CurveForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\DistSectionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="controls\DistSectionForm.Designer.cs">
+      <DependentUpon>DistSectionForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\ElCurveForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="controls\ElCurveForm.Designer.cs">
+      <DependentUpon>ElCurveForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\LongRailsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="controls\LongRailsForm.Designer.cs">
+      <DependentUpon>LongRailsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\ElevationForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="controls\ElevationForm.Designer.cs">
+      <DependentUpon>ElevationForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\MessageHelper.cs" />
+    <Compile Include="controls\NonExistsKm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="controls\NonExistsKm.Designer.cs">
+      <DependentUpon>NonExistsKm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\NonstandardKms.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="controls\NonstandardKms.Designer.cs">
+      <DependentUpon>NonstandardKms.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\NormaWidthForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="controls\NormaWidthForm.Designer.cs">
+      <DependentUpon>NormaWidthForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\PdbForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="controls\PdbForm.Designer.cs">
+      <DependentUpon>PdbForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\PeriodForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="controls\PeriodForm.Designer.cs">
+      <DependentUpon>PeriodForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\PeriodControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="controls\PeriodControl.Designer.cs">
+      <DependentUpon>PeriodControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\PeriodGenerateDirListForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="controls\PeriodGenerateDirListForm.Designer.cs">
+      <DependentUpon>PeriodGenerateDirListForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\ProfileObjectForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="controls\ProfileObjectForm.Designer.cs">
+      <DependentUpon>ProfileObjectForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\RailsSectionsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="controls\RailsSectionsForm.Designer.cs">
+      <DependentUpon>RailsSectionsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\RailsBraceForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="controls\RailsBraceForm.Designer.cs">
+      <DependentUpon>RailsBraceForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\SpeedForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="controls\SpeedForm.Designer.cs">
+      <DependentUpon>SpeedForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\StationControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="controls\StationControl.Designer.cs">
+      <DependentUpon>StationControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\StationSectionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="controls\StationSectionForm.Designer.cs">
+      <DependentUpon>StationSectionForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\StraighteningThreadForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="controls\StraighteningThreadForm.Designer.cs">
+      <DependentUpon>StraighteningThreadForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\SwitchForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="controls\SwitchForm.Designer.cs">
+      <DependentUpon>SwitchForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\ChamJointForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="controls\ChamJointForm.Designer.cs">
+      <DependentUpon>ChamJointForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\TrackClass.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="controls\TrackClass.Designer.cs">
+      <DependentUpon>TrackClass.cs</DependentUpon>
+    </Compile>
+    <Compile Include="controls\MetroSpinEdit.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="controls\MetroSpinEdit.Designer.cs">
+      <DependentUpon>MetroSpinEdit.cs</DependentUpon>
+    </Compile>
+    <Compile Include="EntityState.cs" />
+    <Compile Include="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MainForm1.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MainForm.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="alerts.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>alerts.resx</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="controls\AdmListBox.resx">
+      <DependentUpon>AdmListBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\AdmUnitControls.resx">
+      <DependentUpon>AdmUnitControls.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\DimensionForm.resx">
+      <DependentUpon>DimensionForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\ExportForm.resx">
+      <DependentUpon>ExportForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\ImportForm.resx">
+      <DependentUpon>ImportForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\AdmUnitForm.resx">
+      <DependentUpon>AdmUnitForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\ArtificialConstructionForm.resx">
+      <DependentUpon>ArtificialConstructionForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\CatalogListBox.resx">
+      <DependentUpon>CatalogListBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\DistanceBetweenTracksForm.resx">
+      <DependentUpon>DistanceBetweenTracksForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\DefectsEarthForm.resx">
+      <DependentUpon>DefectsEarthForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\CommunicationForm.resx">
+      <DependentUpon>CommunicationForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\CheckSectionForm.resx">
+      <DependentUpon>CheckSectionForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\CoordinateGNSSForm.resx">
+      <DependentUpon>CoordinateGNSSForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\StCurveForm.resx">
+      <DependentUpon>StCurveForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\MainParametersProcessPeriod.resx">
+      <DependentUpon>MainParametersProcessPeriod.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\ProfmarksForm.resx">
+      <DependentUpon>ProfmarksForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\RfidForm.resx">
+      <DependentUpon>RfidForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\RefPointForm.resx">
+      <DependentUpon>RefPointForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\RepairProjectForm.resx">
+      <DependentUpon>RepairProjectForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\SwitchListBox.resx">
+      <DependentUpon>SwitchListBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\DeepForm.resx">
+      <DependentUpon>DeepForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\BallastForm.resx">
+      <DependentUpon>BallastForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\WaycatForm.resx">
+      <DependentUpon>WaycatForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\TrafficForm.resx">
+      <DependentUpon>TrafficForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\CoordControl.resx">
+      <DependentUpon>CoordControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\CrosstieForm.resx">
+      <DependentUpon>CrosstieForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\CurveForm.resx">
+      <DependentUpon>CurveForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\DistSectionForm.resx">
+      <DependentUpon>DistSectionForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\ElCurveForm.resx">
+      <DependentUpon>ElCurveForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\LongRailsForm.resx">
+      <DependentUpon>LongRailsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\ElevationForm.resx">
+      <DependentUpon>ElevationForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\NonExistsKm.resx">
+      <DependentUpon>NonExistsKm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\NonstandardKms.resx">
+      <DependentUpon>NonstandardKms.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\NormaWidthForm.resx">
+      <DependentUpon>NormaWidthForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\PdbForm.resx">
+      <DependentUpon>PdbForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\PeriodControl.resx">
+      <DependentUpon>PeriodControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\PeriodForm.resx">
+      <DependentUpon>PeriodForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\PeriodGenerateDirListForm.resx">
+      <DependentUpon>PeriodGenerateDirListForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\ProfileObjectForm.resx">
+      <DependentUpon>ProfileObjectForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\RailsSectionsForm.resx">
+      <DependentUpon>RailsSectionsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\RailsBraceForm.resx">
+      <DependentUpon>RailsBraceForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\SpeedForm.resx">
+      <DependentUpon>SpeedForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\StationControl.resx">
+      <DependentUpon>StationControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\StationSectionForm.resx">
+      <DependentUpon>StationSectionForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\StraighteningThreadForm.resx">
+      <DependentUpon>StraighteningThreadForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\SwitchForm.resx">
+      <DependentUpon>SwitchForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\ChamJointForm.resx">
+      <DependentUpon>ChamJointForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\TrackClass.resx">
+      <DependentUpon>TrackClass.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\MetroSpinEdit.resx">
+      <DependentUpon>MetroSpinEdit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>MainForm1.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <EmbeddedResource Include="alerts.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>alerts.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="packages.config" />
+    <None Include="Properties\DataSources\AdmRoad.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.AdmUnit.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.ArtificialConstruction.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.BallastType.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.Catalog.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.ChamJoint.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.CheckSection.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.Communication.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.CoordinateGNSS.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.CrossTie.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.Curve.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.Deep.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.DefectsEarth.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.Dimension.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.DistanceBetweenTracks.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.DistSection.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.ElCurve.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.Elevation.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.Fragments.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.LongRails.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.MtoTraffic.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.NonExtKm.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.NonstandardKm.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.NormaWidth.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.PdbSection.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.Period.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.ProfileObject.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.Profmarks.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.RailsBrace.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.RailsSections.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.RefPoint.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.RepairProject.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.Rfid.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.Speed.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.Station.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.StationSection.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.StCurve.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.StraighteningThread.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.Switch.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.TempSpeed.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.TrackClass.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.Trips.datasource" />
+    <None Include="Properties\DataSources\ALARm.Core.Waycat.datasource" />
+    <None Include="Properties\DataSources\ALARMBase.AdmRoad.datasource" />
+    <None Include="Properties\DataSources\ALARMBase.AdmUnit.datasource" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.6.1 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\add.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\remove.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="19.13.ico" />
+    <None Include="Resources\loupe.bmp" />
+    <Content Include="Resources\select.bmp" />
+    <None Include="Resources\edit.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ALARm.Core\ALARm.Core.csproj">
+      <Project>{d3ddf3c2-d4b0-4747-893f-feb0018e4635}</Project>
+      <Name>ALARm.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ALARm.Services\ALARm.Services.csproj">
+      <Project>{dbaf0c4f-958a-4495-bf63-16ed2121918b}</Project>
+      <Name>ALARm.Services</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\Accord.3.8.2-alpha\build\Accord.targets" Condition="Exists('..\packages\Accord.3.8.2-alpha\build\Accord.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>Данный проект ссылается на пакеты NuGet, отсутствующие на этом компьютере. Используйте восстановление пакетов NuGet, чтобы скачать их.  Дополнительную информацию см. по адресу: http://go.microsoft.com/fwlink/?LinkID=322105. Отсутствует следующий файл: {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Accord.3.8.2-alpha\build\Accord.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Accord.3.8.2-alpha\build\Accord.targets'))" />
+  </Target>
+</Project>

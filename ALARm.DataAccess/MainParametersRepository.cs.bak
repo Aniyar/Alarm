@@ -1,0 +1,805 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using ALARm.Core;
+using ALARm.DataAccess.Properties;
+
+namespace ALARm.DataAccess
+{
+    public class MainParametersRepository : IMainParametersRepository
+    {
+		public MainParameters DevPlan(int kilometer)
+        {
+            var result = new MainParameters();
+            string line;
+            //чтение измерительных данных
+            using (var file = new StreamReader("D:/work_shifrovka/new/km_" + kilometer.ToString() + ".svgpdat", Encoding.GetEncoding(1251)))
+            {
+
+                string start = file.ReadLine();
+                string final = file.ReadLine();
+
+                line = file.ReadLine();
+                result.Car = new CarParameters { ChiefName = line, CurrentPosition = CarPosition.Base  };
+                file.ReadLine();
+                line = file.ReadLine();
+                result.TrackNumber = line != null && line.Length <= 3 ? line : line != null && line.Equals(Resources.even) ? "2" : "1";
+                line = file.ReadLine();
+                result.TravelDirection = line != null && line.Equals(Resources.reverse) ? Direction.Reverse : Direction.Direct;
+                result.Direction = result.TravelDirection == Direction.Direct ? start + "-" + final : final + "-" + start;
+                line = file.ReadLine();
+                //result.TravelDate = DateTime.ParseExact(line, "dd.mm.yyyy", System.Globalization.CultureInfo.InvariantCulture);
+                result.TravelDate = DateTime.Parse(line);
+                result.Car.CarNumber = file.ReadLine();
+                file.ReadLine();
+                result.KilometrNumber = int.Parse(file.ReadLine() ?? throw new InvalidOperationException());
+                result.KilometrNumber = kilometer;
+                while ((line = file.ReadLine()) != null) result.ParseDevPlan(line);
+
+                if (result.Strl.Count() != 0)
+                {
+                    result.NerovPlana.Add(result.Strl.Average() - result.Strr.Average());
+                    //result.Strl.Clear();
+                }
+                if (result.Strr.Count() != 0)
+                {
+                    result.Krivizna.Add((result.Strl.Average() + result.Strr.Average()) / 2);
+                    //result.Strr.Clear();
+                }
+            }
+            return result;
+        }
+        public MainParameters GetMainParametersSKO(int kilometer)
+        {
+            var result = new MainParameters();
+            string line;
+            //чтение измерительных данных
+            using (var file = new StreamReader("D:/work_shifrovka/new/km_" + kilometer.ToString() + ".svgpdat", Encoding.GetEncoding(1251)))
+            {
+                string start = file.ReadLine();
+                string final = file.ReadLine();
+
+                line = file.ReadLine();
+                result.Car = new CarParameters { ChiefName = line, CurrentPosition = CarPosition.Base };
+                file.ReadLine();
+                line = file.ReadLine();
+                result.TrackNumber = line != null && line.Length <= 3 ? line : line != null && line.Equals(Resources.even) ? "2" : "1";
+                line = file.ReadLine();
+                result.TravelDirection = line != null && line.Equals(Resources.reverse) ? Direction.Reverse : Direction.Direct;
+                result.Direction = result.TravelDirection == Direction.Direct ? start + "-" + final : final + "-" + start;
+                line = file.ReadLine();
+                //result.TravelDate = DateTime.ParseExact(line, "dd.mm.yyyy", System.Globalization.CultureInfo.InvariantCulture);
+                result.TravelDate = DateTime.Parse(line);
+                result.Car.CarNumber = file.ReadLine();
+                file.ReadLine();
+                result.KilometrNumber = int.Parse(file.ReadLine() ?? throw new InvalidOperationException());
+                result.KilometrNumber = kilometer;
+                while ((line = file.ReadLine()) != null) result.ParseSKO(line);
+
+                if (result.CCCPspeedBYpiketGARB.Count() != 0)
+                {
+                    result.CCCPspeedBYpiket.Add(result.CCCPspeedBYpiketGARB.Average());
+                    result.CCCPspeedBYpiketGARB.Clear();
+                }
+
+                if (result.Strl.Count() != 0)
+                {
+                    result.StraighteningLeft.Add(result.Strl.Average());
+                    result.Strl.Clear();
+                }
+                if (result.Strr.Count() != 0)
+                {
+                    result.StraighteningRigth.Add(result.Strr.Average());
+                    result.Strr.Clear();
+                }
+                if (result.LVL.Count() != 0)
+                {
+                    result.LevelNew.Add(result.LVL.Average());
+                    result.LVL.Clear();
+                }
+                if (result.DrL.Count() != 0)
+                {
+                    result.DrawdownLeft.Add(result.DrL.Average());
+                    result.DrL.Clear();
+                }
+                if (result.DrR.Count() != 0)
+                {
+                    result.DrawdoownRigth.Add(result.DrR.Average());
+                    result.DrR.Clear();
+                }
+                if (result.TrW.Count() != 0)
+                {
+                    result.TrackWidth.Add(result.TrW.Average());
+                    result.TrW.Clear();
+                }
+            }
+
+
+            //чтение паспортных данных
+            foreach (var unused in result.Meters)
+            {
+                double straighteningZero = 0;
+                double levelZero = 0;
+                result.GaugeNorm.Add(1520);
+                result.ZeroGauge.Add(1520);
+                result.ZeroStraightening.Add(straighteningZero);
+                result.ZeroLevel.Add(levelZero);
+                result.StraighteningSide.Add(1);
+            }
+
+            var mainTrackRepository = new MainTrackStructureRepository();
+            result.Curves = mainTrackRepository.GetMtoObjectsByCoord(result.TravelDate, result.KilometrNumber,
+                MainTrackStructureConst.MtoCurve, result.Direction, result.TrackNumber) as List<Curve>;
+            result.CrossTies = mainTrackRepository.GetMtoObjectsByCoord(result.TravelDate, result.KilometrNumber,
+                MainTrackStructureConst.MtoCrossTie, result.Direction, result.TrackNumber) as List<CrossTie>;
+            result.ArtificialConstructions = mainTrackRepository.GetMtoObjectsByCoord(result.TravelDate,
+                result.KilometrNumber, MainTrackStructureConst.MtoArtificialConstruction, result.Direction,
+                result.TrackNumber) as List<ArtificialConstruction>;
+            var prevKm = mainTrackRepository.GetMtoObjectsByCoord(result.TravelDate, result.KilometrNumber - 1,
+                MainTrackStructureConst.MtoNonStandard, result.Direction, result.TrackNumber) as List<NonstandardKm>;
+            var currentKm = mainTrackRepository.GetMtoObjectsByCoord(result.TravelDate, result.KilometrNumber,
+                MainTrackStructureConst.MtoNonStandard, result.Direction, result.TrackNumber) as List<NonstandardKm>;
+
+            var straighteningThreads = mainTrackRepository.GetMtoObjectsByCoord(result.TravelDate,
+                result.KilometrNumber, MainTrackStructureConst.MtoStraighteningThread, result.Direction,
+                result.TrackNumber) as List<StraighteningThread>;
+
+
+            //рихтовочная нить
+            foreach (var thread in straighteningThreads)
+            {
+                var x1 = 0;
+                var x2 = 1000;
+                if (thread.Start_Km == result.KilometrNumber)
+                    x1 = thread.Start_M;
+                if (thread.Final_Km == result.KilometrNumber)
+                    x2 = thread.Final_M;
+
+                for (var meter = x1; meter <= x2; meter++)
+                {
+                    var index = result.Meters.IndexOf(meter);
+                    result.StraighteningSide[index] = thread.Side_Id * (int)result.TravelDirection;
+                }
+            }
+            /*
+            //кривые участки
+            foreach (var curve in result.Curves)
+            {
+                curve.Radiuses =
+                    (mainTrackRepository.GetMtoObjects(curve.Id, MainTrackStructureConst.MtoElCurve) as List<ElCurve>)
+                    .OrderBy(radius => radius.Start_M).ToList();
+
+                double straighteningZero = 0;
+                double levelZero = 0;
+
+
+                //радиусы
+                foreach (var elCurve in curve.Radiuses)
+                {
+                    var x2 = elCurve.Lvl_start_km == result.KilometrNumber ? elCurve.Lvl_start_m : 1;
+
+                    double straighteningY2 = 17860 / elCurve.Radius * result.GetStraighteningAverageDirect(x2);
+                    double levelY2 = elCurve.Lvl * result.GetStraighteningAverageDirect(x2);
+
+                    var x1 = elCurve.Start_M;
+
+                    var index = result.Meters.IndexOf(x1);
+                    if (index < 0)
+                    {
+                        x1 = result.TravelDirection == Direction.Direct
+                            ? result.Meters[0]
+                            : result.Meters[result.Meters.Count - 1];
+                        index = result.Meters.IndexOf(x1);
+                    }
+                    var straighteningY1 = result.ZeroStraightening[index] * result.GetStraighteningAverageDirect(x1);
+                    var levelY1 = result.ZeroLevel[index] * result.GetStraighteningAverageDirect(x1);
+
+                    if (elCurve.Start_Km < result.KilometrNumber)
+                    {
+                        x1 = 1;
+                        var prevLength = prevKm.Count <= 0 ? 1000 : prevKm[0].Len;
+                        straighteningY1 = GetY(x1, elCurve.Start_M - prevLength, x2, 0, straighteningY2);
+                        levelY1 = GetY(x1, elCurve.Start_M - prevLength, x2, 0, levelY2);
+                    }
+
+                    if (elCurve.Lvl_start_km < result.KilometrNumber)
+                    {
+                        x2 = elCurve.Lvl_final_m;
+                        straighteningY1 = straighteningY2;
+                        levelY1 = levelY2;
+                    }
+
+                    if (elCurve.Lvl_final_km == result.KilometrNumber)
+
+                        for (var meter = x1; meter <= x2; meter++)
+                        {
+                            index = result.Meters.IndexOf(meter);
+                            result.ZeroStraightening[index] =
+                                GetY(meter, x1, x2, straighteningY1, straighteningY2) + straighteningZero;
+                            result.ZeroLevel[index] = GetY(meter, x1, x2, levelY1, levelY2) + levelZero;
+                            result.StraighteningSide[index] = result.ZeroStraightening[index] > 0 ? 1 : -1;
+                        }
+
+                    x2 = elCurve.Final_M;
+                    x1 = elCurve.Lvl_final_m;
+                    straighteningY1 = straighteningY2;
+                    levelY1 = levelY2;
+                    int final_m = elCurve.Final_M;
+                    index = result.Meters.IndexOf(elCurve.Final_M);
+                    if (index < 0)
+                    {
+                        final_m = result.TravelDirection == Direction.Reverse
+                            ? result.Meters[0]
+                            : result.Meters[result.Meters.Count - 1];
+                        index = result.Meters.IndexOf(final_m);
+                    }
+                    straighteningY2 = result.ZeroStraightening[index] *
+                                       result.GetStraighteningAverageDirect(final_m);
+                    levelY2 = result.ZeroLevel[index] * result.GetStraighteningAverageDirect(final_m);
+
+                    if (elCurve.Lvl_start_km > result.KilometrNumber)
+                    {
+                        x1 = elCurve.Start_M;
+                        index = result.Meters.IndexOf(x1);
+                        straighteningY1 = result.ZeroStraightening[index];
+                        levelY1 = result.ZeroLevel[index];
+
+                        var currentLength = !currentKm.Any() ? 1000 : currentKm[0].Len;
+                        x2 = currentLength;
+                        straighteningY2 = 17860 / elCurve.Radius * result.GetStraighteningAverageDirect(x2);
+                        straighteningY2 = GetY(x2, x1, currentLength + elCurve.Lvl_final_m, straighteningY1,
+                            straighteningY2);
+
+                        levelY2 = elCurve.Lvl * result.GetStraighteningAverageDirect(x2);
+                        levelY2 = GetY(x2, x1, currentLength + elCurve.Lvl_final_m, levelY1, levelY2);
+                    }
+
+                    if (elCurve.Final_Km > elCurve.Lvl_final_km)
+                    {
+                        x1 = elCurve.Lvl_final_m;
+                        straighteningY1 = 17860 / elCurve.Radius * result.GetStraighteningAverageDirect(x1);
+                        levelY1 = elCurve.Lvl * result.GetStraighteningAverageDirect(x1);
+
+                        var currentLength = !currentKm.Any() ? 1000 : currentKm[0].Len;
+                        x2 = currentLength;
+
+                        straighteningY2 = GetY(x2, x1, currentLength + elCurve.Final_M, straighteningY1, 0);
+                        levelY2 = GetY(x2, x1, currentLength + elCurve.Final_M, levelY1, 0);
+                    }
+
+
+                    for (var meter = x1; meter <= x2; meter++)
+                    {
+                        index = result.Meters.IndexOf(meter);
+                        if (index > -1)
+                        {
+                            result.ZeroStraightening[index] =
+                                GetY(meter, x1, x2, straighteningY1, straighteningY2) + straighteningZero;
+                            result.ZeroLevel[index] = GetY(meter, x1, x2, levelY1, levelY2) + levelZero;
+                            result.StraighteningSide[index] = result.ZeroStraightening[index] > 0 ? 1 : -1;
+                        }
+                    }
+
+
+                    if (elCurve.Lvl_start_km == result.KilometrNumber &&
+                        elCurve.Lvl_final_km == result.KilometrNumber || elCurve.Lvl_start_km < result.KilometrNumber &&
+                        elCurve.Lvl_final_km > result.KilometrNumber)
+                    {
+                        x1 = elCurve.Lvl_start_km == result.KilometrNumber ? elCurve.Lvl_start_m : 1;
+                        x2 = elCurve.Lvl_final_km == result.KilometrNumber ? elCurve.Lvl_final_m : 1000;
+                        for (var meter = x1; meter < x2; meter++)
+                        {
+                            if (index > -1)
+                            {
+                                index = result.Meters.IndexOf(meter);
+                                result.ZeroStraightening[index] = straighteningY1 + straighteningZero;
+                                result.ZeroLevel[index] = levelY1 + levelZero;
+                                result.StraighteningSide[index] = result.ZeroStraightening[index] > 0 ? 1 : -1;
+                            }
+                        }
+                    }
+
+                    straighteningZero += straighteningY1;
+                    levelZero += levelY1;
+                }
+            }*/
+            return result;
+        }
+        public MainParameters GetMainParametersSKOvedom(int kilometer)
+        {
+            var result = new MainParameters();
+            string line;
+            //чтение измерительных данных
+            using (var file = new StreamReader("D:/work_shifrovka/new/km_" + kilometer.ToString() + ".svgpdat", Encoding.GetEncoding(1251)))
+            {
+                string start = file.ReadLine();
+                string final = file.ReadLine();
+
+                line = file.ReadLine();
+                result.Car = new CarParameters { ChiefName = line, CurrentPosition = CarPosition.Base };
+                file.ReadLine();
+                line = file.ReadLine();
+                result.TrackNumber = line != null && line.Length <= 3 ? line : line != null && line.Equals(Resources.even) ? "2" : "1";
+                line = file.ReadLine();
+                result.TravelDirection = line != null && line.Equals(Resources.reverse) ? Direction.Reverse : Direction.Direct;
+                result.Direction = result.TravelDirection == Direction.Direct ? start + "-" + final : final + "-" + start;
+                line = file.ReadLine();
+                //result.TravelDate = DateTime.ParseExact(line, "dd.mm.yyyy", System.Globalization.CultureInfo.InvariantCulture);
+                result.TravelDate = DateTime.Parse(line);
+                result.Car.CarNumber = file.ReadLine();
+                file.ReadLine();
+                result.KilometrNumber = int.Parse(file.ReadLine() ?? throw new InvalidOperationException());
+                result.KilometrNumber = kilometer;
+                while ((line = file.ReadLine()) != null) result.ParseSKOvedomost(line);
+
+            }
+
+
+            //чтение паспортных данных
+            foreach (var unused in result.Meters)
+            {
+                double straighteningZero = 0;
+                double levelZero = 0;
+                result.GaugeNorm.Add(1520);
+                result.ZeroGauge.Add(1520);
+                result.ZeroStraightening.Add(straighteningZero);
+                result.ZeroLevel.Add(levelZero);
+                result.StraighteningSide.Add(1);
+            }
+
+            var mainTrackRepository = new MainTrackStructureRepository();
+            result.Curves = mainTrackRepository.GetMtoObjectsByCoord(result.TravelDate, result.KilometrNumber,
+                MainTrackStructureConst.MtoCurve, result.Direction, result.TrackNumber) as List<Curve>;
+            result.CrossTies = mainTrackRepository.GetMtoObjectsByCoord(result.TravelDate, result.KilometrNumber,
+                MainTrackStructureConst.MtoCrossTie, result.Direction, result.TrackNumber) as List<CrossTie>;
+            result.ArtificialConstructions = mainTrackRepository.GetMtoObjectsByCoord(result.TravelDate,
+                result.KilometrNumber, MainTrackStructureConst.MtoArtificialConstruction, result.Direction,
+                result.TrackNumber) as List<ArtificialConstruction>;
+            var prevKm = mainTrackRepository.GetMtoObjectsByCoord(result.TravelDate, result.KilometrNumber - 1,
+                MainTrackStructureConst.MtoNonStandard, result.Direction, result.TrackNumber) as List<NonstandardKm>;
+            var currentKm = mainTrackRepository.GetMtoObjectsByCoord(result.TravelDate, result.KilometrNumber,
+                MainTrackStructureConst.MtoNonStandard, result.Direction, result.TrackNumber) as List<NonstandardKm>;
+
+            var straighteningThreads = mainTrackRepository.GetMtoObjectsByCoord(result.TravelDate,
+                result.KilometrNumber, MainTrackStructureConst.MtoStraighteningThread, result.Direction,
+                result.TrackNumber) as List<StraighteningThread>;
+
+
+            //рихтовочная нить
+            foreach (var thread in straighteningThreads)
+            {
+                var x1 = 0;
+                var x2 = 1000;
+                if (thread.Start_Km == result.KilometrNumber)
+                    x1 = thread.Start_M;
+                if (thread.Final_Km == result.KilometrNumber)
+                    x2 = thread.Final_M;
+
+                for (var meter = x1; meter <= x2; meter++)
+                {
+                    var index = result.Meters.IndexOf(meter);
+                    result.StraighteningSide[index] = thread.Side_Id * (int)result.TravelDirection;
+                }
+            }
+            /*
+            //кривые участки
+            foreach (var curve in result.Curves)
+            {
+                curve.Radiuses =
+                    (mainTrackRepository.GetMtoObjects(curve.Id, MainTrackStructureConst.MtoElCurve) as List<ElCurve>)
+                    .OrderBy(radius => radius.Start_M).ToList();
+
+                double straighteningZero = 0;
+                double levelZero = 0;
+
+                
+                //радиусы
+                foreach (var elCurve in curve.Radiuses)
+                {
+                    var x2 = elCurve.Lvl_start_km == result.KilometrNumber ? elCurve.Lvl_start_m : 1;
+
+                    double straighteningY2 = 17860 / elCurve.Radius * result.GetStraighteningAverageDirect(x2);
+                    double levelY2 = elCurve.Lvl * result.GetStraighteningAverageDirect(x2);
+
+                    var x1 = elCurve.Start_M;
+
+                    var index = result.Meters.IndexOf(x1);
+                    if (index < 0)
+                    {
+                        x1 = result.TravelDirection == Direction.Direct
+                            ? result.Meters[0]
+                            : result.Meters[result.Meters.Count - 1];
+                        index = result.Meters.IndexOf(x1);
+                    }
+                    var straighteningY1 = result.ZeroStraightening[index] * result.GetStraighteningAverageDirect(x1);
+                    var levelY1 = result.ZeroLevel[index] * result.GetStraighteningAverageDirect(x1);
+
+                    if (elCurve.Start_Km < result.KilometrNumber)
+                    {
+                        x1 = 1;
+                        var prevLength = prevKm.Count <= 0 ? 1000 : prevKm[0].Len;
+                        straighteningY1 = GetY(x1, elCurve.Start_M - prevLength, x2, 0, straighteningY2);
+                        levelY1 = GetY(x1, elCurve.Start_M - prevLength, x2, 0, levelY2);
+                    }
+
+                    if (elCurve.Lvl_start_km < result.KilometrNumber)
+                    {
+                        x2 = elCurve.Lvl_final_m;
+                        straighteningY1 = straighteningY2;
+                        levelY1 = levelY2;
+                    }
+
+                    if (elCurve.Lvl_final_km == result.KilometrNumber)
+
+                        for (var meter = x1; meter <= x2; meter++)
+                        {
+                            index = result.Meters.IndexOf(meter);
+                            result.ZeroStraightening[index] =
+                                GetY(meter, x1, x2, straighteningY1, straighteningY2) + straighteningZero;
+                            result.ZeroLevel[index] = GetY(meter, x1, x2, levelY1, levelY2) + levelZero;
+                            result.StraighteningSide[index] = result.ZeroStraightening[index] > 0 ? 1 : -1;
+                        }
+
+                    x2 = elCurve.Final_M;
+                    x1 = elCurve.Lvl_final_m;
+                    straighteningY1 = straighteningY2;
+                    levelY1 = levelY2;
+                    int final_m = elCurve.Final_M;
+                    index = result.Meters.IndexOf(elCurve.Final_M);
+                    if (index < 0)
+                    {
+                        final_m = result.TravelDirection == Direction.Reverse
+                            ? result.Meters[0]
+                            : result.Meters[result.Meters.Count - 1];
+                        index = result.Meters.IndexOf(final_m);
+                    }
+                    straighteningY2 = result.ZeroStraightening[index] *
+                                       result.GetStraighteningAverageDirect(final_m);
+                    levelY2 = result.ZeroLevel[index] * result.GetStraighteningAverageDirect(final_m);
+
+                    if (elCurve.Lvl_start_km > result.KilometrNumber)
+                    {
+                        x1 = elCurve.Start_M;
+                        index = result.Meters.IndexOf(x1);
+                        straighteningY1 = result.ZeroStraightening[index];
+                        levelY1 = result.ZeroLevel[index];
+
+                        var currentLength = !currentKm.Any() ? 1000 : currentKm[0].Len;
+                        x2 = currentLength;
+                        straighteningY2 = 17860 / elCurve.Radius * result.GetStraighteningAverageDirect(x2);
+                        straighteningY2 = GetY(x2, x1, currentLength + elCurve.Lvl_final_m, straighteningY1,
+                            straighteningY2);
+
+                        levelY2 = elCurve.Lvl * result.GetStraighteningAverageDirect(x2);
+                        levelY2 = GetY(x2, x1, currentLength + elCurve.Lvl_final_m, levelY1, levelY2);
+                    }
+
+                    if (elCurve.Final_Km > elCurve.Lvl_final_km)
+                    {
+                        x1 = elCurve.Lvl_final_m;
+                        straighteningY1 = 17860 / elCurve.Radius * result.GetStraighteningAverageDirect(x1);
+                        levelY1 = elCurve.Lvl * result.GetStraighteningAverageDirect(x1);
+
+                        var currentLength = !currentKm.Any() ? 1000 : currentKm[0].Len;
+                        x2 = currentLength;
+
+                        straighteningY2 = GetY(x2, x1, currentLength + elCurve.Final_M, straighteningY1, 0);
+                        levelY2 = GetY(x2, x1, currentLength + elCurve.Final_M, levelY1, 0);
+                    }
+
+
+                    for (var meter = x1; meter <= x2; meter++)
+                    {
+                        index = result.Meters.IndexOf(meter);
+                        if (index > -1)
+                        {
+                            result.ZeroStraightening[index] =
+                                GetY(meter, x1, x2, straighteningY1, straighteningY2) + straighteningZero;
+                            result.ZeroLevel[index] = GetY(meter, x1, x2, levelY1, levelY2) + levelZero;
+                            result.StraighteningSide[index] = result.ZeroStraightening[index] > 0 ? 1 : -1;
+                        }
+                    }
+
+
+                    if (elCurve.Lvl_start_km == result.KilometrNumber &&
+                        elCurve.Lvl_final_km == result.KilometrNumber || elCurve.Lvl_start_km < result.KilometrNumber &&
+                        elCurve.Lvl_final_km > result.KilometrNumber)
+                    {
+                        x1 = elCurve.Lvl_start_km == result.KilometrNumber ? elCurve.Lvl_start_m : 1;
+                        x2 = elCurve.Lvl_final_km == result.KilometrNumber ? elCurve.Lvl_final_m : 1000;
+                        for (var meter = x1; meter < x2; meter++)
+                        {
+                            if (index > -1)
+                            {
+                                index = result.Meters.IndexOf(meter);
+                                result.ZeroStraightening[index] = straighteningY1 + straighteningZero;
+                                result.ZeroLevel[index] = levelY1 + levelZero;
+                                result.StraighteningSide[index] = result.ZeroStraightening[index] > 0 ? 1 : -1;
+                            }
+                        }
+                    }
+
+                    straighteningZero += straighteningY1;
+                    levelZero += levelY1;
+                }
+            }*/
+            return result;
+        }
+        public ShortRoughness GetAppParameters(int km)
+        {
+            var result = new ShortRoughness();
+            string line;
+            //чтение измерительных данных
+            using (var file = new StreamReader(km.ToString() + ".svgpdat", Encoding.GetEncoding(1251)))
+            {
+                line = file.ReadLine();
+                result.Direction = "Обратный";
+                result.Car = new CarParameters { ChiefName = "CheffName", CurrentPosition = CarPosition.Boiler };
+                //line = file.ReadLine();
+                result.TrackNumber = line != null && line.Length <= 3 ? line : line != null && line.Equals(Resources.even) ? "2" : "1";
+                result.TravelDirection = line != null && line.Equals(Resources.reverse) ? Direction.Direct : Direction.Reverse;
+                //line = file.ReadLine();
+                //result.TravelDate = DateTime.ParseExact(line, "dd.mm.yyyy", System.Globalization.CultureInfo.InvariantCulture);
+                result.TravelDate = DateTime.Now;
+                result.Car.CarNumber = "0001";
+                result.KilometrNumber = int.Parse(line ?? throw new InvalidOperationException());
+                while ((line = file.ReadLine()) != null) result.Parse(line);
+            }
+            using (var file = new StreamReader(km.ToString() + "_2.svgpdat", Encoding.GetEncoding(1251)))
+            {
+                line = file.ReadLine();
+                result.Direction = "Обратный";
+                result.Car = new CarParameters { ChiefName = "CheffName", CurrentPosition = CarPosition.Boiler };
+                //line = file.ReadLine();
+                result.TrackNumber = line != null && line.Length <= 3 ? line : line != null && line.Equals(Resources.even) ? "2" : "1";
+                result.TravelDirection = line != null && line.Equals(Resources.reverse) ? Direction.Direct : Direction.Reverse;
+                //line = file.ReadLine();
+                //result.TravelDate = DateTime.ParseExact(line, "dd.mm.yyyy", System.Globalization.CultureInfo.InvariantCulture);
+                result.TravelDate = DateTime.Now;
+                result.Car.CarNumber = "0001";
+                result.KilometrNumber = int.Parse(line ?? throw new InvalidOperationException());
+                while ((line = file.ReadLine()) != null) result.Parse2(line);
+            }
+
+            result.Correct();
+
+
+            return result;
+        }
+
+        public MainParameters GetMainParameters(int kilometer)
+        {
+            var result = new MainParameters();
+            string line;
+            //чтение измерительных данных
+            using (var file = new StreamReader("D:/work_shifrovka/km_" + kilometer.ToString() + ".svgpdat", Encoding.GetEncoding(1251)))
+            {
+                string start = file.ReadLine();
+                string final = file.ReadLine();
+                
+                line = file.ReadLine();
+                result.Car = new CarParameters {ChiefName = line, CurrentPosition = CarPosition.Boiler};
+                file.ReadLine();
+                line = file.ReadLine();
+                result.TrackNumber = line != null && line.Length <= 3 ? line : line != null && line.Equals(Resources.even) ? "2" : "1";
+                line = file.ReadLine();
+                result.TravelDirection = line != null && line.Equals(Resources.reverse) ? Direction.Direct : Direction.Reverse;
+                result.Direction = result.TravelDirection == Direction.Reverse ? start + "-" + final : final + "-" + start;
+                line = file.ReadLine();
+                //result.TravelDate = DateTime.ParseExact(line, "dd.mm.yyyy", System.Globalization.CultureInfo.InvariantCulture);
+                result.TravelDate = DateTime.Parse(line);
+                result.Car.CarNumber = file.ReadLine();
+                file.ReadLine();
+                result.KilometrNumber = int.Parse(file.ReadLine() ?? throw new InvalidOperationException());
+                result.KilometrNumber = kilometer;
+                while ((line = file.ReadLine()) != null) result.Parse(line);
+            }
+
+            //чтение паспортных данных
+            foreach (var unused in result.Meters)
+            {
+                double straighteningZero = 0;
+                double levelZero = 0;
+                result.GaugeNorm.Add(1520);
+                result.ZeroGauge.Add(1520);
+                result.ZeroStraightening.Add(straighteningZero);
+                result.ZeroLevel.Add(levelZero);
+                result.StraighteningSide.Add(1);
+            }
+
+            var mainTrackRepository = new MainTrackStructureRepository();
+            result.Curves = mainTrackRepository.GetMtoObjectsByCoord(result.TravelDate, result.KilometrNumber,
+                MainTrackStructureConst.MtoCurve, result.Direction, result.TrackNumber) as List<Curve>;
+            result.CrossTies = mainTrackRepository.GetMtoObjectsByCoord(result.TravelDate, result.KilometrNumber,
+                MainTrackStructureConst.MtoCrossTie, result.Direction, result.TrackNumber) as List<CrossTie>;
+            result.ArtificialConstructions = mainTrackRepository.GetMtoObjectsByCoord(result.TravelDate,
+                result.KilometrNumber, MainTrackStructureConst.MtoArtificialConstruction, result.Direction,
+                result.TrackNumber) as List<ArtificialConstruction>;
+            var prevKm = mainTrackRepository.GetMtoObjectsByCoord(result.TravelDate, result.KilometrNumber - 1,
+                MainTrackStructureConst.MtoNonStandard, result.Direction, result.TrackNumber) as List<NonstandardKm>;
+            var currentKm = mainTrackRepository.GetMtoObjectsByCoord(result.TravelDate, result.KilometrNumber,
+                MainTrackStructureConst.MtoNonStandard, result.Direction, result.TrackNumber) as List<NonstandardKm>;
+
+            var straighteningThreads = mainTrackRepository.GetMtoObjectsByCoord(result.TravelDate,
+                result.KilometrNumber, MainTrackStructureConst.MtoStraighteningThread, result.Direction,
+                result.TrackNumber) as List<StraighteningThread>;
+
+
+            //рихтовочная нить
+            foreach (var thread in straighteningThreads)
+            {
+                var x1 = 0;
+                var x2 = 1000;
+                if (thread.Start_Km == result.KilometrNumber)
+                    x1 = thread.Start_M;
+                if (thread.Final_Km == result.KilometrNumber)
+                    x2 = thread.Final_M;
+
+                for (var meter = x1; meter <= x2; meter++)
+                {
+                    var index = result.Meters.IndexOf(meter);
+                    result.StraighteningSide[index] = thread.Side_Id * (int) result.TravelDirection;
+                }
+            }
+
+            //кривые участки
+            /*foreach (var curve in result.Curves)
+            {
+                curve.Radiuses =
+                    (mainTrackRepository.GetMtoObjects(curve.Id, MainTrackStructureConst.MtoElCurve) as List<ElCurve>)
+                    .OrderBy(radius => radius.Start_M).ToList();
+
+                double straighteningZero = 0;
+                double levelZero = 0;
+
+
+                //радиусы
+                foreach (var elCurve in curve.Radiuses)
+                {
+                    var x2 = elCurve.Lvl_start_km == result.KilometrNumber ? elCurve.Lvl_start_m : 1;
+
+                    double straighteningY2 = 17860 / elCurve.Radius * result.GetStraighteningAverageDirect(x2);
+                    double levelY2 = elCurve.Lvl * result.GetStraighteningAverageDirect(x2);
+
+                    var x1 = elCurve.Start_M;
+
+                    var index = result.Meters.IndexOf(x1);
+                    if (index < 0) { 
+                        x1 = result.TravelDirection == Direction.Reverse
+                            ? result.Meters[0]
+                            : result.Meters[result.Meters.Count - 1];
+                        index = result.Meters.IndexOf(x1);
+                    }
+                    var straighteningY1 = result.ZeroStraightening[index] * result.GetStraighteningAverageDirect(x1);
+                    var levelY1 = result.ZeroLevel[index] * result.GetStraighteningAverageDirect(x1);
+
+                    if (elCurve.Start_Km < result.KilometrNumber)
+                    {
+                        x1 = 1;
+                        var prevLength = prevKm.Count <= 0 ? 1000 : prevKm[0].Len;
+                        straighteningY1 = GetY(x1, elCurve.Start_M - prevLength, x2, 0, straighteningY2);
+                        levelY1 = GetY(x1, elCurve.Start_M - prevLength, x2, 0, levelY2);
+                    }
+
+                    if (elCurve.Lvl_start_km < result.KilometrNumber)
+                    {
+                        x2 = elCurve.Lvl_final_m;
+                        straighteningY1 = straighteningY2;
+                        levelY1 = levelY2;
+                    }
+
+                    if (elCurve.Lvl_final_km == result.KilometrNumber)
+
+                        for (var meter = x1; meter <= x2; meter++)
+                        {
+                            index = result.Meters.IndexOf(meter);
+                            result.ZeroStraightening[index] =
+                                GetY(meter, x1, x2, straighteningY1, straighteningY2) + straighteningZero;
+                            result.ZeroLevel[index] = GetY(meter, x1, x2, levelY1, levelY2) + levelZero;
+                            result.StraighteningSide[index] = result.ZeroStraightening[index] > 0 ? 1 : -1;
+                        }
+
+                    x2 = elCurve.Final_M;
+                    x1 = elCurve.Lvl_final_m;
+                    straighteningY1 = straighteningY2;
+                    levelY1 = levelY2;
+                    int final_m = elCurve.Final_M;
+                    index = result.Meters.IndexOf(elCurve.Final_M);
+                    if (index < 0)
+                    {
+                        final_m = result.TravelDirection == Direction.Direct
+                            ? result.Meters[0]
+                            : result.Meters[result.Meters.Count - 1];
+                        index = result.Meters.IndexOf(final_m);
+                    }
+                    straighteningY2 = result.ZeroStraightening[index] *
+                                       result.GetStraighteningAverageDirect(final_m);
+                    levelY2 = result.ZeroLevel[index] * result.GetStraighteningAverageDirect(final_m);
+
+                    if (elCurve.Lvl_start_km > result.KilometrNumber)
+                    {
+                        x1 = elCurve.Start_M;
+                        index = result.Meters.IndexOf(x1);
+                        straighteningY1 = result.ZeroStraightening[index];
+                        levelY1 = result.ZeroLevel[index];
+
+                        var currentLength = !currentKm.Any() ? 1000 : currentKm[0].Len;
+                        x2 = currentLength;
+                        straighteningY2 = 17860 / elCurve.Radius * result.GetStraighteningAverageDirect(x2);
+                        straighteningY2 = GetY(x2, x1, currentLength + elCurve.Lvl_final_m, straighteningY1,
+                            straighteningY2);
+
+                        levelY2 = elCurve.Lvl * result.GetStraighteningAverageDirect(x2);
+                        levelY2 = GetY(x2, x1, currentLength + elCurve.Lvl_final_m, levelY1, levelY2);
+                    }
+
+                    if (elCurve.Final_Km > elCurve.Lvl_final_km)
+                    {
+                        x1 = elCurve.Lvl_final_m;
+                        straighteningY1 = 17860 / elCurve.Radius * result.GetStraighteningAverageDirect(x1);
+                        levelY1 = elCurve.Lvl * result.GetStraighteningAverageDirect(x1);
+
+                        var currentLength = !currentKm.Any() ? 1000 : currentKm[0].Len;
+                        x2 = currentLength;
+
+                        straighteningY2 = GetY(x2, x1, currentLength + elCurve.Final_M, straighteningY1, 0);
+                        levelY2 = GetY(x2, x1, currentLength + elCurve.Final_M, levelY1, 0);
+                    }
+
+
+                    for (var meter = x1; meter <= x2; meter++)
+                    {
+                        index = result.Meters.IndexOf(meter);
+                        if (index > -1)
+                        {
+                            result.ZeroStraightening[index] =
+                                GetY(meter, x1, x2, straighteningY1, straighteningY2) + straighteningZero;
+                            result.ZeroLevel[index] = GetY(meter, x1, x2, levelY1, levelY2) + levelZero;
+                            result.StraighteningSide[index] = result.ZeroStraightening[index] > 0 ? 1 : -1;
+                        }
+                    }
+
+
+                    if (elCurve.Lvl_start_km == result.KilometrNumber &&
+                        elCurve.Lvl_final_km == result.KilometrNumber || elCurve.Lvl_start_km < result.KilometrNumber &&
+                        elCurve.Lvl_final_km > result.KilometrNumber)
+                    {
+                        x1 = elCurve.Lvl_start_km == result.KilometrNumber ? elCurve.Lvl_start_m : 1;
+                        x2 = elCurve.Lvl_final_km == result.KilometrNumber ? elCurve.Lvl_final_m : 1000;
+                        for (var meter = x1; meter < x2; meter++)
+                        {
+                            if(index > -1) { 
+                            index = result.Meters.IndexOf(meter);
+                            result.ZeroStraightening[index] = straighteningY1 + straighteningZero;
+                            result.ZeroLevel[index] = levelY1 + levelZero;
+                            result.StraighteningSide[index] = result.ZeroStraightening[index] > 0 ? 1 : -1;
+                            }
+                        }
+                    }
+
+                    straighteningZero += straighteningY1;
+                    levelZero += levelY1;
+                }
+            }*/
+
+
+            return result;
+        }
+
+        /// <summary>
+        ///     екі нүкте арқылы түзудің бойындағы x-нүктесіндегі y-тің мәнін табу
+        /// </summary>
+        /// <param name="x">y-тің мәні ізделіп отырған нүкте</param>
+        /// <param name="x1">бірінші нүктенің x бойынша координатасы</param>
+        /// <param name="x2">екінші нүктенің x бойынша координатасы</param>
+        /// <param name="y1">бірінші нүктенің y бойынша координатасы</param>
+        /// <param name="y2">екінші нүктенің y бойынша координатасы</param>
+        /// <returns></returns>
+        public double GetY(double x, double x1, double x2, double y1, double y2)
+        {
+            return (x - x1) / (x2 - x1) * (y2 - y1) + y1;
+        }
+    }
+}

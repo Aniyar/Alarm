@@ -1,0 +1,33 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using ALARm.Core.AdditionalParameteres;
+
+
+namespace ALARm.Core
+{
+    public interface IAdditionalParametersRepository
+    {
+        List<Gap> GetGaps(Int64 process_id, int direction, int kilometer);
+        List<int> GetKilometers(Int64 process_id, int direction);
+        CrossRailProfile GetCrossRailProfileFromText(int kilometer);
+        ShortRoughness GetShortRoughnessFromText(int kilometer);
+        List<Gap> GetGaps(Int64 trip_id, int kilometer);
+		List<Gap> GetGap(long process_id, int direction);
+        List<Gap> DirectName(long process_id, int direction);
+        List<Heat> GetHeats(Int64 trip_id, int kilometer);
+        Bitmap GetFrame(int v, Int64 file_id);
+        List<VideoObject> GetObjectsByFrameNumber(int frame_Number, Int64 trip_id);
+        List<Gap> GetGapsByFrameNumber(int frame_Number, Int64 id);
+        Bitmap MatrixToTimage(int[,] matrix);
+        List<RailFastener> GetRailFasteners(long tripId, int kilometer);
+        List<int> GetKilometersByTripId(Int64 process_id);
+		List<int> GetKilometersByTripId(long process_id, long trackId);
+        CrossRailProfile vertIznos(int nkm);
+        List<Gap> GetFusGap(long process_id, int direction);
+        
+    }
+}

@@ -1,0 +1,370 @@
+﻿@using MatBlazor
+@using ALARm.Core.Report;
+@inject IJSRuntime JSRuntime
+@inject AlarmPP.Web.Services.AppData AppData
+@inject IMatToaster Toaster
+    <MatThemeProvider Theme="@Theme">
+        <MatDialog Style="min-width:700px" @bind-IsOpen="@AppData.IsDialogOpen" CanBeClosed="false">
+
+            <MatDialogContent>
+                <MatTabGroup ActiveIndexChanged=" _=>ActiveChanged()">
+                    <MatTab Label="Постобработка">
+                        <div>
+                            <br />
+                            <MatSelect Label="Дорога" Outlined="true" TValue="long" Value="@CurrentRoad" ValueChanged="@((long road_id) => LoadPeriods(road_id))" Style="min-width:200px;">
+
+                                @if (AdmRoads != null)
+                                    foreach (var admRoad in AdmRoads)
+                                    {
+                                        <MatOption Value="@admRoad.Id">@admRoad.Name</MatOption>
+                                    }
+                            </MatSelect>
+                            <MatSelect Label="Период" Outlined="true" TValue="string" ValueChanged="@((string period) => LoadTrips(period))" @onfocus="@OnTripSelect" Style="min-width:200px;">
+
+                                @if (ReportPeriods != null)
+                                    foreach (var reportPeriod in ReportPeriods)
+                                    {
+                                        <MatOption Value="@reportPeriod.ToString()">@reportPeriod.Period</MatOption>
+                                    }
+                            </MatSelect>
+                            <MatSelect Label="Тип проверки" Outlined="true" TValue="string" ValueChanged="@((string typeId) => LoadTripType(typeId))" @onfocus="@OnTripSelect" Style="min-width:200px;">
+                                @if (ControlTrips != null)
+                                {
+                                    <MatOption Value="((int)TripType.Work).ToString()">Рабочая</MatOption>
+                                    <MatOption Value="((int)TripType.Control).ToString()">Контрольная</MatOption>
+                                    <MatOption Value="((int)TripType.Additional).ToString()">Дополнительная</MatOption>
+                                }
+                            </MatSelect>
+                        </div>
+                        <div style="width:auto;background-color:ghostwhite; margin-top:10px;">
+                            <div style="float:left;min-width: 330px;width:50%">
+                                <MatListGroup Style="background-color:ghostwhite;max-height:500px;overflow:scroll">
+                                    
+                                    @if (ControlTrips != null && ControlTrips.Where(o=>o.Trip_Type==TripType.Work).Any())
+                                    {
+                                        <MatListGroupSubHeader>Рабочая</MatListGroupSubHeader>
+                                        <MatList SingleSelection="true">
+                                            @foreach (var trip in ControlTrips.Where(o => o.Trip_Type == TripType.Work).ToList())
+                                            {
+                                                <MatListItem OnClick="@((_) => SelectTripItem(trip.Id, TripType.Work))" Id="@trip.Id.ToString()">@trip.Trip_date.ToShortDateString() &nbsp; @trip.Trip_date.ToShortTimeString() &nbsp; @trip.Start_station_name-@trip.Final_station_name</MatListItem>
+                                            }
+                                        </MatList>
+                                    }
+
+                                    @if (ControlTrips != null && ControlTrips.Where(o => o.Trip_Type == TripType.Additional).Any())
+                                    {
+                                        <MatListGroupSubHeader>Дополнительная</MatListGroupSubHeader>
+                                        <MatList SingleSelection="true">
+                                            @foreach (var trip in ControlTrips.Where(o => o.Trip_Type == TripType.Additional).ToList())
+                                            {
+                                                <MatListItem OnClick="@((_) => SelectTripItem(trip.Id, TripType.Additional))" Id="@trip.Id.ToString()">@trip.Trip_date.ToShortDateString() &nbsp; @trip.Trip_date.ToShortTimeString() &nbsp; @trip.Start_station_name-@trip.Final_station_name</MatListItem>
+                                            }
+                                        </MatList>
+                                    }
+
+                                    @if (ControlTrips != null && ControlTrips.Where(o => o.Trip_Type == TripType.Control).Any())
+                                    {
+                                        <MatListGroupSubHeader>Контрольная</MatListGroupSubHeader>
+                                        <MatList SingleSelection="true">
+                                            @foreach (var trip in ControlTrips.Where(o => o.Trip_Type == TripType.Control).ToList())
+                                            {
+                                                <MatListItem OnClick="@((_) => SelectTripItem(trip.Id, TripType.Control))" Id="@trip.Id.ToString()">@trip.Trip_date.ToShortDateString() &nbsp; @trip.Trip_date.ToShortTimeString() &nbsp; @trip.Start_station_name-@trip.Final_station_name</MatListItem>
+                                            }
+                                        </MatList>
+                                    }
+                                </MatListGroup>
+                            </div>
+                            <div class="tcd-right">
+                                <div style="min-height:150px;max-height:250px;">
+                                    <table class="tcd-table">
+                                        <tr>
+                                            <th class="tcd-th">id</th>
+                                            <th class="tcd-th tcd-font">Направление</th>
+                                            <th class="tcd-th">Ход</th>
+                                            <th class="tcd-th">Путь</th>
+                                        </tr>
+                                        @if (ControlTrips != null)
+                                        {
+                                            @foreach (var trip in ControlTrips.Where(o=>o.Id== CurrentTrip).ToList())
+                                            {
+                                                <tr class="tcd-tr">
+                                                    <td class="tcd-td">@trip.Id</td>
+                                                    <td class="tcd-td">@trip.Direction_Name</td>
+                                                    <td class="tcd-td">@(trip.Direction_id == (int)ALARm.Core.Direction.Direct ? "Прям." : "Обр.")</td>
+                                                    <td class="tcd-td">@(trip.Direction_id == (int)ALARm.Core.Direction.Direct ? "Прям." : "Обр.")</td>
+                                                </tr>
+                                            }
+                                        }
+                                    </table>
+                                </div>
+                                @if (ControlTrips != null)
+                                {
+                                    <fieldset class="tcd-fiedlset">
+
+                                        <legend class="tcd-font">Дополнительные параметры:</legend>
+                                        <table style="border:none">
+
+
+                                            @if (ControlTrips != null)
+                                            {
+                                                @foreach (var trip in ControlTrips.Where(o => o.Id == CurrentTrip).ToList())
+                                                {
+                                                    @if (trip.Rail_Profile)
+                                                    {
+                                                        <tr class="tcd-font">
+                                                            <td>поперечный профиль рельса</td>
+                                                        </tr>
+                                                    }
+                                                    @if (trip.Longitudinal_Profile)
+                                                    {
+                                                        <tr class="tcd-font">
+                                                            <td>продольный профиль пельса</td>
+                                                        </tr>
+                                                    }
+                                                    @if (trip.Short_Irregularities)
+                                                    {
+                                                        <tr class="tcd-font">
+                                                            <td>короткие неровности</td>
+                                                        </tr> 
+                                                    }
+                                                    @if (trip.Joint_Gaps)
+                                                    {
+                                                        <tr class="tcd-font">
+                                                            <td>стыковые зазоры</td>
+                                                        </tr> 
+                                                    }
+                                                    @if (trip.Georadar)
+                                                    {
+                                                        <tr class="tcd-font">
+                                                            <td>георадар</td>
+                                                        </tr> 
+                                                    }
+                                                    @if (trip.Dimensions)
+                                                    {
+                                                        <tr class="tcd-font">
+                                                            <td>габариты</td>
+                                                        </tr> 
+                                                    }
+                                                    @if (trip.Beacon_Marks)
+                                                    {
+                                                        <tr class="tcd-font">
+                                                            <td>маячные метки</td>
+                                                        </tr> 
+                                                    }
+                                                    @if (trip.Embankment)
+                                                    {
+                                                        <tr class="tcd-font">
+                                                            <td>насыпь</td>
+                                                        </tr> 
+                                                    }
+                                                    @if (trip.Rail_Temperature)
+                                                    {
+                                                        <tr class="tcd-font">
+                                                            <td>температура рельса</td>
+                                                        </tr> 
+                                                    }
+                                                    @if (trip.Geolocation)
+                                                    {
+                                                        <tr class="tcd-font">
+                                                            <td>ГНСС, GPS</td>
+                                                        </tr> 
+                                                    }
+                                                    @if (trip.Rail_Video_Monitoring)
+                                                    {
+                                                        <tr class="tcd-font">
+                                                            <td>видеоконтроль рельсов</td>
+                                                        </tr>
+                                                    }
+                                                    @if (trip.Video_Monitoring)
+                                                    {
+                                                        <tr class="tcd-font">
+                                                            <td>видеонаблюдение</td>
+                                                        </tr>
+                                                    }
+                                                }
+                                            }
+
+
+                                        </table>
+
+                                    </fieldset>
+                                }
+                            </div>
+                        </div>
+                        <div style="clear:both;"><label id="status-label" style="color:blue;">@status</label></div>
+                        <MatProgressBar Indeterminate="@Loading"></MatProgressBar>
+                        <p style="width:100%;text-align:right"><MatButton Disabled="@OkButtonDisabled" OnClick="@OkClick">OK</MatButton></p>
+                    </MatTab>
+                    <MatTab @onmouseover="@MouseOver" @onmouseout="@MouseOut" Label="Онлайн режим">
+                        <div style="min-height:600px;min-width:520px;">
+                            <MatAccordion Multi="false">
+                                <MatExpansionPanel Expanded="true">
+                                    <MatExpansionPanelSummary>
+                                        <MatExpansionPanelHeader Style="min-width:350px">Подготовка к поездке</MatExpansionPanelHeader>
+
+                                    </MatExpansionPanelSummary>
+                                    <MatExpansionPanelDetails>
+                                        <p style="margin:0px;">
+                                            <MatTextField Style="width:50%;background-color:white;" @bind-Value="@AppData.Trip.Chief" Label="Начальник смены"></MatTextField>
+                                            <MatSelect Style="width:49%;background-color:white;" Label="Тип проверки" @bind-Value="@CurrentTripType">
+                                                <MatOption TValue="int" Value="0">Рабочая</MatOption>
+                                                <MatOption TValue="int" Value="1">Контрольная</MatOption>
+                                                <MatOption TValue="int" Value="2">Дополнительная</MatOption>
+                                            </MatSelect>
+                                        </p>
+                                        <p style="margin:0px;">
+                                            <MatSelect TValue="int" @bind-Value="TravelDirection" Style="width:50%;background-color:white;" Label="Счет километра">
+                                                <MatOption Value="(int)ALARm.Core.Direction.Direct">Прямой</MatOption>
+                                                <MatOption Value="(int)ALARm.Core.Direction.Reverse">Обратный</MatOption>
+                                            </MatSelect>
+                                            <MatSelect TValue="int" @bind-Value="CarPosition" Style="width:49%;background-color:white;" Label="Положение вагона">
+                                                <MatOption Value="(int)ALARm.Core.CarPosition.Boiler">Котлом вперед</MatOption>
+                                                <MatOption Value="(int)ALARm.Core.CarPosition.Base">Котлом назад</MatOption>
+                                            </MatSelect>
+                                        </p>
+                                        <p style="margin:0px;">
+                                            <MatSelect Label="Дорога" TValue="long" Value="@AppData.Trip.Road_Id" ValueChanged="@((long road_id) => LoadDirections(road_id))" Style="width:50%;background-color:white;">
+
+                                                @if (AdmRoads != null)
+                                                    foreach (var admRoad in AdmRoads)
+                                                    {
+                                                        <MatOption Value="@admRoad.Id">@admRoad.Name</MatOption>
+                                                    }
+                                            </MatSelect>
+                                            <MatSelect Label="Направление" TValue="long" ValueChanged="@((long direction_id) => LoadTracks(direction_id))" Style="width:49%;background-color:white;">
+
+                                                @if (AdmDirections != null)
+                                                    foreach (var admDirection in AdmDirections)
+                                                    {
+                                                        <MatOption Value="@admDirection.Id">@(admDirection.Code + " " + admDirection.Name)</MatOption>
+                                                    }
+                                            </MatSelect>
+                                        </p>
+                                        <p style="margin:0px;">
+                                            <MatSelect Label="Начало" TValue="long" ValueChanged="@((long station_id) => SelectStartStation(station_id))" Style="width:50%;background-color:white;">
+
+                                                @if (AdmStations != null)
+                                                    foreach (var admStation in AdmStations)
+                                                    {
+                                                        <MatOption Value="@admStation.Station_Id">@admStation.Station</MatOption>
+                                                    }
+                                            </MatSelect>
+                                            <MatSelect Label="Конец" TValue="long" ValueChanged="@((long station_id) => SelectFinalStation(station_id))" Style="width:49%;background-color:white;">
+
+                                                @if (AdmStations != null)
+                                                    foreach (var admStation in AdmStations)
+                                                    {
+                                                        <MatOption Value="@admStation.Station_Id">@admStation.Station</MatOption>
+                                                    }
+                                            </MatSelect>
+                                        </p>
+                                        <p style="margin:0px;">
+                                            @if (AppData.Trip.Route != null)
+                                            {
+                                                <Route CommonTracks="commonTracks" Stations="AdmStations" Source="@AppData.Trip.Route" ></Route>
+                                            }
+                                        </p>
+                                        <p style="margin:0px;">
+                                            <MatSelect Disabled="false" TValue="int" Style="width:100%;background-color:white;" Label="Привязка объекта">
+                                                <MatOption Value="-1"></MatOption>
+                                                <MatOption Value="0">Столб</MatOption>
+                                                <MatOption Value="1">Стрелка</MatOption>
+                                                <MatOption Value="2">Мост</MatOption>
+                                                <MatOption Value="3">Тоннель</MatOption>
+                                                <MatOption Value="1">Заметка оператора</MatOption>
+                                            </MatSelect>
+                                        </p>
+                                        <p style="margin:0px;">
+                                            <EscortList UpdateState="Refresh" Style="margin:5px"></EscortList>
+                                        </p>
+                                    </MatExpansionPanelDetails>
+                                </MatExpansionPanel>
+
+
+                                <MatExpansionPanel>
+                                    <MatExpansionPanelSummary>
+                                        <MatExpansionPanelHeader Style="min-width:350px">Дополнительные параметры и функции</MatExpansionPanelHeader>
+                                    </MatExpansionPanelSummary>
+                                    <MatExpansionPanelDetails>
+
+                                        <p style="margin:0px;">
+                                            <MatCheckbox @bind-Value="AppData.Trip.Rail_Profile" Style="width:45%" Label="Поперечный профиль рельса"></MatCheckbox>
+                                            <MatCheckbox @bind-Value="AppData.Trip.Longitudinal_Profile" Style="width:45%" Label="Продольный профиль"></MatCheckbox>
+                                        </p>
+                                        <p style="margin:0px;">
+                                            <MatCheckbox @bind-Value="AppData.Trip.Short_Irregularities" Style="width:45%" Label="Короткие неровности"></MatCheckbox>
+                                            <MatCheckbox @bind-Value="AppData.Trip.Georadar" Style="width:45%" Label="Георадар" Disabled="true"></MatCheckbox>
+                                        </p>
+                                        <p style="margin:0px;">
+                                            <MatCheckbox @bind-Value="AppData.Trip.Joint_Gaps" Style="width:45%" Label="Стыковые зазоры"></MatCheckbox>
+                                            <MatCheckbox @bind-Value="AppData.Trip.Dimensions" Style="width:45%" Label="Габариты" Disabled="true"></MatCheckbox>
+                                        </p>
+                                        <p style="margin:0px;">
+                                            <MatCheckbox @bind-Value="AppData.Trip.Beacon_Marks" Style="width:45%" Label="Маячные метки"></MatCheckbox>
+                                            <MatCheckbox @bind-Value="AppData.Trip.Embankment" Style="width:45%" Label="Насыпь" Disabled="true"></MatCheckbox>
+                                        </p>
+                                        <p style="margin:0px;">
+                                            <MatCheckbox @bind-Value="AppData.Trip.Rail_Temperature" Style="width:45%" Label="Температура рельсов"></MatCheckbox>
+                                            <MatCheckbox @bind-Value="AppData.Trip.Geolocation" Style="width:45%" Label="ГНСС"></MatCheckbox>
+                                        </p>
+                                        <p style="margin:0px;">
+                                            <MatCheckbox @bind-Value="AppData.Trip.Rail_Video_Monitoring" Style="width:45%" Label="Видеоконтроль рельсов"></MatCheckbox>
+                                            <MatCheckbox @bind-Value="AppData.Trip.Video_Monitoring" Style="width:45%" Label="Видеонаблюдение"></MatCheckbox>
+                                        </p>
+                                    </MatExpansionPanelDetails>
+                                </MatExpansionPanel>
+
+                            </MatAccordion>
+
+                            <p style="width:100%;text-align:right">
+                                <MatButton OnClick="@(_=> { startDialog = true; })">Старт</MatButton>
+                            </p>
+                            <MatProgressBar Style="@(Loading ? "visibility:visible": "visibility:hidden")" Indeterminate="true"></MatProgressBar>
+                        </div>
+                    </MatTab>
+
+
+                </MatTabGroup>
+
+            </MatDialogContent>
+            <MatDialogActions>
+
+            </MatDialogActions>
+        </MatDialog>
+        <MatDialog @bind-IsOpen="@IsHavingActiveTrip" CanBeClosed="false">
+            <MatDialogTitle>Продолжение проезда</MatDialogTitle>
+            <MatDialogContent>
+                <p>Продолжить проезд:</p>
+                @if (AppData.Trip != null)
+                {
+                    <p>
+                        Дата проезда: @AppData.Trip.Trip_date.ToShortDateString() @AppData.Trip.Trip_date.ToShortTimeString()
+                    </p>
+                    <p>
+                        Направление: @AppData.Trip.Direction_Name
+                    </p>
+                }
+            </MatDialogContent>
+            <MatDialogActions>
+                <MatButton OnClick="@(_=>OnlineOkClick(true))">Продолжить</MatButton>
+                <MatButton OnClick="@NewTrip">Новый проезд</MatButton>
+            </MatDialogActions>
+        </MatDialog>
+        <MatDialog @bind-IsOpen="@startDialog" Stacked="true">
+            <MatDialogContent>Начать поездку?</MatDialogContent>
+            <MatDialogActions>
+                <MatButton Raised="true" Style="margin-right:5px;" OnClick="_=> { startDialog = false; Loading = true; OnlineOkClick(false);  }">Ок</MatButton>
+                <MatButton Raised="true" OnClick="_=> { startDialog = false; Loading = false; }">Отменить</MatButton>
+            </MatDialogActions>
+        </MatDialog>
+
+        
+
+
+
+
+    </MatThemeProvider>
+
+
+
+

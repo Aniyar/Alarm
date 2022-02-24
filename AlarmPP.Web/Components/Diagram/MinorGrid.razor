@@ -1,0 +1,15 @@
+﻿@if (MinorPositionsFloat != null)
+{
+    @foreach (var x in MinorPositionsFloat)
+    {
+        <line x1="@x.ToString().Replace(",", ".")" x2="@x.ToString().Replace(",", ".")" y1="@y1" y2="@y2" fill="none" 
+              stroke="@(Color == null ? x == Zero ? "grey" :"red" : Color)" stroke-width="@StrokeWidth" stroke-dasharray="@StrokeDashArray" />
+    }
+}
+else
+{
+    @foreach (var x in MinorPositions)
+    {
+        <line x1="@x" x2="@x" y1="@y1" y2="@y2" fill="none" stroke="@(Color == null ? x == Zero ? "grey" :"red" : Color)" stroke-width="@StrokeWidth" stroke-dasharray="@StrokeDashArray" />
+    }
+}

@@ -1,0 +1,32 @@
+﻿@inject AlarmPP.Web.Services.AppData AppData
+    <div style="@MainStyle">
+        @if (RailImage != null)
+        {
+            <div style="text-align:right;height:24px;width:100%;background-color:ghostwhite;">
+                <MatTooltip Tooltip="Вернуть в исходное состояние" TargetId="expand-btn">
+                    <i id="expand-btn" class="demo-icon icon-dg-printer5 tcd-border-tool" @onclick="RestoreClick">&#xe821;</i>
+                </MatTooltip>
+                <MatTooltip Tooltip="Расширить" TargetId="minimize-btn">
+                    <i id="minimize-btn" class="tcd-hover demo-icon icon-dg-printer5 tcd-border-tool" @onclick="ExpandClick">&#xe81e;</i>
+                </MatTooltip>
+            </div>
+            <svg id="svgrailimage" style="@SvgStyle" viewBox="0 0 @AppData.RailImage.Width @AppData.RailImage.Height"
+                 xmlns="http://www.w3.org/2000/svg"
+                 xmlns:xlink="http://www.w3.org/1999/xlink">
+                <image href="data:image;base64,@AppData.RailImage.Base64" x="0" y="0" height="@AppData.RailImage.Height" width="@AppData.RailImage.Width" @onmousemove="OnMouseMove"/>
+                <RuleGrid Width="AppData.RailImage.Width" Height="AppData.RailImage.Height"></RuleGrid>
+
+                @foreach (var video_object in AppData.RailImage.Objects)
+                {
+                    <VideoObject Width="AppData.RailImage.Width" Height="AppData.RailImage.Height" Object="video_object"></VideoObject>
+
+                }
+                @foreach (var gap in AppData.RailImage.Gaps)
+                {
+                    <RectRuler RailImage="AppData.RailImage" X="@(AppData.RailImage.Width / 2)" Width="@(AppData.RailImage.Width / 2)" Gap="gap" />
+                }
+
+            </svg>
+        }
+
+    </div>

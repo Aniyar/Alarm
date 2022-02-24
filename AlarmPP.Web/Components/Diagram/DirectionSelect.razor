@@ -1,0 +1,7 @@
+﻿@using ALARm.Core
+@inject AlarmPP.Web.Services.AppData AppData
+<span>
+    <AlarmButton Symbol="@(Fragment.Direction == Direction.Reverse ? "" : "")" Tooltip="Обратный" OnClick="_=>ChangeDirect(Direction.Reverse)"></AlarmButton>
+    <AlarmButton Symbol="@(Fragment.Direction == Direction.Direct ? "" : "")" Tooltip="Прямой" OnClick="_=>ChangeDirect(Direction.Direct)"></AlarmButton>
+</span>
+

@@ -1,0 +1,311 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using ALARm.Core;
+using ALARm.Core.AdditionalParameteres;
+using ALARm.Core.Report;
+using ALARm.DataAccess;
+using Autofac;
+
+namespace ALARm.Services
+{
+    public class RdStructureService
+    {
+        static readonly IContainer Container;
+        public static IRdStructureRepository GetRepository()
+        {
+            return new RdStructureRepository();
+        }
+        static RdStructureService()
+        {
+            var builder = new ContainerBuilder();
+            builder.RegisterType<RdStructureRepository>().As<IRdStructureRepository>();
+            Container = builder.Build();
+        }
+
+        public static List<Int64> GetAdmDirectionIDs(Int64 distance_id)
+        {
+            return Container.Resolve<IRdStructureRepository>().GetAdmDirectionIDs(distance_id);
+        }
+
+        public static List<Kilometer> GetKilometersByProcessId(Int64 processId)
+        {
+            return Container.Resolve<IRdStructureRepository>().GetKilometersByProcessId(processId);
+        }
+
+        public static List<VideoObject> GetRdObject()
+        {
+            return Container.Resolve<IRdStructureRepository>().GetRdObject();
+        }
+
+        public static List<MainParametersProcess> GetAdditionalParametersProcess(ReportPeriod period)
+        {
+            return Container.Resolve<IRdStructureRepository>().GetAdditionalParametersProcess(period);
+        }
+
+        public static List<Catalog> GetCatalog(int catType)
+        {
+            return Container.Resolve<IRdStructureRepository>().GetCatalog(catType);
+        }
+
+        public static object GetReportPeriods(long distanceId)
+        {
+            return Container.Resolve<IRdStructureRepository>().GetReportPeriods(distanceId);
+        }
+
+        public static List<Curve> GetCurves(Int64 processId)
+        {
+            return Container.Resolve<IRdStructureRepository>().GetCurves(processId);
+        }
+
+        public static List<Gaps> GetGaps(Int64 processId)
+        {
+            return Container.Resolve<IRdStructureRepository>().GetGaps(processId);
+        }
+
+        public static List<ReportTemplate> GetReportTemplates(int repType)
+        {
+            return Container.Resolve<IRdStructureRepository>().GeReportTemplates(repType);
+        }
+
+		public static object SumOfTheDep(long processId)
+        {
+            return Container.Resolve<IRdStructureRepository>().SumOfTheDep(processId);
+        }
+        public static List<VideoObject> GetRdObject(int object_id, int km, Int64 file_id)
+        {
+            return Container.Resolve<IRdStructureRepository>().GetRdObject(object_id, km, file_id);
+        }
+        public static List<int> GetKilometerTrip(long trip_id)
+        {
+            return Container.Resolve<IRdStructureRepository>().GetKilometerTrip(trip_id);
+        }
+
+
+        public static List<VideoObject> GetRdObject(string object_id, string trip_files)
+        {
+            return Container.Resolve<IRdStructureRepository>().GetRdObject(object_id, trip_files);
+        }
+
+        public static List<VideoObject> GetVideoObjects(string obj_name, MainParametersProcess process)
+        {
+            return Container.Resolve<IRdStructureRepository>().GetVideoObjects(obj_name, process);
+        }
+
+        public static List<VideoObjectCount> GetRdObjectCount(Int64 trip_files_id)
+        {
+            return Container.Resolve<IRdStructureRepository>().GetRdObjectCount(trip_files_id);
+        }
+
+        public static List<VideoObjectCount> GetRdObjectCount(List<Int64> fileIDs)
+        {
+            return Container.Resolve<IRdStructureRepository>().GetRdObjectCount(fileIDs);
+        }
+
+        public static List<VideoObject> GetRdObjectKm(string km, string trip_files)
+        {
+            return Container.Resolve<IRdStructureRepository>().GetRdObjectKm(km, trip_files);
+        }
+
+        public static List<Digression> PoorKilometers(Int64 processId, string distanceName, int[] typ)
+        {
+            return Container.Resolve<IRdStructureRepository>().PoorKilometers(processId, distanceName, typ);
+        }
+
+        public static List<Digression> AverageScoreDepartments(Int64 processId, string distanceName, int[] typ)
+        {
+            return Container.Resolve<IRdStructureRepository>().AverageScoreDepartments(processId, distanceName, typ);
+        }
+
+
+        public static List<Digression> DeviationsRailRailing(Int64 processId, string distanceName, int[] typ)
+        {
+            return Container.Resolve<IRdStructureRepository>().DeviationsRailRailing(processId, distanceName, typ);
+        }
+
+        public static List<Digression> ControlAdjustmentProtocol(Int64 processId, string distanceName, int[] typ)
+        {
+            return Container.Resolve<IRdStructureRepository>().ControlAdjustmentProtocol(processId, distanceName, typ);
+        }
+
+        public static List<Digression> DeviationsToDangerous(Int64 processId, string distanceName, int[] typ)
+        {
+            return Container.Resolve<IRdStructureRepository>().DeviationsToDangerous(processId, distanceName, typ);
+        }
+
+        public static List<Digression> DeviationOfPRZH(Int64 processId, string distanceName, int[] typ)
+        {
+            return Container.Resolve<IRdStructureRepository>().DeviationOfPRZH(processId, distanceName, typ);
+        }
+
+        public static List<Digression> DerogationsIsostsAndJointless(Int64 processId, string distanceName, int[] typ)
+        {
+            return Container.Resolve<IRdStructureRepository>().DerogationsIsostsAndJointless(processId, distanceName, typ);
+        }
+
+        public static List<Digression> DeviationsRailHeadWear(Int64 processId, string distanceName, int[] typ)
+        {
+            return Container.Resolve<IRdStructureRepository>().DeviationsRailHeadWear(processId, distanceName, typ);
+        }
+        
+        public static List<Digression> TrackDeviations(Int64 processId, string distanceName, int[] typ)
+        {
+            return Container.Resolve<IRdStructureRepository>().TrackDeviations(processId, distanceName, typ);
+        }
+
+        public static List<VideoObject> GetRdObjectKm(string object_id, string km, string trip_files)
+        {
+            return Container.Resolve<IRdStructureRepository>().GetRdObjectKm(object_id, km, trip_files);
+        }
+
+        public static List<Digression> GetDigressions3and4(Int64 processId, string distanceName, int[] typ)
+        {
+            return Container.Resolve<IRdStructureRepository>().GetDigressions3and4(processId, distanceName, typ);
+        }
+
+		public static Trips GetTrip(long trip_id)
+        {
+            return Container.Resolve<IRdStructureRepository>().GetTrip(trip_id);
+        }
+        public static object GetTrips(Int64 process_id)
+        {
+            return Container.Resolve<IRdStructureRepository>().GetTrips(process_id);
+        }
+
+        public static object GetTrips(List<Int64> directionIDs, int rd_lvl)
+        {
+            return Container.Resolve<IRdStructureRepository>().GetTrips(directionIDs, rd_lvl);
+        }
+
+        public static List<Digression> GetDigressions(Int64 processId, string distanceName, int[] typ)
+        {
+            return Container.Resolve<IRdStructureRepository>().GetDigressions(processId, distanceName, typ);
+        }
+
+        public static List<Digression> GetDigressions(MainParametersProcess process, int[] typ)
+        {
+            return Container.Resolve<IRdStructureRepository>().GetDigressions(process, typ);
+        }
+
+        public static List<RdClasses> GetRdClasses()
+        {
+            return Container.Resolve<IRdStructureRepository>().GetRdClasses();
+        }
+
+        public static RdClasses GetRdClasses(int class_id)
+        {
+            return Container.Resolve<IRdStructureRepository>().GetRdClasses(class_id);
+        }
+
+        public static object GetAdmDirection(List<Int64> directionIDs)
+        {
+            return Container.Resolve<IRdStructureRepository>().GetAdmDirection(directionIDs);
+        }
+
+        public static List<MainParametersProcess> GetMainParametersProcess()
+        {
+            return Container.Resolve<IRdStructureRepository>().GetMainParametersProcess();
+        }
+
+        public static MainParametersProcess GetMainParametersProcess(Int64 process_id)
+        {
+            return Container.Resolve<IRdStructureRepository>().GetMainParametersProcess(process_id);
+        }
+
+        public static List<MainParametersProcess> GetMainParametersProcesses(ReportPeriod period, Int64 distance_id)
+        {
+            return Container.Resolve<IRdStructureRepository>().GetMainParametersProcesses(period, distance_id);
+        }
+
+        public static List<MainParametersProcess> GetMainParametersProcess(ReportPeriod period, string distanceName)
+        {
+            return Container.Resolve<IRdStructureRepository>().GetMainParametersProcess(period, distanceName);
+        }
+
+        public static object GetS3(Int64 processId)
+        {
+            return Container.Resolve<IRdStructureRepository>().GetS3(processId);
+        }
+        public static object GetS3all(Int64 processId, string pch)
+        {
+            return Container.Resolve<IRdStructureRepository>().GetS3all(processId, pch);
+        }
+
+        public static object GetS3(Int64 processId, int type)
+        {
+            return Container.Resolve<IRdStructureRepository>().GetS3(processId, type);
+        }
+        public static object GetDBD(Int64 processId)
+        {
+            return Container.Resolve<IRdStructureRepository>().GetDBD(processId);
+        }
+
+        public static object GetBedemost(Int64 processId)
+        {
+            return Container.Resolve<IRdStructureRepository>().GetBedemost(processId);
+        }
+
+        public static object GetRdProfileObjects(long trackId, DateTime date, int type, int start_km, int start_m, int final_km, int final_m)
+        {
+            return Container.Resolve<IRdStructureRepository>().GetRdProfileObjects(trackId, date, type, start_km, start_m, final_km, final_m);
+        }
+
+        public static object GetRdTables(MainParametersProcess process, int type_id)
+        {
+            return Container.Resolve<IRdStructureRepository>().GetRdTables(process, type_id);
+        }
+
+        public static bool CleanTables(int type)
+        {
+            return Container.Resolve<IRdStructureRepository>().CleanTables(type);
+        }
+        public static List<MainParametersProcess> GetProcess(ReportPeriod period, long distanceId, ProcessType processType)
+        {
+            return Container.Resolve<IRdStructureRepository>().GetProcess(period, distanceId, processType);
+        }
+        public static List<RailFastener> GetBadRailFasteners(long tripId, bool orderBySide)
+        {
+            return Container.Resolve<IRdStructureRepository>().GetBadRailFasteners(tripId, orderBySide);
+        }
+		public static CurveParams GetCurveParams(long curveId)
+        {
+            return Container.Resolve<IRdStructureRepository>().GetCurveParams(curveId);
+        }
+
+        public static SiteInfo GetSiteInfo(long trackId, int startKm, int finalKm)
+        {
+            return Container.Resolve<IRdStructureRepository>().GetSiteInfo(trackId, startKm, finalKm);
+        }
+
+        public static List<AdmTrack> GetTracksOnTrip(long tripId)
+        {
+            return Container.Resolve<IRdStructureRepository>().GetTracksOnTrip(tripId);
+        }
+
+        public static List<Trips> GetTripsOnDistance(long distanceId, ReportPeriod period)
+        {
+            return Container.Resolve<IRdStructureRepository>().GetTripsOnDistance(distanceId, period);
+        }
+
+        public static List<Curve> GetCurvesAsTripElems(long trackId, DateTime date, int start_km, int start_m, int final_km, int final_m)
+        {
+            return Container.Resolve<IRdStructureRepository>().GetCurvesAsTripElems(trackId, date, start_km, start_m, final_km, final_m);
+        }
+
+        public static object GetTripSections(long trackId, DateTime date, int type)
+        {
+            return Container.Resolve<IRdStructureRepository>().GetTripSections(trackId, date, type);
+        }
+
+        public static object GetTripSections(long trackId, DateTime date, int start_km, int start_m, int final_km, int final_m, int type)
+        {
+            return Container.Resolve<IRdStructureRepository>().GetTripSections(trackId, date, start_km, start_m, final_km, final_m, type);
+        }
+        public static List<Trips> GetTrips(int count = 10)
+        {
+            return Container.Resolve<IRdStructureRepository>().GetTrips(count);
+        }
+    }
+}

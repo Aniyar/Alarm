@@ -1,0 +1,123 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ALARm.Core.Report
+{
+    public class Digression : RdObject
+    {
+        public int M { get; set; }
+        public int Otkl { get; set; }
+        public int Len { get; set; }
+        public int Velich { get; set; }
+        public string Direction { get; set; }
+        public string Track { get; set; }
+        public string PCHU { get; set; }
+        public string PD { get; set; }
+        public string PDB { get; set; }
+        public DateTime FoundDate { get; set; }
+        public string Name { get; set; }
+        public float Value { get; set; }
+        public int Length { get; set; }
+        public int Count { get; set; }
+        public object Typ { get; set; }
+        public string FullSpeed { get; set; }
+        public string AllowSpeed { get; set; }
+
+        public string Norma { get; set; } = "1520";
+        public string Primech { get; set; }
+        public Int64 Process_id { get; set; }
+        public string Pch { get; set; }
+        public int AvgBall { get; set; }
+        public string PdCount { get; set; }
+        public int Kmetr { get; set; }
+        public float Lkm { get; set; }
+        public DigressionName DigName { get; set; }
+        public Threat Threat { get; set; }
+        public string StationName { get; set; }
+        public string BraceType { get; set; }
+        public int CurveRadius { get; set; }
+        public string ThreadSide { get; set; }
+        public string RailType { get; set; }
+        public string TrackClass { get; set; }
+
+        public string GetName()
+        {
+            return Properties.Resources.ResourceManager.GetString(DigName.ToString());
+        }
+        public Location Location { get; set; }
+    }
+
+    public class   DigressionMark {
+        public DigressionName Digression { get; set; } = DigressionName.Undefined;
+        public int Meter { get; set; }
+        public int Km { get; set; }
+        public int Degree { get; set; }
+        public int Length { get; set; }
+        public float Value { get; set; }
+        public int Count { get; set; }
+        public string DigName { get; set; }
+        public string LimitSpeed { get; set; }
+        public string GetDigName(DigressionName dig)
+        {
+            return Digression == DigressionName.Undefined ? (DigName != null ? DigName : "-") : Properties.Resources.ResourceManager.GetString(dig.ToString());
+        }
+        public override string ToString()
+        {
+            return Properties.Resources.ResourceManager.GetString(Digression.ToString());
+        }
+        public void DigNameToDigression(string digName)
+        {
+            switch (digName)
+            {
+                case string digname when digname.Equals(GetDigName(DigressionName.DrawdownRight)):
+                    Digression = DigressionName.DrawdownRight;
+                    break;
+                case string digname when digname.Equals(GetDigName(DigressionName.DrawdownLeft)):
+                    Digression = DigressionName.DrawdownLeft;
+                    break;
+                case string digname when digname.Equals(GetDigName(DigressionName.Level)):
+                    Digression = DigressionName.Level;
+                    break;
+                case string digname when digname.Equals(GetDigName(DigressionName.Strightening)):
+                    Digression = DigressionName.Strightening;
+                    break;
+                case string digname when digname.Equals(GetDigName(DigressionName.Sag)):
+                    Digression = DigressionName.Sag;
+                    break;
+                case string digname when digname.Equals(GetDigName(DigressionName.Broadening)):
+                    Digression = DigressionName.Broadening;
+                    break;
+                case string digname when digname.Equals(GetDigName(DigressionName.Constriction)):
+                    Digression = DigressionName.Constriction;
+                    break;
+
+            }
+        }
+}
+
+    public enum DigressionName
+    {
+        Undefined = -1, TreadTiltLeft = 0, TreadTiltRight = 1, DownhillLeft = 2, DownhillRight = 3, Strightening = 4, Level = 5, Sag = 6, Ramp = 7, RampNear = 8, SpeedUp = 9, 
+        PatternRetraction = 10, NoneStrigtSide =11, DrawdownLeft = 12, DrawdownRight = 13, Broadening = 14, Constriction = 15, StrighteningLeft = 16, StrighteningRight = 17,
+        ShortWaveLeft = 101, ShortWaveRight = 102, MiddleWaveRight = 103, MiddleWaveLeft = 104, LongWaveRight = 105, LongWaveLeft = 106, ImpulsLeft = 107, ImpulsRight = 108,
+        FusingGap = 109, Gap = 110, AnomalisticGap = 111,
+        SideWearLeft = 120, SideWearRight = 121, VertIznosL = 122, VertIznosR = 123, ReducedWearLeft = 124, ReducedWearRight = 125,
+        BrokenBasePlate = 200, ClampUnderRail = 201, BrokenMainBolts = 202, MissingArsClamp = 203, Missing2OrMoreMainSpikes = 204, BrokenArsClamp = 205, MissingClamp = 206,
+        KNS = 207,
+        BallastNotEnough = 1014, BallastOverage = 1015,
+        LongitudinalCrack = 1017, SplitsAtTheEnds = 1018, PrickingOutPiecesOfWood = 1019, FractureOfRCSleeper = 1020,
+        BushBadnessOfSleepers = 1021, PercentageBadnessOfSleepers = 1022
+    }
+    public enum Location
+    {
+        OnStrightSection = 0, //прямой участок или кривой радиусом более 650 метров
+        OnCurveSection = 1, // на кривом участке с радиусом 650 метров или менее
+        OnSwitchSection = 2 // на рамном рельсе, в крестовине или контррельсовом рельсе стрелочного перевода
+
+    }
+
+}
+

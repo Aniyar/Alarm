@@ -1,0 +1,309 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AnomalisticGap" xml:space="preserve">
+    <value>АРЗ</value>
+  </data>
+  <data name="Base" xml:space="preserve">
+    <value>Базовая</value>
+  </data>
+  <data name="Boiler" xml:space="preserve">
+    <value>Котлом</value>
+  </data>
+  <data name="Broadening" xml:space="preserve">
+    <value>Уш</value>
+  </data>
+  <data name="BrokenArsClamp" xml:space="preserve">
+    <value>Излом упруой клемми</value>
+  </data>
+  <data name="BrokenBasePlate" xml:space="preserve">
+    <value>излом подкладки</value>
+  </data>
+  <data name="BrokenMainBolts" xml:space="preserve">
+    <value>излом закладных болтов</value>
+  </data>
+  <data name="ClampUnderRail" xml:space="preserve">
+    <value>Клемма под подошвой рельса</value>
+  </data>
+  <data name="Constriction" xml:space="preserve">
+    <value>Суж</value>
+  </data>
+  <data name="D65_NoPad" xml:space="preserve">
+    <value>Отсутствие скрепления</value>
+  </data>
+  <data name="Degree3" xml:space="preserve">
+    <value>3ст</value>
+  </data>
+  <data name="Direct" xml:space="preserve">
+    <value>Прямой</value>
+  </data>
+  <data name="DownhillLeft" xml:space="preserve">
+    <value>Пу.л.</value>
+  </data>
+  <data name="DownhillRight" xml:space="preserve">
+    <value>Пу.п.</value>
+  </data>
+  <data name="DrawdownLeft" xml:space="preserve">
+    <value>Пр.л</value>
+  </data>
+  <data name="DrawdownRight" xml:space="preserve">
+    <value>Пр.п</value>
+  </data>
+  <data name="DS" xml:space="preserve">
+    <value>DS</value>
+  </data>
+  <data name="FusingGap" xml:space="preserve">
+    <value>СЗ</value>
+  </data>
+  <data name="Gap" xml:space="preserve">
+    <value>З</value>
+  </data>
+  <data name="Gauge10" xml:space="preserve">
+    <value>Ш10</value>
+  </data>
+  <data name="GBRNoPad" xml:space="preserve">
+    <value>Отсутствие скрепления</value>
+  </data>
+  <data name="ImpulsLeft" xml:space="preserve">
+    <value>ИН.л</value>
+  </data>
+  <data name="ImpulsRight" xml:space="preserve">
+    <value>ИН.п</value>
+  </data>
+  <data name="KB65_MissingClamp" xml:space="preserve">
+    <value>Отсутствие болта</value>
+  </data>
+  <data name="KB65_NoPad" xml:space="preserve">
+    <value>Отсутствие скрепления</value>
+  </data>
+  <data name="KD65NB" xml:space="preserve">
+    <value>Отсутствие болта</value>
+  </data>
+  <data name="KNS" xml:space="preserve">
+    <value>КНС</value>
+  </data>
+  <data name="KppNoPad" xml:space="preserve">
+    <value>Отсутствие скрепления</value>
+  </data>
+  <data name="Level" xml:space="preserve">
+    <value>У</value>
+  </data>
+  <data name="LongWaveLeft" xml:space="preserve">
+    <value>ДВ.л</value>
+  </data>
+  <data name="LongWaveRight" xml:space="preserve">
+    <value>ДВ.п</value>
+  </data>
+  <data name="MiddleWaveLeft" xml:space="preserve">
+    <value>СВ.л</value>
+  </data>
+  <data name="MiddleWaveRight" xml:space="preserve">
+    <value>СВ.п</value>
+  </data>
+  <data name="Missing2OrMoreMainSpikes" xml:space="preserve">
+    <value>отсутствие двух или более пришивочных костылей</value>
+  </data>
+  <data name="MissingArsClamp" xml:space="preserve">
+    <value>отсутствие упругой клеммы</value>
+  </data>
+  <data name="MissingClamp" xml:space="preserve">
+    <value />
+  </data>
+  <data name="NoneStrightening" xml:space="preserve">
+    <value>Рнр</value>
+  </data>
+  <data name="NoneStrigtSide" xml:space="preserve">
+    <value>рн</value>
+  </data>
+  <data name="P350MissingClamp" xml:space="preserve">
+    <value>Отсутствие болта</value>
+  </data>
+  <data name="PatternRetraction" xml:space="preserve">
+    <value>Oтв.ш</value>
+  </data>
+  <data name="Psi" xml:space="preserve">
+    <value>Пси</value>
+  </data>
+  <data name="PsiNear" xml:space="preserve">
+    <value>?Пси</value>
+  </data>
+  <data name="Ramp" xml:space="preserve">
+    <value>Укл</value>
+  </data>
+  <data name="RampNear" xml:space="preserve">
+    <value>?Уkл</value>
+  </data>
+  <data name="ReducedWearLeft" xml:space="preserve">
+    <value>Ип.л</value>
+  </data>
+  <data name="ReducedWearRight" xml:space="preserve">
+    <value>Ип.п</value>
+  </data>
+  <data name="Reverse" xml:space="preserve">
+    <value>Обратный</value>
+  </data>
+  <data name="Sag" xml:space="preserve">
+    <value>П</value>
+  </data>
+  <data name="ShortWaveLeft" xml:space="preserve">
+    <value>КВ.л</value>
+  </data>
+  <data name="ShortWaveRight" xml:space="preserve">
+    <value>КВ.п</value>
+  </data>
+  <data name="SideWearLeft" xml:space="preserve">
+    <value>Иб.л</value>
+  </data>
+  <data name="SideWearRight" xml:space="preserve">
+    <value>Иб.п</value>
+  </data>
+  <data name="SklNoPad" xml:space="preserve">
+    <value>Отсутствие скрепления</value>
+  </data>
+  <data name="SpeedUp" xml:space="preserve">
+    <value>Анп</value>
+  </data>
+  <data name="SpeedUpNear" xml:space="preserve">
+    <value>?Анп</value>
+  </data>
+  <data name="Strightening" xml:space="preserve">
+    <value>Р</value>
+  </data>
+  <data name="StrighteningLeft" xml:space="preserve">
+    <value>Р</value>
+  </data>
+  <data name="StrighteningRight" xml:space="preserve">
+    <value>Р</value>
+  </data>
+  <data name="TreadTiltLeft" xml:space="preserve">
+    <value>Нпк.л</value>
+  </data>
+  <data name="TreadTiltRight" xml:space="preserve">
+    <value>Нпк.п</value>
+  </data>
+  <data name="VertIznosL" xml:space="preserve">
+    <value>Ив.л</value>
+  </data>
+  <data name="VertIznosR" xml:space="preserve">
+    <value>Ив.п</value>
+  </data>
+  <data name="WW" xml:space="preserve">
+    <value>Отсутствие упругой клеммы</value>
+  </data>
+</root>

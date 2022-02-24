@@ -1,0 +1,91 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using ALARm.Core.AdditionalParameteres;
+using ALARm.Core.Report;
+
+namespace ALARm.Core
+{
+    public interface IRdStructureRepository
+    {
+        List<Int64> GetAdmDirectionIDs(Int64 distance_id);
+        List<VideoObject> GetRdObject();
+        List<ReportTemplate> GeReportTemplates(int repType);
+        List<VideoObject> GetRdObject(int object_id, int km, Int64 file_id);
+        List<VideoObject> GetRdObject(string object_id, string trip_files);
+        List<VideoObject> GetRdObjectKm(string km, string trip_files);
+        List<VideoObject> GetRdObjectKm(string object_id, string km, string trip_files);
+        List<VideoObject> GetVideoObjects(string obj_name, MainParametersProcess process);
+        Trips GetTrip(long trip_id);
+        object GetTrips(Int64 process_id);
+        object GetTrips(List<Int64> directionIDs, int rd_lvl);
+        List<RdClasses> GetRdClasses();
+        List<Catalog> GetCatalog(int catType);
+        RdClasses GetRdClasses(int class_i);
+        List<Kilometer> GetKilometersByProcessId(Int64 processId);
+        List<VideoObjectCount> GetRdObjectCount(Int64 trip_files_id);
+        List<VideoObjectCount> GetRdObjectCount(List<Int64> fileIDs);
+        object GetAdmDirection(List<Int64> directionIDs);
+        List<MainParametersProcess> GetMainParametersProcess();
+        List<MainParametersProcess> GetMainParametersProcesses(ReportPeriod period, Int64 distance_id);
+        List<MainParametersProcess> GetAdditionalParametersProcess(ReportPeriod process_id);
+        MainParametersProcess GetMainParametersProcess(Int64 process_id);
+        List<ReportPeriod> GetReportPeriods(long distanceId);
+        List<MainParametersProcess> GetMainParametersProcess(ReportPeriod period, string distanceName);
+        List<Digression> GetDigressions(Int64 processId, string distanceName, int[] typ);
+        List<Digression> GetDigressions(MainParametersProcess process, int[] typ);
+        object GetS3(Int64 processId);
+        object GetS3(Int64 processId, int type);
+        object GetBedemost(Int64 processId);
+        List<Curve> GetCurves(Int64 processId);
+        CurveParams GetCurveParams(long curveId);
+        List<Gaps> GetGaps(Int64 processId);
+        object GetRdProfileObjects(long trackId, DateTime date, int type, int start_km, int start_m, int final_km, int final_m);
+        object GetRdTables(MainParametersProcess process, int type_id);
+        bool CleanTables(int type);
+
+        List<Digression> GetDigressions3and4(Int64 processId, string distanceName, int[] typ);
+        List<Digression> TrackDeviations(Int64 processId, string distanceName, int[] typ);
+        List<Digression> DeviationsRailHeadWear(Int64 processId, string distanceName, int[] typ);
+        List<Digression> DerogationsIsostsAndJointless(Int64 processId, string distanceName, int[] typ);
+		object SumOfTheDep(long processId);
+        List<Digression> DeviationOfPRZH(Int64 processId, string distanceName, int[] typ);
+        List<Digression> DeviationsToDangerous(Int64 processId, string distanceName, int[] typ);
+        List<Digression> DeviationsRailRailing(Int64 processId, string distanceName, int[] typ);
+        List<Digression> ControlAdjustmentProtocol(Int64 processId, string distanceName, int[] typ);
+        List<Digression> AverageScoreDepartments(Int64 processId, string distanceName, int[] typ);
+        List<Digression> PoorKilometers(Int64 processId, string distanceName, int[] typ);
+        object GetS3all(Int64 processId, string pch);
+        object GetDBD(Int64 processId);
+        List<Kilometer> GetKilometersByTripId(long trip_id);
+        int InsertTrip(Trips trip);
+        bool GetButtonState(string name);
+        void SetButtonStatus(string name, bool state);
+        void CloseTrip(long tripId);
+        Trips GetCurrentTrip();
+        List<Fragment> GetTripFragments(long id);
+        List<MainParametersProcess> GetProcess(ReportPeriod period, long distanceId, ProcessType processType);
+        List<RailFastener> GetBadRailFasteners(long tripId, bool orderBySide);
+        SiteInfo GetSiteInfo(long trackId, int startKm, int finalKm);
+        List<AdmTrack> GetTracksOnTrip(long tripId);
+        List<Trips> GetTripsOnDistance(long distanceId, ReportPeriod period);
+        List<Curve> GetCurvesAsTripElems(long trackId, DateTime date, int start_km, int start_m, int final_km, int final_m);
+        object GetTripSections(long trackId, DateTime date, int type);
+        object GetTripSections(long trackId, DateTime date, int start_km, int start_m, int final_km, int final_m, int type);
+        List<Trips> GetTripsByRoad(Int64 road_id, ReportPeriod period, int trip_type);
+        List<ReportPeriod> GetTripPeriodsByRoad(long road_id);
+        List<OutData> GetNextOutDatas(int meter, int count, long trip_id);
+        int GetDistanceBetweenCoordinates(int start_km, int start_m, int final_km, int final_m, long track_id, DateTime trip_date);
+        ReportTemplate GetReportTemplate(string className);
+        void ClearBedemost(long id);
+        List<Trips> GetTrips(int count = 10);
+        int InsertKilometer(Kilometer km);
+        List<DigressionMark> GetDigressionMarks(long trip_id,int km, long track_id, int[] type);
+        List<Gap> GetGaps(long tripId, GapSource source, int km);
+        List<int> GetKilometerTrip(long trip_id);
+
+
+    }
+}

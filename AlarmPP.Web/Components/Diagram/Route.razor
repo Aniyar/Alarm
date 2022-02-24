@@ -1,0 +1,102 @@
+﻿@inject IMatToaster Toaster
+@if (Source != null)
+{<div style="max-height: 300px; overflow-y: scroll; width: 100%; height: calc(100% - (50px))">
+        
+            
+     <p class="margin-1">
+         <label style=@($"width:{(Short ? 62 : 65)}px;margin:0px;")>Счет км</label>
+         <label style=@($"width:{(Short ? 50 : 220)}px;margin:2px;")>Путь</label>
+         <label style="width:@(Short ? 42: 70)px;margin:0px;">Нач.км</label>
+         <label style="width:@(Short ? 40: 70)px;margin:0px;">Нач.м</label>
+         <label style="width:@(Short ? 42: 70)px;margin:0px;">Кон.км</label>
+         <label style="width:@(Short ? 40: 70)px;margin:0px;">Кон.м</label>
+     </p>
+            @foreach (var fragment in Source)
+            {
+ <p class="margin-1">
+     <CascadingValue Value="this">
+         <DirectionSelect  Fragment="@fragment"></DirectionSelect>
+     </CascadingValue>
+     
+     <select @onchange="e => TrackChanged(e, fragment)" disabled="@(Source.IndexOf(fragment) != Source.Count() - 1 && !(fragment.Editable && Editable))" Style=@($"width:{ (Short ? 50 : 220)}px;background-color:white;")>
+         <option style="background-color: #30D5C8" value="-1"></option>
+         @if (fragment.AdmTracks != null)
+             foreach (var admTrack in fragment.AdmTracks)
+             {
+                 <option selected="@(fragment.Track_Id == admTrack.Id)" style=@($"background-color:{(admTrack.Parent_Id == -1 ? "#FDEAA8" : "#30D5C8")}") value="@admTrack.Id">@($@"{admTrack.Code} ({admTrack.Belong})")</option>
+             }
+         @if (fragment.StationTracks != null)
+             foreach (var stationTrack in fragment.StationTracks)
+             {
+                 <option selected="@(fragment.Track_Id == stationTrack.Adm_track_id)" style=@($"background-color:{(stationTrack.Stw_park_id > -1 ? "#FDEAA8" : "#98FF98")}") value="@stationTrack.Adm_track_id">@($@"{stationTrack.Code} ({stationTrack.Belong})")</option>
+             }
+     </select>
+     <select @onchange="e=>SelectFragmentFinal(e, fragment)" disabled="@(fragment.Direction==ALARm.Core.Direction.NotDefined)" Style=@($"width:{ (Short ? 50 : 220)}px;background-color:white;")>
+         <option style="background-color: #30D5C8" value="-1"></option>
+         @{ var ni = 0;
+             foreach(var next in fragment.NextFragments)
+             {
+              
+             if (next.AdmTracks != null)
+                 foreach (var admTrack in next.AdmTracks)
+                 {
+                     <option selected="@(next.Track_Id == admTrack.Id)" style=@($"background-color:{(admTrack.Parent_Id == -1 ? "#FDEAA8" : "#30D5C8")}") value="@($"{admTrack.Id}-{next.Start_Km}-{next.Start_M}-{fragment.NextFragments.IndexOf(next)}")">@($@"{admTrack.Code} ({admTrack.Belong}) {next.Start_Km}-{next.Start_M}")</option>
+                 }
+             if (next.StationTracks != null)
+                 foreach (var stationTrack in next.StationTracks)
+                 {
+                     <option selected="@(next.Track_Id == stationTrack.Adm_track_id)" style=@($"background-color:{(stationTrack.Stw_park_id > -1 ? "#FDEAA8" : "#98FF98")}") value="@stationTrack.Adm_track_id">@($@"{stationTrack.Code} ({stationTrack.Belong})")</option>
+                     }
+             }
+             ni++;
+             }
+     </select>
+     <input disabled="@(!(fragment.Editable && Editable))" Style="width:42px;background-color:white;" @bind="@fragment.Start_Km"></input>
+     <input disabled="@(!(fragment.Editable && Editable))" Style="width:40px;background-color:white;" @bind="@fragment.Start_M"> </input>
+     <input disabled="@(!(fragment.Editable  && Editable))" Style="width:42px;background-color:white;" @bind="@fragment.Final_Km"></input>
+     <input disabled="@(!(fragment.Editable  && Editable))" Style="width:40px;background-color:white;" @bind="@fragment.Final_M"> </input>
+     @if (Editable)
+     {
+         <AlarmButton Symbol="" Tooltip="Редактировать" OnClick="_=>DoFragmentEditable(fragment)"></AlarmButton>
+         @if (AppData.Trip.Route.IndexOf(fragment) > 0)
+         {
+             <AlarmButton Symbol="" Tooltip="Удалить" OnClick="_ => { CurrentFragment = fragment; deleteDialog = true; }"></AlarmButton>
+         }
+
+         @if (Source.IndexOf(fragment) == Source.Count() - 1)
+         {
+             <AlarmButton Symbol="" Tooltip="Добавить" OnClick="_=>GetNextTracks(fragment)"></AlarmButton>
+             if (CommonTracks != null)
+                 if (CommonTracks.Contains(fragment.Track_Id))
+                 {
+                     <AlarmButton Symbol="" Tooltip="До конечной станции" OnClick="_=>ToFinalStation(fragment)"></AlarmButton>
+                 }
+         }
+     }
+ </p>
+            }
+        
+    </div>
+    <!--Предупреждение при редактировании-->
+    <MatSnackbar @bind-IsOpen="@editDialog" Stacked="true">
+        <MatSnackbarContent>Редактирование приведет к удалению всех фрагментов ниже.</MatSnackbarContent>
+        <MatSnackbarActions>
+            <MatButton Raised="true" OnClick="_=> { CurrentFragment.Editable = false; editDialog = false; }">Отменить редактирование</MatButton>
+        </MatSnackbarActions>
+    </MatSnackbar>
+    <!--Предупреждение пр  удалении-->
+    <MatDialog @bind-IsOpen="@deleteDialog">
+        <MatDialogTitle>удаление фрагмента </MatDialogTitle>
+        <MatDialogContent>
+            <p>Удаление текущего фрагмента приведет к удалению всех фрагментов ниже.</p>
+            <p>Продолжить удаление?</p>
+
+        </MatDialogContent>
+        <MatDialogActions>
+            <MatButton OnClick="@(e => { deleteDialog = false; })">Отменить</MatButton>
+            <MatButton OnClick="@(_=> DeleteFrom(CurrentFragment,true))">OK</MatButton>
+        </MatDialogActions>
+    </MatDialog>
+
+}
+
