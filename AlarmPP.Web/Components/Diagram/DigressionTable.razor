@@ -3,7 +3,7 @@
 @inject IMatToaster Toaster
 @using ALARm.Core.Report
 
-<table style="height:100%;border-collapse: collapse;">
+<table style="height:100%;border-collapse: collapse; ">
     <thead style="display:block; height:25px;">
         <tr>
             <th style="border-right: 1px solid grey; width:35px;">N</th>
@@ -94,19 +94,37 @@
                         int metre = kilometer.Direction == ALARm.Core.Direction.Direct ? digression.Meter + digression.Length / 2 : kilometer.Length - digression.Meter - digression.Length / 2;
                         int pos = currentKMPosition + metre;
                         int index = rowIndex;
+                        digression.TrackName = kilometer.Track_name;
                         if (AppData.ShowDigressions || AppData.ShowCloseToDangerous)
                         {
-                            if ((digression.Degree == 4) && (AppData.ShowDangerousDigressions) ||
+                            if ((digression.Degree == 4 || (digression.Degree == 3 && closeToDangerGR.Contains(digression.Comment)))  && (AppData.ShowDangerousDigressions) ||
                                    (digression.Degree == 3) && (AppData.Show3DegreeDigressions) ||
                                    (digression.Degree == 2) && (AppData.Show2DegreeDigressions) ||
                                    (digression.Degree == 1) && (AppData.Show1DegreeDigressions) ||
                                    (closeToDangerGR.Contains(digression.Comment) && AppData.ShowCloseToDangerous))
                             {
                                 var color = digression.Degree == 4 ? "red" : digression.Degree == 3 ? "yellow" : digression.Degree == 2 ? "green" : "white";
-                                if (closeToDangerGR.Contains(digression.DigName) && AppData.ShowCloseToDangerous)
+
+                                if (closeToDangerGR.Contains(digression.Comment) && AppData.ShowCloseToDangerous)
                                 {
                                     color = "red";
+
+
                                 }
+                                if (!digression.gotprim)
+                                {
+                                    digression.NewBedemostComment = AppData.RdStructureRepository.GetPrimech(digression);
+                                    if (digression.Comment.Contains("гр"))
+                                    {
+                                        digression.LimitSpeed = "-/60";
+                                        digression.FreightSpeedLimit = 60;
+                                        digression.PassengerSpeedLimit = -1;
+
+                                    }
+                                    digression.gotprim = true;
+                                }
+
+
                                 <tr style="background:@(CurrentRow == index ? "#75d2ff" : color)" @onmousedown="@(_ => GoToMark(pos, index))">
                                     <td style="border-right: 1px solid grey; text-align: left; width: 35px;">@rowIndex</td>
                                     <td style="border-right: 1px solid grey; text-align: left; width: 35px;">@kilometer.Number</td>
@@ -115,14 +133,16 @@
                                     <td style="border-right: 1px solid grey;   width:90px; text-align:right">@digression.Degree</td>
                                     <td style="border-right: 1px solid grey; width: 125px;">@digression.Value</td>
                                     <td style="border-right: 1px solid grey; width: 125px;">@digression.Length</td>
-                                    @if (digression.Comment != null)
+                                    @*@if (digression.Comment != null)
                                     {
-                                        <td style="border-right: 1px solid grey; width: 125px;">@(digression.Comment.Contains("гр")? "-/60" : digression.LimitSpeed)</td>
+                                       //  <td style="border-right: 1px solid grey; width: 125px;">@((digression.Comment.Contains("гр") && !digression.LimitSpeed.Equals("-/-")) ? "-/60" : digression.LimitSpeed)</td>
+                                        
                                     }
                                     else
                                     {
                                         <td style="border-right: 1px solid grey; width: 125px;">@digression.LimitSpeed</td>
-                                    }
+                                    }*@
+                                    <td style="border-right: 1px solid grey; width: 125px;">@digression.LimitSpeed</td>
 
                                     <td>
 
@@ -395,6 +415,8 @@
         <MatNumericUpDownField ReadOnly="true" @bind-Value="digression.Length" Label="Длина" Style="width:45%" TextArea="true" Outlined="true"></MatNumericUpDownField>
         <MatTextField @bind-Value="digression.PassengerSpeedLimit" Label="Огр.ск.пасс.(-1 если нет огр.)" Style="width:45%" TextArea="true" Outlined="true"></MatTextField>
         <MatTextField @bind-Value="digression.FreightSpeedLimit" Label="Огр.ск.груз.(-1 если нет огр.)" Style="width:45%" TextArea="true" Outlined="true"></MatTextField>
+        <MatTextField @bind-Value="digression.NewBedemostComment" Label="Примечание" Style="width:45%" Outlined="true"></MatTextField>
+
 
     </MatDialogContent>
     <MatDialogActions>
@@ -417,7 +439,7 @@
     </MatDialogActions>
 </MatDialog>
 
-<MatDialog @bind-IsOpen="@GapEditDialog" Stacked="true">
+<MatDialog @bind-IsOpen="@GapEditDialog" Stacked="true" Style="z-index : 1000">
     <MatDialogTitle>Корректировка стыкового зазора</MatDialogTitle>
     <MatDialogContent>
         <br />
@@ -824,10 +846,10 @@
     <MatDialogActions>
         @*<MatButton Raised="true" OnClick="_=> { DigressionImageDialog = false;}">Редактировать</MatButton>*@
 
-        @*@if (AppData.ShowGaps)
+        @if (AppData.ShowGaps)
             {
-                <MatButton Raised="true" OnClick="() => UpdateGapAsync(digressionGap)" Style="margin-right: .5rem">Сохранить</MatButton>
-            }*@
+                <MatButton Raised="true" OnClick="() => ModifyGapClick(digressionGap)" Style="margin-right: .5rem">Сохранить</MatButton>
+            }
         <MatButton Raised="true" OnClick="_=> { DigressionImageDialog = false;}">Закрыть</MatButton>
     </MatDialogActions>
 </MatDialog>

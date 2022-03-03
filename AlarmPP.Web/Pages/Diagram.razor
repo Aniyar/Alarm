@@ -188,12 +188,17 @@
                             <i class="demo-icon icon-dg-joint" style="@(AppData.ShowJoints ? AppData.PressedButtonState : "")">&#xe812;</i>
                         </MatFAB>
                     </MatTooltip>
+                    <MatTooltip Tooltip="Прибивки" Wrap="true">
+                        <MatFAB Mini="true" Style="border-radius:10%;box-shadow:none;" OnClick="@(_ => SetShowStatus(Services.ShowButtons.Correction))">
+                            <i class="demo-icon icon-dg-correction" style="@(AppData.ShowCorrection ? AppData.PressedButtonState : "")">&#xe812;</i>
+                        </MatFAB>
+                    </MatTooltip>
 
-                    <MatTooltip Tooltip="Поперечный профиль рельса" Wrap="true">
+                    @*<MatTooltip Tooltip="Поперечный профиль рельса" Wrap="true">
                         <MatFAB Mini="true" Style="border-radius:10%;box-shadow:none;" OnClick="@(_ => SetShowStatus(Services.ShowButtons.RailProfile))">
                             <i class="demo-icon icon-dg-rail-profile" style="@(AppData.ShowRailProfile ? AppData.PressedButtonState : "")">&#xe813;</i>
                         </MatFAB>
-                    </MatTooltip>
+                    </MatTooltip>*@
 
 
                 </MatAppBarSection>

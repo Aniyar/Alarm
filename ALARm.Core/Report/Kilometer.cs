@@ -88,6 +88,7 @@ namespace ALARm.Core
         public List<NonstandardKm> NonstandardKms { get; set; }
         public Fragment Fragment { get; set; }
         public string Sector { get; set; }
+        
         public List<StationSection> StationSection { get; set; }
         public List<LongRails> LongRailses { get; set; }
         public List<Curve> Curves { get; set; }
@@ -525,6 +526,7 @@ namespace ALARm.Core
         public int CorrectionMeter { get; set; } = -1;
         public CorrectionType CorrectionType { get; set; } = CorrectionType.None;
         public List<DigressionMark> Digressions { get; set; } = new List<DigressionMark>();
+
         public List<Digression> AdditionalDigressions { get; set; } = new List<Digression>();
         //List<> GetCrossRailProfileFromDBbyKm(int kilometer, long trip_id);
         public List<CorrectionNote> CorrectionNotes = new List<CorrectionNote>();
@@ -534,6 +536,8 @@ namespace ALARm.Core
         public List<Digression> DefShpals { get; set; } = new List<Digression>();
         public List<Digression> PerShpals { get; set; } = new List<Digression>();
         public List<Heat> Heats { get; set; }
+        
+    
         private bool ShifrovkaGenerated { get; set; } = false;
         public bool IsPrinted { get; set; } = false;
 

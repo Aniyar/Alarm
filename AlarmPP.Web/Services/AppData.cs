@@ -20,6 +20,7 @@ namespace AlarmPP.Web.Services
         private List<Kilometer> _kilometers;
         public OnlineModeData onlineModeData { get; set; } = new OnlineModeData();
 
+
         public List<Kilometer> Kilometers
         {
             get
@@ -77,7 +78,10 @@ namespace AlarmPP.Web.Services
         /// Показать стыки
         /// </summary>
         /// 
-
+        public bool ShowCorrection { get; set; }
+        /// <summary>
+        /// Прибивки
+        /// </summary>
 
         public bool ShowJoints { get; set; }
         /// <summary>
@@ -289,6 +293,29 @@ namespace AlarmPP.Web.Services
         public int StrightWidth => 140;
         public int StrightLeftZero => 100;
         public int StrightRightZero => 40;
+   
+        public int NoneStrightLeftPosition => 60;
+        public int NoneStrightRightPosition => 120;
+        public int NoneStrightWidth => 140;
+        public int NoneСombinationWidth => 80;
+        public int NoneCombinationPosition
+        {
+            get { return MainParamsPosition + NoneStrightWidth; }
+        }
+        public int NoneStrgihtRightPosition
+        {
+            get
+            {
+                return   NoneStrightLeftPosition + NoneStrightWidth;
+            }
+        }
+        public int NoneStrgihtLeftPosition
+        {
+            get
+            {
+                return NoneCombinationPosition + NoneСombinationWidth;
+            }
+        }
         /// <summary>
         /// начальная позиция левой рихтовки
         /// </summary>
@@ -351,6 +378,7 @@ namespace AlarmPP.Web.Services
         public bool ShowDangerousForEmtyWagon { get; set; } = false;
         public bool Show3DegreeDigressions { get; set; } = false;
         public bool ShowCloseToDangerous { get; set; } = false;
+        
         public bool ShowCloseTo2Degree { get; set; } = false;
 
         public bool FirstDegreeDigression { get; set; } = false;
@@ -500,13 +528,15 @@ namespace AlarmPP.Web.Services
                         {
                            
                             km.AdditionalDigressions = RdStructureRepository.GetAdditional(km.Number);
-                            km.Digressions = RdStructureRepository.GetDigressionMarks(Trip.Id, km.Number, km.Track_id, new int[] {2, 3, 4 });
+                            km.Digressions = RdStructureRepository.GetDigressionMarks(Trip.Id, km.Number, km.Track_id, new int[] {1,2, 3, 4 });
                             km.CorrectionNotes = RdStructureRepository.GetCorrectionNotes(Trip.Id, km.Track_id, km.Number, coord, km.CorrectionValue);
                             km.Gaps = AdditionalParametersRepository.Check_gap_state(Trip.Id, 999);
                             km.Bolts = AdditionalParametersRepository.Check_bolt_state(Trip.Id, 999);
                             km.Fasteners = AdditionalParametersRepository.Check_badfastening_state(Trip.Id, 999);
                             km.DefShpals = AdditionalParametersRepository.Check_defshpal_state(Trip.Id, 999);
                             km.PerShpals = AdditionalParametersRepository.Check_ViolPerpen(Trip.Id);
+                            //km.direction_name = RdStructureService.Check_direction_name(Trip.Id);
+                            
                             //if (!km.CorrectionNotes.Any())
                             //{
                             //    km.CorrectionNotes = RdStructureRepository.GetCorrectionNotes(Trip.Id, km.Track_id, km.Number, coord, km.CorrectionValue);
@@ -570,14 +600,15 @@ namespace AlarmPP.Web.Services
                             //{
                             //    km.TrapezLevel += $"{km.LevelAvgTrapezoid[i] * km.StrightKoef:0.00},{km.Meters[i]} ";
                             //}
-                            km.Digressions = RdStructureRepository.GetDigressionMarks(Trip.Id, km.Number, km.Track_id, new int[] {2, 3, 4 });
+                            km.Digressions = RdStructureRepository.GetDigressionMarks(Trip.Id, km.Number, km.Track_id, new int[] {1,2, 3, 4 });
                             km.CorrectionNotes = RdStructureRepository.GetCorrectionNotes(Trip.Id, km.Track_id, km.Number, coord, km.CorrectionValue);
                             km.Gaps = AdditionalParametersRepository.Check_gap_state(Trip.Id, 999);
                             km.Bolts = AdditionalParametersRepository.Check_bolt_state(Trip.Id, 999);
                             km.Fasteners = AdditionalParametersRepository.Check_badfastening_state(Trip.Id, 999);
                             km.DefShpals = AdditionalParametersRepository.Check_defshpal_state(Trip.Id, 999);
                             km.PerShpals = AdditionalParametersRepository.Check_ViolPerpen(Trip.Id);
-
+                            km.AdditionalDigressions = RdStructureRepository.GetAdditional(km.Number);
+                            //km.direction_name = RdStructureService.GetTracksOnTrip(Trip.Id);
                             Kilometers.Add(km);
 
                         }
@@ -1007,7 +1038,7 @@ namespace AlarmPP.Web.Services
         SecondDegreeDigression,FirstDegreeDigression, OthersDigressions, ExcludedOnSwitch, ExcludedByOerator,
       
         NotTakenOnRating, Joints, RailProfile, Gaps, GapCloseToDangerous, Bolts, Fasteners, PerShpals, DefShpals, 
-        PU, NPK, ShortWaves, LongWaves, MediumWaves, IznosBok, IznosVert, IznosPriv
+        PU, NPK, ShortWaves, LongWaves, MediumWaves, IznosBok, IznosVert, IznosPriv, Correction
     }
  
     

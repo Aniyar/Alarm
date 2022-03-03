@@ -76,6 +76,8 @@ namespace AlarmPP.Web.Components.Diagram
 
 
         }
+
+        
         void DeleteClick(DigressionMark mark)
         {
 

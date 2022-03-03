@@ -3859,11 +3859,13 @@ namespace ALARm.DataAccess
                 AS alert
                 from s3 where trip_id = {trip_id} and track_id = {track_id} and km = {km}   and 
 	            typ > 1
-                GROUP BY track_id, trip_id, km, typ, len, otkl, kol, ots, ovp, ogp, uv, uvg, is2to3, isequalto3, isequalto4, onswitch, islong, comment, meter
+                GROUP BY track_id, trip_id, km, meter, typ, len, otkl, kol, ots, ovp, ogp, uv, uvg, is2to3, isequalto3, isequalto4, onswitch, islong, comment
                 ORDER BY
 	                meter").ToList();
             }
         }
+        //хочу вставить новую переменную для изменения примечания после коретировки
+        //,newbedomost
         /// <summary>
         /// Километрдің қорытынды бағасын қайтарады
         /// </summary>
@@ -3888,13 +3890,39 @@ namespace ALARm.DataAccess
             }
             return result;
         }
-        /// <summary>
-        ///Ескерту жазбасын түзету
-        /// </summary>
-        /// <param name="digression"></param>
-        /// <param name="action"></param>
-        /// <returns>сәтті болған жағдайда 1, әйтпесе -1</returns>
-        public int UpdateDigression(DigressionMark digression, Kilometer kilometer, RdAction action)
+        public string GetPrimech(DigressionMark digression)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                NpgsqlTransaction transaction = (NpgsqlTransaction)db.BeginTransaction();
+                var command = new NpgsqlCommand();
+                command.Connection = (NpgsqlConnection)db;
+                command.Transaction = transaction;
+                try
+                {
+                    command.CommandText = $@"SELECT primech
+                    FROM bedemost WHERE bedemost.trip_id = {digression.TripId} AND bedemost.put = '{digression.TrackName}' AND bedemost.km = {digression.Km}";
+                    return (string)command.ExecuteScalar() ?? "";
+                }
+                catch (Exception e)
+                {
+                    return "";
+                }
+                finally
+                {
+                    db.Close();
+                }
+            }
+        }
+                /// <summary>
+                ///Ескерту жазбасын түзету
+                /// </summary>
+                /// <param name="digression"></param>
+                /// <param name="action"></param>
+                /// <returns>сәтті болған жағдайда 1, әйтпесе -1</returns>
+       public int UpdateDigression(DigressionMark digression, Kilometer kilometer, RdAction action)
         {
             using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
             {
@@ -3913,6 +3941,7 @@ namespace ALARm.DataAccess
                        id, pch, naprav, put, pchu, pd, pdb, km, meter, trip_id, ots, kol, otkl, len, primech, tip_poezdki, cu, us, p1, p2, ur, pr, r1, r2, bas, typ, uv, uvg, ovp, ogp, is2to3, track_id, onswitch, isequalto4, distance_id, isequalto3, {(int)action}, '{digression.Editor}', '{digression.EditReason}'
                     FROM s3 WHERE s3.id = {digression.ID}
                     ";
+                    /// ,'{digression.NewBedemostComment}',newBedemostComment
                     command.ExecuteNonQuery();
                     var prevPoint = kilometer.Point;
                     if (action == RdAction.Delete)
@@ -3945,13 +3974,13 @@ namespace ALARm.DataAccess
                         command.ExecuteNonQuery();
                         command.CommandText = $@"
                         UPDATE bedemost
-                            SET ball = {kilometer.Point}, ots_iv_st = '{digression.LimitSpeedToString()}'
+                            SET ball = {kilometer.Point}, ots_iv_st = '{digression.LimitSpeedToString()}', primech = '{digression.NewBedemostComment}'
                         WHERE 
                             km = {digression.Km} and track_id = {digression.TrackId} and trip_id = {digression.TripId}
                         ";
                         command.ExecuteNonQuery();
                     }
-
+                    //SET ball = { kilometer.Point }, ots_iv_st = '{digression.LimitSpeedToString()}, primech = {digression.NewBedemostComment}'
                     transaction.Commit();
                     return 1;
                 }
@@ -4023,7 +4052,36 @@ namespace ALARm.DataAccess
                 return db.Query<CorrectionNote>($@"select distinct km,trip_id,track_id,correctionvalue,coord from s3_correction where km={Number} GROUP BY  km,trip_id,track_id,correctionvalue,coord ").ToList();
             }
         }
+        public List<Digression> Check_direction_name(long trip_id)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                try
+                {
 
+                    var txt = $@"SELECT
+	                                * ,file_id fileid
+                                FROM    
+	                                report_violperpen
+                                WHERE
+	                                trip_id = {trip_id} 
+	                                                
+                                ORDER BY
+	                                km";
+
+                    return db.Query<Digression>(txt).ToList();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Check_ViolPerpen error: " + e.Message);
+
+                    return null;
+                }
+
+            }
+        }
 
         public List<NotCheckedKm> GetDop2(long trip_id, long distId)
         {

@@ -413,7 +413,10 @@ namespace AlarmPP.Web.Components.Diagram
                     return AppData.GaugePosition + AppData.GaugeZero;
                 case int v when v == DigressionName.Constriction.Value:
                     return AppData.GaugePosition + AppData.GaugeZero;
-
+                ///
+                case int v when v == DigressionName.NoneStrightening.Value:
+                    return AppData.NoneStrgihtLeftPosition + AppData.NoneStrgihtRightPosition;
+                ///
                 default:
                     return 0;
             }

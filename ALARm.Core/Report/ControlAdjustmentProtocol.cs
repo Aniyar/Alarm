@@ -24,6 +24,11 @@ namespace ALARm.Core.Report
         public int state_id { get; set; }
         public string comment { get; set; }
         public string editor { get; set; }
+        public string Ovp { get; set; }
+     
+
+        
+
     }
 }
 
