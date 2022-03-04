@@ -19,8 +19,6 @@ namespace AlarmPP.Web.Services
         public IAdditionalParametersRepository AdditionalParametersRepository { get; set; }
         private List<Kilometer> _kilometers;
         public OnlineModeData onlineModeData { get; set; } = new OnlineModeData();
-
-
         public List<Kilometer> Kilometers
         {
             get
@@ -37,6 +35,8 @@ namespace AlarmPP.Web.Services
         /// <summary>
         /// процедура для рисования ПУ и НПК
         /// </summary>
+        
+        public List<Kilometer> BedKilometers { get; set; }
         private float angleRuleWidth = 70f;
         public float GetDIstanceFrom1div60(float x)
         {
@@ -390,7 +390,8 @@ namespace AlarmPP.Web.Services
         public bool ShowNotTakenOnRating { get; set; } = false;
         public bool DigressionChecked { get; set; } = false;
         
-            public bool AddDigressionChecked { get; set; } = false;
+        public bool AddDigressionChecked { get; set; } = false;
+        public bool ByKilometerChecked { get; set; } = false;
         public bool ShowGaps { get; set; } = false;
         public bool ShowGapsCloseToDangerous {get; set; } = false;
         public bool ShowBolts { get; set; } = false;
@@ -433,7 +434,7 @@ namespace AlarmPP.Web.Services
         {
             if (Kilometers == null)
                 Kilometers = new List<Kilometer>();
-
+            BedKilometers = RdStructureRepository.GetBedemostKilometers();
             foreach (var fragment in Trip.Route)
             {
                 var kms = MainTrackStructureRepository.GetKilometersOfFragment(fragment, DateTime.Today, fragment.Direction, Trip.Id);
@@ -1038,7 +1039,9 @@ namespace AlarmPP.Web.Services
         SecondDegreeDigression,FirstDegreeDigression, OthersDigressions, ExcludedOnSwitch, ExcludedByOerator,
       
         NotTakenOnRating, Joints, RailProfile, Gaps, GapCloseToDangerous, Bolts, Fasteners, PerShpals, DefShpals, 
-        PU, NPK, ShortWaves, LongWaves, MediumWaves, IznosBok, IznosVert, IznosPriv, Correction
+        PU, NPK, ShortWaves, LongWaves, MediumWaves, IznosBok, IznosVert, IznosPriv, Correction, 
+
+        ByKilometer
     }
  
     

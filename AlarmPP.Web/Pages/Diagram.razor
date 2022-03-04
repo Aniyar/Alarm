@@ -68,7 +68,9 @@
                                 @*<MatListItem OnClick="(_ => SetShowStatus(Services.ShowButtons.DangerousForEmtyWagon))">
                         <MatCheckbox Value="@AppData.ShowDangerousForEmtyWagon" Label="Опасные для порожных вагонов" Style="color:hotpink;width:100%;" ValueChanged="@((bool value) => SetShowStatus(Services.ShowButtons.DangerousForEmtyWagon))"></MatCheckbox>
                     </MatListItem>*@
-
+                                <MatListItem OnClick="(_ => SetShowStatus(Services.ShowButtons.ByKilometer))">
+                                    <MatCheckbox Value="@AppData.ByKilometerChecked" Label="Покилометровая оценка отступлений" Style="color: black; width: 100%;" ValueChanged="@((bool value) => SetShowStatus(Services.ShowButtons.ByKilometer))"></MatCheckbox>
+                                </MatListItem>
                                 <MatListItem OnClick="(_ => SetShowStatus(Services.ShowButtons.CloseToDangerous))">
                                     <MatCheckbox Value="@AppData.ShowCloseToDangerous" Label="Отступления близкие к опасным" Style="color: red; width: 100%;" ValueChanged="@((bool value) => SetShowStatus(Services.ShowButtons.CloseToDangerous))"></MatCheckbox>
                                 </MatListItem>
@@ -113,6 +115,7 @@
                                 <MatListItem OnClick="(_ => SetShowStatus(Services.ShowButtons.DefShpals))">
                                     <MatCheckbox Value="@AppData.ShowDefShpals" Label="Деффектные шпалы" Style="color: blue; width: 100%;" ValueChanged="@((bool value) => SetShowStatus(Services.ShowButtons.DefShpals))"></MatCheckbox>
                                 </MatListItem>
+
                                 @* ////.........*@
                             </MatList>
                         </MatMenu>
@@ -193,12 +196,20 @@
                             <i class="demo-icon icon-dg-correction" style="@(AppData.ShowCorrection ? AppData.PressedButtonState : "")">&#xe812;</i>
                         </MatFAB>
                     </MatTooltip>
-
-                    @*<MatTooltip Tooltip="Поперечный профиль рельса" Wrap="true">
+                    <MatTooltip Tooltip="Поперечный профиль рельса" Wrap="true">
                         <MatFAB Mini="true" Style="border-radius:10%;box-shadow:none;" OnClick="@(_ => SetShowStatus(Services.ShowButtons.RailProfile))">
                             <i class="demo-icon icon-dg-rail-profile" style="@(AppData.ShowRailProfile ? AppData.PressedButtonState : "")">&#xe813;</i>
                         </MatFAB>
-                    </MatTooltip>*@
+                    </MatTooltip>
+                    @if (AppData.Trip.Processed == true)
+                    {
+                        <mat-label>Постобработка проезда завершена</mat-label>
+                    }
+                    else
+                    {
+                        <MatButton Raised="true" Style="margin-right:5px;" OnClick="@(() => FinishProcessingDialog = true)">Завершить постобработку</MatButton>
+                    }
+
 
 
                 </MatAppBarSection>
@@ -229,3 +240,10 @@
     </MatAppBarContainer>
 </MatThemeProvider>
 
+<MatDialog @bind-IsOpen="@FinishProcessingDialog" Stacked="true">
+    <MatDialogTitle>Завершить постобработку?</MatDialogTitle>
+    <MatDialogActions>
+        <MatButton Raised="true" Style="margin-right:5px;" OnClick="_=> {FinishProcessing();  }">Ок</MatButton>
+        <MatButton Raised="true" OnClick="_=> { FinishProcessingDialog = false;}">Закрыть</MatButton>
+    </MatDialogActions>
+</MatDialog>

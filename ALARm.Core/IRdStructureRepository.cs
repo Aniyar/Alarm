@@ -176,5 +176,9 @@ namespace ALARm.Core
         public int UpdateAdditionalBase(Digression digression, Kilometer kilometer, RdAction action);
         public string GetPrimech(DigressionMark digression); // берет примечание по километру из bedemost
 
+        public int InsertRating(int km, string rating, string put); //вставляет рейтинг на км
+        public List<Kilometer> GetBedemostKilometers();
+        public int FinishProcessing(long trip_id);
+
     }
 }

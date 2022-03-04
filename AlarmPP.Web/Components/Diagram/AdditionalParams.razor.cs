@@ -25,6 +25,7 @@ namespace AlarmPP.Web.Components.Diagram
         
         public bool AdditionalDeleteDialog { get; set; } = false;
         public bool AdditionalEditDialog { get; set; } = false;
+        public int CurrentRow { get; set; } = 0;
 
         public string Editor { get; set; }
         public string EditReason { get; set; }

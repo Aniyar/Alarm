@@ -153,6 +153,7 @@ namespace ALARm.Core
         public string DirectionCode { get; set; }
 
         public long Id { get; set; }
+        public bool Processed { get; set; }
         public DateTime Trip_date { get; set; }
         public long Direction_id { get; set; } = -1;
         public bool Checked_Status { get; set; }
@@ -220,6 +221,8 @@ namespace ALARm.Core
                 return $"{Start_station_name}-{Final_station_name} {Trip_date.ToString("dd.MM.yyyy hh:mm")}";
             }
         }
+
+        public string TrackCode { get; set; }
     }
 
     public class RdClasses

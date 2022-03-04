@@ -88,7 +88,8 @@ namespace ALARm.Core
         public List<NonstandardKm> NonstandardKms { get; set; }
         public Fragment Fragment { get; set; }
         public string Sector { get; set; }
-        
+        public string Rating_bedomost { get; set; }
+
         public List<StationSection> StationSection { get; set; }
         public List<LongRails> LongRailses { get; set; }
         public List<Curve> Curves { get; set; }
@@ -127,18 +128,21 @@ namespace ALARm.Core
         }
 
         public int Number { get; set; }
+        public string SpeedLim { get; set; }
         public int Start_m { get; set; } = 1;
         public int Final_m { get; set; } = 1000;
 
         public string Direction_name { get; set; }
         public string Direction_code { get; set; }
+        public string PchCode { get; set; }
         public string PchuCode { get; set; }
         public string PdCode { get; set; }
         public string PdbCode { get; set; }
         public string PchuChief { get; set; }
         public string PdChief { get; set; }
         public string PdbChief { get; set; }
-    
+
+
         public float Lkm { get; set; }
         public int GetLength() {
             return Math.Abs(Start_m - Final_m) + 1;
@@ -1144,6 +1148,7 @@ namespace ALARm.Core
         public string Stright5 { get; set; } = "";
         public bool Rep_type_cni { get; set; } = false;
         public string SpeedLimit { get; private set; }
+        
         public int GlobPassSpeed { get; set; } = -1;
         public int GlobFreightSpeed { get; set; } = -1;
         public int AllowedSpeed { get; private set; }

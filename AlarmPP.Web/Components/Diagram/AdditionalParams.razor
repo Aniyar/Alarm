@@ -8,15 +8,16 @@
 <div style="max-height: 300px; overflow-y: scroll; width: 100%; height: calc(100% - (50px))">
     <table>
         <tr style="background: " #75d2ff")>
-            <th style="border-right: 1px solid grey; border-left: 1px solid grey; width: 50px;">N</th>
-            <th style="border-right: 1px solid grey; border-left: 1px solid grey; width: 50px;">Км</th>
-            <th style="border-right: 1px solid grey; border-left: 1px solid grey; width: 50px;">Метр</th>
+            <th style="border-right: 1px solid grey; border-left: 1px solid grey; width: 30px;">N</th>
+            <th style="border-right: 1px solid grey; border-left: 1px solid grey; width: 30px;">Км</th>
+            <th style="border-right: 1px solid grey; border-left: 1px solid grey; width: 30px;">М</th>
             <th style="border-right: 1px solid grey; width: 125px;">Отступление</th>
-            <th style="border-right: 1px solid grey; width: 50px;">Степень</th>
-            <th style="border-right: 1px solid grey; width: 50px;">Значение</th>
+            <th style="border-right: 1px solid grey; width: 30px;">Ст.</th>
+            <th style="border-right: 1px solid grey; width: 40px;">Отклонение</th>
+            <th style="border-right: 1px solid grey; width: 40px;">Дл</th>
             <th style="border-right: 1px solid grey; width: 50px;">Кол-во</th>
             <th style="border-right: 1px solid grey; width: 50px;">Огр. ск.</th>
-            <th style="border-right: 1px solid grey; width: 125px;"></th>
+            <th style="border-right: 1px solid grey; width: 100px;"></th>
         </tr>
         @if (Kilometers != null)
         {
@@ -60,14 +61,15 @@
                 {
 
                     <tr>
-                        <th>@rowIndex</th>
-                        <th>@addDig.Km</th>
-                        <th>@addDig.Meter</th>
-                        <th>@addDig.DigName</th>
-                        <th>@addDig.Typ</th>
-                        <th>@addDig.Value</th>
-                        <th>@addDig.Count</th>
-                        <th>@addDig.FullSpeed</th>
+                        <td>@rowIndex</td>
+                        <td>@addDig.Km</td>
+                        <td>@addDig.Meter</td>
+                        <td>@addDig.DigName</td>
+                        <td>@addDig.Typ</td>
+                        <td>@addDig.Value</td>
+                        <td>@addDig.Length</td>
+                        <td>@addDig.Count</td>
+                        <td>@addDig.AllowSpeed</td>
                         <td>
                             <AlarmButton Text="" Symbol="" Tooltip="Удалить" OnClick="() => DeleteAddClick(addDig)"></AlarmButton>
                             <AlarmButton Text="" Symbol="" Tooltip="Редактировать" OnClick="() =>  ModifyAddClick(addDig)"></AlarmButton>

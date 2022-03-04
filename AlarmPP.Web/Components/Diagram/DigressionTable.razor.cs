@@ -80,9 +80,7 @@ namespace AlarmPP.Web.Components.Diagram
         
         void DeleteClick(DigressionMark mark)
         {
-
             digression = mark;
-
             DigressionDeleteDialog = true;
         }
         void ModifyClick(DigressionMark mark)
