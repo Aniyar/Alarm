@@ -461,6 +461,7 @@ namespace ALARm.DataAccess
             }
         }
 
+
         public List<VideoObject> GetRdObjectKm(string object_id, string km, string trip_files)
         {
             using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
@@ -495,7 +496,16 @@ namespace ALARm.DataAccess
                         left join adm_station as s_station on s_station.id = trip.start_station
                         left join adm_station as f_station on f_station.id = trip.final_station
                         where road.road_id = @road_id and trip.trip_date between @start and @final order by trip.trip_date desc";
-                return db.Query<Trips>(sqltext, new { road_id = road_id, start = period.StartDate, final = period.FinishDate }, commandType: CommandType.Text).ToList();
+                var trips = db.Query<Trips>(sqltext, new { road_id = road_id, start = period.StartDate, final = period.FinishDate }, commandType: CommandType.Text).ToList();
+                for (int i = 0; i< trips.Count; i++)
+                {
+                    var fr = GetTripFragments(trips[0].Id);
+                        if (fr.Count>0)
+                    {
+                        trips[i].TrackCode = fr[0].Track_Code;
+                    }
+                }
+                return trips;
             }
         }
         public object GetTrips(List<Int64> directionIDs, int rd_lvl)
@@ -2420,11 +2430,11 @@ namespace ALARm.DataAccess
                     INSERT INTO trips(
                         direction_id, car, chief, travel_direction, car_position, start_station, final_station, trip_type, trip_date, 
                         current, start_position, track_id, rail_profile, longitudinal_profile, short_irregularities, joint_gaps, georadar, 
-                        dimensions, beacon_marks, embankment, rail_temperature, geolocation, rail_video_monitoring, video_monitoring, road_id)
+                        dimensions, beacon_marks, embankment, rail_temperature, geolocation, rail_video_monitoring, video_monitoring, road_id, processed)
 
                     VALUES(@direction_id, (select value from PARAMETER WHERE name = 'car' limit 1), @chief, @travel_direction, @car_position, @start_station, @final_station, @trip_type, @trip_date, 
                         true, @start_position, @track_id, @rail_profile, @longitudinal_profile, @short_irregularities, @joint_gaps, @georadar, 
-                        @dimensions, @beacon_marks, @embankment, @rail_temperature, @geolocation, @rail_video_monitoring, @video_monitoring, @road_id) RETURNING id", new
+                        @dimensions, @beacon_marks, @embankment, @rail_temperature, @geolocation, @rail_video_monitoring, @video_monitoring, @road_id, @processed) RETURNING id", new
                 {
                     direction_id = trip.Direction_id,
                     car = trip.Car,
@@ -2449,8 +2459,9 @@ namespace ALARm.DataAccess
                     geolocation = trip.Geolocation,
                     rail_video_monitoring = trip.Rail_Video_Monitoring,
                     video_monitoring = trip.Video_Monitoring,
-                    road_id = trip.Road_Id
-                }, commandType: CommandType.Text);
+                    road_id = trip.Road_Id,
+                    processed = false
+                }, commandType: CommandType.Text); ;
 
                 db.Execute(@"CREATE TABLE public.outdata_" + trip_id + @"
                 (
@@ -2620,7 +2631,8 @@ namespace ALARm.DataAccess
                 if (db.State == ConnectionState.Closed)
                     db.Open();
                 return db.Query<Fragment>(
-                    @"select fragments.*, fragments.adm_track_id as track_id from fragments 
+                    @"select fragments.*, fragments.adm_track_id as track_id, tr.code as track_code  from fragments 
+                        inner join adm_track as tr on tr.id = fragments.adm_track_id
                         where trip_id = @tripid 
                         order by id",
                     new { tripid = trip_id }, commandType: CommandType.Text).ToList();
@@ -3198,6 +3210,41 @@ namespace ALARm.DataAccess
             }
         }
 
+        public int FinishProcessing(long trip_id)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                try
+                {
+                    db.Execute($@"UPDATE trips SET processed = true WHERE id = {trip_id}", commandType: CommandType.Text);
+                    return 1;
+                }
+                catch (Exception e)
+                {
+                    return -1;
+                }
+            }
+        }
+        public List<Kilometer> GetBedemostKilometers()
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                try
+                {
+                    var res= db.Query<Kilometer>($@"select km as number, pch as pchcode, pchu as pchucode, pd as pdcode, pdb as pdbcode, ots_iv_st as speedlim, primech as primech, put as track_name, rating as Rating_bedomost from bedemost", commandType: CommandType.Text).ToList();
+                    return res;
+                }
+                catch (Exception e)
+                {
+                    return null;
+                }
+            }
+
+        }
         public List<OutData> GetNextOutDatas(int meter, int count, long trip_id)
         {
             using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
@@ -3326,7 +3373,7 @@ namespace ALARm.DataAccess
                 }
                 catch (Exception e)
                 {
-                    Console.Error.WriteLine("getRefrenceDataError:" + e.StackTrace);
+                    Console.Error.WriteLine("getAdditionalError:" + e.StackTrace);
                     return null;
                 }
             }
@@ -4199,6 +4246,39 @@ namespace ALARm.DataAccess
                 return result;
             }
             
+        }
+
+        public int InsertRating(int km, string rating, string put)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                NpgsqlTransaction transaction = (NpgsqlTransaction)db.BeginTransaction();
+                var command = new NpgsqlCommand();
+                command.Connection = (NpgsqlConnection)db;
+                command.Transaction = transaction;
+                try
+                {
+                    command.CommandText = $@"
+                    UPDATE bedemost
+                    SET rating = '{rating}' WHERE km = {km} AND put = '{put}'";
+                    command.ExecuteNonQuery();
+                    transaction.Commit();
+                    return 1;
+                }
+                catch (Exception e)
+                {
+                    transaction.Rollback();
+                    Console.WriteLine($"UpdateDigression error: {e.Message}");
+                    return -1;
+
+                }
+                finally
+                {
+                    db.Close();
+                }
+            }
         }
 
         public List<Trips> GetTripFromFileId(int fileId)

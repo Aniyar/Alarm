@@ -40,7 +40,11 @@ namespace ALARm.Core
             {
                 switch (Trip_Type)
                 {
+
                     //case 0: return "";
+
+                    //case 0: return "Рабочая";
+
                     //case 0: return "Контрольная 1";
                     case TripType.Control: return "Контрольная";
                     case TripType.Additional: return "Дополнительная";

@@ -491,5 +491,10 @@ namespace ALARm.Services
         {
             return Container.Resolve<IRdStructureRepository>().GetPU32Kilometers(from, to, distance_id, trip_type);
         }
+
+        public static int InsertRating(int km, string rating, string put)
+        {
+            return Container.Resolve<IRdStructureRepository>().InsertRating(km, rating, put);
+        }
     }
 }

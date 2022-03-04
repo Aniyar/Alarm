@@ -5258,7 +5258,7 @@
             // dataGridViewTextBoxColumn91
             // 
             this.dataGridViewTextBoxColumn91.DataPropertyName = "Type";
-            this.dataGridViewTextBoxColumn91.HeaderText = "Тип";
+            this.dataGridViewTextBoxColumn91.HeaderText = "Категория";
             this.dataGridViewTextBoxColumn91.MinimumWidth = 6;
             this.dataGridViewTextBoxColumn91.Name = "dataGridViewTextBoxColumn91";
             this.dataGridViewTextBoxColumn91.Width = 125;

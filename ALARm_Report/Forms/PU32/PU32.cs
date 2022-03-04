@@ -809,7 +809,8 @@ namespace ALARm_Report.Forms
 
 							);
 
-							kmTotal.Length = km.Lkm;
+							int inserted = RdStructureService.InsertRating(km.Number, kmTotal.QualitiveRating.ToString(), km.Track_name);
+						   kmTotal.Length = km.Lkm;
 
 							pdbTotaln += kmTotal;
 							pdbElementn.Add(kmElement);
@@ -2110,6 +2111,8 @@ namespace ALARm_Report.Forms
 								new XAttribute("chief", chief));
 			}
 
+
+
 	void PDBnTotalGenerate(ref XElement pdbElement, ref Total pdbTotal, ref XElement pdElement, ref Total pdTotal, string code, string chief, ref Total compPdbTotal, ref Total compPdTotal)
 			{
 				var avgBall1 = (pdbTotal.MainParamPointSum + pdbTotal.CurvePointSum) / pdbTotal.Length;
@@ -2333,8 +2336,10 @@ namespace ALARm_Report.Forms
 
 			//Қосымша тексеру керек
 			NSector = NSector < 0 ? 0 : NSector;
-
+			
 			return $"{NSector.ToString("0.0", nfi)}/{QualitiveRating}";
+	
+
 		}
 	}
 

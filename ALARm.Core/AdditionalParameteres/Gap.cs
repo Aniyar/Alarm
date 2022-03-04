@@ -182,6 +182,18 @@ namespace ALARm.Core.AdditionalParameteres
             }
             return digression;
         }
+        public int GetPoint()
+        {
+            if (Otst == "З?")
+            {
+                return 20;
+            }
+            if (Otst == "З")
+            {
+                return 50;
+            }
+            return -1;
+        }
         public Digression GetDigressions3()
         {
             Digression digression = new Digression

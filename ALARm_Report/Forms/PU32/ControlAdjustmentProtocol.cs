@@ -81,6 +81,7 @@ namespace ALARm_Report.Forms
                             new XAttribute("date_statement", DateTime.Now.Date.ToShortDateString()),
                             //new XAttribute("check", tripProcess.GetProcessTypeName), //ToDo
                             new XAttribute("check", trip.GetProcessTypeName), //ToDo
+
                             new XAttribute("road", roadName),
                             new XAttribute("track", trackName),
                             new XAttribute("code", tripProcess.DirectionCode),
@@ -117,7 +118,9 @@ namespace ALARm_Report.Forms
                                     new XAttribute("old_count", st[0].COUNT),
                                     new XAttribute("old_strelka", ""),
                                     new XAttribute("old_most", ""),
+
                                     //new XAttribute("old_count", st[0].Ovp),
+
 
                                     new XAttribute("Stepen", elem.Typ),
                                     new XAttribute("value", elem.VALUE),
@@ -125,6 +128,7 @@ namespace ALARm_Report.Forms
                                     new XAttribute("count", elem.COUNT),
                                     new XAttribute("strelka", ""),
                                     new XAttribute("most", ""),
+
                                      //new XAttribute("put", trackName),
                                     //new XAttribute("ogr", st[0].uvg),
                                     //new XAttribute("ogr", st[0].uv),
@@ -133,6 +137,7 @@ namespace ALARm_Report.Forms
 
                                     );
                                 note.Add(xeNote);
+
                             }
 
                             if (stdeleted.Count() > 0)
@@ -161,6 +166,7 @@ namespace ALARm_Report.Forms
                                     new XAttribute("old_ogr", elem.Ovp)
                                     );
                                 note.Add(xeNote);
+
                             }
                             tripElem.Add(note);
                         }

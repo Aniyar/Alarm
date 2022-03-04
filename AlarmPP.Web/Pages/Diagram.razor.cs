@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
- 
+
 
 namespace AlarmPP.Web.Pages
 {
@@ -43,6 +43,7 @@ namespace AlarmPP.Web.Pages
             this.printMenu.OpenAsync();
         }
 
+        bool FinishProcessingDialog { get; set ;} = false;
         public MatMenu digFilterMenu { get; set; }
         public ForwardRef digFilterMenuRef { get; set; } = new ForwardRef();
         public void OnDigFilterMenuClick(MouseEventArgs e)
@@ -105,7 +106,9 @@ namespace AlarmPP.Web.Pages
             {
                 AppData.AddDigressionChecked = true;
             }
-        
+            //bykilometer
+            AppData.ByKilometerChecked = RdStructureRepository.GetButtonState(ShowButtons.ByKilometer.ToString());
+
         }
         private void Refresh()
         {
@@ -117,6 +120,34 @@ namespace AlarmPP.Web.Pages
         {
             switch (buttonName)
             {
+                case ShowButtons.Correction:
+                    AppData.ShowCorrection = !AppData.ShowCorrection;
+                    RdStructureRepository.SetButtonStatus(ShowButtons.Correction.ToString(), AppData.ShowCorrection);
+                    break;
+                case ShowButtons.ByKilometer:
+                    AppData.ByKilometerChecked = !AppData.ByKilometerChecked;
+                    AppData.ShowDangerousDigressions = false;
+                    AppData.ShowCloseToDangerous = false;
+                    AppData.Show3DegreeDigressions = false;
+                    AppData.Show2DegreeDigressions = false;
+                    AppData.Show1DegreeDigressions = false;
+                    AppData.ShowGaps = false;
+                    AppData.ShowGapsCloseToDangerous = false;
+                    AppData.ShowBolts = false;
+                    AppData.ShowFasteners = false;
+                    AppData.ShowDefShpals = false;
+                    AppData.ShowPerShpals = false;
+                    RdStructureRepository.SetButtonStatus(ShowButtons.ByKilometer.ToString(), AppData.ByKilometerChecked);
+                    if (AppData.ByKilometerChecked)
+                    {
+                        AppData.DigressionChecked = false;
+                        AppData.ShowDigressions = false;
+                    }
+                    else
+                    {
+                        AppData.ByKilometerChecked = false;
+                    }
+                    break;
                 case ShowButtons.Signal:
                     AppData.ShowSignals = !AppData.ShowSignals;
                     RdStructureRepository.SetButtonStatus(ShowButtons.Signal.ToString(), AppData.ShowSignals);
@@ -485,6 +516,22 @@ namespace AlarmPP.Web.Pages
             Refresh();
         }
 
+        public void FinishProcessing()
+        {
+            try
+            {
+                if (AppData.RdStructureRepository.FinishProcessing(AppData.Trip.Id) > 0)
+                {
+                    //Toaster.Add($"Постобработка успешно завершена", MatBlazor.MatToastType.Success);
+                    FinishProcessingDialog = false;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Не уадлость завершить редактирование из за ошибки: " + e.Message);
+            }
+
+        }
         public async Task OpenDialog()
         {
             AppData.IsDialogOpen = true;

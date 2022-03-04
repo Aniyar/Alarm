@@ -25,11 +25,10 @@ namespace ALARm.Core.Report
         public string comment { get; set; }
         public string editor { get; set; }
         public string Ovp { get; set; }
+
         public string Ogp { get; set; }
         public string uv { get; set; }
         public string uvg { get; set; }
-
-
 
     }
 }
