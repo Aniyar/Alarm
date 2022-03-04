@@ -1039,9 +1039,11 @@ namespace AlarmPP.Web.Services
         SecondDegreeDigression,FirstDegreeDigression, OthersDigressions, ExcludedOnSwitch, ExcludedByOerator,
       
         NotTakenOnRating, Joints, RailProfile, Gaps, GapCloseToDangerous, Bolts, Fasteners, PerShpals, DefShpals, 
+
         PU, NPK, ShortWaves, LongWaves, MediumWaves, IznosBok, IznosVert, IznosPriv, Correction, 
 
         ByKilometer
+
     }
  
     

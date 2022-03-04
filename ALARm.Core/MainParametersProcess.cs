@@ -38,14 +38,19 @@ namespace ALARm.Core
         {
             get
             {
-                switch (Process_Type)
+                switch (Trip_Type)
                 {
+
+                    //case 0: return "";
+
                     //case 0: return "Рабочая";
+
                     //case 0: return "Контрольная 1";
-                    case 1: return "Контрольная";
-                    case 2: return "Дополнительная";
-                    case 3: return "Колибровочная";
-                    case 4: return "Доппараметры";
+                    case TripType.Control: return "Контрольная";
+                    case TripType.Additional: return "Дополнительная";
+                    case TripType.Work: return "Рабочая";
+                    //case TripType.Work: return "Колибровочная";
+                    //case TripType.: return "Доппараметры";
                     default: return string.Empty;
                 }
             }

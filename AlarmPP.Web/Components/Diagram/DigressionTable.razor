@@ -116,7 +116,9 @@
                                 if (!digression.gotprim)
                                 {
                                     digression.NewBedemostComment = AppData.RdStructureRepository.GetPrimech(digression);
+
                                     if (digression.Comment != null && digression.Comment.Contains("гр"))
+
                                     {
                                         digression.LimitSpeed = "-/60";
                                         digression.FreightSpeedLimit = 60;
@@ -126,7 +128,9 @@
                                     digression.gotprim = true;
                                 }
 
+
                                 digression.LimitSpeed = (digression.PassengerSpeedLimit == -1 ? "-" : digression.PassengerSpeedLimit.ToString()) + "/" + (digression.PassengerSpeedLimit == -1 ? "-" : digression.PassengerSpeedLimit.ToString());
+
 
                                 <tr style="background:@(CurrentRow == index ? "#75d2ff" : color)" @onmousedown="@(_ => GoToMark(pos, index))">
                                     <td style="border-right: 1px solid grey; text-align: left; width: 35px;">@rowIndex</td>
@@ -136,8 +140,10 @@
                                     <td style="border-right: 1px solid grey;   width:90px; text-align:left">@digression.Degree</td>
                                     <td style="border-right: 1px solid grey; width: 125px;">@digression.Value</td>
                                     <td style="border-right: 1px solid grey; width: 125px;">@digression.Length</td>
+
                                     <td style="border-right: 1px solid grey; width: 125px;">@digression.LimitSpeed</td>
                                     <th style="border-right: 1px solid grey; width: 50px;">@digression.GetPoint(kilometer)</th>
+
                                     <td>
 
                                         <AlarmButton Text="" Symbol="" Tooltip="Удалить" OnClick="() => DeleteClick(digression)"></AlarmButton>

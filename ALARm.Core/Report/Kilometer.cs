@@ -88,6 +88,7 @@ namespace ALARm.Core
         public List<NonstandardKm> NonstandardKms { get; set; }
         public Fragment Fragment { get; set; }
         public string Sector { get; set; }
+
         public string Rating_bedomost { get; set; }
 
         public List<StationSection> StationSection { get; set; }

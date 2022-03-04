@@ -1680,6 +1680,8 @@ namespace ALARm.DataAccess
 	                        otkl AS VALUE,
 	                        len AS LENGTH,
 	                        kol AS COUNT,
+                            uv,
+                            uvg,
 	                        ovp, 
 	                        ogp,
 	                        typ
@@ -1719,6 +1721,8 @@ namespace ALARm.DataAccess
 	                        otkl AS VALUE,
 	                        len AS LENGTH,
 	                        kol AS COUNT,
+                            uv,
+                            uvg,
 	                        ovp,
 	                        ogp,
 	                        typ,
@@ -2582,7 +2586,7 @@ namespace ALARm.DataAccess
                 SELECT trip.*, direction.name as direction_name FROM trips as trip 
                 INNER JOIN adm_direction as direction on direction.id = trip.direction_id
                 WHERE
-                  trip.id = 242
+                  trip.id = 240
                   --current = true 
                   order by id desc limit 1";
                 

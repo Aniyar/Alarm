@@ -475,6 +475,7 @@
         @*<DigRailImage RailImage="AppData.RailImage"></DigRailImage>*@
         @if (AppData.WorkMode == Services.WorkMode.Online)
         {
+
             <div class="float-left h-100">
 
                 <MatButton TrailingIcon="@(OnlineModeData.RouteEditable ? "check" : "edit")" OnClick="_=> RouteEditableChange(AppData.Trip)">@(OnlineModeData.RouteEditable ? "Сохранить маршрут" : "Изменить маршрут")</MatButton>

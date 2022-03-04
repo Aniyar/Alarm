@@ -7710,7 +7710,8 @@
             // dataGridViewTextBoxColumn19
             // 
             this.dataGridViewTextBoxColumn19.DataPropertyName = "Empty_Freight";
-            this.dataGridViewTextBoxColumn19.HeaderText = "Грузовая порожняя";
+            this.dataGridViewTextBoxColumn19.HeaderText = "СТРИЖ";
+            //this.dataGridViewTextBoxColumn19.HeaderText = "Грузовая порожняя";
             this.dataGridViewTextBoxColumn19.MinimumWidth = 6;
             this.dataGridViewTextBoxColumn19.Name = "dataGridViewTextBoxColumn19";
             this.dataGridViewTextBoxColumn19.Width = 125;
@@ -8100,6 +8101,16 @@
             this.Lastochka.MinimumWidth = 6;
             this.Lastochka.Name = "Lastochka";
             this.Lastochka.Width = 125;
+            //
+            // Empty_Freight
+            // 
+            this.Empty_Freight.DataPropertyName = "Empty_Freight";
+            this.Empty_Freight.HeaderText = "СТРИЖ";
+            //this.Empty_Freight.HeaderText = "Грузовая порожняя";
+            this.Empty_Freight.MinimumWidth = 6;
+            this.Empty_Freight.Name = "Empty_Freight";
+            this.Empty_Freight.Width = 125;
+            // 
             // 
             // Column2
             // 
@@ -8117,14 +8128,7 @@
             this.Freight.Name = "Freight";
             this.Freight.Width = 125;
             // 
-            // Empty_Freight
-            // 
-            this.Empty_Freight.DataPropertyName = "Empty_Freight";
-            this.Empty_Freight.HeaderText = "Грузовая порожняя";
-            this.Empty_Freight.MinimumWidth = 6;
-            this.Empty_Freight.Name = "Empty_Freight";
-            this.Empty_Freight.Width = 125;
-            // 
+            
             // speedBindingSource
             // 
             this.speedBindingSource.DataSource = typeof(ALARm.Core.Speed);
@@ -9456,6 +9460,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
         private System.Windows.Forms.DataGridViewTextBoxColumn Freight;
         private System.Windows.Forms.DataGridViewTextBoxColumn Empty_Freight;
+        private System.Windows.Forms.DataGridViewTextBoxColumn STRIG;//новая СТРИЖ
         private System.Windows.Forms.ToolStripButton tsbAcceptAllRepairProject;
         private MetroFramework.Controls.MetroTabPage mtpCheckSection;
         private MetroFramework.Controls.MetroPanel metroPanel26;
