@@ -1,41 +1,125 @@
-﻿<h4>Доп. параметры</h4>
- <div style="max-height: 300px; overflow-y: scroll; width: 100%; height: calc(100% - (50px))">
+﻿@inject AlarmPP.Web.Services.AppData AppData
+@inject IJSRuntime JSRuntime
+@inject IMatToaster Toaster
+@using ALARm.Core.Report
+
+
+<h4>Доп. параметры</h4>
+<div style="max-height: 300px; overflow-y: scroll; width: 100%; height: calc(100% - (50px))">
     <table>
         <tr style="background: " #75d2ff")>
-            <th style="border-right: 1px solid grey; border-left: 1px solid grey; width: 50px;">N</th>
-            <th style="border-right: 1px solid grey; border-left: 1px solid grey; width: 50px;">Км</th>
-            <th style="border-right: 1px solid grey; border-left: 1px solid grey; width: 50px;">Метр</th>
+            <th style="border-right: 1px solid grey; border-left: 1px solid grey; width: 30px;">N</th>
+            <th style="border-right: 1px solid grey; border-left: 1px solid grey; width: 30px;">Км</th>
+            <th style="border-right: 1px solid grey; border-left: 1px solid grey; width: 30px;">М</th>
             <th style="border-right: 1px solid grey; width: 125px;">Отступление</th>
-            <th style="border-right: 1px solid grey; width: 50px;">Степень</th>
-            <th style="border-right: 1px solid grey; width: 50px;">Длина</th>
+            <th style="border-right: 1px solid grey; width: 30px;">Ст.</th>
+            <th style="border-right: 1px solid grey; width: 40px;">Отклонение</th>
+            <th style="border-right: 1px solid grey; width: 40px;">Дл</th>
             <th style="border-right: 1px solid grey; width: 50px;">Кол-во</th>
-            <th style="border-right: 1px solid grey; width: 125px;">Огр. ск.</th>
+            <th style="border-right: 1px solid grey; width: 50px;">Огр. ск.</th>
+            <th style="border-right: 1px solid grey; width: 100px;"></th>
         </tr>
-        @if (kilometers != null)
+        @if (Kilometers != null)
         {
-
+            int rowIndex = 1;
+            foreach (var km in Kilometers)
             {
-                int rowIndex = 0;
-                foreach (var km in kilometers)
+                var digs = new List<Digression> { };
+                if (AppData.ShowPU)
                 {
-                   
-                        foreach (var digression in km.AdditionalDigressions)
-                        {
-                            <tr>
-                                <th>@rowIndex</th>
-                                <th>@digression.Kmetr</th>
-                                <th>@digression.Meter</th>
-                                <th>@digression.DigName</th>
-                                <th>@digression.Typ</th>
-                                <th>@digression.Length</th>
-                                <th>@digression.Count</th>
-                                <th>@digression.FullSpeed</th>
-                            </tr>
-                    }
-                    rowIndex++;
+                    digs.AddRange(km.AdditionalDigressions.Where(o => o.DigName.Name.Contains("Пу")).ToList());
+                }
+                if (AppData.ShowNPK)
+                {
+                    digs.AddRange(km.AdditionalDigressions.Where(o => o.DigName.Name.Contains("Нпк")).ToList());
+                }
+                if (AppData.ShowLongWaves)
+                {
+                    digs.AddRange(km.AdditionalDigressions.Where(o => o.DigName.Name.Contains("ДВ")).ToList());
+                }
+                if (AppData.ShowShortWaves)
+                {
+                    digs.AddRange(km.AdditionalDigressions.Where(o => o.DigName.Name.Contains("КВ")).ToList());
+                }
+                if (AppData.ShowMediumWaves)
+                {
+                    digs.AddRange(km.AdditionalDigressions.Where(o => o.DigName.Name.Contains("СВ")).ToList());
+                }
+                if (AppData.ShowIznosBok)
+                {
+                    digs.AddRange(km.AdditionalDigressions.Where(o => o.DigName.Name.Contains("Иб")).ToList());
+                }
+                if (AppData.ShowIznosVert)
+                {
+                    digs.AddRange(km.AdditionalDigressions.Where(o => o.DigName.Name.Contains("Ив")).ToList());
+                }
+                if (AppData.ShowIznosPriv)
+                {
+                    digs.AddRange(km.AdditionalDigressions.Where(o => o.DigName.Name.Contains("Ип")).ToList());
+                }
+                foreach (var addDig in digs)
+                {
 
+                    <tr>
+                        <td>@rowIndex</td>
+                        <td>@addDig.Km</td>
+                        <td>@addDig.Meter</td>
+                        <td>@addDig.DigName</td>
+                        <td>@addDig.Typ</td>
+                        <td>@addDig.Value</td>
+                        <td>@addDig.Length</td>
+                        <td>@addDig.Count</td>
+                        <td>@addDig.AllowSpeed</td>
+                        <td>
+                            <AlarmButton Text="" Symbol="" Tooltip="Удалить" OnClick="() => DeleteAddClick(addDig)"></AlarmButton>
+                            <AlarmButton Text="" Symbol="" Tooltip="Редактировать" OnClick="() =>  ModifyAddClick(addDig)"></AlarmButton>
+                        </td>
+                    </tr>
+                    rowIndex++;
                 }
             }
+
         }
     </table>
-     </div>
+</div>
+
+<MatDialog @bind-IsOpen="@AdditionalDeleteDialog" Stacked="true">
+    <MatDialogTitle>Удаление доп параметров</MatDialogTitle>
+    <MatDialogContent>
+        <br />
+        @code
+        {
+            string[] options = new[]
+            {
+                "Решение ПС",
+                "Сбой оборудования",
+                "Засветка и шумы"
+            };
+        }
+        <MatTextField @bind-Value="@Editor" Label="Редактор" Style="width:90%" Outlined="true"></MatTextField>
+        <MatAutocompleteList Items="@options" TItem="string" @bind-Value="@EditReason" Label="Причина корректировки" Style="width:45%" Outlined="true"></MatAutocompleteList>
+    </MatDialogContent>
+    <MatDialogActions>
+        <MatButton Raised="true" Style="margin-right:5px;" OnClick="_=>  { EditAdditional(ALARm.Core.Report.RdAction.Delete, AdditionalDeleteDialog); }">Ок</MatButton>
+        <MatButton Raised="true" OnClick="_=> { AdditionalDeleteDialog = false;}">Закрыть</MatButton>
+    </MatDialogActions>
+</MatDialog>
+
+
+    <MatDialog @bind-IsOpen="@AdditionalEditDialog" Stacked="true">
+        <MatDialogTitle>Редактирование доп параметров</MatDialogTitle>
+        <MatDialogContent>
+            <br />
+            <MatTextField @bind-Value="@Editor" Label="Редактор" Style="width:45%" Outlined="true"></MatTextField>
+            <MatAutocompleteList Items="@options" TItem="string" @bind-Value="@EditReason" Label="Причина корректировки" Style="width:45%" Outlined="true"></MatAutocompleteList>
+
+            <MatTextField @bind-Value="addDig.Length" Label="Длина" Style="width:45%" Outlined="true"></MatTextField>
+            <MatTextField @bind-Value="addDig.Count" Label="Кол-во" Style="width:45%" TextArea="true" Outlined="true"></MatTextField>
+            @*<MatTextField @bind-Value="addDig.AllowSpeed" Label="Огр.ск:" Style="width:45%" TextArea="true" Outlined="true"></MatTextField>*@
+
+        </MatDialogContent>
+        <MatDialogActions>
+            <MatButton Raised="true" Style="margin-right:5px;" OnClick="_=> { EditAdditional(ALARm.Core.Report.RdAction.Modify, AdditionalEditDialog); }">Ок</MatButton>
+            <MatButton Raised="true" OnClick="_=> { AdditionalEditDialog = false;}">Закрыть</MatButton>
+        </MatDialogActions>
+    </MatDialog>

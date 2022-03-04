@@ -461,6 +461,7 @@ namespace ALARm.DataAccess
             }
         }
 
+
         public List<VideoObject> GetRdObjectKm(string object_id, string km, string trip_files)
         {
             using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
@@ -495,7 +496,16 @@ namespace ALARm.DataAccess
                         left join adm_station as s_station on s_station.id = trip.start_station
                         left join adm_station as f_station on f_station.id = trip.final_station
                         where road.road_id = @road_id and trip.trip_date between @start and @final order by trip.trip_date desc";
-                return db.Query<Trips>(sqltext, new { road_id = road_id, start = period.StartDate, final = period.FinishDate }, commandType: CommandType.Text).ToList();
+                var trips = db.Query<Trips>(sqltext, new { road_id = road_id, start = period.StartDate, final = period.FinishDate }, commandType: CommandType.Text).ToList();
+                for (int i = 0; i< trips.Count; i++)
+                {
+                    var fr = GetTripFragments(trips[0].Id);
+                        if (fr.Count>0)
+                    {
+                        trips[i].TrackCode = fr[0].Track_Code;
+                    }
+                }
+                return trips;
             }
         }
         public object GetTrips(List<Int64> directionIDs, int rd_lvl)
@@ -2416,11 +2426,11 @@ namespace ALARm.DataAccess
                     INSERT INTO trips(
                         direction_id, car, chief, travel_direction, car_position, start_station, final_station, trip_type, trip_date, 
                         current, start_position, track_id, rail_profile, longitudinal_profile, short_irregularities, joint_gaps, georadar, 
-                        dimensions, beacon_marks, embankment, rail_temperature, geolocation, rail_video_monitoring, video_monitoring, road_id)
+                        dimensions, beacon_marks, embankment, rail_temperature, geolocation, rail_video_monitoring, video_monitoring, road_id, processed)
 
                     VALUES(@direction_id, (select value from PARAMETER WHERE name = 'car' limit 1), @chief, @travel_direction, @car_position, @start_station, @final_station, @trip_type, @trip_date, 
                         true, @start_position, @track_id, @rail_profile, @longitudinal_profile, @short_irregularities, @joint_gaps, @georadar, 
-                        @dimensions, @beacon_marks, @embankment, @rail_temperature, @geolocation, @rail_video_monitoring, @video_monitoring, @road_id) RETURNING id", new
+                        @dimensions, @beacon_marks, @embankment, @rail_temperature, @geolocation, @rail_video_monitoring, @video_monitoring, @road_id, @processed) RETURNING id", new
                 {
                     direction_id = trip.Direction_id,
                     car = trip.Car,
@@ -2445,8 +2455,9 @@ namespace ALARm.DataAccess
                     geolocation = trip.Geolocation,
                     rail_video_monitoring = trip.Rail_Video_Monitoring,
                     video_monitoring = trip.Video_Monitoring,
-                    road_id = trip.Road_Id
-                }, commandType: CommandType.Text);
+                    road_id = trip.Road_Id,
+                    processed = false
+                }, commandType: CommandType.Text); ;
 
                 db.Execute(@"CREATE TABLE public.outdata_" + trip_id + @"
                 (
@@ -2616,7 +2627,8 @@ namespace ALARm.DataAccess
                 if (db.State == ConnectionState.Closed)
                     db.Open();
                 return db.Query<Fragment>(
-                    @"select fragments.*, fragments.adm_track_id as track_id from fragments 
+                    @"select fragments.*, fragments.adm_track_id as track_id, tr.code as track_code  from fragments 
+                        inner join adm_track as tr on tr.id = fragments.adm_track_id
                         where trip_id = @tripid 
                         order by id",
                     new { tripid = trip_id }, commandType: CommandType.Text).ToList();
@@ -3194,6 +3206,41 @@ namespace ALARm.DataAccess
             }
         }
 
+        public int FinishProcessing(long trip_id)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                try
+                {
+                    db.Execute($@"UPDATE trips SET processed = true WHERE id = {trip_id}", commandType: CommandType.Text);
+                    return 1;
+                }
+                catch (Exception e)
+                {
+                    return -1;
+                }
+            }
+        }
+        public List<Kilometer> GetBedemostKilometers()
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                try
+                {
+                    var res= db.Query<Kilometer>($@"select km as number, pch as pchcode, pchu as pchucode, pd as pdcode, pdb as pdbcode, ots_iv_st as speedlim, primech as primech, put as track_name, rating as Rating_bedomost from bedemost", commandType: CommandType.Text).ToList();
+                    return res;
+                }
+                catch (Exception e)
+                {
+                    return null;
+                }
+            }
+
+        }
         public List<OutData> GetNextOutDatas(int meter, int count, long trip_id)
         {
             using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
@@ -3299,6 +3346,32 @@ namespace ALARm.DataAccess
                     return -1;
                 }
 
+            }
+        }
+
+        public List<Digression> GetAdditional(int km)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                try
+                {
+                    if (db.State == ConnectionState.Closed)
+                        db.Open();
+
+                    return db.Query<Digression>($@"
+                    SELECT *
+                    FROM s3_additional 
+                    WHERE
+	                    km = {km}
+                    ORDER BY
+	                    s3_additional.km,
+	                    s3_additional.meter").ToList();
+                }
+                catch (Exception e)
+                {
+                    Console.Error.WriteLine("getAdditionalError:" + e.StackTrace);
+                    return null;
+                }
             }
         }
 
@@ -3833,11 +3906,13 @@ namespace ALARm.DataAccess
                 AS alert
                 from s3 where trip_id = {trip_id} and track_id = {track_id} and km = {km}   and 
 	            typ > 1
-                GROUP BY track_id, trip_id, km, typ, len, otkl, kol, ots, ovp, ogp, uv, uvg, is2to3, isequalto3, isequalto4, onswitch, islong, comment, meter
+                GROUP BY track_id, trip_id, km, meter, typ, len, otkl, kol, ots, ovp, ogp, uv, uvg, is2to3, isequalto3, isequalto4, onswitch, islong, comment
                 ORDER BY
 	                meter").ToList();
             }
         }
+        //хочу вставить новую переменную для изменения примечания после коретировки
+        //,newbedomost
         /// <summary>
         /// Километрдің қорытынды бағасын қайтарады
         /// </summary>
@@ -3862,13 +3937,39 @@ namespace ALARm.DataAccess
             }
             return result;
         }
-        /// <summary>
-        ///Ескерту жазбасын түзету
-        /// </summary>
-        /// <param name="digression"></param>
-        /// <param name="action"></param>
-        /// <returns>сәтті болған жағдайда 1, әйтпесе -1</returns>
-        public int UpdateDigression(DigressionMark digression, Kilometer kilometer, RdAction action)
+        public string GetPrimech(DigressionMark digression)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                NpgsqlTransaction transaction = (NpgsqlTransaction)db.BeginTransaction();
+                var command = new NpgsqlCommand();
+                command.Connection = (NpgsqlConnection)db;
+                command.Transaction = transaction;
+                try
+                {
+                    command.CommandText = $@"SELECT primech
+                    FROM bedemost WHERE bedemost.trip_id = {digression.TripId} AND bedemost.put = '{digression.TrackName}' AND bedemost.km = {digression.Km}";
+                    return (string)command.ExecuteScalar() ?? "";
+                }
+                catch (Exception e)
+                {
+                    return "";
+                }
+                finally
+                {
+                    db.Close();
+                }
+            }
+        }
+                /// <summary>
+                ///Ескерту жазбасын түзету
+                /// </summary>
+                /// <param name="digression"></param>
+                /// <param name="action"></param>
+                /// <returns>сәтті болған жағдайда 1, әйтпесе -1</returns>
+       public int UpdateDigression(DigressionMark digression, Kilometer kilometer, RdAction action)
         {
             using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
             {
@@ -3887,6 +3988,7 @@ namespace ALARm.DataAccess
                        id, pch, naprav, put, pchu, pd, pdb, km, meter, trip_id, ots, kol, otkl, len, primech, tip_poezdki, cu, us, p1, p2, ur, pr, r1, r2, bas, typ, uv, uvg, ovp, ogp, is2to3, track_id, onswitch, isequalto4, distance_id, isequalto3, {(int)action}, '{digression.Editor}', '{digression.EditReason}'
                     FROM s3 WHERE s3.id = {digression.ID}
                     ";
+                    /// ,'{digression.NewBedemostComment}',newBedemostComment
                     command.ExecuteNonQuery();
                     var prevPoint = kilometer.Point;
                     if (action == RdAction.Delete)
@@ -3919,13 +4021,13 @@ namespace ALARm.DataAccess
                         command.ExecuteNonQuery();
                         command.CommandText = $@"
                         UPDATE bedemost
-                            SET ball = {kilometer.Point}, ots_iv_st = '{digression.LimitSpeedToString()}'
+                            SET ball = {kilometer.Point}, ots_iv_st = '{digression.LimitSpeedToString()}', primech = '{digression.NewBedemostComment}'
                         WHERE 
                             km = {digression.Km} and track_id = {digression.TrackId} and trip_id = {digression.TripId}
                         ";
                         command.ExecuteNonQuery();
                     }
-
+                    //SET ball = { kilometer.Point }, ots_iv_st = '{digression.LimitSpeedToString()}, primech = {digression.NewBedemostComment}'
                     transaction.Commit();
                     return 1;
                 }
@@ -3997,7 +4099,36 @@ namespace ALARm.DataAccess
                 return db.Query<CorrectionNote>($@"select distinct km,trip_id,track_id,correctionvalue,coord from s3_correction where km={Number} GROUP BY  km,trip_id,track_id,correctionvalue,coord ").ToList();
             }
         }
+        public List<Digression> Check_direction_name(long trip_id)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                try
+                {
 
+                    var txt = $@"SELECT
+	                                * ,file_id fileid
+                                FROM    
+	                                report_violperpen
+                                WHERE
+	                                trip_id = {trip_id} 
+	                                                
+                                ORDER BY
+	                                km";
+
+                    return db.Query<Digression>(txt).ToList();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Check_ViolPerpen error: " + e.Message);
+
+                    return null;
+                }
+
+            }
+        }
 
         public List<NotCheckedKm> GetDop2(long trip_id, long distId)
         {
@@ -4111,6 +4242,39 @@ namespace ALARm.DataAccess
                 return result;
             }
             
+        }
+
+        public int InsertRating(int km, string rating, string put)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                NpgsqlTransaction transaction = (NpgsqlTransaction)db.BeginTransaction();
+                var command = new NpgsqlCommand();
+                command.Connection = (NpgsqlConnection)db;
+                command.Transaction = transaction;
+                try
+                {
+                    command.CommandText = $@"
+                    UPDATE bedemost
+                    SET rating = '{rating}' WHERE km = {km} AND put = '{put}'";
+                    command.ExecuteNonQuery();
+                    transaction.Commit();
+                    return 1;
+                }
+                catch (Exception e)
+                {
+                    transaction.Rollback();
+                    Console.WriteLine($"UpdateDigression error: {e.Message}");
+                    return -1;
+
+                }
+                finally
+                {
+                    db.Close();
+                }
+            }
         }
 
         public List<Trips> GetTripFromFileId(int fileId)
@@ -4316,13 +4480,69 @@ namespace ALARm.DataAccess
                 {
                     db.Close();
                 }
-
-
             }
             return -1;
         }
 
+        public int UpdateAdditionalBase(Digression digression, Kilometer kilometer, RdAction action)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                NpgsqlTransaction transaction = (NpgsqlTransaction)db.BeginTransaction();
+                var command_hist = new NpgsqlCommand();
+                command_hist.Connection = (NpgsqlConnection)db;
+                command_hist.Transaction = transaction;
+                var command_edit = new NpgsqlCommand();
+                command_edit.Connection = (NpgsqlConnection)db;
+                command_edit.Transaction = transaction;
+                var command_del = new NpgsqlCommand();
+                command_del.Connection = (NpgsqlConnection)db;
+                command_del.Transaction = transaction;
+                command_hist.CommandText = $@"
+                                INSERT INTO s3_additional_history(original_id, km, meter, typ, digname,direction_num,founddate,threat,r_threat,length,location,norma,r_digname,value,count,allowspeed,primech,modi_date,editor,editreason,action)
+                                SELECT
+                                   id, km, meter, typ, digname,direction_num,founddate,threat,r_threat,length,location,norma,r_digname,value,count,allowspeed,primech,CURRENT_TIMESTAMP,'{digression.Editor}', '{digression.EditReason}', {(int)action}
+                                FROM s3_additional WHERE s3_additional.id = {digression.Id} AND s3_additional.km = {digression.Km}
+                                ";
+                command_edit.CommandText = $@"
+                                UPDATE s3_additional
+                                    SET length = {digression.Length}, count = {digression.Count}, allowspeed = '{digression.AllowSpeed}', modi_date=CURRENT_TIMESTAMP
+                                WHERE 
+                                    id = {digression.Id} AND s3_additional.km = {digression.Km}
+                                ";
+                command_del.CommandText = $"DELETE FROM s3_additional WHERE s3_additional.id = {digression.Id} AND s3_additional.km = {digression.Km}";
+                command_hist.ExecuteNonQuery();
+                try
+                {
+                    if (action == RdAction.Delete)
+                    {
+                        command_del.ExecuteNonQuery();
+                        kilometer.AdditionalDigressions.Remove(digression);
+                    }
+                    else
+                    {
+                        command_edit.ExecuteNonQuery();
+                    }
+                    kilometer.CalcPoint();
+                    transaction.Commit();
+                    return 1;
+                }
+                catch (Exception e)
+                    {
+                        transaction.Rollback();
+                        Console.WriteLine($"UpdateDigression error: {e.Message}");
+                        return -1;
 
+                    }
+                finally
+                {
+                    db.Close();
+                }
+            }
+
+        }
         public int UpdateDigressionBase(Digression digression, int type, Kilometer kilometer, RdAction action)
         {
             using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))

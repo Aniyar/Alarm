@@ -1,0 +1,83 @@
+﻿@inject AlarmPP.Web.Services.AppData AppData
+@inject IJSRuntime JSRuntime
+@inject IMatToaster Toaster
+@using ALARm.Core.Report
+
+
+<h4>Оценка по Км.</h4>
+<div style="max-height: 300px; overflow-y: scroll; width: 100%; height: calc(100% - (50px))">
+    <table>
+        <tr style="background: " #75d2ff")>
+            <th style="border-right: 1px solid grey; border-left: 1px solid grey; width: 30px;">N</th>
+            <th style="border-right: 1px solid grey; border-left: 1px solid grey; width: 30px;">Км</th>
+            <th style="border-right: 1px solid grey; border-left: 1px solid grey; width: 30px;">ПЧ</th>
+            <th style="border-right: 1px solid grey; width: 30px;">ПЧУ</th>
+            <th style="border-right: 1px solid grey; width: 30px;">ПД</th>
+            <th style="border-right: 1px solid grey; width: 30px;">ПДБ</th>
+            <th style="border-right: 1px solid grey; width: 100px;">Уст.ск.</th>
+            <th style="border-right: 1px solid grey; width: 30px;">2ст.</th>
+            <th style="border-right: 1px solid grey; width: 30px;">3ст.</th>
+            <th style="border-right: 1px solid grey; width: 30px;">4ст.</th>
+            <th style="border-right: 1px solid grey; width: 30px;">Др.</th>
+            <th style="border-right: 1px solid grey; width: 30px;">Оц.</th>
+            <th style="border-right: 1px solid grey; width: 100px;">Огр.ск.</th>
+            <th style="border-right: 1px solid grey; width: 100px;">Прим.</th>
+        </tr>
+        @if (Kilometers != null)
+        {
+            int rowIndex = 1;
+            foreach (var km in Kilometers)
+            {
+                int dig2count = 0, dig3count = 0, dig4count = 0;
+                string sec = km.PdbSection.Count > 0 ? km.PdbSection[0].ToString() : "";
+
+                try
+                {
+                    var bedkmseq = BedKilometers.Where(o => (o.Number == km.Number && o.Track_name.Equals(km.Track_name)));
+                    if (bedkmseq != null && bedkmseq.Count() > 0)
+                    {
+                        var bedkm = bedkmseq.First();
+                        foreach (var digression in km.Digressions)
+                        {
+                            if (digression.Degree == 2)
+                            {
+                                dig2count += 1;
+                            }
+                            else if (digression.Degree == 3)
+                            {
+                                dig3count += 1;
+                            }
+                            else if (digression.Degree == 4)
+                            {
+                                dig4count += 1;
+                            }
+                        }
+                        <tr>
+                            <th style="border-right: 1px solid grey; border-left: 1px solid grey; width: 30px;">@rowIndex</th>
+                            <th style="border-right: 1px solid grey; border-left: 1px solid grey; width: 30px;">@km.Number</th>
+                            <th style="border-right: 1px solid grey; border-left: 1px solid grey; width: 30px;">@sec.Split('/')[0].Split('-')[1]</th>
+                            <th style="border-right: 1px solid grey; width: 30px;">@sec.Split('/')[1].Split('-')[1]</th>
+                            <th style="border-right: 1px solid grey; width: 30px;">@sec.Split('/')[2].Split('-')[1]</th>
+                            <th style="border-right: 1px solid grey; width: 30px;">@sec.Split('/')[3].Split('-')[1]</th>
+                            <th style="border-right: 1px solid grey; width: 100px;">@km.Speeds[0]</th>
+                            <th style="border-right: 1px solid grey; width: 30px;">@dig2count</th>
+                            <th style="border-right: 1px solid grey; width: 30px;">@dig3count</th>
+                            <th style="border-right: 1px solid grey; width: 30px;">@dig4count</th>
+                            <th style="border-right: 1px solid grey; width: 30px;"></th>
+                            <th style="border-right: 1px solid grey; width: 30px;">@bedkm.Rating_bedomost</th>
+                            <th style="border-right: 1px solid grey; width: 100px;">@bedkm.SpeedLim</th>
+                            <th style="border-right: 1px solid grey; width: 100px;"></th>
+                        </tr>
+                        rowIndex++;
+                    }
+                }
+                catch (Exception e)
+                {
+                    System.Console.WriteLine(e.Message);
+                }
+
+            }
+
+        }
+    </table>
+</div>

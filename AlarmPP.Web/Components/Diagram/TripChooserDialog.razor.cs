@@ -200,6 +200,7 @@ namespace AlarmPP.Web.Components.Diagram
             AppData.Trip.Trip_Type = (TripType)CurrentTripType;
             AppData.Trip.Travel_Direction = (Direction)TravelDirection;
             AppData.Trip.Car_Position = (ALARm.Core.CarPosition)CarPosition;
+
             AppData.Trip.Id = RdStructureRepository.InsertTrip(AppData.Trip);
             AppData.Trip.Trip_date = DateTime.Now;
             AppData.WorkMode = WorkMode.Online;

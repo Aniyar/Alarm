@@ -132,7 +132,9 @@
         private MetroFramework.Controls.MetroComboBox ProcessDataComboBox;
         private MetroFramework.Controls.MetroPanel MainPanel;
         private MetroFramework.Controls.MetroPanel ButtonsPanel;
+#pragma warning disable CS0108 // 'MainParametersProcessPeriod.CancelButton' hides inherited member 'Form.CancelButton'. Use the new keyword if hiding was intended.
         private MetroFramework.Controls.MetroButton CancelButton;
+#pragma warning restore CS0108 // 'MainParametersProcessPeriod.CancelButton' hides inherited member 'Form.CancelButton'. Use the new keyword if hiding was intended.
         private MetroFramework.Controls.MetroButton ChooseButton;
         private System.Windows.Forms.BindingSource mainParametersProcessBindingSource;
     }

@@ -40,7 +40,7 @@ namespace ALARm.Core
             {
                 switch (Process_Type)
                 {
-                    case 0: return "Рабочая";
+                    //case 0: return "Рабочая";
                     //case 0: return "Контрольная 1";
                     case 1: return "Контрольная";
                     case 2: return "Дополнительная";

@@ -70,7 +70,8 @@ namespace ALARm_Report.Forms
                         XElement tripElem = new XElement("trip",
                             new XAttribute("version", $"{DateTime.Now} v{Assembly.GetExecutingAssembly().GetName().Version.ToString()}"),
                             new XAttribute("date_statement", DateTime.Now.Date.ToShortDateString()),
-                            new XAttribute("check", trip.GetProcessTypeName), //ToDo
+                            //new XAttribute("check", tripProcess.GetProcessTypeName), //ToDo
+                            new XAttribute("check", tripProcess.GetProcessTypeName), //ToDo
                             new XAttribute("road", roadName),
                             new XAttribute("track", trackName),
                             new XAttribute("code", tripProcess.DirectionCode),
@@ -106,13 +107,16 @@ namespace ALARm_Report.Forms
                                     new XAttribute("old_count", st[0].COUNT),
                                     new XAttribute("old_strelka", ""),
                                     new XAttribute("old_most", ""),
+                                    new XAttribute("old_count", st[0].Ovp),
 
                                     new XAttribute("Stepen", elem.Typ),
                                     new XAttribute("value", elem.VALUE),
                                     new XAttribute("length", elem.LENGTH),
                                     new XAttribute("count", elem.COUNT),
                                     new XAttribute("strelka", ""),
-                                    new XAttribute("most", "")
+                                    new XAttribute("most", ""),
+                                    new XAttribute("ogr", st[0].Ovp)
+                                  
                                     ));
                             }
 
@@ -141,7 +145,8 @@ namespace ALARm_Report.Forms
                                     new XAttribute("length", elem.LENGTH),
                                     new XAttribute("count", elem.COUNT),
                                     new XAttribute("strelka", ""),
-                                    new XAttribute("most", "")
+                                    new XAttribute("most", ""),
+                                    new XAttribute("ogr", elem.Ovp)
                                     ));
                             }
 

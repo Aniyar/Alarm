@@ -66,9 +66,11 @@
                                 </MatListItem>
 
                                 @*<MatListItem OnClick="(_ => SetShowStatus(Services.ShowButtons.DangerousForEmtyWagon))">
-            <MatCheckbox Value="@AppData.ShowDangerousForEmtyWagon" Label="Опасные для порожных вагонов" Style="color:hotpink;width:100%;" ValueChanged="@((bool value) => SetShowStatus(Services.ShowButtons.DangerousForEmtyWagon))"></MatCheckbox>
-        </MatListItem>*@
-
+                        <MatCheckbox Value="@AppData.ShowDangerousForEmtyWagon" Label="Опасные для порожных вагонов" Style="color:hotpink;width:100%;" ValueChanged="@((bool value) => SetShowStatus(Services.ShowButtons.DangerousForEmtyWagon))"></MatCheckbox>
+                    </MatListItem>*@
+                                <MatListItem OnClick="(_ => SetShowStatus(Services.ShowButtons.ByKilometer))">
+                                    <MatCheckbox Value="@AppData.ByKilometerChecked" Label="Покилометровая оценка отступлений" Style="color: black; width: 100%;" ValueChanged="@((bool value) => SetShowStatus(Services.ShowButtons.ByKilometer))"></MatCheckbox>
+                                </MatListItem>
                                 <MatListItem OnClick="(_ => SetShowStatus(Services.ShowButtons.CloseToDangerous))">
                                     <MatCheckbox Value="@AppData.ShowCloseToDangerous" Label="Отступления близкие к опасным" Style="color: red; width: 100%;" ValueChanged="@((bool value) => SetShowStatus(Services.ShowButtons.CloseToDangerous))"></MatCheckbox>
                                 </MatListItem>
@@ -113,7 +115,43 @@
                                 <MatListItem OnClick="(_ => SetShowStatus(Services.ShowButtons.DefShpals))">
                                     <MatCheckbox Value="@AppData.ShowDefShpals" Label="Деффектные шпалы" Style="color: blue; width: 100%;" ValueChanged="@((bool value) => SetShowStatus(Services.ShowButtons.DefShpals))"></MatCheckbox>
                                 </MatListItem>
+
                                 @* ////.........*@
+                            </MatList>
+                        </MatMenu>
+                    </MatTooltip>
+
+                    <MatTooltip Tooltip="Фильтры отображения доп. параметров" Wrap="true">
+                        <MatFAB Mini="true" @onclick="OnDigFilterMenuClick2" Style="border-radius:10%;box-shadow:none;">
+                            <i class="demo-icon icon-dg-dig-filter" style="@(AppData.AddDigressionChecked ? AppData.PressedButtonState : "")">&#xe808;</i>
+                        </MatFAB>
+                        <MatMenu @ref="digFilterMenu2" TargetForwardRef="@digFilterMenuRef2">
+                            <MatList>
+                                <MatListItem OnClick="(_ => SetShowStatus(Services.ShowButtons.PU))">
+                                    <MatCheckbox Value="@AppData.ShowPU" Label="Подуклонка" Style="color: red; width: 100%;" ValueChanged="@((bool value) => SetShowStatus(Services.ShowButtons.PU))"></MatCheckbox>
+                                </MatListItem>
+                                <MatListItem OnClick="(_ => SetShowStatus(Services.ShowButtons.NPK))">
+                                    <MatCheckbox Value="@AppData.ShowNPK" Label="Наклон поверхности катания" Style="color: red; width: 100%;" ValueChanged="@((bool value) => SetShowStatus(Services.ShowButtons.NPK))"></MatCheckbox>
+                                </MatListItem>
+                                <MatListItem OnClick="(_ => SetShowStatus(Services.ShowButtons.LongWaves))">
+                                    <MatCheckbox Value="@AppData.ShowLongWaves" Label="Длинные волны" Style="color: red; width: 100%;" ValueChanged="@((bool value) => SetShowStatus(Services.ShowButtons.LongWaves))"></MatCheckbox>
+                                </MatListItem>
+                                <MatListItem OnClick="(_ => SetShowStatus(Services.ShowButtons.MediumWaves))">
+                                    <MatCheckbox Value="@AppData.ShowMediumWaves" Label="Средние волны" Style="color: red; width: 100%;" ValueChanged="@((bool value) => SetShowStatus(Services.ShowButtons.MediumWaves))"></MatCheckbox>
+                                </MatListItem>
+                                <MatListItem OnClick="(_ => SetShowStatus(Services.ShowButtons.ShortWaves))">
+                                    <MatCheckbox Value="@AppData.ShowShortWaves" Label="Короткие волны" Style="color: red; width: 100%;" ValueChanged="@((bool value) => SetShowStatus(Services.ShowButtons.ShortWaves))"></MatCheckbox>
+                                </MatListItem>
+                                <MatListItem OnClick="(_ => SetShowStatus(Services.ShowButtons.IznosBok))">
+                                    <MatCheckbox Value="@AppData.ShowIznosBok" Label="Износ боковой" Style="color: red; width: 100%;" ValueChanged="@((bool value) => SetShowStatus(Services.ShowButtons.IznosBok))"></MatCheckbox>
+                                </MatListItem>
+                                <MatListItem OnClick="(_ => SetShowStatus(Services.ShowButtons.IznosVert))">
+                                    <MatCheckbox Value="@AppData.ShowIznosVert" Label="Износ вертикальный" Style="color: red; width: 100%;" ValueChanged="@((bool value) => SetShowStatus(Services.ShowButtons.IznosVert))"></MatCheckbox>
+                                </MatListItem>
+                                <MatListItem OnClick="(_ => SetShowStatus(Services.ShowButtons.IznosPriv))">
+                                    <MatCheckbox Value="@AppData.ShowIznosPriv" Label="Износ приведенный" Style="color: red; width: 100%;" ValueChanged="@((bool value) => SetShowStatus(Services.ShowButtons.IznosPriv))"></MatCheckbox>
+                                </MatListItem>
+
                             </MatList>
                         </MatMenu>
                     </MatTooltip>
@@ -153,12 +191,25 @@
                             <i class="demo-icon icon-dg-joint" style="@(AppData.ShowJoints ? AppData.PressedButtonState : "")">&#xe812;</i>
                         </MatFAB>
                     </MatTooltip>
-                 
+                    <MatTooltip Tooltip="Прибивки" Wrap="true">
+                        <MatFAB Mini="true" Style="border-radius:10%;box-shadow:none;" OnClick="@(_ => SetShowStatus(Services.ShowButtons.Correction))">
+                            <i class="demo-icon icon-dg-correction" style="@(AppData.ShowCorrection ? AppData.PressedButtonState : "")">&#xe812;</i>
+                        </MatFAB>
+                    </MatTooltip>
                     <MatTooltip Tooltip="Поперечный профиль рельса" Wrap="true">
                         <MatFAB Mini="true" Style="border-radius:10%;box-shadow:none;" OnClick="@(_ => SetShowStatus(Services.ShowButtons.RailProfile))">
                             <i class="demo-icon icon-dg-rail-profile" style="@(AppData.ShowRailProfile ? AppData.PressedButtonState : "")">&#xe813;</i>
                         </MatFAB>
                     </MatTooltip>
+                    @if (AppData.Trip.Processed == true)
+                    {
+                        <mat-label>Постобработка проезда завершена</mat-label>
+                    }
+                    else
+                    {
+                        <MatButton Raised="true" Style="margin-right:5px;" OnClick="@(() => FinishProcessingDialog = true)">Завершить постобработку</MatButton>
+                    }
+
 
 
                 </MatAppBarSection>
@@ -174,6 +225,7 @@
                     <MatFAB Mini="true" Style="height:0px;"></MatFAB>
                     <MatFAB Mini="true" RefBack="@printMenuRef" Style="height:0px;"></MatFAB>
                     <MatFAB Mini="true" RefBack="@digFilterMenuRef" Style="height:0px;"></MatFAB>
+                    <MatFAB Mini="true" RefBack="@digFilterMenuRef2" Style="height:0px;"></MatFAB>
                 </MatAppBarSection>
             </MatAppBar>
         </MatAppBar>
@@ -188,3 +240,10 @@
     </MatAppBarContainer>
 </MatThemeProvider>
 
+<MatDialog @bind-IsOpen="@FinishProcessingDialog" Stacked="true">
+    <MatDialogTitle>Завершить постобработку?</MatDialogTitle>
+    <MatDialogActions>
+        <MatButton Raised="true" Style="margin-right:5px;" OnClick="_=> {FinishProcessing();  }">Ок</MatButton>
+        <MatButton Raised="true" OnClick="_=> { FinishProcessingDialog = false;}">Закрыть</MatButton>
+    </MatDialogActions>
+</MatDialog>

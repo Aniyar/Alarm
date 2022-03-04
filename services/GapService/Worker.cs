@@ -275,17 +275,6 @@ namespace GapService
 
 
 
-
-
-
-
-
-
-
-
-
-
-
         /// <summary>
         /// Сервис по стыкам
         /// </summary>
