@@ -185,6 +185,7 @@ namespace ALARm.Core
                 switch (Trip_Type)
                 {
                     case TripType.Work: return "Рабочая";
+                    case TripType.Additional: return "Дополнительная";
                     case TripType.Control: return "Контрольная";
                     case TripType.NotDefined: return "Не определено";
                     default: return string.Empty;

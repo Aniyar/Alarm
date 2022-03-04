@@ -13,7 +13,7 @@
             <th style="border-right: 1px solid grey; border-left: 1px solid grey; width: 50px;">Метр</th>
             <th style="border-right: 1px solid grey; width: 125px;">Отступление</th>
             <th style="border-right: 1px solid grey; width: 50px;">Степень</th>
-            <th style="border-right: 1px solid grey; width: 50px;">Длина</th>
+            <th style="border-right: 1px solid grey; width: 50px;">Значение</th>
             <th style="border-right: 1px solid grey; width: 50px;">Кол-во</th>
             <th style="border-right: 1px solid grey; width: 50px;">Огр. ск.</th>
             <th style="border-right: 1px solid grey; width: 125px;"></th>
@@ -65,7 +65,7 @@
                         <th>@addDig.Meter</th>
                         <th>@addDig.DigName</th>
                         <th>@addDig.Typ</th>
-                        <th>@addDig.Length</th>
+                        <th>@addDig.Value</th>
                         <th>@addDig.Count</th>
                         <th>@addDig.FullSpeed</th>
                         <td>
@@ -113,7 +113,7 @@
 
             <MatTextField @bind-Value="addDig.Length" Label="Длина" Style="width:45%" Outlined="true"></MatTextField>
             <MatTextField @bind-Value="addDig.Count" Label="Кол-во" Style="width:45%" TextArea="true" Outlined="true"></MatTextField>
-            <MatTextField @bind-Value="addDig.AllowSpeed" Label="Огр.ск:" Style="width:45%" TextArea="true" Outlined="true"></MatTextField>
+            @*<MatTextField @bind-Value="addDig.AllowSpeed" Label="Огр.ск:" Style="width:45%" TextArea="true" Outlined="true"></MatTextField>*@
 
         </MatDialogContent>
         <MatDialogActions>

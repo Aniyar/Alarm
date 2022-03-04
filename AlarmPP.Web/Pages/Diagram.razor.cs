@@ -61,6 +61,7 @@ namespace AlarmPP.Web.Pages
         public bool selectRect { get; set; } = false;
         protected override void OnInitialized()
         {
+
             AppData.ShowSignals = RdStructureRepository.GetButtonState(ShowButtons.Signal.ToString());
             AppData.ShowEvents = RdStructureRepository.GetButtonState(ShowButtons.Event.ToString());
             AppData.ShowMainParams = RdStructureRepository.GetButtonState(ShowButtons.MainParams.ToString());
@@ -431,6 +432,7 @@ namespace AlarmPP.Web.Pages
                     break;
                 case ShowButtons.NPK:
                     AppData.ShowNPK = !AppData.ShowNPK;
+                    RdStructureRepository.SetButtonStatus(ShowButtons.NPK.ToString(), AppData.ShowNPK);
                     if (AppData.ShowNPK)
                         AppData.AddDigressionChecked = true;
                     else

@@ -245,6 +245,7 @@ namespace ALARm.Core.Report
         public int Degree { get; set; }
         public int Length { get; set; }
         public string Prim { get; set; }
+        public string NewBedemostComment { get; set; }
         public double Radius { get; set; } = 10000;
         public CrosTieType CrosTieType { get; set; } = CrosTieType.Concrete;
         public float Dlina { get; set; }
@@ -275,6 +276,7 @@ namespace ALARm.Core.Report
         public long TrackId { get; set; }
         public long TripId { get; set; }
         public string Comment { get; set; }
+        public bool gotprim { get; set; } = false;
         public string EditReason { get; set; }
         public string Editor { get; set; }
         public string CNI { get; set; } = "";
@@ -371,10 +373,7 @@ namespace ALARm.Core.Report
 
         public int GetCount()
         {
-            if (Km == 715)
-            {
-
-            }
+          
             int count = -1;
             switch (Digression.Name)
             {
@@ -392,14 +391,22 @@ namespace ALARm.Core.Report
                 || digname == DigressionName.Strightening.Name:
                     count = 1;
                     break;
-                case string digname when digname == DigressionName.Constriction.Name //суж
-                || digname == DigressionName.Broadening.Name: //уш
+                case string digname when digname == DigressionName.Constriction.Name://суж
+               
                     count = Length / 4;
                     count += Length % 4 > 0 ? 1 : 0;
                     break;
-                case string digname when digname == DigressionName.Level.Name: //ур
+                case string digname when digname == DigressionName.Level.Name && Degree <3: //ур
                     count = Length / 20;
                     count += Length % 20 > 0 ? 1 : 0;
+                    break;
+                case string digname when digname == DigressionName.Level.Name && Degree >2: //ур
+                    count = Length / 10;
+                    count += Length % 10 > 0 ? 1 : 0;
+                    break;
+                case string digname when digname == DigressionName.Broadening.Name: //уш
+                    count = Length / 4;
+                    count += Length % 4 > 0 ? 1 : 0;
                     break;
                 case string digname when 
                 digname == DigressionName.TreadTiltLeft.Name || digname == DigressionName.TreadTiltRight.Name ||

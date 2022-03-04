@@ -2532,10 +2532,14 @@ namespace ALARm.DataAccess
 	                    km.final_index,
                         start_index is not null as IsPrinted,
                         bed.ball as point,
-                        COALESCE(km.id,0) as id
+                        COALESCE(km.id,0) as id,
+                        concat(direction.name, '(', direction.code, ')') as direction_name,
+                        direction.code as direction_code
                     FROM
 	                    generate_series ( { fragment.Start_Km }, { fragment.Final_Km }, { (int)direction } ) AS kms
 	                    INNER JOIN adm_track AS track ON track.ID = { fragment.Track_Id }
+                        inner join adm_direction as direction on direction.id = track.adm_direction_id
+
                         LEFT JOIN kilometers AS km ON km.track_id = track.ID 
 	                        AND km.trip_id = {trip_id} 
 	                        AND km.num = kms.kms

@@ -703,11 +703,16 @@ namespace ALARm_Report.Forms
 								{
 									kmTotal.IsLimited = 1;
 									//MessageBox.Show(digression.Km.ToString() + '-' +digression.DigName + '-' + digression.LimitSpeedToString());
+									if (digression.Km == 710 && digression.DigName == DigressionName.Broadening.ToString())
+									{
+										digression.Count = digression.Count;
 
+									}
 									if (digression.Degree == 4 && digression.Digtype == DigressionType.Main && !digression.DigName.Contains("З?")
 										&& !digression.DigName.Contains("кривая факт.") && !digression.DigName.Equals("ПрУ"))
 									{
-										kmTotal.Fourth++;
+										kmTotal.Fourth = kmTotal.Fourth + digression.GetCount();
+										//kmTotal.Fourth++;
 									}
 									//if (digression.Digtype != DigressionType.Main && !digression.DigName.Contains("З?") && !digression.DigName.Equals("ПрУ") && !digression.DigName.Contains("кривая факт."))
 									if (digression.DigName.Contains("З") && !digression.DigName.Contains("З?") && !digression.DigName.Equals("ПрУ") && !digression.DigName.Contains("кривая факт.") && digression.DigName.Contains("Изн"))
@@ -722,7 +727,7 @@ namespace ALARm_Report.Forms
 
 									if ((digression.Comment.Contains("ОШК") || digression.Comment.Contains("ОШП") || digression.Comment.Contains("Уобр")) &&
 
-										!digression.Comment.Contains("m") && !digression.Comment.Contains("гр") && !digression.DigName.Contains("З") && !digression.DigName.Equals("ПрУ") && !digression.DigName.Contains("кривая факт.")
+										!digression.Comment.Contains("м") && !digression.Comment.Contains("гр") && !digression.DigName.Contains("З") && !digression.DigName.Equals("ПрУ") && !digression.DigName.Contains("кривая факт.")
 										&& !(digression.Degree == 4 && digression.Digtype == DigressionType.Main) && !digression.DigName.Contains("Изн") && digression.LimitSpeedToString().Any(char.IsDigit)
 
 										)
@@ -734,10 +739,15 @@ namespace ALARm_Report.Forms
 
 
 									}
+									//&& (digression.Degree == 3)
+									if (((digression.Comment.Contains("гр") || digression.Comment.Contains("м") ) && (digression.Degree == 3)) && !digression.DigName.Contains("З") && !digression.DigName.Equals("ПрУ") && !digression.DigName.Contains("кривая факт.")
+									&& (!(digression.Degree == 4) && digression.Digtype == DigressionType.Main) && !digression.DigName.Contains("Изн"))
+										///сделать сортировку по "гр.ис.Пр,м" с органичемнием скрости  что то типо digression.Comment.Contains("м") || digression.Comment.Contains("ис")
+										///проверка на наличие ограничения скорости 
+									//	var flag_gr = false;
+									//if (digression.Comment != null) if (digression.Comment.Contains("гр")) flag_gr = true;
 
-									if ((digression.Comment.Contains("гр") || digression.Comment.Contains("m")) && (digression.Degree == 3) && !digression.DigName.Contains("З") && !digression.DigName.Equals("ПрУ") && !digression.DigName.Contains("кривая факт.")
-										&& (!(digression.Degree == 4) && digression.Digtype == DigressionType.Main) && !digression.DigName.Contains("Изн")
-																		)
+									//if ((digression.LimitSpeedToString().Any(char.IsDigit) && !digression.Equals("ПрУ") && !digression.DigName.Contains("кривая факт.")) || flag_gr)
 									{
 										kmTotal.Grk = kmTotal.Grk + 1;
 
@@ -1314,7 +1324,7 @@ namespace ALARm_Report.Forms
 								if (digression.Degree == 4 && digression.Digtype == DigressionType.Main && !digression.DigName.Contains("З?")
 									&& !digression.DigName.Contains("кривая факт.") && !digression.DigName.Equals("ПрУ"))
 								{
-									kmTotal.Fourth++;
+									kmTotal.Fourth = kmTotal.Fourth + digression.GetCount();
 								}
 								//if (digression.Digtype != DigressionType.Main && !digression.DigName.Contains("З?") && !digression.DigName.Equals("ПрУ") && !digression.DigName.Contains("кривая факт."))
 								if (digression.DigName.Contains("З") && !digression.DigName.Contains("З?") && !digression.DigName.Equals("ПрУ") && !digression.DigName.Contains("кривая факт.") && digression.DigName.Contains("Изн"))
@@ -1329,7 +1339,7 @@ namespace ALARm_Report.Forms
 
 								if ((digression.Comment.Contains("ОШК") || digression.Comment.Contains("ОШП") || digression.Comment.Contains("Уобр")) &&
 
-									!digression.Comment.Contains("m") && !digression.Comment.Contains("гр") && !digression.DigName.Contains("З") && !digression.DigName.Equals("ПрУ") && !digression.DigName.Contains("кривая факт.")
+									!digression.primech.Contains("м") && !digression.Comment.Contains("гр") && !digression.DigName.Contains("З") && !digression.DigName.Equals("ПрУ") && !digression.DigName.Contains("кривая факт.")
 									&& !(digression.Degree == 4 && digression.Digtype == DigressionType.Main) && !digression.DigName.Contains("Изн") && digression.LimitSpeedToString().Any(char.IsDigit)
 
 									)
@@ -1342,11 +1352,15 @@ namespace ALARm_Report.Forms
 
 								}
 
-								if ((digression.Comment.Contains("гр") || digression.Comment.Contains("m")) && (digression.Degree == 3) && !digression.DigName.Contains("З") && !digression.DigName.Equals("ПрУ") && !digression.DigName.Contains("кривая факт.")
-									&& (!(digression.Degree == 4) && digression.Digtype == DigressionType.Main) && !digression.DigName.Contains("Изн")
-																	)
-								{
-									kmTotal.Grk = kmTotal.Grk + 1;
+						//
+							if (((digression.Comment.Contains("гр") || digression.Comment.Contains("м") ) && (digression.Degree == 3)) 
+								&& !digression.DigName.Contains("З") && !digression.DigName.Equals("ПрУ") && !digression.DigName.Contains("кривая факт.")
+								&& (!(digression.Degree == 4) && digression.Digtype == DigressionType.Main) && !digression.DigName.Contains("Изн"))
+							///сделать сортировку по "гр.ис.Пр,м" с органичемнием скрости  что то типо digression.Comment.Contains("м") || digression.Comment.Contains("ис")
+
+
+							{
+								kmTotal.Grk = kmTotal.Grk + 1;
 
 								}
 
@@ -1562,7 +1576,7 @@ namespace ALARm_Report.Forms
 
 									if (digression.Degree == 4 && digression.Digtype == DigressionType.Main)
 									{
-										comparativeKMTotal.Fourth++;
+										comparativeKMTotal.Fourth = comparativeKMTotal.Fourth + digression.GetCount();
 									}
 
 								}
@@ -1882,7 +1896,18 @@ namespace ALARm_Report.Forms
 					new XAttribute("bad", sectionTotal.RatingCounts[3].ToString("0.000", nfi)),
 					new XAttribute("limit", sectionTotal.IsLimited),
 					//
-					new XAttribute("d4", sectionTotal.Fourth),
+					new XAttribute("d4", sectionTotal.Fourth ),
+
+					new XAttribute("c1", sectionTotal.Constriction),
+					new XAttribute("c2", sectionTotal.Broadening),
+					new XAttribute("c3", sectionTotal.Level),
+					new XAttribute("c4", sectionTotal.Sag),
+					new XAttribute("c5", sectionTotal.Drawdown),
+					new XAttribute("c6", sectionTotal.Strightening),
+					new XAttribute("c7", sectionTotal.Common),
+					new XAttribute("c8", sectionTotal.FourthOtherAdd),
+					new XAttribute("point", $"{sectionTotal.MainParamPointSum + sectionTotal.CurvePointSum}/{sectionTotal.AddParamPointSum}"),
+			
 
 					new XAttribute("SOCHET", "0"),//to doo 
 					new XAttribute("Grk", sectionTotal.Grk),

@@ -484,9 +484,10 @@ namespace ALARm_Report.Forms
 						{
 							kmTotal.IsLimited = 1;
 
-							if ((digression.Degree == 4) || digression.Degree == 3)
+							//if ((digression.Degree == 4) || digression.Degree == 3)
+							if ((digression.Degree == 4) )
 							{
-								kmTotal.Fourth++;
+								kmTotal.Fourth = kmTotal.Fourth + digression.Count;
 							}
 							else if (digression.Digtype != DigressionType.Main)
 							{
