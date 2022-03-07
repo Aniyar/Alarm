@@ -11,25 +11,21 @@
         </tr>
         @if (kilometers != null)
         {
-
+            foreach (var km in kilometers)
             {
-                foreach (var km in kilometers)
-                {
                    
-                        foreach (var corectnion in km.CorrectionNotes)
-                        {
-                        <tr>
-                            <th>@corectnion.Km</th>
-                            @*<th>@corectnion.Meter</th>*@
-                            @*<th>@(corectnion.Type == 0 ? "RP" : "AP" )</th>*@
-                            @*<th>@( "Рп ,Ап" )</th>*@
-                            <th>@corectnion.CorrectionValue</th>
-                            <th>@corectnion.coord</th>
+                    foreach (var corectnion in km.CorrectionNotes)
+                    {
+                    <tr>
+                        <th>@corectnion.Km</th>
+                        @*<th>@corectnion.Meter</th>*@
+                        @*<th>@(corectnion.Type == 0 ? "RP" : "AP" )</th>*@
+                        @*<th>@( "Рп ,Ап" )</th>*@
+                        <th>@corectnion.CorrectionValue</th>
+                        <th>@corectnion.coord</th>
 
-                        </tr>
-                        }
-                  
-                }
+                    </tr>
+                    }
             }
         }
     </table>

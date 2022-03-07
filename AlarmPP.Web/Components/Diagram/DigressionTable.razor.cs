@@ -257,24 +257,6 @@ namespace AlarmPP.Web.Components.Diagram
 
                 var bottomShapes = (List<Dictionary<String, Object>>)bottomDic["drawShapes"];
                 bottomShapes.ForEach(s => { shapes.Add(s); });
-
-                //if (center != null)
-                //{
-                //    using MemoryStream m = new MemoryStream();
-                //   // commonBitMap.Save(m, ImageFormat.Png);
-                //    //commonBitMap.Save("G:/bitmap/1.png", ImageFormat.Png);
-                //    commonBitMap.Save("C:/Cдача 10,11,2021/bitmap/1.png", ImageFormat.Png);
-
-                //    byte[] byteImage = m.ToArray();
-
-                //    var b64 = Convert.ToBase64String(byteImage);
-                //    result.Add("b64", b64);
-
-                //    result.Add("shapes", shapes);
-                //    digression.DigressionImage = result;
-
-                //    digression.DigImage = b64;
-                //}
                 if (center != null)
                 {
                     using MemoryStream m = new MemoryStream();
@@ -310,8 +292,8 @@ namespace AlarmPP.Web.Components.Diagram
                 }
                 JSRuntime.InvokeVoidAsync("initCanvas", result);
                 JSRuntime.InvokeVoidAsync("loader", false);
-                //JSRuntime.InvokeVoidAsync("startZoom");
-                //JSRuntime.InvokeVoidAsync("showImage", result);
+                JSRuntime.InvokeVoidAsync("startZoom");
+                JSRuntime.InvokeVoidAsync("showImage", result);
             }
             catch (Exception)
             {
@@ -323,6 +305,78 @@ namespace AlarmPP.Web.Components.Diagram
                 JSRuntime.InvokeVoidAsync("initCanvas", result);
                 JSRuntime.InvokeVoidAsync("loader", false);
             }
+        }
+
+
+        public void GetImagePerShpals(Digression data, int index, int type)
+        {
+            try
+            {
+                digGapCurrentIndex = index;
+                digGapCurrentKm = data.Km;
+                digType = type;
+                JSRuntime.InvokeVoidAsync("loader", true);
+                digressionO = data;
+                DigressionImageDialog = true;
+                int upperKoef = 45;
+                var result = new Dictionary<String, Object>();
+                List<Object> shapes = new List<Object>();
+
+                var carPosition = data.Direction_num;
+                List<List<Bitmap>> rows = new List<List<Bitmap>>();
+                int N_rows = 5;
+                for (int i = 0; i < N_rows; i++)
+                {
+                    rows.Add(new List<Bitmap>());
+                    var dic = AppData.AdditionalParametersRepository.getBitMaps(data.Fileid, data.Ms - 200 * (i - (int)N_rows / 2) * (int)carPosition, data.Fnum + (i - (int)N_rows / 2) * (int)carPosition, RepType.Undefined);
+                    rows[i] = (List<Bitmap>)dic["bitMaps"];
+                    ((List<Dictionary<String, Object>>)dic["drawShapes"]).ForEach(s => { shapes.Add(s); });
+                }
+
+                int W = rows[0][0].Width, H = rows[0][0].Height;
+                var commonBitMap = new Bitmap(W * 5 - 87, H * N_rows - 175);
+                Graphics g = Graphics.FromImage(commonBitMap);
+
+                for (int i = 0; i < N_rows; i++)
+                {
+                    g.DrawImageUnscaled(RotateImage(rows[i][0], -1), -12, (H - upperKoef) * i - 46);
+                    g.DrawImageUnscaled(RotateImage(rows[i][1], -1), W - 12, (H - upperKoef) * i - 65);
+                    g.DrawImageUnscaled(RotateImage(rows[i][2], 1), W * 2 - 33, (H - upperKoef) * i - 35);
+                    g.DrawImageUnscaled(RotateImage(rows[i][3], -2), W * 3 - 50, (H - upperKoef) * i - 24);
+                    g.DrawImageUnscaled(RotateImage(rows[i][4], 4), W * 4 - 130, (H - upperKoef) * i - 24);
+                }
+                if (rows[1] != null)
+                {
+                    using MemoryStream m = new MemoryStream();
+                    commonBitMap.Save(m, ImageFormat.Png);
+                    //commonBitMap.Save("G:/bitmap/1.png", ImageFormat.Png);
+                    byte[] byteImage = m.ToArray();
+
+                    var b64 = Convert.ToBase64String(byteImage);
+                    result.Add("b64", b64);
+                    result.Add("type", 4);
+                    result.Add("shapes", shapes);
+                    digression.DigressionImage = result;
+                    digression.DigImage = b64;
+                }
+                else
+                {
+                    digression.DigressionImage = null;
+                }
+                JSRuntime.InvokeVoidAsync("initCanvas", result);
+                JSRuntime.InvokeVoidAsync("loader", false);
+                JSRuntime.InvokeVoidAsync("startZoom");
+                JSRuntime.InvokeVoidAsync("showImage", result);
+
+            }
+            catch (Exception)
+            {
+                digression.DigressionImage = null;
+                var result = new Dictionary<String, Object>();
+                JSRuntime.InvokeVoidAsync("initCanvas", result);
+                JSRuntime.InvokeVoidAsync("loader", false);
+            }
+
         }
 
         public void GetImageGaps(Gap data, int index, int type)
@@ -357,7 +411,7 @@ namespace AlarmPP.Web.Components.Diagram
                 for (int i = 0; i < N_rows; i++)
                 {
                     g.DrawImageUnscaled(RotateImage(rows[i][0], -1), -12, (H - upperKoef) * i - 46);
-                    g.DrawImageUnscaled(RotateImage(rows[i][1], 1), W - 30, (H - upperKoef) * i - 65);
+                    g.DrawImageUnscaled(RotateImage(rows[i][1], 1), W - 12, (H - upperKoef) * i - 65);
                     g.DrawImageUnscaled(RotateImage(rows[i][2], 1), W * 2 - 33, (H - upperKoef) * i - 35);
                     g.DrawImageUnscaled(RotateImage(rows[i][3], -3), W * 3 - 50, (H - upperKoef) * i - 24);
                     g.DrawImageUnscaled(RotateImage(rows[i][4], 4), W * 4 - 130, (H - upperKoef) * i - 24);
@@ -440,9 +494,9 @@ namespace AlarmPP.Web.Components.Diagram
                 for (int i = 0; i < N_rows; i++)
                 {
                     g.DrawImageUnscaled(RotateImage(rows[i][0], -1), -12, (H - upperKoef) * i - 46);
-                    g.DrawImageUnscaled(RotateImage(rows[i][1], -1), W - 30, (H - upperKoef) * i - 65);
+                    g.DrawImageUnscaled(RotateImage(rows[i][1], 1), W - 12, (H - upperKoef) * i - 65);
                     g.DrawImageUnscaled(RotateImage(rows[i][2], 1), W * 2 - 33, (H - upperKoef) * i - 35);
-                    g.DrawImageUnscaled(RotateImage(rows[i][3], -2), W * 3 - 50, (H - upperKoef) * i - 24);
+                    g.DrawImageUnscaled(RotateImage(rows[i][3], -3), W * 3 - 50, (H - upperKoef) * i - 24);
                     g.DrawImageUnscaled(RotateImage(rows[i][4], 4), W * 4 - 130, (H - upperKoef) * i - 24);
                 }
                 if (rows[1] != null)
@@ -531,7 +585,7 @@ namespace AlarmPP.Web.Components.Diagram
                 for (int i = 0; i < N_rows; i++)
                 {
                     g.DrawImageUnscaled(RotateImage(rows[i][0], -1), -12, (H - upperKoef) * i - 46);
-                    g.DrawImageUnscaled(RotateImage(rows[i][1], -1), W - 30, (H - upperKoef) * i - 65);
+                    g.DrawImageUnscaled(RotateImage(rows[i][1], -1), W - 10, (H - upperKoef) * i - 65);
                     g.DrawImageUnscaled(RotateImage(rows[i][2], 1), W * 2 - 33, (H - upperKoef) * i - 35);
                     g.DrawImageUnscaled(RotateImage(rows[i][3], -2), W * 3 - 50, (H - upperKoef) * i - 24);
                     g.DrawImageUnscaled(RotateImage(rows[i][4], 4), W * 4 - 130, (H - upperKoef) * i - 24);
@@ -584,82 +638,7 @@ namespace AlarmPP.Web.Components.Diagram
 
         }
 
-        public void GetImagePerShpals(Digression data, int index, int type)
-        {
-            try
-            {
-                Stopwatch stopWatch = new();
-                stopWatch.Start();
-                digGapCurrentIndex = index;
-                digGapCurrentKm = data.Km;
-                digType = type;
-                JSRuntime.InvokeVoidAsync("loader", true);
-                digressionO = data;
-                DigressionImageDialog = true;
-                int upperKoef = 45;
-                var result = new Dictionary<String, Object>();
-                List<Object> shapes = new List<Object>();
-
-                var carPosition = data.Direction_num;
-                List<List<Bitmap>> rows = new List<List<Bitmap>>();
-                int N_rows = 5;
-                for (int i = 0; i < N_rows; i++)
-                {
-                    rows.Add(new List<Bitmap>());
-                    var dic = AppData.AdditionalParametersRepository.getBitMaps(data.Fileid, data.Ms - 200 * (i - (int)N_rows / 2) * (int)carPosition, data.Fnum + (i - (int)N_rows / 2) * (int)carPosition, RepType.Undefined);
-                    rows[i] = (List<Bitmap>)dic["bitMaps"];
-                    ((List<Dictionary<String, Object>>)dic["drawShapes"]).ForEach(s => { shapes.Add(s); });
-                }
-
-                int W = rows[0][0].Width, H = rows[0][0].Height;
-                var commonBitMap = new Bitmap(W * 5 - 87, H * N_rows - 175);
-                Graphics g = Graphics.FromImage(commonBitMap);
-
-                for (int i = 0; i < N_rows; i++)
-                {
-                    g.DrawImageUnscaled(RotateImage(rows[i][0], -1), -12, (H - upperKoef) * i - 46);
-                    g.DrawImageUnscaled(RotateImage(rows[i][1], -1), W - 30, (H - upperKoef) * i - 65);
-                    g.DrawImageUnscaled(RotateImage(rows[i][2], 1), W * 2 - 33, (H - upperKoef) * i - 35);
-                    g.DrawImageUnscaled(RotateImage(rows[i][3], -2), W * 3 - 50, (H - upperKoef) * i - 24);
-                    g.DrawImageUnscaled(RotateImage(rows[i][4], 4), W * 4 - 130, (H - upperKoef) * i - 24);
-                }
-                if (rows[1] != null)
-                {
-                    using MemoryStream m = new MemoryStream();
-                    commonBitMap.Save(m, ImageFormat.Png);
-                    //commonBitMap.Save("G:/bitmap/1.png", ImageFormat.Png);
-                    byte[] byteImage = m.ToArray();
-
-                    var b64 = Convert.ToBase64String(byteImage);
-                    result.Add("b64", b64);
-                    result.Add("type", 3);
-                    result.Add("shapes", shapes);
-                    digression.DigressionImage = result;
-                    digression.DigImage = b64;
-                }
-                else
-                {
-                    digression.DigressionImage = null;
-                }
-                JSRuntime.InvokeVoidAsync("initCanvas", result);
-                JSRuntime.InvokeVoidAsync("loader", false);
-                stopWatch.Stop();
-                TimeSpan ts = stopWatch.Elapsed;
-                string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
-                    ts.Hours, ts.Minutes, ts.Seconds,
-                    ts.Milliseconds / 10);
-                Console.WriteLine("Скрепление RunTime " + elapsedTime);
-
-            }
-            catch (Exception)
-            {
-                digression.DigressionImage = null;
-                var result = new Dictionary<String, Object>();
-                JSRuntime.InvokeVoidAsync("initCanvas", result);
-                JSRuntime.InvokeVoidAsync("loader", false);
-            }
-
-        }
+        
 
         public void GetImageDefShpals(Digression data, int index, int type)
         {
@@ -695,7 +674,7 @@ namespace AlarmPP.Web.Components.Diagram
                 for (int i = 0; i < N_rows; i++)
                 {
                     g.DrawImageUnscaled(RotateImage(rows[i][0], -1), -12, (H - upperKoef) * i - 46);
-                    g.DrawImageUnscaled(RotateImage(rows[i][1], -1), W - 30, (H - upperKoef) * i - 65);
+                    g.DrawImageUnscaled(RotateImage(rows[i][1], -1), W - 10, (H - upperKoef) * i - 65);
                     g.DrawImageUnscaled(RotateImage(rows[i][2], 1), W * 2 - 33, (H - upperKoef) * i - 35);
                     g.DrawImageUnscaled(RotateImage(rows[i][3], -2), W * 3 - 50, (H - upperKoef) * i - 24);
                     g.DrawImageUnscaled(RotateImage(rows[i][4], 4), W * 4 - 130, (H - upperKoef) * i - 24);

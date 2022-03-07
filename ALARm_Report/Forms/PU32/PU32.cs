@@ -176,7 +176,7 @@ namespace ALARm_Report.Forms
 						DirectionCode = comparativeKilometers[0].Direction_code,
 						DirectionName = comparativeKilometers[0].Direction_name
 					};
-
+					
 
 					comparativeAddParam = AdditionalParametersService.GetAddParam(comparativeKilometers.First().Trip.Id) as List<S3>; //износы
 					comparative_check_gap_state = AdditionalParametersService.Check_gap_state(comparativeKilometers.First().Trip.Id, template.ID); //стыки
