@@ -65,6 +65,9 @@ namespace AlarmPP.Web.Services
         public int TitleRowHeigth = 48;
         public int PasportPosition { get; set; } = 0;
         public int PasportWidth = 60;
+
+        public int CurrDigKm { get; set; }
+        public int CurrDigM { get; set; }
         public List<double> Koefs { get; set; } = new List<double> { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
 
         /// <summary>
