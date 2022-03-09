@@ -8017,9 +8017,10 @@
             this.dataGridViewTextBoxColumn12,
             this.Sapsan,
             this.Lastochka,
+            this.Empty_Freight,
             this.Column2,
-            this.Freight,
-            this.Empty_Freight});
+            this.Freight
+            });
             this.mgSpeed.Cursor = System.Windows.Forms.Cursors.Default;
             this.mgSpeed.DataSource = this.speedBindingSource;
             dataGridViewCellStyle98.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
