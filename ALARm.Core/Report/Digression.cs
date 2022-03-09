@@ -281,7 +281,7 @@ namespace ALARm.Core.Report
         public string Editor { get; set; }
         public string CNI { get; set; } = "";
 
-        public string GetDigName(string dig)
+        public string GetDigName(string dig="")
         {
             return DigName;
         }

@@ -82,24 +82,35 @@
                                             <th class="tcd-th tcd-font">Направление</th>
                                             <th class="tcd-th">Ход</th>
                                             <th class="tcd-th">Путь</th>
+                                            <th class="tcd-th">Статус</th>
                                         </tr>
                                         @if (ControlTrips != null)
                                         {
-                                            @foreach (var trip in ControlTrips.Where(o=>o.Id== CurrentTrip).ToList())
+                                            @foreach (var trip in ControlTrips.Where(o => o.Id == CurrentTrip).ToList())
                                             {
-                                                <tr class="tcd-tr">
-                                                    <td class="tcd-td">@trip.Id</td>
-                                                    <td class="tcd-td">@trip.Direction_Name</td>
-                                                    <td class="tcd-td">@(trip.Travel_Direction == ALARm.Core.Direction.Direct ? "Прям." : "Обр.")</td>
+                                    <tr class="tcd-tr">
+                                        <td class="tcd-td">@trip.Id</td>
+                                        <td class="tcd-td">@trip.Direction_Name</td>
+                                        <td class="tcd-td">@(trip.Travel_Direction == ALARm.Core.Direction.Direct ? "Прям." : "Обр.")</td>
 
-                                                    <td class="tcd-td">@(trip.TrackCode)</td>
-                                                </tr>
-                                            }
+                                        <td class="tcd-td">@(trip.TrackCode)</td>
+                                        @if (trip.Processed == true)
+                                        {
+                                            <td><AlarmButton Text="" Symbol="🟢" Tooltip="Завершен" ></AlarmButton></td>
+                                        }
+                                        else
+                                        {
+                                    <td><AlarmButton Text="" Symbol="🔴" Tooltip="Не завершен"></AlarmButton></td>
+
+                                        }
+                                        </tr>
+                                        }
                                         }
                                     </table>
                                 </div>
                                 @if (ControlTrips != null)
                                 {
+                                   
                                     <fieldset class="tcd-fiedlset">
 
                                         <legend class="tcd-font">Дополнительные параметры:</legend>
@@ -110,6 +121,7 @@
                                                 @*@if (ControlTrips != null)*@
                                                 {
                                                     @foreach (var trip in ControlTrips.Where(o => o.Id == CurrentTrip).ToList())
+
                                                     {
                                                         @if (trip.Rail_Profile)
                                                         {

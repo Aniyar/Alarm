@@ -134,7 +134,7 @@
 
                                 <tr style="background:@(CurrentRow == index ? "#75d2ff" : color)" @onmousedown="@(_ => GoToMark(pos, index))">
                                     <td style="border-right: 1px solid grey; text-align: left; width: 35px;">@rowIndex</td>
-                                    <td style="border-right: 1px solid grey; text-align: left; width: 35px;">@kilometer.Number</td>
+                                    <td style="border-right: 1px solid grey; text-align: left; width: 35px;">@digression.Km</td>
                                     <td style="border-right: 1px solid grey;  width:35px; text-align:left">@digression.Meter</td>
                                     <td style="border-right: 1px solid grey;  width:110px;">@(  digression.DigName != ""  ? digression.DigName : digression.Digression.Name )</td>
                                     <td style="border-right: 1px solid grey;   width:90px; text-align:left">@digression.Degree</td>
@@ -153,6 +153,7 @@
 
                                 </tr>
                                 rowIndex++;
+                                
                             }
                         }
                     }

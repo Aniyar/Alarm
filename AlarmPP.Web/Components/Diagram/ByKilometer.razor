@@ -19,6 +19,7 @@
             <th style="border-right: 1px solid grey; width: 30px;">3ст.</th>
             <th style="border-right: 1px solid grey; width: 30px;">4ст.</th>
             <th style="border-right: 1px solid grey; width: 30px;">Др.</th>
+            <th style="border-right: 1px solid grey; width: 60px;">Балл</th>
             <th style="border-right: 1px solid grey; width: 30px;">Оц.</th>
             <th style="border-right: 1px solid grey; width: 100px;">Огр.ск.</th>
             <th style="border-right: 1px solid grey; width: 100px;">Прим.</th>
@@ -30,7 +31,7 @@
             {
                 int dig2count = 0, dig3count = 0, dig4count = 0;
                 string sec = km.PdbSection.Count > 0 ? km.PdbSection[0].ToString() : "";
-
+                int points = 0;
                 try
                 {
                     var bedkmseq = BedKilometers.Where(o => (o.Number == km.Number && o.Track_name.Equals(km.Track_name)));
@@ -42,15 +43,23 @@
                             if (digression.Degree == 2)
                             {
                                 dig2count += 1;
+                                points += digression.GetPoint(km);
                             }
-                            else if (digression.Degree == 3)
+                            else if (digression.Degree == 3 && !digression.GetDigName().ToString().Equals("Рнр"))
                             {
                                 dig3count += 1;
+                                points += digression.GetPoint(km);
                             }
-                            else if (digression.Degree == 4)
+                            else if (digression.Degree == 4 ) //!(digression.Value == DigressionName.StrighteningOnSwitch.Value && digression.GetDigName().ToString().Equals("Рнр"))
                             {
+                                if (digression.DigName.Contains("Рнрст"))
+                                {
+                                    continue;
+                                }
                                 dig4count += 1;
+                                points += digression.GetPoint(km);
                             }
+
                         }
                         <tr>
                             <th style="border-right: 1px solid grey; border-left: 1px solid grey; width: 30px;">@rowIndex</th>
@@ -64,6 +73,7 @@
                             <th style="border-right: 1px solid grey; width: 30px;">@dig3count</th>
                             <th style="border-right: 1px solid grey; width: 30px;">@dig4count</th>
                             <th style="border-right: 1px solid grey; width: 30px;"></th>
+                            <th style="border-right: 1px solid grey; width: 60px;">@points</th>
                             <th style="border-right: 1px solid grey; width: 30px;">@bedkm.Rating_bedomost</th>
                             <th style="border-right: 1px solid grey; width: 100px;">@bedkm.SpeedLim</th>
                             <th style="border-right: 1px solid grey; width: 100px;"></th>
