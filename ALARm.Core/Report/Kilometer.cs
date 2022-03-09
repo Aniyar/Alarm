@@ -146,7 +146,8 @@ namespace ALARm.Core
 
         public float Lkm { get; set; }
         public int GetLength() {
-            return Math.Abs(Start_m - Final_m) + 1;
+            return Math.Abs(Start_m - Final_m)+1 ;
+            //return Math.Abs(Start_m - Final_m) + 1;
         }
         public int Track_id { get; set; }
         public string Track_name { get; set; }

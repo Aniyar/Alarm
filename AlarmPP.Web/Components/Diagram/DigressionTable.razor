@@ -94,7 +94,7 @@
                     foreach (var digression in kilometer.Digressions)
                     {
                         int metre = kilometer.Direction == ALARm.Core.Direction.Direct ? digression.Meter + digression.Length / 2 : kilometer.Length - digression.Meter - digression.Length / 2;
-                        int pos = currentKMPosition + metre;
+                        int pos = currentKMPosition + metre- kilometer.Start_m;
                         int index = rowIndex;
                         digression.TrackName = kilometer.Track_name;
                         if (AppData.ShowDigressions || AppData.ShowCloseToDangerous)
@@ -375,7 +375,7 @@
                         }
                     }
                 }
-                currentKMPosition = currentKMPosition + kilometer.GetLength();
+                currentKMPosition = currentKMPosition + kilometer.GetLength() ;
             }
         }
     </tbody>

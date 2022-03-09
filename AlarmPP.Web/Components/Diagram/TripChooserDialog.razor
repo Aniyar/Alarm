@@ -117,95 +117,97 @@
                                         <table style="border:none">
 
 
-                                            @if (ControlTrips != null)
-                                            {
-                                                @foreach (var trip in ControlTrips.Where(o => o.Id == CurrentTrip).ToList())
+                                            @if (ControlTrips == null)///Поменять
+                                                @*@if (ControlTrips != null)*@
                                                 {
-                                                    @if (trip.Rail_Profile)
-                                                    {
-                                                        <tr class="tcd-font">
-                                                            <td>поперечный профиль рельса</td>
-                                                        </tr>
-                                                    }
-                                                    @if (trip.Longitudinal_Profile)
-                                                    {
-                                                        <tr class="tcd-font">
-                                                            <td>продольный профиль пельса</td>
-                                                        </tr>
-                                                    }
-                                                    @if (trip.Short_Irregularities)
-                                                    {
-                                                        <tr class="tcd-font">
-                                                            <td>короткие неровности</td>
-                                                        </tr>
+                                                    @foreach (var trip in ControlTrips.Where(o => o.Id == CurrentTrip).ToList())
 
-                                                    }
-                                                    @if (trip.Joint_Gaps)
                                                     {
-                                                        <tr class="tcd-font">
-                                                            <td>стыковые зазоры</td>
-                                                        </tr>
+                                                        @if (trip.Rail_Profile)
+                                                        {
+                                                            <tr class="tcd-font">
+                                                                <td>поперечный профиль рельса</td>
+                                                            </tr>
+                                                        }
+                                                        @if (trip.Longitudinal_Profile)
+                                                        {
+                                                            <tr class="tcd-font">
+                                                                <td>продольный профиль пельса</td>
+                                                            </tr>
+                                                        }
+                                                        @if (trip.Short_Irregularities)
+                                                        {
+                                                            <tr class="tcd-font">
+                                                                <td>короткие неровности</td>
+                                                            </tr>
 
-                                                    }
-                                                    @if (trip.Georadar)
-                                                    {
-                                                        <tr class="tcd-font">
-                                                            <td>георадар</td>
-                                                        </tr>
+                                                        }
+                                                        @if (trip.Joint_Gaps)
+                                                        {
+                                                            <tr class="tcd-font">
+                                                                <td>стыковые зазоры</td>
+                                                            </tr>
 
-                                                    }
-                                                    @if (trip.Dimensions)
-                                                    {
-                                                        <tr class="tcd-font">
-                                                            <td>габариты</td>
-                                                        </tr>
+                                                        }
+                                                        @if (trip.Georadar)
+                                                        {
+                                                            <tr class="tcd-font">
+                                                                <td>георадар</td>
+                                                            </tr>
 
-                                                    }
-                                                    @if (trip.Beacon_Marks)
-                                                    {
-                                                        <tr class="tcd-font">
-                                                            <td>маячные метки</td>
-                                                        </tr>
+                                                        }
+                                                        @if (trip.Dimensions)
+                                                        {
+                                                            <tr class="tcd-font">
+                                                                <td>габариты</td>
+                                                            </tr>
 
-                                                    }
-                                                    @if (trip.Embankment)
-                                                    {
-                                                        <tr class="tcd-font">
-                                                            <td>насыпь</td>
-                                                        </tr>
+                                                        }
+                                                        @if (trip.Beacon_Marks)
+                                                        {
+                                                            <tr class="tcd-font">
+                                                                <td>маячные метки</td>
+                                                            </tr>
 
-                                                    }
-                                                    @if (trip.Rail_Temperature)
-                                                    {
-                                                        <tr class="tcd-font">
-                                                            <td>температура рельса</td>
-                                                        </tr>
+                                                        }
+                                                        @if (trip.Embankment)
+                                                        {
+                                                            <tr class="tcd-font">
+                                                                <td>насыпь</td>
+                                                            </tr>
 
-                                                    }
-                                                    @if (trip.Geolocation)
-                                                    {
-                                                        <tr class="tcd-font">
-                                                            <td>ГНСС, GPS</td>
-                                                        </tr>
+                                                        }
+                                                        @if (trip.Rail_Temperature)
+                                                        {
+                                                            <tr class="tcd-font">
+                                                                <td>температура рельса</td>
+                                                            </tr>
 
-                                                    }
-                                                    @if (trip.Rail_Video_Monitoring)
-                                                    {
-                                                        <tr class="tcd-font">
-                                                            <td>видеоконтроль рельсов</td>
-                                                        </tr>
-                                                    }
-                                                    @if (trip.Video_Monitoring)
-                                                    {
-                                                        <tr class="tcd-font">
-                                                            <td>видеонаблюдение</td>
-                                                        </tr>
+                                                        }
+                                                        @if (trip.Geolocation)
+                                                        {
+                                                            <tr class="tcd-font">
+                                                                <td>ГНСС, GPS</td>
+                                                            </tr>
+
+                                                        }
+                                                        @if (trip.Rail_Video_Monitoring)
+                                                        {
+                                                            <tr class="tcd-font">
+                                                                <td>видеоконтроль рельсов</td>
+                                                            </tr>
+                                                        }
+                                                        @if (trip.Video_Monitoring)
+                                                        {
+                                                            <tr class="tcd-font">
+                                                                <td>видеонаблюдение</td>
+                                                            </tr>
+                                                        }
                                                     }
                                                 }
-                                            }
 
 
-                                        </table>
+                                            </table>
 
                                     </fieldset>
                                 }

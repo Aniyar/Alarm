@@ -499,7 +499,7 @@ namespace ALARm.DataAccess
                 var trips = db.Query<Trips>(sqltext, new { road_id = road_id, start = period.StartDate, final = period.FinishDate }, commandType: CommandType.Text).ToList();
                 for (int i = 0; i< trips.Count; i++)
                 {
-                    var fr = GetTripFragments(trips[0].Id);
+                    var fr = GetTripFragments(trips[i].Id);
                         if (fr.Count>0)
                     {
                         trips[i].TrackCode = fr[0].Track_Code;
@@ -3386,8 +3386,10 @@ namespace ALARm.DataAccess
                 if (db.State == ConnectionState.Closed)
                     db.Open();
                 
-                    return db.Query<DigressionMark>($@"
-                    SELECT
+                   
+
+                string sql = $@" 
+                    SELECT distinct
                         s3.id,
 	                    s3.km,
                         s3.ots as digname,
@@ -3413,9 +3415,10 @@ namespace ALARm.DataAccess
 	                    trip_id = {trip_id} and s3.typ in ({string.Join(",", type)}) and s3.km = {km} and s3.onSwitch = false AND s3.ots NOT LIKE'%Крив%'
                     ORDER BY
 	                    s3.km,
-	                    s3.meter"
+	                    s3.meter";
 
-                    ).ToList();
+                //Console.Out.WriteLine("SQL == > "+sql);
+                return db.Query<DigressionMark>(sql, commandType: CommandType.Text).ToList();
             }
         }
 

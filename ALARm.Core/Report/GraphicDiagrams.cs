@@ -335,6 +335,9 @@ namespace ALARm.Core.Report
             {
                 int start = crossTie.Start_Km == kilometer.Number ? crossTie.Start_M : y1;
                 int final = crossTie.Final_Km == kilometer.Number ? crossTie.Final_M : y2;
+
+
+
                 string ctype = "1,8";
                 string color = "black";
                 switch (crossTie.Crosstie_type_id)
@@ -349,20 +352,22 @@ namespace ALARm.Core.Report
                 result.Add(new XElement("crosstie",
                     new XAttribute("sw", ctype),
                     new XAttribute("st", color),
-                    new XAttribute("y1", -start),
-                    new XAttribute("y2", -final)
+                    new XAttribute("y1", -y1),
+                    new XAttribute("y2", -y2)
                     ));
             }
             var longRailses = MainTrackStructureRepository.GetMtoObjectsByCoord(travelDate, kilometer.Number, MainTrackStructureConst.MtoLongRails, trackId) as List<LongRails>;
             //рисуем бесстыковые пути
             foreach (var longRails in longRailses)
             {
-                int start = longRails.Start_Km == kilometer.Number ? longRails.Start_M : y1;
-                int final = longRails.Final_Km == kilometer.Number ? longRails.Final_M : y2;
+
+                int start = longRails.Start_Km == kilometer.Number ? longRails.Start_M : y1 ;
+                int final = longRails.Final_Km == kilometer.Number ? longRails.Final_M : y2 ;
+            
                 result.Add(
                     new XElement("longRails",
-                    new XAttribute("y1", -start),
-                    new XAttribute("y2", -final))
+                    new XAttribute("y1", -y1 ),
+                    new XAttribute("y2", -y2 ))
                     );
             }
             //рисуем Изостыки
@@ -431,6 +436,11 @@ namespace ALARm.Core.Report
                 }
                 //if (sw.Start_Km != kilometer.Number && sw.Final_Km != kilometer.Number)
                 //    continue;
+
+                if (sw.Start_Km != kilometer.Number && sw.Final_Km != kilometer.Number)
+                    continue;
+                if (kilometer.Number.ToDoubleCoordinate(Math.Max(kilometer.Start_m, kilometer.Final_m)) < Math.Max(sw.RealStartCoordinate, sw.RealFinalCoordinate))
+                    continue;
 
                 if (sw.Start_M > kilometer.Final_m)
                     continue;

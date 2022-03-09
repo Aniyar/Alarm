@@ -49,6 +49,7 @@ namespace AlarmPP.Web.Services
         public bool Loading { get; set; } = false;
         public string LoadingText { get; set; } = "Загрузка...";
         public int CurrentKmMeter { get; set; }
+        public int CurrentKmMeterMeter { get; set; }
         public int CurrentKm { get; set; }
         public Kilometer CurrentKilometer { get; set; }
         public bool? MainLoading { get; set; } = true;
@@ -632,23 +633,22 @@ namespace AlarmPP.Web.Services
         
             int position = (int)yPosition;
             int length = 0;
-            foreach (var km in _kilometers)
-            {
-
-                if(km.Number == 712)
-                {
-
-                }
-
+   
+                foreach (var km in _kilometers)
+                { 
+              
                 length += km.GetLength();
                 if (yPosition < length)
                 {
                     CurrentKm = km.Number;
                     CurrentKilometer = km;
+
+
                     CurrentKmMeter = (Trip.Travel_Direction == Direction.Direct ? ((int)yPosition - (length - km.GetLength()) + km.Start_m) : km.Final_m - ((int)yPosition - (length - km.GetLength())));
-                    Data[(int)Series.Pasport] = km.Number.ToString() + "." + (Trip.Travel_Direction == Direction.Direct ? ((int)yPosition - (length - km.GetLength()) + km.Start_m ) : km.Final_m - ((int)yPosition - (length - km.GetLength()))).ToString();
+
+                    Data[(int)Series.Pasport] = km.Number.ToString() + "." + (Trip.Travel_Direction == Direction.Direct ? ((int)yPosition - (length - km.GetLength()) + km.Start_m) : km.Final_m - ((int)yPosition - (length - km.GetLength()))).ToString();
                     if (km.PdbSection.Count > 0)
-                    Data[(int)Series.Section] += km.PdbSection[0].ToString();
+                        Data[(int)Series.Section] += km.PdbSection[0].ToString();
                     int currentMetre = Trip.Travel_Direction == Direction.Direct ? ((int)yPosition - (length - km.GetLength()) + km.Start_m) : km.Final_m - ((int)yPosition - (length - km.GetLength()));
 
                     for (int index = 0; index < km.Speed.Count; index++)
@@ -657,7 +657,7 @@ namespace AlarmPP.Web.Services
                         if (metre == currentMetre)
                         {
                             Data[(int)Series.LevelZero] = km.LevelAvg[index].ToString("0.00");
-                           // Data[(int)Series.LevelPasport] = km.flvl0[index].ToString("0.00");
+                            // Data[(int)Series.LevelPasport] = km.flvl0[index].ToString("0.00");
                             Data[(int)Series.LevelSignal] = km.Level[index].ToString("0.00");
 
                             Data[(int)Series.StrightLeftZero] = km.StrightAvg[index].ToString("0.00");
@@ -680,7 +680,7 @@ namespace AlarmPP.Web.Services
                             break;
                         }
                     }
-                    if (km.CrossRailProfile!= null)
+                    if (km.CrossRailProfile != null)
                     {
                         int indexCross = km.CrossRailProfile.Meters.IndexOf(Trip.Travel_Direction == Direction.Reverse ? (float)currentMetre : km.Length - (float)currentMetre);
                         if (indexCross > 0)
@@ -718,7 +718,7 @@ namespace AlarmPP.Web.Services
                     //{
                     //    foreach (var gap in km.Gaps)
                     //    {
-                            
+
                     //        if (gap.Meter == currentMetre)
                     //        {
                     //            Data[(int)(gap.Threat == Threat.Right ? Series.GapRight : Series.GapLeft)] = gap.Length.ToString();
@@ -750,6 +750,7 @@ namespace AlarmPP.Web.Services
                     //}
                     break;
                 }
+                
                 
             }
             return true;
