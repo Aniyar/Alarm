@@ -117,7 +117,7 @@ namespace AlarmPP.Web.Components.Diagram
                 var sortedData = DBcrossRailProfile.OrderByDescending(d => d.Meter).ToList();
                 kilometer.CrossRailProfile = AdditionalParametersRepository.GetCrossRailProfileFromDBParse(sortedData);
             }
-            /*var profileDatas = RdStructureRepository.GetNextProfileDatas(AppData.ProfileMeter, 100, AppData.Trip.Id);
+            var profileDatas = RdStructureRepository.GetNextProfileDatas(AppData.ProfileMeter, 100, AppData.Trip.Id);
 
             foreach (var profileData in profileDatas)
             {
@@ -129,7 +129,7 @@ namespace AlarmPP.Web.Components.Diagram
                     }
                 }
 
-            }*/
+            }
 
             AppData.IsDialogOpen = false;
             OnlineModeStarted.InvokeAsync(true);

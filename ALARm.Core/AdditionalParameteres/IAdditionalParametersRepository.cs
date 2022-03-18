@@ -83,5 +83,7 @@ namespace ALARm.Core
         List<Digression> Check_ViolPerpen(long trip_id);
         List<CrosProf> GetCrossRailProfileFromDBbyCurve(Curve curve, long trip_id);
         List<Digression> GetFullGapsByNN(long km, long trip_id);
+        List<Digression> Insert_additional_param_state_longwawes(List<Digression> impulses);
+        List<Digression> Insert_additional_param_state(List<Digression> addDigressions);
     }
 }
