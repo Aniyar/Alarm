@@ -318,7 +318,9 @@ namespace ALARm_Report.Forms
 
                             shortRoughness.MetersLeft.AddRange(Meters);
                             shortRoughness.MetersRight.AddRange(Meters);
-
+                           
+                      
+                            
                             //импульсы
                             var impulses = Impuls;
                             for (int i = 0; i < impulses.Count; i++)
@@ -378,7 +380,10 @@ namespace ALARm_Report.Forms
                             }
 
                             List<Digression> addDigressions = shortRoughness.GetDigressions();
-
+                            if (addDigressions.Count != null && addDigressions.Count != 0)
+                            {
+                                var Insert_additional_param_state = AdditionalParametersService.Insert_additional_param_state(addDigressions);
+                            }
                             foreach (var dig in addDigressions)
                             {
                                 float count = dig.Length / 100.0f;
@@ -477,7 +482,7 @@ namespace ALARm_Report.Forms
         private void GetTestData(int number)
         {
             var connection = new Npgsql.NpgsqlConnection("Host=DESKTOP-EMAFC5J;Username=postgres;Password=alhafizu;Database=railway_copy");
-            var ShortData = connection.Query<DataFlow>($@"SELECT * FROM testdata_242 where km = {709} limit 5000").ToList();
+            var ShortData = connection.Query<DataFlow>($@"SELECT * FROM testdata_242 where km = {number} limit 5000").ToList();
 
             var shortl = ShortData.Select(o => o.Diff_l / 8.0 < 1 / 8.0 ? 0 : o.Diff_l / 8.0).ToList();
             var shortr = ShortData.Select(o => o.Diff_r / 8.0 < 1 / 8.0 ? 0 : o.Diff_r / 8.0).ToList();
