@@ -1,0 +1,18 @@
+﻿@inject AlarmPP.Web.Services.AppData AppData
+@inject IJSRuntime JSRuntime
+@inject IMatToaster Toaster
+@using ALARm.Core.Report
+
+<MatSlideToggle Value="@AppData.VideoProcessing" ValueChanged="(async (bool i) => await OnTimedEventAsync())">@(!AppData.VideoProcessing ? "Пауза" : "Продолжить")</MatSlideToggle>
+
+<p>
+    Километр
+    <MatNumericUpDownField @bind-Value="@Number"></MatNumericUpDownField>
+    Скорость перемотки
+    <MatSlider @bind-Value="@AppData.Speed" ValueMin="1" ValueMax="100" Style="width:650px"></MatSlider>
+    
+    <div id="imgdiv1">
+        <img src="data:image/jpeg;base64,@Base64" />
+
+    </div>
+</p>
