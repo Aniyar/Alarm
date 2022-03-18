@@ -179,6 +179,7 @@ namespace ALARm.Core
         public int InsertRating(int km, string rating, string put); //вставляет рейтинг на км
         public List<Kilometer> GetBedemostKilometers();
         public int FinishProcessing(long trip_id);
-
+        void SetFileID(int km, long fileid, long trip_id);
+        public List<long> GetFileID(int trip_id, int num);
     }
 }

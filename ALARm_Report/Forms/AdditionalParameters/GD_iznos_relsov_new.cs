@@ -296,12 +296,13 @@ namespace ALARm_Report.Forms
                             addParam.Add(new XElement("polyline", new XAttribute("points", HeadWearLeft)));
                             addParam.Add(new XElement("polyline", new XAttribute("points", HeadWearRight)));
 
+                            
 
                             List<Digression> addDigressions = crossRailProfile.GetDigressions();
                             // заполняет таблицу с доп параметрами
                             if (addDigressions.Count != null && addDigressions.Count != 0)
-                            {
-                                var Insert_additional_param_state = AdditionalParametersService.Insert_additional_param_state(addDigressions);
+                            { 
+                             var Insert_additional_param_state = AdditionalParametersService.Insert_additional_param_state(addDigressions, kilometer.Number);
                             }
 
                             var dignatur = new List<DigressionMark> { };
