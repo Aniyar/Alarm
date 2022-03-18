@@ -3200,7 +3200,7 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
             return impulses;
         }
 
-        public List<Digression> Insert_additional_param_state(List<Digression> addDigressions)
+        public List<Digression> Insert_additional_param_state_aslan(List<Digression> addDigressions)
         {
             int index = 0;
             foreach (var adddig in addDigressions)
