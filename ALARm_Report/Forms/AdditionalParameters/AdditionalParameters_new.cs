@@ -412,7 +412,7 @@ namespace ALARm_Report.Forms
                             if (addDigressions.Any())
                             {
 
-                                var Insert_additional_param_state = AdditionalParametersService.Insert_additional_param_state(addDigressions);
+                                var Insert_additional_param_state = AdditionalParametersService.Insert_additional_param_state_aslan(addDigressions);
 
                             }
                             foreach (var dig in addDigressions)
@@ -492,7 +492,7 @@ namespace ALARm_Report.Forms
                             addParam.Add(digElemenets);
                             report.Add(addParam);
 
-                            ClearShortDataDB();
+                            ClearShortDataDB(trip.Trip_id);
                         }
                     
                     }
@@ -520,9 +520,9 @@ namespace ALARm_Report.Forms
         }
 
 
-        private void ClearShortDataDB()
+        private void ClearShortDataDB(long trip)
         {
-            var trip_id = 242;
+            var trip_id = trip;
 
             var cs = "Host=DESKTOP-EMAFC5J;Username=postgres;Password=alhafizu;Database=railway";
 
