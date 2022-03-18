@@ -349,16 +349,16 @@ namespace AlarmPP.Web.Components.Diagram
 
                             AppData.Meter += 1;
                             OnlineModeData.CurrentFrameIndex = AppData.Meter;
-                            //OnlineModeData.GetBitmapAsync();
+                            OnlineModeData.GetBitmapAsync();
 
-                            //kilometer.DownHillLeft += (OnlineModeData.DownhillLeft.ToRadians() * kilometer.DegKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
-                            //kilometer.DownHillRight += (OnlineModeData.DownhillRight.ToRadians() * kilometer.DegKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
-                            //kilometer.VertWearLeft += (OnlineModeData.VertWearLeft * kilometer.WearKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
-                            //kilometer.VertWearRight += (OnlineModeData.VertWearRight * kilometer.WearKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
-                            //kilometer.SideWearLeft += (OnlineModeData.SideWearLeft * kilometer.WearKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
-                            //kilometer.SideWearRight += (OnlineModeData.SideWearRight * kilometer.WearKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
-                            //kilometer.HeadWear45Left += (OnlineModeData.Wear45Left * kilometer.WearKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
-                            //kilometer.HeadWear45Right += (OnlineModeData.Wear45Right * kilometer.WearKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
+                            kilometer.DownHillLeft += (OnlineModeData.DownhillLeft.ToRadians() * kilometer.DegKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
+                            kilometer.DownHillRight += (OnlineModeData.DownhillRight.ToRadians() * kilometer.DegKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
+                            kilometer.VertWearLeft += (OnlineModeData.VertWearLeft * kilometer.WearKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
+                            kilometer.VertWearRight += (OnlineModeData.VertWearRight * kilometer.WearKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
+                            kilometer.SideWearLeft += (OnlineModeData.SideWearLeft * kilometer.WearKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
+                            kilometer.SideWearRight += (OnlineModeData.SideWearRight * kilometer.WearKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
+                            kilometer.HeadWear45Left += (OnlineModeData.Wear45Left * kilometer.WearKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
+                            kilometer.HeadWear45Right += (OnlineModeData.Wear45Right * kilometer.WearKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
                             break;
                         }
                     }

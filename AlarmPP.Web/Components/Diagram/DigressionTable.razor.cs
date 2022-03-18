@@ -164,7 +164,7 @@ namespace AlarmPP.Web.Components.Diagram
                 Console.WriteLine("Не уадлость завершить редактирование из за ошибки: " + e.Message);
             }
         }
-
+        
         void EditDigression(RdAction action, int type, bool dialog)
         {
 

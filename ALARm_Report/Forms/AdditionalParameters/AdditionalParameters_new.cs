@@ -522,8 +522,6 @@ namespace ALARm_Report.Forms
 
         private void ClearShortDataDB()
         {
-            //if (900 < Meter) continue;
-
             var trip_id = 242;
 
             var cs = "Host=DESKTOP-EMAFC5J;Username=postgres;Password=alhafizu;Database=railway";

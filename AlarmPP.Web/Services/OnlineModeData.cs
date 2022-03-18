@@ -250,13 +250,13 @@ namespace AlarmPP.Web.Services
         }
         public void GetBitmapAsync()
         {
-           
-                  //  CurrentProfileLeft();
-                   // CurrentProfileRight();
-                   
 
-               
-          
+            CurrentProfileLeft();
+            CurrentProfileRight();
+
+
+
+
         }
         /// <summary>
         /// Возвращает индексы максимальных элементов каждого столбца

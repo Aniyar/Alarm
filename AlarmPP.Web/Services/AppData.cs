@@ -2,13 +2,16 @@
 using ALARm.Core;
 using ALARm.Core.AdditionalParameteres;
 using ALARm.Core.Report;
+using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace AlarmPP.Web.Services
 {
@@ -819,8 +822,11 @@ namespace AlarmPP.Web.Services
         
         ///online mode parameters
         public int CurrentFrameIndex { get; set; } = 0;
+        public int CurrentVideoFrame { get; set; } = 0;
+        public long VideoMs { get; set; } = 0; 
         public int Speed { get; set; } = 1;
         public bool Processing = true;
+        public bool VideoProcessing = false;
         public int Kilometer { get; set; } = -1;
         public int Meter { get; set; } = 0;
         public int ProfileMeter { get; set; } = 0;
@@ -922,48 +928,9 @@ namespace AlarmPP.Web.Services
             }
         }
 
-        [Obsolete]
-        public Bitmap GetBitmapAsync(String filePath, int frameNumber)
-        {
-            using (BinaryReader reader = new BinaryReader(File.Open(filePath, FileMode.Open)))
-            {
-                try
-                {
-                    var data = reader.ReadBytes(2);
-                    Array.Reverse(data);
-                    int width = BitConverter.ToInt16(data, 0);
-                    data = reader.ReadBytes(2);
-                    Array.Reverse(data);
-                    reader.ReadByte();
-                    int height = BitConverter.ToInt16(data, 0);
+        
 
-                    int frameSize = width * height;
-                    long position = (long)frameNumber * (long)frameSize + 5;
-                    reader.BaseStream.Seek(position, SeekOrigin.Begin);
-                    byte[] by = reader.ReadBytes(frameSize);
-                    Kilometer = by[20] * 256 + by[21];
-                    Picket = by[22] * 256 + by[23];
-                    Meter = by[24] * 256 + by[25];
-                    var result = ConvertMatrix(Array.ConvertAll(by, Convert.ToInt32), height, width);
-                    result = result.Submatrix(0, height - 1, 39, width - 40);
-                    var vect = GetIndexesOfColumnsMax(result);
-                    DataS = VectorToPoints(vect);
-
-                    PointsLeft = CurrentProfileLeft();
-                    PointsRight = CurrentProfileRight();
-                    
-                   
-                    return AdditionalParametersRepository.MatrixToTimage(result);
-
-                }
-                catch
-                {
-                    CurrentFrameIndex = -1;
-                    Processing = false;
-                    return null;
-                }
-            }
-        }
+        
         /// <summary>
         /// Возвращает индексы максимальных элементов каждого столбца
         /// </summary>
@@ -1037,6 +1004,7 @@ namespace AlarmPP.Web.Services
 
 
     }
+    
     
     public enum ShowButtons { Pasport= 0, Signal=1, ZeroLines, MainParams, Event, Digression, MainParamsPlus,
         DangerousDigression, DangerousForEmtyWagon, ThirdDegreeDigressions, CloseToDangerous, CloseTo2Degree,

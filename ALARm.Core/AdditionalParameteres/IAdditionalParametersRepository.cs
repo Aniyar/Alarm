@@ -28,7 +28,7 @@ namespace ALARm.Core
 		List<int> GetKilometersByTripId(long process_id, long trackId);
         CrossRailProfile vertIznos(int nkm);
         List<Gap> GetFusGap(long process_id, int direction);
-        Bitmap GetBitMap(long fileId, long ms, int fnum);
+        List<Bitmap> GetBitMap(long fileid, long ms);
         Dictionary<String,Object> getBitMaps(long fileId , long ms , int fnum, RepType RepType = RepType.Undefined);
 
         List<VideoObject> GetObjectsByFrameNumber(long fileId, long ms, int fnum, RepType RepType = RepType.Undefined);
@@ -83,7 +83,11 @@ namespace ALARm.Core
         List<Digression> Check_ViolPerpen(long trip_id);
         List<CrosProf> GetCrossRailProfileFromDBbyCurve(Curve curve, long trip_id);
         List<Digression> GetFullGapsByNN(long km, long trip_id);
+
         List<Digression> Insert_additional_param_state_longwawes(List<Digression> impulses);
-        List<Digression> Insert_additional_param_state(List<Digression> addDigressions);
+        List<Digression> Insert_additional_param_state_aslan(List<Digression> addDigressions);
+
+        List<Digression> Insert_additional_param_state(List<Digression> addDigressions, int nkm);
+
     }
 }

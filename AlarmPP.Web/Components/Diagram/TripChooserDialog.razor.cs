@@ -105,7 +105,7 @@ namespace AlarmPP.Web.Components.Diagram
             {
                 //_ = SetLabelById("status-label", "Загрузка данных по попречному профилю рельса для " + kilometer.Number + " км ...");
                 //kilometer.CrossRailProfile = AdditionalParametersRepository.GetCrossRailProfileFromText(kilometer.Number);
-                //kilometer.CalcRailProfileLines(AppData.Trip);
+                kilometer.CalcRailProfileLines(AppData.Trip);
                 //_ = SetLabelById("status-label", "Загрузка данных по стыкам для " + kilometer.Number + " км...");
                 //kilometer.Gaps = AdditionalParametersRepository.GetGaps(AppData.Trip.Id, kilometer.Number);
                 //kilometer.Heats = AdditionalParametersRepository.GetHeats(AppData.Trip.Id, kilometer.Number);

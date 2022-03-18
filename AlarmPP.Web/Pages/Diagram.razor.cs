@@ -43,6 +43,7 @@ namespace AlarmPP.Web.Pages
             this.printMenu.OpenAsync();
         }
 
+        bool VideoDialog { get; set; } = false;
         bool FinishProcessingDialog { get; set ;} = false;
         public MatMenu digFilterMenu { get; set; }
         public ForwardRef digFilterMenuRef { get; set; } = new ForwardRef();
@@ -498,7 +499,7 @@ namespace AlarmPP.Web.Pages
                         AppData.AddDigressionChecked = false;
                     break;
                 case ShowButtons.IznosPriv:
-                    AppData.ShowIznosBok = !AppData.ShowIznosBok;
+                    AppData.ShowIznosPriv = !AppData.ShowIznosPriv;
                     if (AppData.ShowIznosPriv)
                         AppData.AddDigressionChecked = true;
                     else
