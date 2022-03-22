@@ -497,6 +497,7 @@ namespace AlarmPP.Web.Services
                         if (km.Start_Index > -1)
                         {
                             var outData = RdStructureRepository.GetNextOutDatas(km.Start_Index - 1, km.GetLength(), Trip.Id);
+
                             int meter = 0;
                             foreach (var data in outData)
                             {

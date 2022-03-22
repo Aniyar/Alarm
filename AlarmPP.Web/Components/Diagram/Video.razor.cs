@@ -103,6 +103,7 @@ namespace AlarmPP.Web.Components.Diagram
         {
             AppData.VideoProcessing = !AppData.VideoProcessing;
             Kilometer km = Kilometers.Where(km => km.Number == Number).First();
+            var carpistion = AppData.Trip.Car_Position.ToString();
             while (AppData.VideoProcessing)
             {
                 FileIdList = AppData.RdStructureRepository.GetFileID(242, Number);
