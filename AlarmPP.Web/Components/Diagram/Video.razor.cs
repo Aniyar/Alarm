@@ -94,10 +94,6 @@ namespace AlarmPP.Web.Components.Diagram
                 commonBitMap.Save(m, ImageFormat.Jpeg);
                 Base64 = Convert.ToBase64String(m.ToArray());
             }
-            else
-            {
-                Base64 = null;
-            }
         }
         public async Task OnTimedEventAsync()
         {
