@@ -2548,8 +2548,6 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
         {
             using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
             {
-                
-
                 if (db.State == ConnectionState.Closed)
                     db.Open();
 
@@ -2588,7 +2586,6 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
                         break;
                 }
 
-
                 return db.Query<VideoObject>(
                     $@"SELECT DISTINCT
 	                        rvo.oid,
@@ -2609,8 +2606,8 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
 	                        rd_video_objects AS rvo
 	                        INNER JOIN trip_files tf ON tf.ID = rvo.file_id 
                         WHERE
-	                        rvo.file_id = {fileId} AND 
-                            rvo.ms = {ms} 
+	                        rvo.file_id = {fileId} 
+                            -- AND rvo.ms = {ms} 
 	                        AND rvo.fnum = {fnum} 
 	                        {filter} --AND rvo.oid = 7 
                         ORDER BY

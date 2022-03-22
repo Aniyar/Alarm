@@ -427,7 +427,7 @@ namespace AlarmPP.Web.Components.Diagram
             StateHasChanged();
             if (AppData.WorkMode == Services.WorkMode.Online)
             {
-                _ = OnTimedEventAsync();                
+                _ = OnTimedEventAsync();
             }
             try
             {
