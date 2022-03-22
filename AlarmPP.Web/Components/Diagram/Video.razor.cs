@@ -1,4 +1,4 @@
-﻿using ALARm.Core;
+using ALARm.Core;
 using ALARm.Core.AdditionalParameteres;
 using ALARm.Core.Report;
 using ALARm.DataAccess;
