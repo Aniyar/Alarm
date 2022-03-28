@@ -4328,6 +4328,12 @@ namespace ALARm.DataAccess
 	                        bok_r,
 	                        npk_l,
 	                        npk_r,
+                            shortwavesleft,
+                            shortwavesright,
+                            mediumwavesleft,
+                            mediumwavesright,
+                            longwavesleft,
+                            longwavesright,
 	                        iz_45_l,
 	                        iz_45_r 
                         FROM
@@ -4335,8 +4341,8 @@ namespace ALARm.DataAccess
                         WHERE
 	                        ID > {meter} 
                         ORDER BY
-                        ID 
-	                        LIMIT {count}").ToList();
+                        ID").ToList();
+
                 }
                 catch (Exception ex)
                 {
@@ -4543,6 +4549,48 @@ namespace ALARm.DataAccess
                         return -1;
 
                     }
+                finally
+                {
+                    db.Close();
+                }
+            }
+
+        }
+        public List<long> GetFileID(int trip_id, int num)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                return db.Query<long>($@"SELECT id FROM trip_files WHERE km_num = {num} AND trip_id = {trip_id}").ToList();
+            }
+
+        }
+        public void SetFileID(int num, long fileId, long trip_id)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                NpgsqlTransaction transaction = (NpgsqlTransaction)db.BeginTransaction();
+                var command = new NpgsqlCommand();
+                command.Connection = (NpgsqlConnection)db;
+                command.Transaction = transaction;
+                command.CommandText = $@"SELECT file_name FROM trip_files WHERE id = {fileId}";
+                try
+                {
+                    string filename = (string)command.ExecuteScalar() ?? "";
+                    string extension = Path.GetExtension(filename).Split('_')[1];
+                    filename = Path.GetFileNameWithoutExtension(filename);
+                    var query = $@"UPDATE trip_files 
+                            SET km_num = {num}
+	                        WHERE file_name LIKE '%{extension}' AND trip_id = {trip_id}";
+                    db.Execute(query);
+                }
+                catch (Exception  e){
+                    transaction.Rollback();
+                    Console.WriteLine($"UpdateDigression error: {e.Message}");
+                }
                 finally
                 {
                     db.Close();

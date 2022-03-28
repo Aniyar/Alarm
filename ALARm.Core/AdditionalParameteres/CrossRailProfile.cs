@@ -69,11 +69,19 @@ namespace ALARm.Core.AdditionalParameteres
             TreadTiltLeft.Add(elem.Npk_l);
             TreadTiltRight.Add(elem.Npk_r);
             //пу
-            DownhillLeft.Add(elem.Pu_l);
-            DownhillRight.Add(elem.Pu_r);
+            //DownhillLeft.Add(elem.Pu_l * 100);
+            //DownhillRight.Add(elem.Pu_r * 100);
+            ////боковой износ
+            //SideWearLeft.Add(elem.Bok_l * 100);
+            //SideWearRight.Add(elem.Bok_r * 100);
+            ////верт износ
+            //VertIznosL.Add(elem.Vert_l * 100);
+            //VertIznosR.Add(elem.Vert_r * 100);
+            DownhillLeft.Add(elem.Pu_l );
+            DownhillRight.Add(elem.Pu_r );
             //боковой износ
             SideWearLeft.Add(elem.Bok_l );
-            SideWearRight.Add(elem.Bok_r );
+            SideWearRight.Add(elem.Bok_r);
             //верт износ
             VertIznosL.Add(elem.Vert_l );
             VertIznosR.Add(elem.Vert_r );
@@ -83,15 +91,15 @@ namespace ALARm.Core.AdditionalParameteres
             ReducedWearLeft.Add( leftRed );
             ReducedWearRight.Add(rRed );
             //износ головки 45 градус
-            HeadWearLeft.Add(elem.Iz_45_l);
-            HeadWearRight.Add(elem.Iz_45_r);
+            HeadWearLeft.Add(elem.Iz_45_l );
+            HeadWearRight.Add(elem.Iz_45_r );
 
-            Longwavesleft.Add(elem.Longwavesleft);
+            Longwavesleft.Add(elem.Longwavesleft );
             Longwavesright.Add(elem.Longwavesright);
-            Mediumwavesleft.Add(elem.Mediumwavesleft);
-            Mediumwavesright.Add(elem.Mediumwavesright);
-            Shortwavesleft.Add(elem.Shortwavesleft);
-            Shortwavesright.Add(elem.Shortwavesright);
+            Mediumwavesleft.Add(elem.Mediumwavesleft );
+            Mediumwavesright.Add(elem.Mediumwavesright );
+            Shortwavesleft.Add(elem.Shortwavesleft );
+            Shortwavesright.Add(elem.Shortwavesright );
             CurrentSm -= 0.2f;
             if (kilometer == null)
                 return;
@@ -384,6 +392,7 @@ namespace ALARm.Core.AdditionalParameteres
                   RWdig3RightValue = 0, RWdig2RightValue = 0;
 
 
+            
             for (int i = 0; i < Meters.Count; i++)
             {
                 //3 степени Ип Прав
@@ -1304,6 +1313,7 @@ namespace ALARm.Core.AdditionalParameteres
                     if ((DownhillRight[i] >= OneDiv60) && (PUfound4Right))
                     {
                         PUdig4Right.Length = Math.Abs(PUdig4Right.Meter - (int)Meters[i]);
+                        PUdig3Right.Km = NKm;
                         PUdig4Right.Kmetr = (int)Meters[i];
                         PUdig4Right.Value = PUdig4RightValue;
                         PUdig4RightValue = 0;

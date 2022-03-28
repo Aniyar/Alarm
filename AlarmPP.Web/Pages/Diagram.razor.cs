@@ -43,6 +43,7 @@ namespace AlarmPP.Web.Pages
             this.printMenu.OpenAsync();
         }
 
+        bool VideoDialog { get; set; } = false;
         bool FinishProcessingDialog { get; set ;} = false;
         public MatMenu digFilterMenu { get; set; }
         public ForwardRef digFilterMenuRef { get; set; } = new ForwardRef();

@@ -152,6 +152,20 @@
                                     <MatCheckbox Value="@AppData.ShowIznosPriv" Label="Износ приведенный" Style="color: red; width: 100%;" ValueChanged="@((bool value) => SetShowStatus(Services.ShowButtons.IznosPriv))"></MatCheckbox>
                                 </MatListItem>
 
+                               @*///средние короткие волны*@
+                                <MatListItem OnClick="(_ => SetShowStatus(Services.ShowButtons.IznosPriv))">
+                                    <MatCheckbox Value="@AppData.ShowIznosPriv" Label="Износ приведенный" Style="color: red; width: 100%;" ValueChanged="@((bool value) => SetShowStatus(Services.ShowButtons.IznosPriv))"></MatCheckbox>
+                                </MatListItem>
+                                <MatListItem OnClick="(_ => SetShowStatus(Services.ShowButtons.IznosPriv))">
+                                    <MatCheckbox Value="@AppData.ShowIznosPriv" Label="Износ приведенный" Style="color: red; width: 100%;" ValueChanged="@((bool value) => SetShowStatus(Services.ShowButtons.IznosPriv))"></MatCheckbox>
+                                </MatListItem>
+                                <MatListItem OnClick="(_ => SetShowStatus(Services.ShowButtons.IznosPriv))">
+                                    <MatCheckbox Value="@AppData.ShowIznosPriv" Label="Износ приведенный" Style="color: red; width: 100%;" ValueChanged="@((bool value) => SetShowStatus(Services.ShowButtons.IznosPriv))"></MatCheckbox>
+                                </MatListItem>
+                                <MatListItem OnClick="(_ => SetShowStatus(Services.ShowButtons.IznosPriv))">
+                                    <MatCheckbox Value="@AppData.ShowIznosPriv" Label="Износ приведенный" Style="color: red; width: 100%;" ValueChanged="@((bool value) => SetShowStatus(Services.ShowButtons.IznosPriv))"></MatCheckbox>
+                                </MatListItem>
+
                             </MatList>
                         </MatMenu>
                     </MatTooltip>
@@ -202,6 +216,9 @@
                             <i class="demo-icon icon-dg-rail-profile" style="@(AppData.ShowRailProfile ? AppData.PressedButtonState : "")">&#xe813;</i>
                         </MatFAB>
                     </MatTooltip>
+                    <MatTooltip Tooltip="Просмотр видео" Wrap="true">
+                        <MatFAB Mini="true" Style="font-size: 150%; box-shadow: none;" OnClick="@(_ => VideoDialog = true)">📹</MatFAB>
+                    </MatTooltip>
                     @if (AppData.Trip.Processed == true)
                     {
                         <mat-label>Постобработка проезда завершена</mat-label>
@@ -247,4 +264,12 @@
         <MatButton Raised="true" Style="margin-right:5px;" OnClick="_=> {FinishProcessing();  }">Ок</MatButton>
         <MatButton Raised="true" OnClick="_=> { FinishProcessingDialog = false;}">Закрыть</MatButton>
     </MatDialogActions>
+</MatDialog>
+
+<MatDialog @bind-IsOpen="@VideoDialog" Stacked="true" Class="image-modal">
+        <MatDialogTitle>Просмотр видео проезда</MatDialogTitle>
+        <Video Kilometers=AppData.Kilometers></Video>
+        <MatDialogActions>
+            <MatButton Raised="true" OnClick="_=> { VideoDialog = false; AppData.VideoProcessing = false; }">Закрыть</MatButton>
+        </MatDialogActions>
 </MatDialog>

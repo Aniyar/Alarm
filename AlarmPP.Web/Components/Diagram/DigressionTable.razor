@@ -97,8 +97,10 @@
                         int pos = currentKMPosition + metre- kilometer.Start_m;
                         int index = rowIndex;
                         digression.TrackName = kilometer.Track_name;
+
                         if (AppData.ShowDigressions || AppData.ShowCloseToDangerous)
                         {
+                            
                             if ((digression.Degree == 4 || (digression.Degree == 3 && closeToDangerGR.Contains(digression.Comment)))  && (AppData.ShowDangerousDigressions) ||
                                    (digression.Degree == 3) && (AppData.Show3DegreeDigressions) ||
                                    (digression.Degree == 2) && (AppData.Show2DegreeDigressions) ||
@@ -141,8 +143,8 @@
                                     <td style="border-right: 1px solid grey; width: 125px;">@digression.Value</td>
                                     <td style="border-right: 1px solid grey; width: 125px;">@digression.Length</td>
 
-                                    <td style="border-right: 1px solid grey; width: 125px;">@digression.LimitSpeed</td>
-                                    <th style="border-right: 1px solid grey; width: 50px;">@digression.GetPoint(kilometer)</th>
+                                    <td style="border-right: 1px solid grey; width: 125px;">@(digression.Degree == 1 ? "-/-":digression.LimitSpeed)</td>
+                                    <th style="border-right: 1px solid grey; width: 50px;">@(digression.Degree ==1 ? "0": digression.GetPoint(kilometer)) </th>
 
                                     <td>
 
@@ -285,6 +287,8 @@
                         fastener.value.Pdb_section = kilometer.PdbSection.Count > 0 ? kilometer.PdbSection[0].ToString() : "";
                         fastener.value.Date = DateTime.Today.ToShortDateString();
                         int index = rowIndex;
+                        //AppData.RdStructureRepository.SetFileID(fastener.value.Km, fastener.value.Fileid, 242);     
+                            
                         if (AppData.ShowFasteners)
                         {
                             <tr style="background:@(CurrentRow == index ? "#75d2ff" : "lightgray")" @onmousedown="@(_ => GoToMark(pos, index))">
@@ -375,7 +379,8 @@
                         }
                     }
                 }
-                currentKMPosition = currentKMPosition + kilometer.GetLength() ;
+                
+                currentKMPosition = currentKMPosition + kilometer.GetLength();
             }
         }
     </tbody>

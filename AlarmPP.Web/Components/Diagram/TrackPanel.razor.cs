@@ -349,16 +349,16 @@ namespace AlarmPP.Web.Components.Diagram
 
                             AppData.Meter += 1;
                             OnlineModeData.CurrentFrameIndex = AppData.Meter;
-                            //OnlineModeData.GetBitmapAsync();
+                            OnlineModeData.GetBitmapAsync();
 
-                            //kilometer.DownHillLeft += (OnlineModeData.DownhillLeft.ToRadians() * kilometer.DegKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
-                            //kilometer.DownHillRight += (OnlineModeData.DownhillRight.ToRadians() * kilometer.DegKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
-                            //kilometer.VertWearLeft += (OnlineModeData.VertWearLeft * kilometer.WearKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
-                            //kilometer.VertWearRight += (OnlineModeData.VertWearRight * kilometer.WearKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
-                            //kilometer.SideWearLeft += (OnlineModeData.SideWearLeft * kilometer.WearKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
-                            //kilometer.SideWearRight += (OnlineModeData.SideWearRight * kilometer.WearKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
-                            //kilometer.HeadWear45Left += (OnlineModeData.Wear45Left * kilometer.WearKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
-                            //kilometer.HeadWear45Right += (OnlineModeData.Wear45Right * kilometer.WearKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
+                            kilometer.DownHillLeft += (OnlineModeData.DownhillLeft.ToRadians() * kilometer.DegKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
+                            kilometer.DownHillRight += (OnlineModeData.DownhillRight.ToRadians() * kilometer.DegKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
+                            kilometer.VertWearLeft += (OnlineModeData.VertWearLeft * kilometer.WearKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
+                            kilometer.VertWearRight += (OnlineModeData.VertWearRight * kilometer.WearKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
+                            kilometer.SideWearLeft += (OnlineModeData.SideWearLeft * kilometer.WearKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
+                            kilometer.SideWearRight += (OnlineModeData.SideWearRight * kilometer.WearKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
+                            kilometer.HeadWear45Left += (OnlineModeData.Wear45Left * kilometer.WearKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
+                            kilometer.HeadWear45Right += (OnlineModeData.Wear45Right * kilometer.WearKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
                             break;
                         }
                     }
@@ -426,18 +426,25 @@ namespace AlarmPP.Web.Components.Diagram
             StateHasChanged();
             if (AppData.WorkMode == Services.WorkMode.Online)
             {
-                _ = OnTimedEventAsync();                
+                _ = OnTimedEventAsync();
             }
-            OnlineModeData.ViewBoxLeft = "-100 -30 200 300"; // Уакытша
-            OnlineModeData.ViewBoxRight = "-100 -30 200 300"; // Уакытша
-            OnlineModeData.NominalTranslateLeft = "-10px,-10px"; // Уакытша
-            OnlineModeData.NominalTranslateRight = "-10px,-10px"; // Уакытша
-            OnlineModeData.NominalRotateLeft = "0deg"; // Уакытша
-            OnlineModeData.NominalRotateRight = "0deg"; // Уакытша
-            //OnlineModeData.CalibrConstLeft = 0; // Уакытша
-            //OnlineModeData.CalibrConstRight = 0; // Уакытша
-            OnlineModeData.NominalRailScheme = OnlineModeData.GetNominalRailScheme(Rails.r50);
-            digressionTable.Refresh();
+            try
+            {
+                OnlineModeData.ViewBoxLeft = "-100 -30 200 300"; // Уакытша
+                OnlineModeData.ViewBoxRight = "-100 -30 200 300"; // Уакытша
+                OnlineModeData.NominalTranslateLeft = "-10px,-10px"; // Уакытша
+                OnlineModeData.NominalTranslateRight = "-10px,-10px"; // Уакытша
+                OnlineModeData.NominalRotateLeft = "0deg"; // Уакытша
+                OnlineModeData.NominalRotateRight = "0deg"; // Уакытша
+                                                            //OnlineModeData.CalibrConstLeft = 0; // Уакытша
+                                                            //OnlineModeData.CalibrConstRight = 0; // Уакытша
+                OnlineModeData.NominalRailScheme = OnlineModeData.GetNominalRailScheme(Rails.r50);
+                digressionTable.Refresh();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("djfkshkf" + e.Message);
+            }
         }
 
         public void RouteEditableChange(Trips trip)

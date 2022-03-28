@@ -309,7 +309,7 @@ namespace ALARm.Core
         /// <returns></returns>
         public List<Digression> GetDigressions()
         {
-            void CalcDegression(List<Digression> digressions, List<int> meters, List<float> longWave, List<float> middleWave, List<float> shortWave, List<float> impulsWave, DigName l, DigName m, DigName s, DigName im)
+            void CalcDegression(List<Digression> digressions, List<int> meters,List<float> longWave, List<float> middleWave, List<float> shortWave, List<float> impulsWave, DigName l, DigName m, DigName s, DigName im)
             {
                 bool found = false, middleFound = false, longFound = false, impulsFound = false;
                 int defleng = 0, mDefLeng = 0, lDefLeng = 0, iDefLeng = 0;
@@ -356,7 +356,7 @@ namespace ALARm.Core
                     }
                     else if (mDefLeng >= 1000)                  {
                         digressions.Add(new Digression()
-                            {Meter = mDefStart, Length = mDefLeng, DigName = m, Value = mMax});
+                            {Meter = mDefStart, Length = mDefLeng, DigName = m, Value = mMax });
                         middleFound = false;
                         mDefStart = 0;
                         mDefLeng = 0;
@@ -378,7 +378,7 @@ namespace ALARm.Core
                     else if (lDefLeng >= 2000)  
                     {
                         digressions.Add(new Digression()
-                            {Meter = lDefStart, Length = lDefLeng, DigName = l, Value = lMax});
+                            {Meter = lDefStart, Length = lDefLeng, DigName = l, Value = lMax });
                         longFound = false;
                         lDefStart = 0;
                         lDefLeng = 0;
@@ -417,7 +417,123 @@ namespace ALARm.Core
             CalcDegression(result, MetersLeft, LongWaveLeft, MediumWaveLeft, ShortWaveLeft, ImpulseLeft, DigressionName.LongWaveLeft, DigressionName.MiddleWaveLeft, DigressionName.ShortWaveLeft, DigressionName.ImpulsLeft);
             return result;
         }
+        public List<Digression> GetDigressions_new(int km)
+        {
+            void CalcDegression(List<Digression> digressions, List<int> meters,  List<float> longWave, List<float> middleWave, List<float> shortWave, List<float> impulsWave, DigName l, DigName m, DigName s, DigName im)
+            {
+                bool found = false, middleFound = false, longFound = false, impulsFound = false;
+                int defleng = 0, mDefLeng = 0, lDefLeng = 0, iDefLeng = 0;
+                int defstart = 0, mDefStart = 0, lDefStart = 0, iDefStart = 0;
+                float def = 0, mDef = 0, lDef = 0, iDef = 0;
+                float max = 0, mMax = 0, lMax = 0, iMax = 0;
+               
+                for (int i = 0; i < meters.Count; i++)
+                {
+                    if (shortWave.Count() < 1)
+                    {
+                        continue;
+                    }
 
-        
+                    if (shortWave[i] > 0.2f)
+                    {
+                        if (!found)
+                        {
+                            defstart = meters[i];
+                        }
+
+                        defleng += 100;
+                        def = shortWave[i];
+                        if (def > max)
+                            max = def;
+                        found = true;
+                    }
+                    else if (defleng > 200)
+                    {
+                        digressions.Add(new Digression()
+                        { Meter = defstart, Length = defleng, DigName = s, Value = max, Km = km });
+                        found = false;
+                        defstart = 0;
+                        defleng = 0;
+                        max = 0;
+                        def = 0;
+                    }
+                    if (middleWave[i] > 0.45f)
+                    {
+                        if (!middleFound)
+                        {
+                            mDefStart = meters[i];
+                        }
+
+                        mDefLeng += 100;
+                        mDef = middleWave[i];
+                        if (mDef > mMax)
+                            mMax = mDef;
+                        middleFound = true;
+                    }
+                    else if (mDefLeng >= 1000)
+                    {
+                        digressions.Add(new Digression()
+                        { Meter = mDefStart, Length = mDefLeng, DigName = m, Value = mMax, Km = km });
+                        middleFound = false;
+                        mDefStart = 0;
+                        mDefLeng = 0;
+                        mMax = 0;
+                        mDef = 0;
+                    }
+                    if (longWave[i] > 0.6f)
+                    {
+                        if (!longFound)
+                        {
+                            lDefStart = meters[i];
+                        }
+                        lDefLeng += 100;
+                        lDef = longWave[i];
+                        if (lDef > lMax)
+                            lMax = lDef;
+                        longFound = true;
+                    }
+                    else if (lDefLeng >= 2000)
+                    {
+                        digressions.Add(new Digression()
+                        { Meter = lDefStart, Length = lDefLeng, DigName = l, Value = lMax, Km = km });
+                        longFound = false;
+                        lDefStart = 0;
+                        lDefLeng = 0;
+                        lMax = 0;
+                        lDef = 0;
+                    }
+                    if (impulsWave.Count() != 0)
+                    {
+                        if (impulsWave[i] > 0.6f)
+                        {
+                            if (!impulsFound)
+                            {
+                                iDefStart = meters[i];
+                            }
+                            iDefLeng += 100;
+                            iDef = impulsWave[i];
+                            if (iDef > iMax)
+                                iMax = iDef;
+                            impulsFound = true;
+                        }
+                        else if ((iDefLeng > 0) && (iDefLeng < 301))
+                        {
+                            digressions.Add(new Digression()
+                            { Meter = iDefStart, Length = iDefLeng, DigName = im, Value = iMax, Km = km });
+                            impulsFound = false;
+                            iDefStart = 0;
+                            iDefLeng = 0;
+                            iMax = 0;
+                            iDef = 0;
+                        }
+                    }
+                }
+            }
+            var result = new List<Digression>();
+            CalcDegression(result, MetersRight, LongWaveRight, MediumWaveRight, ShortWaveRight, ImpulseRight, DigressionName.LongWaveRight, DigressionName.MiddleWaveRight, DigressionName.ShortWaveRight, DigressionName.ImpulsRight);
+            CalcDegression(result, MetersLeft, LongWaveLeft, MediumWaveLeft, ShortWaveLeft, ImpulseLeft, DigressionName.LongWaveLeft, DigressionName.MiddleWaveLeft, DigressionName.ShortWaveLeft, DigressionName.ImpulsLeft);
+            return result;
+        }
+
     }
 }

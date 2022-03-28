@@ -298,9 +298,17 @@ namespace ALARm.Services
         {
             return Container.Resolve<IAdditionalParametersRepository>().GetCrossRailProfileFromDBbyCurve(curve, trip_id);
         }
-        public static List<Digression> Insert_additional_param_state(List<Digression> addDigressions)
+        public static List<Digression> Insert_additional_param_state_longwawes(List<Digression> impulses)
         {
-            return Container.Resolve<IAdditionalParametersRepository>().Insert_additional_param_state(addDigressions);
+            return Container.Resolve<IAdditionalParametersRepository>().Insert_additional_param_state_longwawes(impulses);
+        }
+        public static List<Digression> Insert_additional_param_state_aslan(List<Digression> addDigressions)
+        {
+            return Container.Resolve<IAdditionalParametersRepository>().Insert_additional_param_state_aslan(addDigressions);
+        }
+        public static List<Digression> Insert_additional_param_state(List<Digression> addDigressions,int nkm)
+        {
+            return Container.Resolve<IAdditionalParametersRepository>().Insert_additional_param_state(addDigressions,  nkm);
         }
     }
 }

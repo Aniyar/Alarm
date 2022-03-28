@@ -164,7 +164,7 @@ namespace AlarmPP.Web.Components.Diagram
                 Console.WriteLine("Не уадлость завершить редактирование из за ошибки: " + e.Message);
             }
         }
-
+        
         void EditDigression(RdAction action, int type, bool dialog)
         {
 
@@ -879,61 +879,61 @@ namespace AlarmPP.Web.Components.Diagram
                 JSRuntime.InvokeVoidAsync("ZoomOut");
         }
 
-        void ModifyGapClick(Gap gap)
+        public void ModifyGapClick(Gap gap)
         {
             digressionGap = gap;
             GapEditDialog = true;
         }
 
-        void DeleteGapClick(Gap gap)
+        public void DeleteGapClick(Gap gap)
         {
             digressionGap = gap;
             GapDeleteDialog = true;
         }
 
-        void ModifyBoltClick(Digression bolt)
+        public void ModifyBoltClick(Digression bolt)
         {
             digressionO = bolt;
             BoltEditDialog = true;
         }
 
-        void DeleteBoltClick(Digression bolt)
+        public void DeleteBoltClick(Digression bolt)
         {
             digressionO = bolt;
             BoltDeleteDialog = true;
         }
 
-        void ModifyFastenerClick(Digression fastener)
+        public void ModifyFastenerClick(Digression fastener)
         {
             digressionO = fastener;
             FastenerEditDialog = true;
         }
 
-        void DeleteFastenerClick(Digression fastener)
+        public void DeleteFastenerClick(Digression fastener)
         {
             digressionO = fastener;
             FastenerDeleteDialog = true;
         }
 
-        void ModifyPerShpalClick(Digression perShpal)
+        public void ModifyPerShpalClick(Digression perShpal)
         {
             digressionO = perShpal;
             PerShpalEditDialog = true;
         }
 
-        void DeletePerShpalClick(Digression perShpal)
+        public void DeletePerShpalClick(Digression perShpal)
         {
             digressionO = perShpal;
             PerShpalDeleteDialog = true;
         }
 
-        void ModifyDefShpalClick(Digression perShpal)
+        public void ModifyDefShpalClick(Digression perShpal)
         {
             digressionO = perShpal;
             DefShpalEditDialog = true;
         }
 
-        void DeleteDefShpalClick(Digression perShpal)
+        public void DeleteDefShpalClick(Digression perShpal)
         {
             digressionO = perShpal;
             DefShpalDeleteDialog = true;

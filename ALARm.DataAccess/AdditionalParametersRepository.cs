@@ -14,7 +14,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
-
+using System.Threading.Tasks;
 
 namespace ALARm.DataAccess
 {
@@ -1819,7 +1819,7 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
         public CrossRailProfile vertIznos(int nkm)
         {
             var crossRailProfile = new CrossRailProfile();
-            using (var file = new StreamReader("D:/work_shifrovka/dop/" + nkm.ToString() + "_1.add_dat", Encoding.GetEncoding(1251)))
+            using (var file = new StreamReader("G:/work_shifrovka/dop/" + nkm.ToString() + "_1.add_dat", Encoding.GetEncoding(1251)))
             {
                 crossRailProfile.NKm = nkm;
                 string line = "";
@@ -2079,7 +2079,9 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
         public CrossRailProfile GetCrossRailProfileFromText(int nkm)
         {
             var crossRailProfile = new CrossRailProfile();
-            using (var file = new StreamReader(@"D:\work_shifrovka\dop\" + nkm.ToString() + "_1.add_dat", Encoding.ASCII))
+            using (var file = new StreamReader(@"G:\work_shifrovka\dop\" + nkm.ToString() + "_1.add_dat", Encoding.ASCII))
+            //using (var file = new StreamReader(@"G:\work_shifrovka\dop\km_700_4816.svgpdat", Encoding.ASCII))
+
             {
                 crossRailProfile.NKm = nkm;
                 string line = "";
@@ -2118,7 +2120,7 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
             var result = new ShortRoughness();
             string line;
             //чтение измерительных данных
-            using (var file = new StreamReader("D:/work_shifrovka/dop/" + km.ToString() + ".svgpdat", Encoding.GetEncoding(1251)))
+            using (var file = new StreamReader("G:/work_shifrovka/dop/" + km.ToString() + ".svgpdat", Encoding.GetEncoding(1251)))
             {
                 line = file.ReadLine();
                 result.Direction = "Обратный";
@@ -2133,7 +2135,7 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
                 result.KilometrNumber = int.Parse(line ?? throw new InvalidOperationException());
                 while ((line = file.ReadLine()) != null) result.Parse(line);
             }
-            using (var file = new StreamReader("D:/work_shifrovka/dop/" + km.ToString() + "_2.svgpdat", Encoding.GetEncoding(1251)))
+            using (var file = new StreamReader("G:/work_shifrovka/dop/" + km.ToString() + "_2.svgpdat", Encoding.GetEncoding(1251)))
             {
                 line = file.ReadLine();
                 result.Direction = "Обратный";
@@ -2271,43 +2273,39 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
                 }
             }
         }
-        public Bitmap GetBitMap(long fileId, long ms, int fnum)
+        public List<Bitmap> GetBitMap(long fileId, long ms)
         {
-            var filePath = GetFilePathById(fileId);
-            using (BinaryReader reader = new BinaryReader(File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)))
+            List<Bitmap> bitMaps = new List<Bitmap>();
+            var filePaths = getFilesPathById(fileId);
+            filePaths.ForEach(filePath =>
             {
-                try
+                using (BinaryReader reader = new BinaryReader(File.Open(filePath["fileName"] as string, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)))
                 {
-
-                    int width = reader.ReadInt32();
-                                      
-                    int height = reader.ReadInt32();
-
-                    int frameSize = width * height;
-                    long position = (long)0 * (long)frameSize + 8;
-                    reader.BaseStream.Seek(position, SeekOrigin.Begin);
-                    byte[] by = reader.ReadBytes(frameSize);
-                    var arr = by.Skip(8).Take(4).ToArray();
-                    //Array.Reverse(arr);
-                    var encoderCounter_1 = BitConverter.ToInt32(arr,0);
-                  position = (long)(Math.Abs(ms-encoderCounter_1) / 200) * (long)frameSize + 8;
-                  reader.BaseStream.Seek(position, SeekOrigin.Begin);
-                    by = reader.ReadBytes(frameSize);
-                    encoderCounter_1 = BitConverter.ToInt32(by.Skip(8).Take(4).ToArray(), 0);
-                    if (encoderCounter_1 == ms)
-                        return Convert2Bitmap(by, width, height);
-                    
-                        position = (long)fnum * (long)frameSize + 8;
+                    try
+                    {
+                        int width = reader.ReadInt32();
+                        int height = reader.ReadInt32();
+                        int frameSize = width * height;
+                        long position = (long)ms * (long)frameSize + 8;
+                        reader.BaseStream.Seek(position, SeekOrigin.Begin);
+                        byte[] by = reader.ReadBytes(frameSize);
+                        var arr = by.Skip(8).Take(4).ToArray();
+                        //Array.Reverse(arr);
+                        var encoderCounter_1 = BitConverter.ToInt32(arr, 0);
+                        position = (long)(Math.Abs(ms) / 200) * (long)frameSize + 8;
                         reader.BaseStream.Seek(position, SeekOrigin.Begin);
                         by = reader.ReadBytes(frameSize);
-                    return Convert2Bitmap(by, width, height);
+                        encoderCounter_1 = BitConverter.ToInt32(by.Skip(8).Take(4).ToArray(), 0);
+                        bitMaps.Add( Convert2Bitmap(by, width, height));
+                    }
+                    catch (Exception e)
+                    {
+                        System.Console.WriteLine("GetBitmap error: " + e.Message);
+                        //return bitMaps;
+                    }
                 }
-                catch (Exception e)
-                {
-                    System.Console.WriteLine("GetBitmap error: " +e.Message);
-                    return null;
-                }
-            }
+            });
+            return bitMaps;
         }
         
         public Dictionary<string,Object> getBitMaps(long fileId, long ms, int fnum, RepType RepType){
@@ -2546,8 +2544,6 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
         {
             using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
             {
-                
-
                 if (db.State == ConnectionState.Closed)
                     db.Open();
 
@@ -2586,7 +2582,6 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
                         break;
                 }
 
-
                 return db.Query<VideoObject>(
                     $@"SELECT DISTINCT
 	                        rvo.oid,
@@ -2607,8 +2602,8 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
 	                        rd_video_objects AS rvo
 	                        INNER JOIN trip_files tf ON tf.ID = rvo.file_id 
                         WHERE
-	                        rvo.file_id = {fileId} AND 
-                            rvo.ms = {ms} 
+	                        rvo.file_id = {fileId} 
+                            -- AND rvo.ms = {ms} 
 	                        AND rvo.fnum = {fnum} 
 	                        {filter} --AND rvo.oid = 7 
                         ORDER BY
@@ -3061,7 +3056,7 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
 
             }
         }
-        public List<Digression> Insert_additional_param_state(List<Digression> addDigressions)
+        public List<Digression> Insert_additional_param_state(List<Digression> addDigressions, int nkm)
         {
             int index = 0;
             foreach (var adddig in addDigressions)
@@ -3073,8 +3068,7 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
                     {
                         if (db.State == ConnectionState.Closed)
                             db.Open();
-                        var txt = $@"INSERT INTO s3_additional (id,
-                                                                km,
+                        var txt = $@"INSERT INTO s3_additional (km,
                                                                 kmetr,
                                                                 meter,
                                                                 typ,
@@ -3092,7 +3086,7 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
                                                                 allowspeed,
                                                                 primech 
                                                                 )
-                                                 VALUES ({index},{adddig.Km}, {adddig.Kmetr}, {adddig.Meter}, {adddig.Typ}, '{adddig.DigName}', {adddig.Direction_num}, '{adddig.FoundDate}', '{adddig.Threat}', '{adddig.R_threat}', {adddig.Length}, '{adddig.Location}', '{adddig.Norma}', '{adddig.R_DigName}', {adddig.Value}, {adddig.Count}, '{adddig.AllowSpeed}', '{adddig.Primech}')";
+                                                 VALUES ({nkm}, {adddig.Kmetr}, {adddig.Meter}, {adddig.Typ}, '{adddig.DigName}', {adddig.Direction_num}, '{adddig.FoundDate}', '{adddig.Threat}', '{adddig.R_threat}', {adddig.Length}, '{adddig.Location}', '{adddig.Norma}', '{adddig.R_DigName}', {adddig.Value}, {adddig.Count}, '{adddig.AllowSpeed}', '{adddig.Primech}')";
                         db.Execute(txt);
                     }
                     index++;
@@ -3161,6 +3155,97 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
 
             }
         }
+
+        public List<Digression> Insert_additional_param_state_longwawes(List<Digression> impulses)
+        {
+            int index = 0;
+            foreach (var imp in impulses)
+            {
+                try
+                {
+
+                    using (var db = new NpgsqlConnection(Helper.ConnectionString()))
+                    {
+                        if (db.State == ConnectionState.Closed)
+                            db.Open();
+                        var txt = $@"INSERT INTO s3_additional (
+                                    km,
+                                    kmetr,
+                                    meter,
+                                    typ,
+                                    digname,
+                                    direction_num,
+                                    founddate,
+                                    threat,
+                                    r_threat,
+                                    LENGTH,
+                                    LOCATION,
+                                    norma,
+                                    r_digname,
+                                    VALUE,
+                                    COUNT,
+                                    allowspeed,
+                                    primech 
+                                    )
+                     VALUES ({imp.Km}, {imp.Kmetr}, {imp.Meter}, {3}, '{imp.DigName}', {imp.Direction_num}, '{imp.FoundDate}', '{imp.Threat}', '{imp.R_threat}', {imp.Length}, '{imp.Location}', '{imp.Norma}', '{imp.R_DigName}', {imp.Intensity_ra.ToString("0.00")}, {imp.Count}, '{imp.AllowSpeed}', '{imp.Primech}')";
+                        db.Execute(txt);
+                    }
+                    index++;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Insert_additional_param_state_longwawes error: " + e.Message);
+                    return new List<Digression> { };
+                }
+            }
+            return impulses;
+        }
+
+        public List<Digression> Insert_additional_param_state_aslan(List<Digression> addDigressions)
+        {
+            int index = 0;
+            foreach (var adddig in addDigressions)
+            {
+                try
+                {
+
+                    using (var db = new NpgsqlConnection(Helper.ConnectionString()))
+                    {
+                        if (db.State == ConnectionState.Closed)
+                            db.Open();
+                        var txt = $@"INSERT INTO s3_additional (
+                                                                km,
+                                                                kmetr,
+                                                                meter,
+                                                                typ,
+                                                                digname,
+                                                                direction_num,
+                                                                founddate,
+                                                                threat,
+                                                                r_threat,
+                                                                LENGTH,
+                                                                LOCATION,
+                                                                norma,
+                                                                r_digname,
+                                                                VALUE,
+                                                                COUNT,
+                                                                allowspeed,
+                                                                primech 
+                                                                )
+                                                 VALUES ({adddig.Km}, {adddig.Kmetr}, {adddig.Meter}, {3}, '{adddig.DigName}', {adddig.Direction_num}, '{adddig.FoundDate}', '{adddig.Threat}', '{adddig.R_threat}', {adddig.Length}, '{adddig.Location}', '{adddig.Norma}', '{adddig.R_DigName}', {adddig.Value}, {adddig.Count}, '{adddig.AllowSpeed}', '{adddig.Primech}')";
+                        db.Execute(txt);
+                    }
+                    index++;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Insert_additional_param_state error: " + e.Message);
+                    return new List<Digression> { };
+                }
+            }
+            return addDigressions;
+        }
+
 
         public List<Digression> GetFullGapsByNN(long km, long trip_id)
         {
