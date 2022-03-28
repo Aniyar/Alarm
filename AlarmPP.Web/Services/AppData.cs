@@ -703,6 +703,7 @@ namespace AlarmPP.Web.Services
                     }
                     if (km.CrossRailProfile != null)
                     {
+
                         int indexCross = km.CrossRailProfile.Meters.IndexOf(Trip.Travel_Direction == Direction.Reverse ? (float)currentMetre : km.Length - (float)currentMetre);
                         try
                         {
@@ -747,6 +748,7 @@ namespace AlarmPP.Web.Services
                         {
                             Console.WriteLine("ads" + e);
                         }
+                     
                     }
                     //if (km.Gaps != null)
                     //{

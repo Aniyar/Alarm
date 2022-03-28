@@ -4341,8 +4341,8 @@ namespace ALARm.DataAccess
                         WHERE
 	                        ID > {meter} 
                         ORDER BY
-                        ID 
-	                        ").ToList();
+                        ID").ToList();
+
                 }
                 catch (Exception ex)
                 {
