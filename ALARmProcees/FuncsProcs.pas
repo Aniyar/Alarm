@@ -4263,7 +4263,7 @@ begin
 
     i := j;
     // ---------------------------------------------
-    if (k4 > delta_length) then
+    if (k4 > 19) then
     begin
       for fi := i - k4 to i do
       begin
@@ -4277,14 +4277,15 @@ begin
 
         count := 1;
 
-        if (ln4 > 15) then
+        if (ln4 > 20) then
         begin
-          if ((ln4 - 15) mod 10) > 0 then
+          if ((ln4 - 20) mod 10) > 0 then
             bolshek10 := 1;
-          count := ((ln4 - 15) div 10) + bolshek10 + 1;
+          count := ((ln4 - 20) div 10) + bolshek10 + 1;
         end;
-
-        pot_s2 := pot_s2 + count;
+          if (ln4 > 19) then
+        begin
+             pot_s2 := pot_s2 + count;
 
         // bolshek10:= 0;
         // if ln2 mod 10 > 0 then bolshek10:= 1;
@@ -4307,6 +4308,9 @@ begin
         WUsh[ns].Vrg := Vrg;
         WUsh[ns].flg := false;
         ns := ns + 1;
+        end;
+
+
 
         x4a := 0;
         x4b := 0;

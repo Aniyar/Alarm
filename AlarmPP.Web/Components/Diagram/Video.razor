@@ -28,15 +28,15 @@
 
 
 <div class="row">
-    <div id="imgdiv1" style="width:100%">
-        <img src="data:image/jpeg;base64,@Base64" />
+    <div id="imgdiv1" style="max-width: 100%;">
+        <img src="data:image/jpeg;base64,@Base64"style="max-width:100%" />
     </div>
 </div>
 <MatButton Raised="true" Text="Редактировать" OnClick="() => GetObjectsFromFrame()"></MatButton>
 
 
 
-<MatDialog @bind-IsOpen="@ObjectsDialog" Stacked="true" Style="width:40%; height:30%">
+<MatDialog @bind-IsOpen="@ObjectsDialog" Stacked="true" Style="width:40%; height:30%" >
     <MatDialogTitle>Дефекты пути на @CurrentMeter метре</MatDialogTitle>
     <MatDialogContent>
         @if (Gaps != null && Gaps.Count > 0)

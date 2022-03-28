@@ -804,10 +804,10 @@ namespace ALARm_Report.Forms
                 try
                 {
                     var qrStr = $@"UPDATE  profiledata_{trip_id}
-                                   SET  longwavesleft = {(LongWavesLeft_m[i]).ToString("0.00").Replace(",", ".")},
-                                   mediumwavesleft =  {(MediumWavesLeft_m[i]).ToString("0.00").Replace(",", ".")},shortwavesleft = {(ShortWavesLeft_m[i]).ToString("0.00").Replace(",", ".")},
-                                   longwavesright =   {(LongWavesRight_m[i]).ToString("0.00").Replace(",", ".")},mediumwavesright =  {(MediumWavesRight_m[i]).ToString("0.00").Replace(",", ".")}
-                                 ,shortwavesright = {(ShortWavesRight_m[i]).ToString("0.00").Replace(",", ".")}
+                                   SET  longwavesleft = {(LongWavesLeft_m[i]).ToString("0.00000").Replace(",", ".")},
+                                   mediumwavesleft =  {(MediumWavesLeft_m[i]).ToString("0.00000").Replace(",", ".")},shortwavesleft = {(ShortWavesLeft_m[i]).ToString("0.00000").Replace(",", ".")},
+                                   longwavesright =   {(LongWavesRight_m[i]).ToString("0.00000").Replace(",", ".")},mediumwavesright =  {(MediumWavesRight_m[i]).ToString("0.00000").Replace(",", ".")}
+                                 ,shortwavesright = {(ShortWavesRight_m[i]).ToString("0.00000").Replace(",", ".")}
                                    where km = {km} and meter = {METERS_long_M[i]}";
 
                     cmd.CommandText = qrStr;

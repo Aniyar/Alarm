@@ -143,8 +143,8 @@
                                     <td style="border-right: 1px solid grey; width: 125px;">@digression.Value</td>
                                     <td style="border-right: 1px solid grey; width: 125px;">@digression.Length</td>
 
-                                    <td style="border-right: 1px solid grey; width: 125px;">@digression.LimitSpeed</td>
-                                    <th style="border-right: 1px solid grey; width: 50px;">@digression.GetPoint(kilometer)</th>
+                                    <td style="border-right: 1px solid grey; width: 125px;">@(digression.Degree == 1 ? "-/-":digression.LimitSpeed)</td>
+                                    <th style="border-right: 1px solid grey; width: 50px;">@(digression.Degree ==1 ? "0": digression.GetPoint(kilometer)) </th>
 
                                     <td>
 
@@ -379,7 +379,8 @@
                         }
                     }
                 }
-                currentKMPosition = currentKMPosition + kilometer.GetLength() ;
+                
+                currentKMPosition = currentKMPosition + kilometer.GetLength();
             }
         }
     </tbody>
