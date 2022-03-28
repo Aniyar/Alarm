@@ -2544,8 +2544,6 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
         {
             using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
             {
-                
-
                 if (db.State == ConnectionState.Closed)
                     db.Open();
 
@@ -2584,7 +2582,6 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
                         break;
                 }
 
-
                 return db.Query<VideoObject>(
                     $@"SELECT DISTINCT
 	                        rvo.oid,
@@ -2605,8 +2602,8 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
 	                        rd_video_objects AS rvo
 	                        INNER JOIN trip_files tf ON tf.ID = rvo.file_id 
                         WHERE
-	                        rvo.file_id = {fileId} AND 
-                            rvo.ms = {ms} 
+	                        rvo.file_id = {fileId} 
+                            -- AND rvo.ms = {ms} 
 	                        AND rvo.fnum = {fnum} 
 	                        {filter} --AND rvo.oid = 7 
                         ORDER BY
@@ -3154,6 +3151,97 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
 
             }
         }
+
+        public List<Digression> Insert_additional_param_state_longwawes(List<Digression> impulses)
+        {
+            int index = 0;
+            foreach (var imp in impulses)
+            {
+                try
+                {
+
+                    using (var db = new NpgsqlConnection(Helper.ConnectionString()))
+                    {
+                        if (db.State == ConnectionState.Closed)
+                            db.Open();
+                        var txt = $@"INSERT INTO s3_additional (
+                                    km,
+                                    kmetr,
+                                    meter,
+                                    typ,
+                                    digname,
+                                    direction_num,
+                                    founddate,
+                                    threat,
+                                    r_threat,
+                                    LENGTH,
+                                    LOCATION,
+                                    norma,
+                                    r_digname,
+                                    VALUE,
+                                    COUNT,
+                                    allowspeed,
+                                    primech 
+                                    )
+                     VALUES ({imp.Km}, {imp.Kmetr}, {imp.Meter}, {3}, '{imp.DigName}', {imp.Direction_num}, '{imp.FoundDate}', '{imp.Threat}', '{imp.R_threat}', {imp.Length}, '{imp.Location}', '{imp.Norma}', '{imp.R_DigName}', {imp.Intensity_ra.ToString("0.00")}, {imp.Count}, '{imp.AllowSpeed}', '{imp.Primech}')";
+                        db.Execute(txt);
+                    }
+                    index++;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Insert_additional_param_state_longwawes error: " + e.Message);
+                    return new List<Digression> { };
+                }
+            }
+            return impulses;
+        }
+
+        public List<Digression> Insert_additional_param_state_aslan(List<Digression> addDigressions)
+        {
+            int index = 0;
+            foreach (var adddig in addDigressions)
+            {
+                try
+                {
+
+                    using (var db = new NpgsqlConnection(Helper.ConnectionString()))
+                    {
+                        if (db.State == ConnectionState.Closed)
+                            db.Open();
+                        var txt = $@"INSERT INTO s3_additional (
+                                                                km,
+                                                                kmetr,
+                                                                meter,
+                                                                typ,
+                                                                digname,
+                                                                direction_num,
+                                                                founddate,
+                                                                threat,
+                                                                r_threat,
+                                                                LENGTH,
+                                                                LOCATION,
+                                                                norma,
+                                                                r_digname,
+                                                                VALUE,
+                                                                COUNT,
+                                                                allowspeed,
+                                                                primech 
+                                                                )
+                                                 VALUES ({adddig.Km}, {adddig.Kmetr}, {adddig.Meter}, {3}, '{adddig.DigName}', {adddig.Direction_num}, '{adddig.FoundDate}', '{adddig.Threat}', '{adddig.R_threat}', {adddig.Length}, '{adddig.Location}', '{adddig.Norma}', '{adddig.R_DigName}', {adddig.Value}, {adddig.Count}, '{adddig.AllowSpeed}', '{adddig.Primech}')";
+                        db.Execute(txt);
+                    }
+                    index++;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Insert_additional_param_state error: " + e.Message);
+                    return new List<Digression> { };
+                }
+            }
+            return addDigressions;
+        }
+
 
         public List<Digression> GetFullGapsByNN(long km, long trip_id)
         {
