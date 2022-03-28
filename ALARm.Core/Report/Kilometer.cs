@@ -185,6 +185,9 @@ namespace ALARm.Core
             {
                 for (int i = 0; i < Speed.Count; i++)
                 {
+                  
+
+
                     kilometer.Speed.Add(Speed[i]);
                     kilometer.DrawdownRight.Add(DrawdownRight[i]);
                     kilometer.DrawdownLeft.Add(DrawdownLeft[i]);
@@ -714,7 +717,7 @@ namespace ALARm.Core
             var downHillRight = new StringBuilder();
             var headWear45Left = new StringBuilder();
             var headWear45Right = new StringBuilder();
-
+            var mediumwavesLeft = new StringBuilder();
             foreach (var meter in CrossRailProfile.Meters.Where(meter => meter % 1 == 0).ToList())
             {
 
@@ -732,6 +735,7 @@ namespace ALARm.Core
                 downHillRight.Append((CrossRailProfile.DownhillRight[index] * DegKoef).ToString().Replace(",", ".") + "," + cmeter.ToString().Replace(",", ".") + " ");
                 headWear45Left.Append((CrossRailProfile.HeadWearLeft[index] * WearKoef).ToString().Replace(",", ".") + "," + cmeter.ToString().Replace(",", ".") + " ");
                 headWear45Right.Append((CrossRailProfile.HeadWearRight[index] * WearKoef).ToString().Replace(",", ".") + "," + cmeter.ToString().Replace(",", ".") + " ");
+                mediumwavesLeft.Append((CrossRailProfile.Mediumwavesleft[index] * WearKoef).ToString().Replace(",", ".") + "," + cmeter.ToString().Replace(",", ".") + " ");
 
             }
             SideWearLeft = sideWearLeft.ToString();
@@ -746,6 +750,7 @@ namespace ALARm.Core
             DownHillRight = downHillRight.ToString();
             HeadWear45Left = headWear45Left.ToString();
             HeadWear45Right = headWear45Right.ToString();
+            MediumwavesLeft = mediumwavesLeft.ToString();
         }
 
         public string GetdigressionsCount =>
@@ -1134,7 +1139,9 @@ namespace ALARm.Core
         public string DownHillLeft { get; set; } = "";
         public string DownHillRight { get; set; } = "";
         public string HeadWear45Left { get; set; } = "";
+   
         public string HeadWear45Right { get; set; } = "";
+        public string MediumwavesLeft { get; set; } = "";
         public int Start_Index { get; set; } = -1;
         public int Final_Index => Start_Index + GetLength();
         public string TrapezLevel { get; set; } = "";

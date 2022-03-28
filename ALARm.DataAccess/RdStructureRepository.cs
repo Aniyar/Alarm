@@ -4328,6 +4328,12 @@ namespace ALARm.DataAccess
 	                        bok_r,
 	                        npk_l,
 	                        npk_r,
+                            shortwavesleft,
+                            shortwavesright,
+                            mediumwavesleft,
+                            mediumwavesright,
+                            longwavesleft,
+                            longwavesright,
 	                        iz_45_l,
 	                        iz_45_r 
                         FROM
@@ -4335,8 +4341,8 @@ namespace ALARm.DataAccess
                         WHERE
 	                        ID > {meter} 
                         ORDER BY
-                        ID 
-	                       ").ToList();
+                        ID").ToList();
+
                 }
                 catch (Exception ex)
                 {
