@@ -43,6 +43,7 @@ namespace AlarmPP.Web.Components.Diagram
         List<Digression> Fasteners { get; set; } = new List<Digression>();
         List<Digression> PerShpals { get; set; } = new List<Digression>();
         List<Digression> DefShpals { get; set; } = new List<Digression>();
+        
         public Image RotateImage(Image img, float rotationAngle)
         {
             Bitmap bmp = new Bitmap(img.Width, img.Height);
@@ -124,12 +125,20 @@ namespace AlarmPP.Web.Components.Diagram
 
         void GetObjectsFromFrame()
         {
-            Gaps = CurrentKm.Gaps.Where(o => o.Meter == CurrentMeter).ToList();
-            Fasteners = CurrentKm.Fasteners.Where(o => o.Meter == CurrentMeter).ToList();
-            Bolts = CurrentKm.Bolts.Where(o => o.Meter == CurrentMeter).ToList();
-            DefShpals = CurrentKm.DefShpals.Where(o => o.Meter == CurrentMeter).ToList();
-            PerShpals = CurrentKm.PerShpals.Where(o => o.Meter == CurrentMeter).ToList();
-            ObjectsDialog = true;
+            try
+            {
+                Gaps = CurrentKm.Gaps.Where(o => o.Meter == CurrentMeter).ToList();
+                Fasteners = CurrentKm.Fasteners.Where(o => o.Meter == CurrentMeter).ToList();
+                Bolts = CurrentKm.Bolts.Where(o => o.Meter == CurrentMeter).ToList();
+                DefShpals = CurrentKm.DefShpals.Where(o => o.Meter == CurrentMeter).ToList();
+                PerShpals = CurrentKm.PerShpals.Where(o => o.Meter == CurrentMeter).ToList();
+                ObjectsDialog = true;
+            }
+            catch(Exception e)
+            {
+                Toaster.Add($"Отсутствуют данные по указанному километру", MatBlazor.MatToastType.Warning, "Просмотр видео проезда");
+            }
+            
         }
 
         public void NextClick()

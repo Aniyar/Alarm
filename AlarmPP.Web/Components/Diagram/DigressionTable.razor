@@ -131,7 +131,7 @@
                                 }
 
 
-                                digression.LimitSpeed = (digression.PassengerSpeedLimit == -1 ? "-" : digression.PassengerSpeedLimit.ToString()) + "/" + (digression.PassengerSpeedLimit == -1 ? "-" : digression.PassengerSpeedLimit.ToString());
+                                digression.LimitSpeed = (digression.PassengerSpeedLimit == -1 ? "-" : digression.PassengerSpeedLimit.ToString()) + "/" + (digression.FreightSpeedLimit == -1 ? "-" : digression.FreightSpeedLimit.ToString());
 
 
                                 <tr style="background:@(CurrentRow == index ? "#75d2ff" : color)" @onmousedown="@(_ => GoToMark(pos, index))">
@@ -389,8 +389,8 @@
     <MatDialogTitle>Удаление отступления</MatDialogTitle>
     <MatDialogContent>
         <br />
-        <MatTextField @bind-Value="@DigressionEditor" Label="Редактор" Style="width:90%" Outlined="true"></MatTextField>
-        <MatAutocompleteList Items="@options" TItem="string" @bind-Value="@EditReason" Label="Причина удаления" Style="width:90%" Outlined="true"></MatAutocompleteList>
+        <MatTextField @bind-Value="@AppData.Editor" Label="Редактор" Style="width:90%" Outlined="true"></MatTextField>
+        <MatAutocompleteList Items="@options" TItem="string" @bind-Value="@AppData.EditReason" Label="Причина удаления" Style="width:90%" Outlined="true"></MatAutocompleteList>
         @code
         {
             string[] options = new[]
@@ -413,8 +413,8 @@
     <MatDialogTitle>Корректировка отступления</MatDialogTitle>
     <MatDialogContent>
         <br />
-        <MatTextField @bind-Value="@DigressionEditor" Label="Редактор" Style="width:45%" Outlined="true"></MatTextField>
-        <MatAutocompleteList Items="@options" TItem="string" @bind-Value="@EditReason" Label="Причина корректировки" Style="width:45%" Outlined="true"></MatAutocompleteList>
+        <MatTextField @bind-Value="@AppData.Editor" Label="Редактор" Style="width:45%" Outlined="true"></MatTextField>
+        <MatAutocompleteList Items="@options" TItem="string" @bind-Value="@AppData.EditReason" Label="Причина корректировки" Style="width:45%" Outlined="true"></MatAutocompleteList>
         <MatTextField @bind-Value="digression.DigName" Label="Отступление" ReadOnly="true" Style="width:45%" Outlined="true"></MatTextField>
         <MatNumericUpDownField ReadOnly="true" @bind-Value="digression.Degree" Label="Степень" Style="width:45%" TextArea="true" Outlined="true" Minimum="1" Maximum="4"></MatNumericUpDownField>
         <MatNumericUpDownField ReadOnly="true" @bind-Value="digression.Value" Label="Значение" Style="width:45%" TextArea="true" Outlined="true"></MatNumericUpDownField>
@@ -436,8 +436,8 @@
     <MatDialogTitle>Удаление стыкового зазора</MatDialogTitle>
     <MatDialogContent>
         <br />
-        <MatTextField @bind-Value="@GapEditor" Label="Редактор" Style="width:90%" Outlined="true"></MatTextField>
-        <MatAutocompleteList Items="@options" TItem="string" @bind-Value="@GapEditReason" Label="Причина корректировки" Style="width:45%" Outlined="true"></MatAutocompleteList>
+        <MatTextField @bind-Value="@AppData.Editor" Label="Редактор" Style="width:90%" Outlined="true"></MatTextField>
+        <MatAutocompleteList Items="@options" TItem="string" @bind-Value="@AppData.EditReason" Label="Причина корректировки" Style="width:45%" Outlined="true"></MatAutocompleteList>
     </MatDialogContent>
     <MatDialogActions>
         <MatButton Raised="true" Style="margin-right:5px;" OnClick="_=> {UpdateGap(ALARm.Core.Report.RdAction.Delete);  }">Ок</MatButton>
@@ -449,8 +449,8 @@
     <MatDialogTitle>Корректировка стыкового зазора</MatDialogTitle>
     <MatDialogContent>
         <br />
-        <MatTextField @bind-Value="@GapEditor" Label="Редактор" Style="width:45%" Outlined="true"></MatTextField>
-        <MatAutocompleteList Items="@options" TItem="string" @bind-Value="@GapEditReason" Label="Причина корректировки" Style="width:45%" Outlined="true"></MatAutocompleteList>
+        <MatTextField @bind-Value="@AppData.Editor" Label="Редактор" Style="width:45%" Outlined="true"></MatTextField>
+        <MatAutocompleteList Items="@options" TItem="string" @bind-Value="@AppData.EditReason" Label="Причина корректировки" Style="width:45%" Outlined="true"></MatAutocompleteList>
         <MatTextField @bind-Value="digressionGap.Otst" Label="Отступление" ReadOnly="true" Style="width:45%" Outlined="true"></MatTextField>
         <MatNumericUpDownField @bind-Value="digressionGap.Zazor" Label="Зазор левый" Style="width:45%" TextArea="true" Outlined="true"></MatNumericUpDownField>
         <MatNumericUpDownField @bind-Value="digressionGap.R_zazor" Label="Зазор правый" Style="width:45%" TextArea="true" Outlined="true"></MatNumericUpDownField>
@@ -468,8 +468,8 @@
     <MatDialogTitle>Удаление Болта</MatDialogTitle>
     <MatDialogContent>
         <br />
-        <MatTextField @bind-Value="@DigressionEditor" Label="Редактор" Style="width:90%" Outlined="true"></MatTextField>
-        <MatAutocompleteList Items="@options" TItem="string" @bind-Value="@EditReason" Label="Причина корректировки" Style="width:45%" Outlined="true"></MatAutocompleteList>
+        <MatTextField @bind-Value="@AppData.Editor" Label="Редактор" Style="width:90%" Outlined="true"></MatTextField>
+        <MatAutocompleteList Items="@options" TItem="string" @bind-Value="@AppData.EditReason" Label="Причина корректировки" Style="width:45%" Outlined="true"></MatAutocompleteList>
     </MatDialogContent>
     <MatDialogActions>
         <MatButton Raised="true" Style="margin-right:5px;" OnClick="_=>  { EditDigression(ALARm.Core.Report.RdAction.Delete, 2, BoltDeleteDialog); }">Ок</MatButton>
@@ -482,8 +482,8 @@
     <MatDialogTitle>Корректировка болта</MatDialogTitle>
     <MatDialogContent>
         <br />
-        <MatTextField @bind-Value="@DigressionEditor" Label="Редактор" Style="width:45%" Outlined="true"></MatTextField>
-        <MatAutocompleteList Items="@options" TItem="string" @bind-Value="@EditReason" Label="Причина корректировки" Style="width:45%" Outlined="true"></MatAutocompleteList>
+        <MatTextField @bind-Value="@AppData.Editor" Label="Редактор" Style="width:45%" Outlined="true"></MatTextField>
+        <MatAutocompleteList Items="@options" TItem="string" @bind-Value="@AppData.EditReason" Label="Причина корректировки" Style="width:45%" Outlined="true"></MatAutocompleteList>
         <MatTextField @bind-Value="digressionO.Overlay" Label="Накладка" Style="width:45%" Outlined="true"></MatTextField>
         <MatTextField @bind-Value="digressionO.Before" Label="До стыка:" Style="width:45%" TextArea="true" Outlined="true"></MatTextField>
         <MatTextField @bind-Value="digressionO.After" Label="После стыка:" Style="width:45%" TextArea="true" Outlined="true"></MatTextField>
@@ -501,8 +501,8 @@
     <MatDialogTitle>Удаление скрепления</MatDialogTitle>
     <MatDialogContent>
         <br />
-        <MatTextField @bind-Value="@DigressionEditor" Label="Редактор" Style="width:90%" Outlined="true"></MatTextField>
-        <MatAutocompleteList Items="@options" TItem="string" @bind-Value="@EditReason" Label="Причина корректировки" Style="width:45%" Outlined="true"></MatAutocompleteList>
+        <MatTextField @bind-Value="@AppData.Editor" Label="Редактор" Style="width:90%" Outlined="true"></MatTextField>
+        <MatAutocompleteList Items="@options" TItem="string" @bind-Value="@AppData.EditReason" Label="Причина корректировки" Style="width:45%" Outlined="true"></MatAutocompleteList>
     </MatDialogContent>
     <MatDialogActions>
         <MatButton Raised="true" Style="margin-right:5px;" OnClick="_=>  {EditDigression(ALARm.Core.Report.RdAction.Delete, 3, FastenerDeleteDialog);}">Ок</MatButton>
@@ -515,8 +515,8 @@
     <MatDialogTitle>Корректировка скрепления</MatDialogTitle>
     <MatDialogContent>
         <br />
-        <MatTextField @bind-Value="@DigressionEditor" Label="Редактор" Style="width:45%" Outlined="true"></MatTextField>
-        <MatAutocompleteList Items="@options" TItem="string" @bind-Value="@EditReason" Label="Причина корректировки" Style="width:45%" Outlined="true"></MatAutocompleteList>
+        <MatTextField @bind-Value="@AppData.Editor" Label="Редактор" Style="width:45%" Outlined="true"></MatTextField>
+        <MatAutocompleteList Items="@options" TItem="string" @bind-Value="@AppData.EditReason" Label="Причина корректировки" Style="width:45%" Outlined="true"></MatAutocompleteList>
         <MatTextField @bind-Value="digressionO.Otst" Label="Отступление" Style="width:45%" Outlined="true"></MatTextField>
         <MatAutocompleteList Items="@options2" TItem="string" @bind-Value="digressionO.Threat_id" Label="Сторона" Style="width:45%" Outlined="true"></MatAutocompleteList>
         @code
@@ -541,8 +541,8 @@
     <MatDialogTitle>Удаление перпендикулярной шпалы</MatDialogTitle>
     <MatDialogContent>
         <br />
-        <MatTextField @bind-Value="@DigressionEditor" Label="Редактор" Style="width:90%" Outlined="true"></MatTextField>
-        <MatAutocompleteList Items="@options" TItem="string" @bind-Value="@EditReason" Label="Причина корректировки" Style="width:45%" Outlined="true"></MatAutocompleteList>
+        <MatTextField @bind-Value="@AppData.Editor" Label="Редактор" Style="width:90%" Outlined="true"></MatTextField>
+        <MatAutocompleteList Items="@options" TItem="string" @bind-Value="@AppData.EditReason" Label="Причина корректировки" Style="width:45%" Outlined="true"></MatAutocompleteList>
     </MatDialogContent>
     <MatDialogActions>
         <MatButton Raised="true" Style="margin-right:5px;" OnClick="_=> {EditDigression(ALARm.Core.Report.RdAction.Delete, 4, PerShpalDeleteDialog);}">Ок</MatButton>
@@ -555,8 +555,8 @@
     <MatDialogTitle>Корректировка перпендикулярной шпалы</MatDialogTitle>
     <MatDialogContent>
         <br />
-        <MatTextField @bind-Value="@DigressionEditor" Label="Редактор" Style="width:45%" Outlined="true"></MatTextField>
-        <MatAutocompleteList Items="@options" TItem="string" @bind-Value="@EditReason" Label="Причина корректировки" Style="width:45%" Outlined="true"></MatAutocompleteList>
+        <MatTextField @bind-Value="@AppData.Editor" Label="Редактор" Style="width:45%" Outlined="true"></MatTextField>
+        <MatAutocompleteList Items="@options" TItem="string" @bind-Value="@AppData.EditReason" Label="Причина корректировки" Style="width:45%" Outlined="true"></MatAutocompleteList>
         <MatTextField @bind-Value="digressionO.Angle" Label="Угол:" Style="width:45%" Outlined="true"></MatTextField>
         <MatTextField @bind-Value="digressionO.Fastener" Label="Скрепление:" Style="width:45%" TextArea="true" Outlined="true"></MatTextField>
         @*        <MatTextField @bind-Value="PerShpal.Vdop" Label="Огр.ск:" Style="width:45%" TextArea="true" Outlined="true"></MatTextField>
@@ -573,8 +573,8 @@
     <MatDialogTitle>Удаление дефектной шпалы</MatDialogTitle>
     <MatDialogContent>
         <br />
-        <MatTextField @bind-Value="@DigressionEditor" Label="Редактор" Style="width:90%" Outlined="true"></MatTextField>
-        <MatAutocompleteList Items="@options" TItem="string" @bind-Value="@EditReason" Label="Причина корректировки" Style="width:45%" Outlined="true"></MatAutocompleteList>
+        <MatTextField @bind-Value="@AppData.Editor" Label="Редактор" Style="width:90%" Outlined="true"></MatTextField>
+        <MatAutocompleteList Items="@options" TItem="string" @bind-Value="@AppData.EditReason" Label="Причина корректировки" Style="width:45%" Outlined="true"></MatAutocompleteList>
     </MatDialogContent>
     <MatDialogActions>
         <MatButton Raised="true" Style="margin-right:5px;" OnClick="_=> {EditDigression(ALARm.Core.Report.RdAction.Delete, 5, DefShpalDeleteDialog);}">Ок</MatButton>
@@ -587,8 +587,8 @@
     <MatDialogTitle>Корректировка дефектной шпалы</MatDialogTitle>
     <MatDialogContent>
         <br />
-        <MatTextField @bind-Value="@DigressionEditor" Label="Редактор" Style="width:45%" Outlined="true"></MatTextField>
-        <MatAutocompleteList Items="@options" TItem="string" @bind-Value="@EditReason" Label="Причина корректировки" Style="width:45%" Outlined="true"></MatAutocompleteList>
+        <MatTextField @bind-Value="@AppData.Editor" Label="Редактор" Style="width:45%" Outlined="true"></MatTextField>
+        <MatAutocompleteList Items="@options" TItem="string" @bind-Value="@AppData.EditReason" Label="Причина корректировки" Style="width:45%" Outlined="true"></MatAutocompleteList>
         <MatTextField @bind-Value="digressionO.Otst" Label="Отступление:" Style="width:45%" Outlined="true"></MatTextField>
         <MatTextField @bind-Value="digressionO.Fastening" Label="Скрепление:" Style="width:45%" TextArea="true" Outlined="true"></MatTextField>
         <MatTextField @bind-Value="digressionO.Meropr" Label="Мероприятие:" Style="width:45%" TextArea="true" Outlined="true"></MatTextField>
