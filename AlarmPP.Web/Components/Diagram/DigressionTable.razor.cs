@@ -144,7 +144,7 @@ namespace AlarmPP.Web.Components.Diagram
             }
             digressionGap.EditReason = AppData.EditReason;
             digressionGap.Editor = AppData.Editor;
-
+            //digressionGap.Zabeg = hidzazor.value;
             try
             {
                 var kilometer = (from km in Kilometers where km.Number == digressionGap.Km select km).First();
@@ -950,5 +950,6 @@ namespace AlarmPP.Web.Components.Diagram
             digType = type;
             DeleteModalState = true;
         }
+
     }
 }

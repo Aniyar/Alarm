@@ -500,10 +500,13 @@ function createCanvas(response) {
 			ctx.stroke()
 			clicks = 0;
 			console.log("x1 = " + x1 + "\ny1 = " + y1 + "\nx2 = " + x2 + "\ny2 = " + y2)
+			var zr = Math.round(Math.sqrt(dx * dx + dy * dy))
 			if (x1 < centerImage && x2 < centerImage) {
-				document.getElementById('zazor_l').innerHTML = Math.round(Math.sqrt(dx * dx + dy * dy));
+				document.getElementById('zazor_l').innerHTML = zr;
+				//$("#hidrzazor").val(zr)
 			} else {
-				document.getElementById('zazor_r').innerHTML = Math.round(Math.sqrt(dx * dx + dy * dy));
+				document.getElementById('zazor_r').innerHTML = zr;
+				//$("#hidrzazor").val(zr)
             }
 		}
 		lastClick = [click_x, click_y];
