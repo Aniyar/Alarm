@@ -3063,6 +3063,7 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
             {
                 try
                 {
+
                     using (var db = new NpgsqlConnection(Helper.ConnectionString()))
                     {
                         if (db.State == ConnectionState.Closed)
@@ -3098,6 +3099,9 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
             }
             return addDigressions;
         }
+
+
+
 
         public List<CrosProf> GetCrossRailProfileFromDBbyCurve(Curve curve, long trip_id)
         {

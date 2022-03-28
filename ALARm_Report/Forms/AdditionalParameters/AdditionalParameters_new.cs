@@ -336,11 +336,7 @@ namespace ALARm_Report.Forms
                             shortRoughness.LongWaveLeft.AddRange(LongWavesLeft.Select(o => (float)o).ToList());
 
                             shortRoughness.MetersLeft.AddRange(Meters);
-                            shortRoughness.MetersRight.AddRange(Meters);
-                            //shortRoughness.MetersLeft.AddRange(METERS_long_M);
-                            //shortRoughness.MetersRight.AddRange(METERS_long_M);
-
-                            //импульсы
+                            shortRoughness.MetersRight.AddRange(Meters);                            //импульсы
                             var impulses = Impuls;
                             for (int i = 0; i < impulses.Count; i++)
                             {
@@ -364,10 +360,7 @@ namespace ALARm_Report.Forms
                                     float imp_count = impulses[i].Len / 40.0f;
                                     
                                     var Digressions = new List<DigressionMark>();
-                                    if (kilometer.Number == 700 && impulses[i].Meter == 922)
-                                    {
-                                        digname = digname;
-                                    }
+                                    
                                     Digressions.Add(new DigressionMark()
                                     {
                                         Digression = digname,
@@ -411,7 +404,10 @@ namespace ALARm_Report.Forms
                             List<Digression> addDigressions = shortRoughness.GetDigressions_new(kilometer.Number);
                             if (addDigressions.Any())
                             {
-
+                            if (addDigressions.Count != null && addDigressions.Count != 0)
+                            {
+                                var Insert_additional_param_state = AdditionalParametersService.Insert_additional_param_state(addDigressions);
+                            }
                                 var Insert_additional_param_state = AdditionalParametersService.Insert_additional_param_state_aslan(addDigressions);
 
                             }
@@ -428,12 +424,6 @@ namespace ALARm_Report.Forms
 
 
                                 var Digressions = new List<DigressionMark>();
-                                if (kilometer.Number == 700 && dig.Meter == 922)
-
-                                {
-                                    dig.DigName = dig.DigName;
-                                }
-
                                 Digressions.Add(new DigressionMark()
                                 {
                                     Digression = dig.DigName,
@@ -522,8 +512,7 @@ namespace ALARm_Report.Forms
 
         private void ClearShortDataDB(long trip)
         {
-            var trip_id = trip;
-
+			var trip_id = trip;
             var cs = "Host=DESKTOP-EMAFC5J;Username=postgres;Password=alhafizu;Database=railway";
 
             var con = new NpgsqlConnection(cs);
