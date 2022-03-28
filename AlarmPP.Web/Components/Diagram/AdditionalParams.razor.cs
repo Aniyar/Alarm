@@ -43,6 +43,18 @@ namespace AlarmPP.Web.Components.Diagram
             AdditionalEditDialog = true;
         }
 
+        public async Task GoToMark(int yposition, int rowIndex)
+        {
+            CurrentRow = rowIndex;
+            AppData.SliderYPosition = yposition;
+            AppData.SliderXPosition = Math.Round(AppData.SliderYPosition / 10);
+            AppData.SliderCenterXPosition = AppData.SliderXPosition + 25;
+            object[] paramss = new object[] { AppData.SliderYPosition - 200 };
+            await JSRuntime.InvokeVoidAsync("ScrollMainSvg", paramss);
+
+
+        }
+
         void EditAdditional(RdAction action, bool dialog)
         {
             if (Kilometers != null)

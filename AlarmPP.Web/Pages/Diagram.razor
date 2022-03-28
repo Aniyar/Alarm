@@ -266,10 +266,10 @@
     </MatDialogActions>
 </MatDialog>
 
-<MatDialog @bind-IsOpen="@VideoDialog" Stacked="true" Class="image-modal">
-        <MatDialogTitle>Просмотр видео проезда</MatDialogTitle>
-        <Video Kilometers=AppData.Kilometers></Video>
-        <MatDialogActions>
-            <MatButton Raised="true" OnClick="_=> { VideoDialog = false; AppData.VideoProcessing = false; }">Закрыть</MatButton>
-        </MatDialogActions>
+<MatDialog @bind-IsOpen="@VideoDialog" Stacked="true" Class="image-modal" Style="height: 70%">
+    <MatDialogTitle>Просмотр видео проезда</MatDialogTitle>
+    <Video Kilometers=AppData.Kilometers></Video>
+    <MatDialogActions>
+        <MatButton Raised="true" OnClick="_=> { VideoDialog = false; AppData.VideoProcessing = false; }">Закрыть</MatButton>
+    </MatDialogActions>
 </MatDialog>
