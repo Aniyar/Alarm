@@ -24,6 +24,17 @@ namespace AlarmPP.Web.Components.Diagram
         public List<Kilometer> Kilometers { get; set; }
         [Parameter]
         public  List<Kilometer> BedKilometers { get; set; }
+        public int CurrentRow { get; set; } = 0;
+
+        public async Task GoToMark(int yposition, int rowIndex)
+        {
+            CurrentRow = rowIndex;
+            AppData.SliderYPosition = yposition;
+            AppData.SliderXPosition = Math.Round(AppData.SliderYPosition / 10);
+            AppData.SliderCenterXPosition = AppData.SliderXPosition + 25;
+            object[] paramss = new object[] { AppData.SliderYPosition - 200 };
+            await JSRuntime.InvokeVoidAsync("ScrollMainSvg", paramss);
+        }
     }
 
 }

@@ -888,6 +888,9 @@ namespace AlarmPP.Web.Services
         public string ViewBoxLeft { get; set; }
         public string ViewBoxRight { get; set; }
 
+        public string Editor { get; set; }
+        public string EditReason { get; set; }
+
         public double[] CurrentProfileLeft()
         {
 
