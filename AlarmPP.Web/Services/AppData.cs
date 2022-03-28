@@ -723,7 +723,7 @@ namespace AlarmPP.Web.Services
                                 Data[(int)Series.HeadWear45Left] = km.CrossRailProfile.HeadWearLeft[indexCross].ToString("0.00");
                                 Data[(int)Series.HeadWear45Right] = km.CrossRailProfile.HeadWearRight[indexCross].ToString("0.00");
 
-                                Data[(int)Series.Mediumwavesleft] = km.CrossRailProfile.Shortwavesleft[indexCross].ToString("0.00");
+                                //Data[(int)Series.Mediumwavesleft] = km.CrossRailProfile.Shortwavesleft[indexCross].ToString("0.00");
                                 //Data[(int)Series.Mediumwaves] = km.CrossRailProfile.Mediumwavesleft[indexCross].ToString("0.00");
                                 //Data[(int)Series.Longwaves] = km.CrossRailProfile.Longwavesleft[indexCross].ToString("0.00");
 
