@@ -3437,7 +3437,7 @@ Begin
       continue;
     end;
 
-    if (k3 > 1) then
+    if (k3 > 3) then
     begin
       fdBroad := fdBroad + (k3 div 4);
       if k3 mod 4 > 0 then
@@ -3447,6 +3447,10 @@ Begin
       WUsh[ns].st := 1;
       WUsh[ns].bel := fff; // max4;
       WUsh[ns].val := max4;
+
+
+
+
       WUsh[ns].L0 := L04;
       WUsh[ns].Lm := Lm4;
       WUsh[ns].v := vt;
@@ -4263,7 +4267,7 @@ begin
 
     i := j;
     // ---------------------------------------------
-    if (k4 > delta_length) then
+    if (k4 > 20) then
     begin
       for fi := i - k4 to i do
       begin
@@ -4277,14 +4281,13 @@ begin
 
         count := 1;
 
-        if (ln4 > 15) then
+        if (ln4 > 19) then
         begin
           if ((ln4 - 15) mod 10) > 0 then
             bolshek10 := 1;
           count := ((ln4 - 15) div 10) + bolshek10 + 1;
-        end;
 
-        pot_s2 := pot_s2 + count;
+               pot_s2 := pot_s2 + count;
 
         // bolshek10:= 0;
         // if ln2 mod 10 > 0 then bolshek10:= 1;
@@ -4307,6 +4310,11 @@ begin
         WUsh[ns].Vrg := Vrg;
         WUsh[ns].flg := false;
         ns := ns + 1;
+
+
+        end;
+
+
 
         x4a := 0;
         x4b := 0;

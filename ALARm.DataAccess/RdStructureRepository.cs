@@ -4336,7 +4336,7 @@ namespace ALARm.DataAccess
 	                        ID > {meter} 
                         ORDER BY
                         ID 
-	                        LIMIT {count}").ToList();
+	                       ").ToList();
                 }
                 catch (Exception ex)
                 {
