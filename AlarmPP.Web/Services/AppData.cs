@@ -685,37 +685,47 @@ namespace AlarmPP.Web.Services
                     }
                     if (km.CrossRailProfile != null)
                     {
-                        int indexCross = km.CrossRailProfile.Meters.IndexOf(Trip.Travel_Direction == Direction.Reverse ? (float)currentMetre : km.Length - (float)currentMetre);
-                        if (indexCross > 0)
+                        int indexCross = km.CrossRailProfile.Meters.IndexOf(Trip.Travel_Direction == Direction.Reverse ? (float)currentMetre :  Math.Abs(km.Length - (float)currentMetre));
+                        if (indexCross < 0) indexCross = 0;
+                        try
                         {
-                            Data[(int)Series.SideWearLeft] = km.CrossRailProfile.SideWearLeft[indexCross].ToString("0.00");
-                            Data[(int)Series.SideWearRight] = km.CrossRailProfile.SideWearRight[indexCross].ToString("0.00");
-                            Data[(int)Series.VertWearLeft] = km.CrossRailProfile.VertIznosL[indexCross].ToString("0.00");
-                            Data[(int)Series.VertWearRight] = km.CrossRailProfile.VertIznosR[indexCross].ToString("0.00");
-                            Data[(int)Series.GivenWearLeft] = km.CrossRailProfile.ReducedWearLeft[indexCross].ToString("0.00");
-                            Data[(int)Series.GivenWearRight] = km.CrossRailProfile.ReducedWearRight[indexCross].ToString("0.00");
-                            Data[(int)Series.TreadTiltLeft] = double.IsPositiveInfinity(1 / km.CrossRailProfile.TreadTiltLeft[indexCross]) ? "" : "1/" + (1 / km.CrossRailProfile.TreadTiltLeft[indexCross]).ToString("0");
-                            Data[(int)Series.TreadTiltRight] = double.IsPositiveInfinity(1 / km.CrossRailProfile.TreadTiltRight[indexCross]) ? "" : "1/" + (1 / km.CrossRailProfile.TreadTiltRight[indexCross]).ToString("0");
-                            Data[(int)Series.DownHillLeft] = double.IsPositiveInfinity(1 / km.CrossRailProfile.DownhillLeft[indexCross]) ? "" : "1/" + (1 / km.CrossRailProfile.DownhillLeft[indexCross]).ToString("0");
-                            Data[(int)Series.DownHillRight] = double.IsPositiveInfinity(1 / km.CrossRailProfile.DownhillRight[indexCross]) ? "" : "1/" + (1 / km.CrossRailProfile.DownhillRight[indexCross]).ToString("0");
-                            Data[(int)Series.HeadWear45Left] = km.CrossRailProfile.HeadWearLeft[indexCross].ToString("0.00");
-                            Data[(int)Series.HeadWear45Right] = km.CrossRailProfile.HeadWearRight[indexCross].ToString("0.00");
+                            if (indexCross > -2)
+                            {
 
-                            ViewBoxLeft = "-100 -30 200 300"; // Уакытша
-                            ViewBoxRight = "-100 -30 200 300"; // Уакытша
-                            NominalTranslateLeft = "-10px,-10px"; // Уакытша
-                            NominalTranslateRight = "-10px,-10px"; // Уакытша
-                            NominalRotateLeft = "0deg"; // Уакытша
-                            NominalRotateRight = "0deg"; // Уакытша
-                            CalibrConstLeft = km.CrossRailProfile.DownhillLeft[indexCross].RadianToAngle().ToString("0.00").Replace(",", ".");
-                            CalibrConstRight = km.CrossRailProfile.DownhillRight[indexCross].RadianToAngle().ToString("0.00").Replace(",", ".");
-                            DownHillLeftValue = "1/" + (int)(1 / km.CrossRailProfile.DownhillLeft[indexCross]);
-                            TiltLeftValue = "1/" + (int)(1 / km.CrossRailProfile.TreadTiltLeft[indexCross]);
-                            DownHillRightValue = "1/" + (int)(1 / km.CrossRailProfile.DownhillLeft[indexCross]);
-                            TiltRightValue = "1/" + (int)(1 / km.CrossRailProfile.TreadTiltLeft[indexCross]);
+                                Data[(int)Series.SideWearLeft] = km.CrossRailProfile.SideWearLeft[indexCross].ToString("0.00");
+                                Data[(int)Series.SideWearRight] = km.CrossRailProfile.SideWearRight[indexCross].ToString("0.00");
+                                Data[(int)Series.VertWearLeft] = km.CrossRailProfile.VertIznosL[indexCross].ToString("0.00");
+                                Data[(int)Series.VertWearRight] = km.CrossRailProfile.VertIznosR[indexCross].ToString("0.00");
+                                Data[(int)Series.GivenWearLeft] = km.CrossRailProfile.ReducedWearLeft[indexCross].ToString("0.00");
+                                Data[(int)Series.GivenWearRight] = km.CrossRailProfile.ReducedWearRight[indexCross].ToString("0.00");
+                                Data[(int)Series.TreadTiltLeft] = double.IsPositiveInfinity(1 / km.CrossRailProfile.TreadTiltLeft[indexCross]) ? "" : "1/" + (1 / km.CrossRailProfile.TreadTiltLeft[indexCross]).ToString("0");
+                                Data[(int)Series.TreadTiltRight] = double.IsPositiveInfinity(1 / km.CrossRailProfile.TreadTiltRight[indexCross]) ? "" : "1/" + (1 / km.CrossRailProfile.TreadTiltRight[indexCross]).ToString("0");
+                                Data[(int)Series.DownHillLeft] = double.IsPositiveInfinity(1 / km.CrossRailProfile.DownhillLeft[indexCross]) ? "" : "1/" + (1 / km.CrossRailProfile.DownhillLeft[indexCross]).ToString("0");
+                                Data[(int)Series.DownHillRight] = double.IsPositiveInfinity(1 / km.CrossRailProfile.DownhillRight[indexCross]) ? "" : "1/" + (1 / km.CrossRailProfile.DownhillRight[indexCross]).ToString("0");
+                                Data[(int)Series.HeadWear45Left] = km.CrossRailProfile.HeadWearLeft[indexCross].ToString("0.00");
+                                Data[(int)Series.HeadWear45Right] = km.CrossRailProfile.HeadWearRight[indexCross].ToString("0.00");
 
-                            NominalRailScheme = onlineModeData.GetNominalRailScheme(Rails.r50);
+                                ViewBoxLeft = "-100 -30 200 300"; // Уакытша
+                                ViewBoxRight = "-100 -30 200 300"; // Уакытша
+                                NominalTranslateLeft = "-10px,-10px"; // Уакытша
+                                NominalTranslateRight = "-10px,-10px"; // Уакытша
+                                NominalRotateLeft = "0deg"; // Уакытша
+                                NominalRotateRight = "0deg"; // Уакытша
+                                CalibrConstLeft = km.CrossRailProfile.DownhillLeft[indexCross].RadianToAngle().ToString("0.00").Replace(",", ".");
+                                CalibrConstRight = km.CrossRailProfile.DownhillRight[indexCross].RadianToAngle().ToString("0.00").Replace(",", ".");
+                                DownHillLeftValue = "1/" + (int)(1 / km.CrossRailProfile.DownhillLeft[indexCross]);
+                                TiltLeftValue = "1/" + (int)(1 / km.CrossRailProfile.TreadTiltLeft[indexCross]);
+                                DownHillRightValue = "1/" + (int)(1 / km.CrossRailProfile.DownhillLeft[indexCross]);
+                                TiltRightValue = "1/" + (int)(1 / km.CrossRailProfile.TreadTiltLeft[indexCross]);
+
+                                NominalRailScheme = onlineModeData.GetNominalRailScheme(Rails.r50);
+                            }
                         }
+                        catch(Exception e)
+                        {
+                            Console.WriteLine("ads" + e);
+                        }
+                     
                     }
                     //if (km.Gaps != null)
                     //{
