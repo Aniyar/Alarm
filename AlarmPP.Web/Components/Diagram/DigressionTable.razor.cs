@@ -145,6 +145,7 @@ namespace AlarmPP.Web.Components.Diagram
             digressionGap.EditReason = AppData.EditReason;
             digressionGap.Editor = AppData.Editor;
 
+
             try
             {
                 var kilometer = (from km in Kilometers where km.Number == digressionGap.Km select km).First();
@@ -164,6 +165,7 @@ namespace AlarmPP.Web.Components.Diagram
             }
             catch (Exception e)
             {
+                Toaster.Add($"Редактирование не завершено", MatBlazor.MatToastType.Warning, "Редактирование отступлений");
                 Console.WriteLine("Не уадлость завершить редактирование из за ошибки: " + e.Message);
             }
         }
@@ -882,16 +884,21 @@ namespace AlarmPP.Web.Components.Diagram
                 JSRuntime.InvokeVoidAsync("ZoomOut");
         }
 
-        public void ModifyGapClick(Gap gap)
+        public async void ModifyGapClick(Gap gap)
         {
-            StateHasChanged();
             digressionGap = gap;
+            var v = await JSRuntime.InvokeAsync<string>("getLZazor");
+            digressionGap.Zazor = Int32.Parse(v);
+            v = await JSRuntime.InvokeAsync<string>("getRZazor");
+            digressionGap.R_zazor = Int32.Parse(v);
+            v = await JSRuntime.InvokeAsync<string>("getZabeg");
+            digressionGap.Zabeg = Int32.Parse(v);
+
             GapEditDialog = true;
         }
 
         public void DeleteGapClick(Gap gap)
         {
-            StateHasChanged();
             digressionGap = gap;
             GapDeleteDialog = true;
         }

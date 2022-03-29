@@ -43,7 +43,6 @@ namespace AlarmPP.Web.Pages
             this.printMenu.OpenAsync();
         }
 
-        bool VideoDialog { get; set; } = false;
         bool FinishProcessingDialog { get; set ;} = false;
         public MatMenu digFilterMenu { get; set; }
         public ForwardRef digFilterMenuRef { get; set; } = new ForwardRef();
@@ -80,6 +79,7 @@ namespace AlarmPP.Web.Pages
             AppData.ShowDangerousDigressions = RdStructureRepository.GetButtonState(ShowButtons.DangerousDigression.ToString());
             AppData.ShowJoints = RdStructureRepository.GetButtonState(ShowButtons.Joints.ToString());
             AppData.ShowRailProfile = RdStructureRepository.GetButtonState(ShowButtons.RailProfile.ToString());
+            AppData.ShowVideo = RdStructureRepository.GetButtonState(ShowButtons.ShowVideo.ToString());
             AppData.ShowGaps = RdStructureRepository.GetButtonState(ShowButtons.Gaps.ToString());
             AppData.ShowBolts = RdStructureRepository.GetButtonState(ShowButtons.Bolts.ToString());
             AppData.ShowFasteners = RdStructureRepository.GetButtonState(ShowButtons.Fasteners.ToString());
@@ -343,6 +343,10 @@ namespace AlarmPP.Web.Pages
                 case ShowButtons.RailProfile:
                     AppData.ShowRailProfile = !AppData.ShowRailProfile;
                     RdStructureRepository.SetButtonStatus(ShowButtons.RailProfile.ToString(), AppData.ShowRailProfile);
+                    break;
+                case ShowButtons.ShowVideo:
+                    AppData.ShowVideo = !AppData.ShowVideo;
+                    RdStructureRepository.SetButtonStatus(ShowButtons.ShowVideo.ToString(), AppData.ShowVideo);
                     break;
                 case ShowButtons.Gaps:
                     AppData.ShowGaps = !AppData.ShowGaps;

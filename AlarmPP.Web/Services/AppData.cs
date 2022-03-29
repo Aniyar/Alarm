@@ -65,6 +65,7 @@ namespace AlarmPP.Web.Services
         public double SliderYPosition { get; set; } = 0;
         public Trips Trip { get; set; } = new Trips();
         public bool IsDialogOpen { get; set; } = true;
+        public bool VideoDialog { get; set; } = false;
         private string _color;
         public int TitleRowHeigth = 48;
         public int PasportPosition { get; set; } = 0;
@@ -95,6 +96,7 @@ namespace AlarmPP.Web.Services
         /// показать поперечный профиль рельса
         /// </summary>
         public bool ShowRailProfile { get; set; }
+        public bool ShowVideo { get; set; } = false;
         /// <summary>
         /// начальная позиция столбца стыков
         /// </summary>
@@ -670,37 +672,37 @@ namespace AlarmPP.Web.Services
                         Data[(int)Series.Section] += km.PdbSection[0].ToString();
                     int currentMetre = Trip.Travel_Direction == Direction.Direct ? ((int)yPosition - (length - km.GetLength()) + km.Start_m) : km.Final_m - ((int)yPosition - (length - km.GetLength()));
 
-                    for (int index = 0; index < km.Speed.Count; index++)
-                    {
-                        int metre = Trip.Travel_Direction != Direction.Direct ? km.Length - index : index;
-                        if (metre == currentMetre)
-                        {
-                            Data[(int)Series.LevelZero] = km.LevelAvg[index].ToString("0.00");
-                            // Data[(int)Series.LevelPasport] = km.flvl0[index].ToString("0.00");
-                            Data[(int)Series.LevelSignal] = km.Level[index].ToString("0.00");
+                    //for (int index = 0; index < km.Speed.Count; index++)
+                    //{
+                    //    int metre = Trip.Travel_Direction != Direction.Direct ? km.Length - index : index;
+                    //    if (metre == currentMetre)
+                    //    {
+                    //        Data[(int)Series.LevelZero] = km.LevelAvg[index].ToString("0.00");
+                    //        // Data[(int)Series.LevelPasport] = km.flvl0[index].ToString("0.00");
+                    //        Data[(int)Series.LevelSignal] = km.Level[index].ToString("0.00");
 
-                            Data[(int)Series.StrightLeftZero] = km.StrightAvg[index].ToString("0.00");
-                            //Data[(int)Series.StrightLeftPasport] = km.fZeroStright[index].ToString("0.00");
-                            Data[(int)Series.StrightLeftSignal] = km.StrightLeft[index].ToString("0.00");
+                    //        Data[(int)Series.StrightLeftZero] = km.StrightAvg[index].ToString("0.00");
+                    //        //Data[(int)Series.StrightLeftPasport] = km.fZeroStright[index].ToString("0.00");
+                    //        Data[(int)Series.StrightLeftSignal] = km.StrightLeft[index].ToString("0.00");
 
-                            Data[(int)Series.StrightRightZero] = km.StrightAvg[index].ToString("0.00");
-                            //Data[(int)Series.StrightRightPasport] = km.fZeroStright[index].ToString("0.00");
-                            Data[(int)Series.StrightRightSignal] = km.StrightLeft[index].ToString("0.00");
+                    //        Data[(int)Series.StrightRightZero] = km.StrightAvg[index].ToString("0.00");
+                    //        //Data[(int)Series.StrightRightPasport] = km.fZeroStright[index].ToString("0.00");
+                    //        Data[(int)Series.StrightRightSignal] = km.StrightLeft[index].ToString("0.00");
 
-                            //Data[(int)Series.GaugePasport] = km.fsh0[index].ToString("0.00");
-                            Data[(int)Series.GaugeSignal] = km.Gauge[index].ToString("0.00");
+                    //        //Data[(int)Series.GaugePasport] = km.fsh0[index].ToString("0.00");
+                    //        Data[(int)Series.GaugeSignal] = km.Gauge[index].ToString("0.00");
 
-                            Data[(int)Series.DrawdownLeft] = km.DrawdownLeft[index].ToString("0.00");
-                            Data[(int)Series.DrwadownRight] = km.DrawdownRight[index].ToString("0.00");
-                            Data[(int)Series.Speed] = km.Speed[index].ToString();
+                    //        Data[(int)Series.DrawdownLeft] = km.DrawdownLeft[index].ToString("0.00");
+                    //        Data[(int)Series.DrwadownRight] = km.DrawdownRight[index].ToString("0.00");
+                    //        Data[(int)Series.Speed] = km.Speed[index].ToString();
 
-                            Data[(int)Series.Mediumwavesleft] = km.DrawdownLeft[index].ToString("0.00");
-                            //Data[(int)Series.Mediumwaves] = km.DrawdownLeft[index].ToString("0.00");
-                            //Data[(int)Series.Longwaves] = km.DrawdownLeft[index].ToString("0.00");
+                    //        Data[(int)Series.Mediumwavesleft] = km.DrawdownLeft[index].ToString("0.00");
+                    //        //Data[(int)Series.Mediumwaves] = km.DrawdownLeft[index].ToString("0.00");
+                    //        //Data[(int)Series.Longwaves] = km.DrawdownLeft[index].ToString("0.00");
 
-                            break;
-                        }
-                    }
+                    //        break;
+                    //    }
+                    //}
                     if (km.CrossRailProfile != null)
                     {
 
@@ -1050,7 +1052,7 @@ namespace AlarmPP.Web.Services
 
         PU, NPK, ShortWaves, LongWaves, MediumWaves, IznosBok, IznosVert, IznosPriv, Correction, 
 
-        ByKilometer
+        ByKilometer, ShowVideo
 
     }
  
