@@ -13,12 +13,8 @@ function ScrollMainSvg(y) {
 }
 function ScrollMainSvg2(y) {
     document.getElementById("dgmainscroll").scroll(document.getElementById("dgmainscroll").scrollLeft, y - document.getElementById("dgmainscroll").clientHeight+25);
-}
-
-function GetZazors() {
-	document.getElementById('zazor_l').textContents;
-	document.getElementById('zazor_r').textContents;
-
+    
+    
 }
 
 
@@ -642,17 +638,17 @@ function trackTransforms(ctx) {
 }
 
 function getLZazor() {
-	console.log(document.getElementById("zazor_l").textContent)
-	return document.getElementById("zazor_l").textContent;
+	console.log(document.getElementById("zazor_l").innerHTML)
+	return document.getElementById("zazor_l").innerHTML;
 }
 
 function getRZazor() {
-	console.log(document.getElementById("zazor_r").textContent)
-	return document.getElementById("zazor_r").textContent;
+	console.log(document.getElementById("zazor_r").innerHTML)
+	return document.getElementById("zazor_r").innerHTML;
 }
 
 function getZabeg() {
-	return document.getElementById("zabeg").textContent;
+	return document.getElementById("zabeg").innerHTML;
 }
 var img, canvas, ctx;
 var xcan, ycan, xcan0, ycan0;

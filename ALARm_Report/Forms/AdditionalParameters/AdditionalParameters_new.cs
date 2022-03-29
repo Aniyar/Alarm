@@ -175,15 +175,15 @@ namespace ALARm_Report.Forms
                             var Curves = new List<NatureCurves> { };
                             var StrightAvgTrapezoid = kilometer.StrightAvg.GetTrapezoid(new List<double> { }, new List<double> { }, 4, ref Curves);
                             var LevelAvgTrapezoid = kilometer.LevelAvg.GetTrapezoid(new List<double> { }, new List<double> { }, 10, ref Curves);
-
+                            
                             LevelAvgTrapezoid.Add(LevelAvgTrapezoid[LevelAvgTrapezoid.Count - 1]);
                             StrightAvgTrapezoid.Add(StrightAvgTrapezoid[StrightAvgTrapezoid.Count - 1]);
 
                             //zero line data
                             kilometer.GetZeroLines(outData, trip, MainTrackStructureService.GetRepository());
-                            kilometer.LoadDigresions(RdStructureRepository, MainTrackStructureRepository, trip, AdditionalParam: true);
+                            kilometer.LoadDigresions(RdStructureRepository, MainTrackStructureRepository, trip, AdditionalParam:true);
 
-                            var sector_station = MainTrackStructureService.GetSector(track_id, kilometer.Number, trip.Trip_date);
+                             var sector_station = MainTrackStructureService.GetSector(track_id, kilometer.Number, trip.Trip_date);
                             var fragment = MainTrackStructureService.GetMtoObjectsByCoord(trip.Trip_date, kilometer.Number, MainTrackStructureConst.Fragments, kilometer.Direction_name, $"{trackName}") as Fragment;
                             var pdbSection = MainTrackStructureService.GetMtoObjectsByCoord(trip.Trip_date, kilometer.Number, MainTrackStructureConst.MtoPdbSection, kilometer.Direction_name, $"{trackName}") as List<PdbSection>;
 
@@ -269,7 +269,7 @@ namespace ALARm_Report.Forms
                             //for (int i = 0; i < kilometer.meter.Count - 1; i++)
                             //{
                             //    int metre = kilometer.meter[i];
-                            GetTestData(kilometer.Number);
+                                GetTestData(kilometer.Number);
                             //}
 
                             LongWavesLeft.Reverse();
@@ -286,7 +286,7 @@ namespace ALARm_Report.Forms
 
                                     if (LongWavesLeft.Count > i)
                                     {
-                                        Longwavesleft += MMToPixelChartString(longWaveLeftPosition + koefLong * LongWavesLeft[i]).Replace(",", ".") + "," + metre + " ";
+                                        Longwavesleft += MMToPixelChartString(longWaveLeftPosition+ koefLong * LongWavesLeft[i]).Replace(",", ".") + "," + metre + " ";
                                         Longwavesright += MMToPixelChartString(LongWaveRightPosition + koefLong * LongWavesRight[i]).Replace(",", ".") + "," + metre + " ";
 
                                         Mediumwavesleft += MMToPixelChartString(MiddleWaveLeftPosition + koefMedium * MediumWavesLeft[i]).Replace(",", ".") + "," + metre + " ";
@@ -324,10 +324,10 @@ namespace ALARm_Report.Forms
 
                             char separator = CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator[0];
 
-
+                            
                             var shortRoughness = new ShortRoughness { };
 
-                            shortRoughness.ShortWaveRight.AddRange(ShortWavesRight.Select(o => (float)o).ToList());
+                            shortRoughness.ShortWaveRight.AddRange(ShortWavesRight.Select(o=> (float)o).ToList());
                             shortRoughness.MediumWaveRight.AddRange(MediumWavesRight.Select(o => (float)o).ToList());
                             shortRoughness.LongWaveRight.AddRange(LongWavesRight.Select(o => (float)o).ToList());
 
@@ -358,9 +358,9 @@ namespace ALARm_Report.Forms
                                 {
                                     float count = impulses[i].Len / 100.0f;
                                     float imp_count = impulses[i].Len / 40.0f;
-
+                                    
                                     var Digressions = new List<DigressionMark>();
-
+                                    
                                     Digressions.Add(new DigressionMark()
                                     {
                                         Digression = digname,
@@ -368,7 +368,7 @@ namespace ALARm_Report.Forms
                                         Meter = impulses[i].Meter,
                                         finish_meter = impulses[i].Meter + (int)count,
                                         Dlina = imp_count,
-                                        Km = kilometer.Number,
+                                        Km =kilometer.Number,
                                         Value = float.Parse(impulses[i].Intensity_ra.ToString("0.00")),
                                         Degree = 0,
                                         Count = (int)count,
@@ -382,10 +382,10 @@ namespace ALARm_Report.Forms
 
                                     if (impulses.Any())
                                     {
-
-                                        var Insert_additional_param_state = AdditionalParametersService.Insert_additional_param_state_longwawes(impulses);
-
-                                    }
+                                      
+                                            var Insert_additional_param_state = AdditionalParametersService.Insert_additional_param_state_longwawes(impulses);
+                                        
+                                    }    
                                     var picket = kilometer.Pickets.GetPicket(impulses[i].Meter);
                                     if (picket != null)
                                     {
@@ -394,8 +394,8 @@ namespace ALARm_Report.Forms
                                 }
 
                                 impuls.Add(new XElement("imp",
-                                    new XAttribute("x2", MMToPixelChartString(position - impulses[i].Length * 0.5)),
-                                    new XAttribute("x4", MMToPixelChartString(position + 1.5f + impulses[i].Intensity_ra)),
+                                    new XAttribute("x2", MMToPixelChartString(position - impulses[i].Length*0.5)),
+                                    new XAttribute("x4", MMToPixelChartString(position + 1.5f + impulses[i].Intensity_ra )),
                                     new XAttribute("y", -impulses[i].Meter)
                                     ));
                                 addParam.Add(impuls);
@@ -404,361 +404,363 @@ namespace ALARm_Report.Forms
                             List<Digression> addDigressions = shortRoughness.GetDigressions_new(kilometer.Number);
                             if (addDigressions.Any())
                             {
-                                if (addDigressions.Count != null && addDigressions.Count != 0)
+                            if (addDigressions.Count != null && addDigressions.Count != 0)
+                            {
+                                var Insert_additional_param_state = AdditionalParametersService.Insert_additional_param_state(addDigressions);
+                            }
+                                var Insert_additional_param_state = AdditionalParametersService.Insert_additional_param_state_aslan(addDigressions);
+
+                            }
+                            foreach (var dig in addDigressions)
+                            {
+                                float count = dig.Length / 100.0f;
+
+                                //if (count < 4) continue;
+                                //if (dig.DigName != DigressionName.LongWaveLeft || dig.DigName != DigressionName.LongWaveRight ||
+                                //    dig.DigName != DigressionName.MiddleWaveLeft || dig.DigName != DigressionName.MiddleWaveRight ||
+                                //    dig.DigName != DigressionName.ShortWaveLeft || dig.DigName != DigressionName.ShortWaveRight
+                                //    ) continue;
+                              
+
+
+                                var Digressions = new List<DigressionMark>();
+                                Digressions.Add(new DigressionMark()
                                 {
-                                    var Insert_additional_param_state = AdditionalParametersService.Insert_additional_param_state_aslan(addDigressions);
-                                }
-                                foreach (var dig in addDigressions)
+                                    Digression = dig.DigName,
+                                    NotMoveAlert = false,
+                                    Meter = dig.Meter,
+                                    finish_meter = dig.Meter + (int)count/5,
+                                    Dlina = count/5,
+                                    Value = float.Parse(dig.Value.ToString("0.00")),
+                                    Degree = 0,
+                                    Count = (int)count/5,
+                                    DigName = dig.GetName(),
+                                    PassengerSpeedLimit = -1,
+                                    FreightSpeedLimit = -1,
+                                    Comment = "",
+                                    Diagram_type = "KN-1"
+                                });
+
+                                var picket = kilometer.Pickets.GetPicket(dig.Meter);
+                                if (picket != null)
                                 {
-                                    float count = dig.Length / 100.0f;
+                                    picket.Digression.Add(Digressions.First());
 
-                                    //if (count < 4) continue;
-                                    //if (dig.DigName != DigressionName.LongWaveLeft || dig.DigName != DigressionName.LongWaveRight ||
-                                    //    dig.DigName != DigressionName.MiddleWaveLeft || dig.DigName != DigressionName.MiddleWaveRight ||
-                                    //    dig.DigName != DigressionName.ShortWaveLeft || dig.DigName != DigressionName.ShortWaveRight
-                                    //    ) continue;
-
-
-
-                                    var Digressions = new List<DigressionMark>();
-                                    Digressions.Add(new DigressionMark()
-                                    {
-                                        Digression = dig.DigName,
-                                        NotMoveAlert = false,
-                                        Meter = dig.Meter,
-                                        finish_meter = dig.Meter + (int)count / 5,
-                                        Dlina = count / 5,
-                                        Value = float.Parse(dig.Value.ToString("0.00")),
-                                        Degree = 0,
-                                        Count = (int)count / 5,
-                                        DigName = dig.GetName(),
-                                        PassengerSpeedLimit = -1,
-                                        FreightSpeedLimit = -1,
-                                        Comment = "",
-                                        Diagram_type = "KN-1"
-                                    });
-
-                                    var picket = kilometer.Pickets.GetPicket(dig.Meter);
-                                    if (picket != null)
-                                    {
-                                        picket.Digression.Add(Digressions.First());
-
-                                    }
-
-                                    picket.Digression = picket.Digression.OrderBy(o => o.Meter).ToList();
                                 }
 
-
-
-                                var digElemenets = new XElement("digressions");
-                                List<int> usedTops = new List<int>();
-                                List<int> speedmetres = new List<int>();
-
-                                var gmeter = kilometer.Start_m.RoundTo10() + 10;
-
-                                foreach (var picket in kilometer.Pickets)
-                                {
-
-                                    picket.WriteNotesToReport(
-                                        kilometer,
-                                        speedmetres,
-                                        addParam,
-                                        digElemenets,
-                                        NPKRightPosition,
-                                        NPKLeftPosition - 2,
-                                        PURightPosition + 0.72f,
-                                        PULeftPosition - 2.5f,
-                                        GaugePosition,
-                                        LevelPosition,
-                                        this,
-                                        ref fourStepOgrCoun,
-                                        ref otherfourStepOgrCoun);
-                                }
-                                /// addParam.Add( new XAttribute("speedlimit", kilometer.GetdigressionsCount) );
-
-                                addParam.Add(digElemenets);
-                                report.Add(addParam);
-
-                                ClearShortDataDB(trip.Trip_id);
+                                picket.Digression = picket.Digression.OrderBy(o => o.Meter).ToList();
                             }
 
+                          
+
+                            var digElemenets = new XElement("digressions");
+                            List<int> usedTops = new List<int>();
+                            List<int> speedmetres = new List<int>();
+
+                            var gmeter = kilometer.Start_m.RoundTo10() + 10;
+
+                            foreach (var picket in kilometer.Pickets)
+                            {
+
+                                picket.WriteNotesToReport(
+                                    kilometer,
+                                    speedmetres,
+                                    addParam,
+                                    digElemenets,
+                                    NPKRightPosition,
+                                    NPKLeftPosition - 2,
+                                    PURightPosition + 0.72f,
+                                    PULeftPosition - 2.5f,
+                                    GaugePosition,
+                                    LevelPosition,
+                                    this,
+                                    ref fourStepOgrCoun,
+                                    ref otherfourStepOgrCoun);
+                            }
+                           /// addParam.Add( new XAttribute("speedlimit", kilometer.GetdigressionsCount) );
+
+                            addParam.Add(digElemenets);
+                            report.Add(addParam);
+
+                            ClearShortDataDB(trip.Trip_id);
                         }
+                    
                     }
-                    xdReport.Add(report);
+                }
+                xdReport.Add(report);
 
-                    XslCompiledTransform transform = new XslCompiledTransform();
-                    transform.Load(XmlReader.Create(new StringReader(template.Xsl)));
-                    transform.Transform(xdReport.CreateReader(), writer);
+                XslCompiledTransform transform = new XslCompiledTransform();
+                transform.Load(XmlReader.Create(new StringReader(template.Xsl)));
+                transform.Transform(xdReport.CreateReader(), writer);
+
+            }
+            try
+            {
+                htReport.Save(Path.GetTempPath() + "/report.html");
+
+            }
+            catch
+            {
+                MessageBox.Show("Ошибка сохранения файлы");
+            }
+            finally
+            {
+                System.Diagnostics.Process.Start(Path.GetTempPath() + "/report.html");
+            }
+        }
+
+
+        private void ClearShortDataDB(long trip)
+        {
+			var trip_id = trip;
+            var cs = "Host=DESKTOP-EMAFC5J;Username=postgres;Password=alhafizu;Database=railway";
+
+            var con = new NpgsqlConnection(cs);
+            con.Open();
+
+            var cmd = new NpgsqlCommand();
+            cmd.Connection = con;
+            con.Close();
+            LongWavesLeft.Clear(); MediumWavesLeft.Clear(); ShortWavesLeft.Clear(); LongWavesRight.Clear();
+            MediumWavesRight.Clear();
+            ShortWavesRight.Clear();
+
+            MediumWavesLeft_m.Clear();
+            ShortWavesLeft_m.Clear();
+            MediumWavesRight_m.Clear();
+            ShortWavesRight_m.Clear();
+            LongWavesRight_m.Clear();
+            LongWavesLeft_m.Clear();
+            METERS_long_M.Clear();
+
+            Meters.Clear();
+        }
+
+
+
+        private void GetTestData(int number )
+        {
+            var connection = new Npgsql.NpgsqlConnection("Host=DESKTOP-EMAFC5J;Username=postgres;Password=alhafizu;Database=railway");
+            var ShortData = connection.Query<DataFlow>($@"SELECT * FROM testdata_242 where km = {number}  limit 5000").ToList();
+
+            var shortl = ShortData.Select(o => o.Diff_l / 8.0 < 1 / 8.0 ? 0 : o.Diff_l / 10.0).ToList();
+            var shortr = ShortData.Select(o => o.Diff_r / 8.0 < 1 / 8.0 ? 0 : o.Diff_r / 10.0).ToList();
+
+            var short_meter = ShortData.Select(o => o.Meter).ToList();
+            Meters.AddRange(ShortData.Select(o => o.Meter).ToList());
+
+
+            var val = new List<double> { };
+            var val_ind = new List<int> { };
+            var bolshe0 = new List<DATA0> { };
+            var inn = false;
+
+            //left
+            for (int i = 0; i < shortl.Count - 1; i++)
+            {
+                var temp = shortl[i];
+                var next_temp = shortl[i + 1];
+
+                if (!inn && 0 < next_temp)
+                {
+                    val.Add(temp);
+                    val_ind.Add(i);
+
+                    val.Add(next_temp);
+                    val_ind.Add(i + 1);
+
+                    inn = true;
+                }
+                else if (inn && 0 < next_temp)
+                {
+                    val.Add(next_temp);
+                    val_ind.Add(i + 1);
 
                 }
-                try
+                else if (inn && 0 == next_temp)
                 {
-                    htReport.Save(Path.GetTempPath() + "/report.html");
+                    if (val.Any())
+                    {
+                        val.Add(next_temp);
+                        val_ind.Add(i + 1);
 
-                }
-                catch
-                {
-                    MessageBox.Show("Ошибка сохранения файлы");
-                }
-                finally
-                {
-                    System.Diagnostics.Process.Start(Path.GetTempPath() + "/report.html");
+                        var d = new DATA0
+                        {
+                            Count = val.Count,
+                            H = val.Max()*0.8,
+                            H_ind = val_ind[val.IndexOf(val.Max())],
+                        };
+
+                        bolshe0.Add(d);
+
+                        inn = false;
+                        val.Clear();
+                        val_ind.Clear();
+                    }
                 }
             }
 
 
-            void ClearShortDataDB(long trip)
+            var val_r = new List<double> { };
+            var val_ind_r = new List<int> { };
+            var bolshe0_r = new List<DATA0> { };
+            var inn_r = false;
+
+            //right
+            for (int i = 0; i < shortr.Count - 1; i++)
             {
-                var trip_id = trip;
-                var cs = "Host=DESKTOP-EMAFC5J;Username=postgres;Password=alhafizu;Database=railway";
+                var temp = shortr[i];
+                var next_temp = shortr[i + 1];
 
-                var con = new NpgsqlConnection(cs);
-                con.Open();
+                if (!inn_r && 0 < next_temp)
+                {
+                    val_r.Add(temp);
+                    val_ind_r.Add(i);
 
-                var cmd = new NpgsqlCommand();
-                cmd.Connection = con;
-                con.Close();
-                LongWavesLeft.Clear(); MediumWavesLeft.Clear(); ShortWavesLeft.Clear(); LongWavesRight.Clear();
-                MediumWavesRight.Clear();
-                ShortWavesRight.Clear();
+                    val_r.Add(next_temp);
+                    val_ind_r.Add(i + 1);
 
-                MediumWavesLeft_m.Clear();
-                ShortWavesLeft_m.Clear();
-                MediumWavesRight_m.Clear();
-                ShortWavesRight_m.Clear();
-                LongWavesRight_m.Clear();
-                LongWavesLeft_m.Clear();
-                METERS_long_M.Clear();
+                    inn_r = true;
+                }
+                else if (inn_r && 0 < next_temp)
+                {
+                    val_r.Add(next_temp);
+                    val_ind_r.Add(i + 1);
 
-                Meters.Clear();
+                }
+                else if (inn_r && 0 == next_temp)
+                {
+                    if (val_r.Any())
+                    {
+                        val_r.Add(next_temp);
+                        val_ind_r.Add(i + 1);
+
+                        var d = new DATA0
+                        {
+                            Count = val_r.Count,
+                            H = val_r.Max()*0.8,
+                            H_ind = val_ind_r[val_r.IndexOf(val_r.Max())],
+                        };
+
+                        bolshe0_r.Add(d);
+
+                        inn_r = false;
+                        val_r.Clear();
+                        val_ind_r.Clear();
+                    }
+                }
             }
 
-
-
-            void GetTestData(int number)
+            for (int j = 0; j < shortl.Count; j++)
             {
-                var connection = new Npgsql.NpgsqlConnection("Host=DESKTOP-EMAFC5J;Username=postgres;Password=alhafizu;Database=railway");
-                var ShortData = connection.Query<DataFlow>($@"SELECT * FROM testdata_242 where km = {number}  limit 5000").ToList();
+                var m = 0.0;
+                var l = 0.0;
+                var s = 0.0;
 
-                var shortl = ShortData.Select(o => o.Diff_l / 8.0 < 1 / 8.0 ? 0 : o.Diff_l / 10.0).ToList();
-                var shortr = ShortData.Select(o => o.Diff_r / 8.0 < 1 / 8.0 ? 0 : o.Diff_r / 10.0).ToList();
+                var mr = 0.0;
+                var lr = 0.0;
+                var sr = 0.0;
 
-                var short_meter = ShortData.Select(o => o.Meter).ToList();
-                Meters.AddRange(ShortData.Select(o => o.Meter).ToList());
-
-
-                var val = new List<double> { };
-                var val_ind = new List<int> { };
-                var bolshe0 = new List<DATA0> { };
-                var inn = false;
-
-                //left
-                for (int i = 0; i < shortl.Count - 1; i++)
-                {
-                    var temp = shortl[i];
-                    var next_temp = shortl[i + 1];
-
-                    if (!inn && 0 < next_temp)
-                    {
-                        val.Add(temp);
-                        val_ind.Add(i);
-
-                        val.Add(next_temp);
-                        val_ind.Add(i + 1);
-
-                        inn = true;
-                    }
-                    else if (inn && 0 < next_temp)
-                    {
-                        val.Add(next_temp);
-                        val_ind.Add(i + 1);
-
-                    }
-                    else if (inn && 0 == next_temp)
-                    {
-                        if (val.Any())
-                        {
-                            val.Add(next_temp);
-                            val_ind.Add(i + 1);
-
-                            var d = new DATA0
-                            {
-                                Count = val.Count,
-                                H = val.Max() * 0.8,
-                                H_ind = val_ind[val.IndexOf(val.Max())],
-                            };
-
-                            bolshe0.Add(d);
-
-                            inn = false;
-                            val.Clear();
-                            val_ind.Clear();
-                        }
-                    }
-                }
-
-
-                var val_r = new List<double> { };
-                var val_ind_r = new List<int> { };
-                var bolshe0_r = new List<DATA0> { };
-                var inn_r = false;
-
-                //right
-                for (int i = 0; i < shortr.Count - 1; i++)
-                {
-                    var temp = shortr[i];
-                    var next_temp = shortr[i + 1];
-
-                    if (!inn_r && 0 < next_temp)
-                    {
-                        val_r.Add(temp);
-                        val_ind_r.Add(i);
-
-                        val_r.Add(next_temp);
-                        val_ind_r.Add(i + 1);
-
-                        inn_r = true;
-                    }
-                    else if (inn_r && 0 < next_temp)
-                    {
-                        val_r.Add(next_temp);
-                        val_ind_r.Add(i + 1);
-
-                    }
-                    else if (inn_r && 0 == next_temp)
-                    {
-                        if (val_r.Any())
-                        {
-                            val_r.Add(next_temp);
-                            val_ind_r.Add(i + 1);
-
-                            var d = new DATA0
-                            {
-                                Count = val_r.Count,
-                                H = val_r.Max() * 0.8,
-                                H_ind = val_ind_r[val_r.IndexOf(val_r.Max())],
-                            };
-
-                            bolshe0_r.Add(d);
-
-                            inn_r = false;
-                            val_r.Clear();
-                            val_ind_r.Clear();
-                        }
-                    }
-                }
-
-                for (int j = 0; j < shortl.Count; j++)
-                {
-                    var m = 0.0;
-                    var l = 0.0;
-                    var s = 0.0;
-
-                    var mr = 0.0;
-                    var lr = 0.0;
-                    var sr = 0.0;
-
-                    for (int i = 0; i < bolshe0.Count; i++)
-                    {
-                        l += bolshe0[i].H * Math.Exp(-0.003 * Math.Pow(bolshe0[i].H_ind - j, 2) / bolshe0[i].Count);
-                        m += bolshe0[i].H * Math.Exp(-0.02 * Math.Pow(bolshe0[i].H_ind - j, 2) / bolshe0[i].Count);
-                        s += bolshe0[i].H * Math.Exp(-0.3 * Math.Pow(bolshe0[i].H_ind - j, 2) / bolshe0[i].Count);
-                    }
-
-                    for (int i = 0; i < bolshe0_r.Count; i++)
-                    {
-                        lr += bolshe0_r[i].H * Math.Exp(-0.003 * Math.Pow(bolshe0_r[i].H_ind - j, 2) / bolshe0_r[i].Count);
-                        mr += bolshe0_r[i].H * Math.Exp(-0.02 * Math.Pow(bolshe0_r[i].H_ind - j, 2) / bolshe0_r[i].Count);
-                        sr += bolshe0_r[i].H * Math.Exp(-0.3 * Math.Pow(bolshe0_r[i].H_ind - j, 2) / bolshe0_r[i].Count);
-
-
-                    }
-                    var koef_long = 0.15;
-                    var koef_medium = 0.15;
-                    var koef_short = 0.15;
-
-                    LongWavesLeft.Add(l * koef_long);
-                    MediumWavesLeft.Add(m * koef_medium);
-                    ShortWavesLeft.Add(s * koef_short);
-
-                    LongWavesRight.Add(lr * koef_long);
-                    MediumWavesRight.Add(mr * koef_medium);
-                    ShortWavesRight.Add(sr * koef_short);
-
-                    if (j / 5 == j / 5.0)
-                    {
-
-
-
-                        LongWavesLeft_m.Add(l * koef_long);
-                        MediumWavesLeft_m.Add(m * koef_medium);
-                        ShortWavesLeft_m.Add(s * koef_short);
-
-                        LongWavesRight_m.Add(lr * koef_long);
-                        MediumWavesRight_m.Add(mr * koef_medium);
-                        ShortWavesRight_m.Add(sr * koef_short);
-
-                        METERS_long_M.Add(short_meter[j]);
-
-                    }
-                }
-
-                //импульсы
                 for (int i = 0; i < bolshe0.Count; i++)
                 {
-                    if (bolshe0[i].H < 0.8) continue;
-
-                    Impuls.Add(new Digression
-                    {
-                        Km = number,
-                        Length = (int)bolshe0[i].Count,
-                        Len = (int)bolshe0[i].Count,
-                        Intensity_ra = bolshe0[i].H,
-                        Meter = Meters[bolshe0[i].H_ind],
-                        Threat = Threat.Left
-                    });
+                    l += bolshe0[i].H * Math.Exp(-0.003 * Math.Pow(bolshe0[i].H_ind - j, 2) / bolshe0[i].Count);
+                    m += bolshe0[i].H * Math.Exp(-0.02 * Math.Pow(bolshe0[i].H_ind - j, 2) / bolshe0[i].Count);
+                    s += bolshe0[i].H * Math.Exp(-0.3 * Math.Pow(bolshe0[i].H_ind - j, 2) / bolshe0[i].Count);
                 }
+
                 for (int i = 0; i < bolshe0_r.Count; i++)
                 {
-                    if (bolshe0_r[i].H < 0.6) continue;
+                    lr += bolshe0_r[i].H * Math.Exp(-0.003 * Math.Pow(bolshe0_r[i].H_ind - j, 2) / bolshe0_r[i].Count);
+                    mr += bolshe0_r[i].H * Math.Exp(-0.02 * Math.Pow(bolshe0_r[i].H_ind - j, 2) / bolshe0_r[i].Count);
+                    sr += bolshe0_r[i].H * Math.Exp(-0.3 * Math.Pow(bolshe0_r[i].H_ind - j, 2) / bolshe0_r[i].Count);
 
-                    Impuls.Add(new Digression
-                    {
-                        Km = number,
-                        Length = (int)bolshe0_r[i].Count,
-                        Len = (int)bolshe0_r[i].Count,
-                        Intensity_ra = bolshe0_r[i].H,
-                        Meter = Meters[bolshe0_r[i].H_ind],
-                        Threat = Threat.Right
-                    });
+
                 }
-                SendShortDataDBMEDIUMWAYES(number);
-            }
+                var koef_long = 0.15;
+               var   koef_medium = 0.15;
+                var koef_short = 0.15;
 
+                LongWavesLeft.Add(l * koef_long);
+                MediumWavesLeft.Add(m * koef_medium);
+                ShortWavesLeft.Add(s * koef_short);
 
-            string GetXByDigName(DigName digName)
-            {
-                float move = 6.6f;
-                switch (digName)
+                LongWavesRight.Add(lr * koef_long);
+                MediumWavesRight.Add(mr * koef_medium);
+                ShortWavesRight.Add(sr * koef_short);
+
+                if (j /5 == j / 5.0)
                 {
-                    case DigName dn when dn == DigressionName.LongWaveLeft:
-                        return MMToPixelChartString(LevelPosition + move);
-                    case DigName dn when dn == DigressionName.LongWaveRight:
-                        return MMToPixelChartString(+move);
-                    case DigName dn when dn == DigressionName.MiddleWaveLeft:
-                        return MMToPixelChartString(+move);
-                    case DigName dn when dn == DigressionName.MiddleWaveRight:
-                        return MMToPixelChartString(+move);
-                    case DigName dn when dn == DigressionName.ShortWaveLeft:
-                        return MMToPixelChartString(+move);
-                    case DigName dn when dn == DigressionName.ShortWaveRight:
-                        return MMToPixelChartString(+move);
-                }
 
-                return "-100";
+                 
+
+                    LongWavesLeft_m.Add(l * koef_long);
+                    MediumWavesLeft_m.Add(m * koef_medium);
+                    ShortWavesLeft_m.Add(s * koef_short);
+
+                    LongWavesRight_m.Add(lr * koef_long);
+                    MediumWavesRight_m.Add(mr * koef_medium);
+                    ShortWavesRight_m.Add(sr * koef_short);
+
+                    METERS_long_M.Add(short_meter[j]);
+
+                }
+            }
+            
+            //импульсы
+            for (int i = 0; i < bolshe0.Count; i++)
+            {
+                if (bolshe0[i].H < 0.8) continue;
+
+                Impuls.Add(new Digression
+                {
+                    Km = number,
+                    Length = (int)bolshe0[i].Count,
+                    Len = (int)bolshe0[i].Count,
+                    Intensity_ra = bolshe0[i].H,
+                    Meter = Meters[bolshe0[i].H_ind],
+                    Threat = Threat.Left
+                });
+            }
+            for (int i = 0; i < bolshe0_r.Count; i++)
+            {
+                if (bolshe0_r[i].H < 0.6) continue;
+
+                Impuls.Add(new Digression
+                {
+                    Km = number,
+                    Length = (int)bolshe0_r[i].Count,
+                    Len = (int)bolshe0_r[i].Count,
+                    Intensity_ra = bolshe0_r[i].H,
+                    Meter = Meters[bolshe0_r[i].H_ind],
+                    Threat = Threat.Right
+                });
+            }
+            SendShortDataDBMEDIUMWAYES(number);
+        }
+    
+
+        private string GetXByDigName(DigName digName)
+        {
+            float move = 6.6f;
+            switch (digName)
+            {
+                case DigName dn when dn == DigressionName.LongWaveLeft:
+                    return MMToPixelChartString(LevelPosition + move);
+                case DigName dn when dn == DigressionName.LongWaveRight:
+                    return MMToPixelChartString(+move);
+                case DigName dn when dn == DigressionName.MiddleWaveLeft:
+                    return MMToPixelChartString(+move);
+                case DigName dn when dn == DigressionName.MiddleWaveRight:
+                    return MMToPixelChartString(+move);
+                case DigName dn when dn == DigressionName.ShortWaveLeft:
+                    return MMToPixelChartString(+move);
+                case DigName dn when dn == DigressionName.ShortWaveRight:
+                    return MMToPixelChartString(+move);
             }
 
+            return "-100";
         }
+
         public class DATA0
         {
             public double H { get; set; }

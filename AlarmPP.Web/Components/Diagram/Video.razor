@@ -3,51 +3,40 @@
 @inject IMatToaster Toaster
 @using ALARm.Core.Report
 
-@*<MatDialog @bind-IsOpen="@AppData.VideoDialog" Stacked="true" Class="image-modal" Style="height: 70%">
-    <MatDialogTitle>Просмотр видео проезда</MatDialogTitle>
-    <MatDialogContent>*@
-    <div class="row">
-        @if (AppData != null && AppData.Data != null)
-        {
-            <p>@AppData.Data[(int)Services.Series.Section] Путь: @AppData.CurrentKilometer.Track_name Км: @AppData.CurrentKm М:@AppData.CurrentKmMeter Направление @AppData.CurrentKilometer.Direction_name: Перегон :@AppData.CurrentKilometer.Sector </p>
-        }
-        </div>
+@if (AppData != null && AppData.Data != null)
+{
+    <p>@AppData.Data[(int)Services.Series.Section] Путь: @AppData.CurrentKilometer.Track_name Км: @AppData.CurrentKm М:@AppData.CurrentKmMeter Направление @AppData.CurrentKilometer.Direction_name: Перегон :@AppData.CurrentKilometer.Sector </p>
+}
 
-        <div class="row">
-            <div class="column">
-                <MatSlideToggle Value="@AppData.VideoProcessing" ValueChanged="(async (bool i) => await OnTimedEventAsync())">@(!AppData.VideoProcessing ? "Пауза" : "Продолжить")</MatSlideToggle>
-                <MatNumericUpDownField @bind-Value="@N_rows" Label="Кол-во кадров"></MatNumericUpDownField>
-                <MatSlider @bind-Value="@AppData.Speed" ValueMin="1" ValueMax="100" Label="Скорость перемотки" Style="width:100px"></MatSlider>
-            </div>
-            <div class="column">
-                <MatNumericUpDownField @bind-Value="@Number" Label="Километр"></MatNumericUpDownField><br />
-                <label>Метр: @CurrentMeter</label><br />
-                <label>Пикет: @(CurrentMeter/100+1)</label><br />
-                <label>Кадр: @CurrentVideoFrame</label>
-            </div>
-            <div class="column">
-                <AlarmButton Text="" Symbol="⬅️" Tooltip="Предыдущий кадр" OnClick="() => PrevClick()"></AlarmButton>
-                <AlarmButton Text="" Symbol="➡️" Tooltip="Следующий кадр" OnClick="() => NextClick()"></AlarmButton>
-            </div>
-        </div>
+<div class="row">
+    <div class="column">
+        <MatSlideToggle Value="@AppData.VideoProcessing" ValueChanged="(async (bool i) => await OnTimedEventAsync())">@(!AppData.VideoProcessing ? "Пауза" : "Продолжить")</MatSlideToggle>
+        <MatNumericUpDownField @bind-Value="@N_rows" Label="Кол-во кадров"></MatNumericUpDownField>
+        <MatSlider @bind-Value="@AppData.Speed" ValueMin="1" ValueMax="100" Label="Скорость перемотки" Style="width:100px"></MatSlider>
+    </div>
+    <div class="column">
+        <MatNumericUpDownField @bind-Value="@Number" Label="Километр"></MatNumericUpDownField><br />
+        <label>Метр: @CurrentMeter</label><br />
+        <label>Пикет: @(CurrentMeter/100+1)</label><br />
+        <label>Кадр: @CurrentVideoFrame</label>
+    </div>
+    <div class="column">
+        <AlarmButton Text="" Symbol="⬅️" Tooltip="Предыдущий кадр" OnClick="() => PrevClick()"></AlarmButton>
+        <AlarmButton Text="" Symbol="➡️" Tooltip="Следующий кадр" OnClick="() => NextClick()"></AlarmButton>
+    </div>
+</div>
 
 
-        <div class="row">
-            <div id="imgdiv1" style="max-width: 100%;">
-                <img src="data:image/jpeg;base64,@Base64" style="max-width:100%" />
-            </div>
-        </div>
-
-        
-    @*</MatDialogContent>
-    <MatDialogActions>*
-        <MatButton Raised="true" OnClick="() => GetObjectsFromFrame()">Редактировать</MatButton>
-        <MatButton Raised="true" OnClick="_=> { AppData.VideoDialog = false; AppData.VideoProcessing = false; }">Закрыть</MatButton>
-    </MatDialogActions>
-</MatDialog>*@
+<div class="row">
+    <div id="imgdiv1" style="max-width: 100%;">
+        <img src="data:image/jpeg;base64,@Base64"style="max-width:100%" />
+    </div>
+</div>
+<MatButton Raised="true" Text="Редактировать" OnClick="() => GetObjectsFromFrame()"></MatButton>
 
 
-<MatDialog @bind-IsOpen="@ObjectsDialog" Stacked="true" Style="width:40%; height:30%">
+
+<MatDialog @bind-IsOpen="@ObjectsDialog" Stacked="true" Style="width:40%; height:30%" >
     <MatDialogTitle>Дефекты пути на @CurrentMeter метре</MatDialogTitle>
     <MatDialogContent>
         @if (Gaps != null && Gaps.Count > 0)
