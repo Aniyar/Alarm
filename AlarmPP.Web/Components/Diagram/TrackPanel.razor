@@ -10,9 +10,11 @@
 @using ALARm.Core
 
 @*<Loader IsLoading="AppData.Loading" />*@
+
+
 <div class="loading d-none" id="trackpanel-loader">@AppData.LoadingText</div>
 <div class="dg-row">
-    @if (AppData.WorkMode == Services.WorkMode.Postprocessing )
+    @if (AppData.WorkMode == Services.WorkMode.Postprocessing)
     {
         <div class="dg-left">
             <div class="dg-label">
@@ -93,10 +95,6 @@
             <MatButton Style="height:30px" OnClick="_=>{ StopDialog = true; AppData.Processing = true; }">
                 <i class="demo-icon icon-done">&#xe819;</i>завершить
             </MatButton>
-
-
-
-
         }
     </div>
 </div>
@@ -104,118 +102,123 @@
 <div style="width:100%; height:48px; overflow:hidden;">
     <div id="dgrowtitle" class="dg-title-row">
 
-            @if (AppData.GetData(AppData.SliderYPosition))
+        @if (AppData.GetData(AppData.SliderYPosition))
+        {
+            string levelValue = "", rihtLeftValue = "", rihtRightValue = "", gaugeValue = "", drawdownLeftValue = "", drawdownRightValue = "", StrightAvgTrapezoid = "", LevelAvgTrapezoid = "";
+
+            if (AppData.ShowSignals)
             {
-                string levelValue = "", rihtLeftValue = "", rihtRightValue = "", gaugeValue = "", drawdownLeftValue = "", drawdownRightValue = "", StrightAvgTrapezoid = "", LevelAvgTrapezoid = "";
-
-                if (AppData.ShowSignals)
-                {
-                    levelValue += "с.: " + AppData.Data[(int)Services.Series.LevelSignal] + " ";
-                    rihtLeftValue += "с.: " + AppData.Data[(int)Services.Series.StrightLeftSignal] + " ";
-                    rihtRightValue += "с.: " + AppData.Data[(int)Services.Series.StrightRightSignal] + " ";
-                    gaugeValue += "с.: " + AppData.Data[(int)Services.Series.GaugeSignal] + " ";
-                    drawdownLeftValue = AppData.Data[(int)Services.Series.DrawdownLeft];
-                    drawdownRightValue = AppData.Data[(int)Services.Series.DrwadownRight];
-                }
-                if (AppData.ShowPasport)
-                {
-
-                    levelValue += "п.: " + AppData.Data[(int)Services.Series.LevelPasport] + " ";
-                    rihtLeftValue += "п.: " + AppData.Data[(int)Services.Series.StrightLeftPasport] + " ";
-                    rihtRightValue += "п.: " + AppData.Data[(int)Services.Series.StrightRightPasport] + " ";
-                    gaugeValue += "п.: " + AppData.Data[(int)Services.Series.GaugePasport] + " ";
-                }
-                if (AppData.ShowZeroLines)
-                {
-                    levelValue += "н.: " + AppData.Data[(int)Services.Series.LevelZero] + " ";
-                    rihtLeftValue += "н.: " + AppData.Data[(int)Services.Series.StrightLeftZero] + " ";
-                    rihtRightValue += "н.: " + AppData.Data[(int)Services.Series.StrightRightZero] + " ";
-                }
-                @if (AppData.ShowTestSignals)
-                {
-                    <MatNumericUpDownField Label="k1" Style="width:100px;" DecimalPlaces="2" Step="0.1" @bind-Value="@AppData.Koefs[0]"></MatNumericUpDownField>
-                    <MatNumericUpDownField Label="k2" Style="width:100px;" DecimalPlaces="2" Step="0.1" @bind-Value="@AppData.Koefs[1]"></MatNumericUpDownField>
-                    <MatNumericUpDownField Label="k3" Style="width:100px;" DecimalPlaces="2" Step="0.1" @bind-Value="@AppData.Koefs[2]"></MatNumericUpDownField>
-                    <MatNumericUpDownField Label="k4" Style="width:100px;" DecimalPlaces="2" Step="0.1" @bind-Value="@AppData.Koefs[3]"></MatNumericUpDownField>
-                    <MatNumericUpDownField Label="k5" Style="width:100px;" DecimalPlaces="2" Step="0.1" @bind-Value="@AppData.Koefs[4]"></MatNumericUpDownField>
-                    <MatNumericUpDownField Label="k6" Style="width:100px;" DecimalPlaces="2" Step="0.1" @bind-Value="@AppData.Koefs[5]"></MatNumericUpDownField>
-                    <MatNumericUpDownField Label="k7" Style="width:100px;" DecimalPlaces="2" Step="0.1" @bind-Value="@AppData.Koefs[6]"></MatNumericUpDownField>
-                    <MatNumericUpDownField Label="k8" Style="width:100px;" DecimalPlaces="2" Step="0.1" @bind-Value="@AppData.Koefs[7]"></MatNumericUpDownField>
-                    <MatNumericUpDownField Label="k9" Style="width:100px;" DecimalPlaces="2" Step="0.1" @bind-Value="@AppData.Koefs[8]"></MatNumericUpDownField>
-                    <MatNumericUpDownField Label="k10" Style="width:100px;" DecimalPlaces="2" Step="0.1" @bind-Value="@AppData.Koefs[9]"></MatNumericUpDownField>
-                }
-    <svg width="@Width" height="48">
-        <!--Pasport-->
-
-        <DgTitleCol X="@AppData.PasportPosition" Width="@AppData.PasportWidth" Heigth="@AppData.TitleRowHeigth" Title="Проезд" ShowValue="true" Value="@AppData.Data[(int)Services.Series.Pasport]"></DgTitleCol>
-        <DgTitleCol X="@AppData.SpeedPosition" Width="@AppData.SpeedWidth" Heigth="@AppData.TitleRowHeigth" Title="Скорость" ShowValue="true" Value="@AppData.Data[(int)Services.Series.Speed]"></DgTitleCol>
-        <!--Events-->
-        @if (AppData.ShowEvents)
-        {
-            <DgTitleCol X="@AppData.EventPosition" Width="@AppData.EventWidth" Heigth="@AppData.TitleRowHeigth" Title="События" ShowValue="false"></DgTitleCol>
-        }
-        <!--Signals-->
-        @if (AppData.ShowMainParams)
-        {
-            <DgTitleCol X="@AppData.MainParamsPosition" Width="@AppData.LevelWidth" Heigth="@AppData.TitleRowHeigth" Title="Уровень" ShowValue="true" Value="@levelValue"></DgTitleCol>
-            <DgTitleCol X="@(AppData.CombinationPosition)" Width="@AppData.СombinationWidth" Heigth="@AppData.TitleRowHeigth" Title="Соч." ShowValue="false"></DgTitleCol>
-            <DgTitleCol X="@(AppData.StrightLeftPosition)" Width="@AppData.StrightWidth" Heigth="@AppData.TitleRowHeigth" Title="Рихтовка Л." ShowValue="true" Value="@rihtLeftValue"></DgTitleCol>
-            <DgTitleCol X="@(AppData.StrgihtRightPosition)" Width="@AppData.StrightWidth" Heigth="@AppData.TitleRowHeigth" Title="Рихтовка Пр." ShowValue="true" Value="@rihtRightValue"></DgTitleCol>
-            <DgTitleCol X="@(AppData.GaugePosition)" Width="@AppData.GaugeWidth" Heigth="@AppData.TitleRowHeigth" Title="Шаблон" ShowValue="true" Value="@gaugeValue"></DgTitleCol>
-            <DgTitleCol X="@(AppData.DrawdownLeftPosition)" Width="@AppData.DrawdownWidth" Heigth="@AppData.TitleRowHeigth" Title="Прос. Л." ShowValue="true" Value="@drawdownLeftValue"></DgTitleCol>
-            <DgTitleCol X="@(AppData.DrawdownRightPosition)" Width="@AppData.DrawdownWidth" Heigth="@AppData.TitleRowHeigth" Title="Прос. Пр." ShowValue="true" Value="@drawdownRightValue"></DgTitleCol>
-        }
-        @if (AppData.ShowJoints)
-        {
-            <DgTitleCol X="@(AppData.JointPosition)" Width="@AppData.HeatWidth" Heigth="@AppData.TitleRowHeigth" Title="Забег" ShowValue="false" Value=""></DgTitleCol>
-            <DgTitleCol X="@(AppData.JointLeftPosition)" Width="@AppData.JointWidth" Heigth="@AppData.TitleRowHeigth" Title="Зазор Л." ShowValue="true" Value="@AppData.Data[(int)Services.Series.GapLeft]"></DgTitleCol>
-            <DgTitleCol X="@(AppData.JointRightPosition)" Width="@AppData.JointWidth" Heigth="@AppData.TitleRowHeigth" Title="Зазор Пр." ShowValue="true" Value="@AppData.Data[(int)Services.Series.GapRight]"></DgTitleCol>
-        }
-
-        @if (AppData.ShowRailProfile)
-        {
-            try
+                levelValue += "с.: " + AppData.Data[(int)Services.Series.LevelSignal] + " ";
+                rihtLeftValue += "с.: " + AppData.Data[(int)Services.Series.StrightLeftSignal] + " ";
+                rihtRightValue += "с.: " + AppData.Data[(int)Services.Series.StrightRightSignal] + " ";
+                gaugeValue += "с.: " + AppData.Data[(int)Services.Series.GaugeSignal] + " ";
+                drawdownLeftValue = AppData.Data[(int)Services.Series.DrawdownLeft];
+                drawdownRightValue = AppData.Data[(int)Services.Series.DrwadownRight];
+            }
+            if (AppData.ShowPasport)
             {
-                <DgTitleCol X="@(AppData.RailProfilePosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Износ бок. Л." ShowValue="true" Value="@AppData.Data[(int)Services.Series.SideWearLeft]"></DgTitleCol>
-                <DgTitleCol X="@(AppData.SideWearRightPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Износ бок. Пр." ShowValue="true" Value="@AppData.Data[(int)Services.Series.SideWearRight]"></DgTitleCol>
-                <DgTitleCol X="@(AppData.VertWearLeftPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Износ верт. Л." ShowValue="true" Value="@AppData.Data[(int)Services.Series.VertWearLeft]"></DgTitleCol>
-                <DgTitleCol X="@(AppData.VertWearRightPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Износ верт. Пр." ShowValue="true" Value="@AppData.Data[(int)Services.Series.VertWearRight]"></DgTitleCol>
-                <DgTitleCol X="@(AppData.GivenWearLeftPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Износ прив. Л." ShowValue="true" Value="@AppData.Data[(int)Services.Series.GivenWearLeft]"></DgTitleCol>
-                <DgTitleCol X="@(AppData.GivenWearRightPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Износ прив. Пр." ShowValue="true" Value="@AppData.Data[(int)Services.Series.GivenWearRight]"></DgTitleCol>
-                <DgTitleCol X="@(AppData.TreadTiltLeftPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Наклон ПК Л." ShowValue="true" Value="@AppData.Data[(int)Services.Series.TreadTiltLeft]"></DgTitleCol>
-                <DgTitleCol X="@(AppData.TreadTiltRightPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Наклон ПК Пр." ShowValue="true" Value="@AppData.Data[(int)Services.Series.TreadTiltRight]"></DgTitleCol>
-                <DgTitleCol X="@(AppData.DownhillLeftPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Подуклонка Л." ShowValue="true" Value="@AppData.Data[(int)Services.Series.DownHillLeft]"></DgTitleCol>
-                <DgTitleCol X="@(AppData.DownhillRightPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Подуклонка Пр." ShowValue="true" Value="@AppData.Data[(int)Services.Series.DownHillRight]"></DgTitleCol>
-                <DgTitleCol X="@(AppData.HeadWear45LeftPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Износ 45° Л." ShowValue="true" Value="@AppData.Data[(int)Services.Series.HeadWear45Left]"></DgTitleCol>
-                <DgTitleCol X="@(AppData.HeadWear45RightPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Износ 45° Пр." ShowValue="true" Value="@AppData.Data[(int)Services.Series.HeadWear45Right]"></DgTitleCol>
 
-                <DgTitleCol X="@(AppData.ShortwavesLeftPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Кор. Волны Л." ShowValue="true" Value="@AppData.Data[(int)Services.Series.ShortWavesleft]"></DgTitleCol>
-                <DgTitleCol X="@(AppData.ShortwavesRightPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Кор. Волны Пр." ShowValue="true" Value="@AppData.Data[(int)Services.Series.ShortWavesright]"></DgTitleCol>
-
-                <DgTitleCol X="@(AppData.MediumwavesleftPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Сред. Волны Л." ShowValue="true" Value="@AppData.Data[(int)Services.Series.MediumWavesleft]"></DgTitleCol>
-                <DgTitleCol X="@(AppData.MediumwavesrightPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Сред Волны Пр." ShowValue="true" Value="@AppData.Data[(int)Services.Series.MediumWavesright]"></DgTitleCol>
-
-                <DgTitleCol X="@(AppData.LongwavesLeftPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Длин. Волны Л." ShowValue="true" Value="@AppData.Data[(int)Services.Series.LongWavesleft]"></DgTitleCol>
-                <DgTitleCol X="@(AppData.LongwavesRightPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Длин. Волны Пр." ShowValue="true" Value="@AppData.Data[(int)Services.Series.LongWavesright]"></DgTitleCol>
+                levelValue += "п.: " + AppData.Data[(int)Services.Series.LevelPasport] + " ";
+                rihtLeftValue += "п.: " + AppData.Data[(int)Services.Series.StrightLeftPasport] + " ";
+                rihtRightValue += "п.: " + AppData.Data[(int)Services.Series.StrightRightPasport] + " ";
+                gaugeValue += "п.: " + AppData.Data[(int)Services.Series.GaugePasport] + " ";
             }
-            catch (Exception e)
+            if (AppData.ShowZeroLines)
             {
-                Console.WriteLine("COnsole" + e);
+                levelValue += "н.: " + AppData.Data[(int)Services.Series.LevelZero] + " ";
+                rihtLeftValue += "н.: " + AppData.Data[(int)Services.Series.StrightLeftZero] + " ";
+                rihtRightValue += "н.: " + AppData.Data[(int)Services.Series.StrightRightZero] + " ";
             }
+            @if (AppData.ShowTestSignals)
+            {
+                <MatNumericUpDownField Label="k1" Style="width:100px;" DecimalPlaces="2" Step="0.1" @bind-Value="@AppData.Koefs[0]"></MatNumericUpDownField>
+                <MatNumericUpDownField Label="k2" Style="width:100px;" DecimalPlaces="2" Step="0.1" @bind-Value="@AppData.Koefs[1]"></MatNumericUpDownField>
+                <MatNumericUpDownField Label="k3" Style="width:100px;" DecimalPlaces="2" Step="0.1" @bind-Value="@AppData.Koefs[2]"></MatNumericUpDownField>
+                <MatNumericUpDownField Label="k4" Style="width:100px;" DecimalPlaces="2" Step="0.1" @bind-Value="@AppData.Koefs[3]"></MatNumericUpDownField>
+                <MatNumericUpDownField Label="k5" Style="width:100px;" DecimalPlaces="2" Step="0.1" @bind-Value="@AppData.Koefs[4]"></MatNumericUpDownField>
+                <MatNumericUpDownField Label="k6" Style="width:100px;" DecimalPlaces="2" Step="0.1" @bind-Value="@AppData.Koefs[5]"></MatNumericUpDownField>
+                <MatNumericUpDownField Label="k7" Style="width:100px;" DecimalPlaces="2" Step="0.1" @bind-Value="@AppData.Koefs[6]"></MatNumericUpDownField>
+                <MatNumericUpDownField Label="k8" Style="width:100px;" DecimalPlaces="2" Step="0.1" @bind-Value="@AppData.Koefs[7]"></MatNumericUpDownField>
+                <MatNumericUpDownField Label="k9" Style="width:100px;" DecimalPlaces="2" Step="0.1" @bind-Value="@AppData.Koefs[8]"></MatNumericUpDownField>
+                <MatNumericUpDownField Label="k10" Style="width:100px;" DecimalPlaces="2" Step="0.1" @bind-Value="@AppData.Koefs[9]"></MatNumericUpDownField>
+            }
+            <svg width="@Width" height="48">
+                <!--Pasport-->
 
-            @*<DgTitleCol X="@(AppData.MediumWaves)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Средние Волны." ShowValue="true" Value="@AppData.Data[(int)Services.Series.Mediumwaves]"></DgTitleCol>
-            <DgTitleCol X="@(AppData.LongWaves)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Длинные Волны." ShowValue="true" Value="@AppData.Data[(int)Services.Series.Longwaves]"></DgTitleCol>*@
+                <DgTitleCol X="@AppData.PasportPosition" Width="@AppData.PasportWidth" Heigth="@AppData.TitleRowHeigth" Title="Проезд" ShowValue="true" Value="@AppData.Data[(int)Services.Series.Pasport]"></DgTitleCol>
+                <DgTitleCol X="@AppData.SpeedPosition" Width="@AppData.SpeedWidth" Heigth="@AppData.TitleRowHeigth" Title="Скорость" ShowValue="true" Value="@AppData.Data[(int)Services.Series.Speed]"></DgTitleCol>
+                <!--Events-->
+                @if (AppData.ShowEvents)
+                {
+                    <DgTitleCol X="@AppData.EventPosition" Width="@AppData.EventWidth" Heigth="@AppData.TitleRowHeigth" Title="События" ShowValue="false"></DgTitleCol>
+                }
+                <!--Signals-->
+                @if (AppData.ShowMainParams)
+                {
+                    <DgTitleCol X="@AppData.MainParamsPosition" Width="@AppData.LevelWidth" Heigth="@AppData.TitleRowHeigth" Title="Уровень" ShowValue="true" Value="@levelValue"></DgTitleCol>
+                    <DgTitleCol X="@(AppData.CombinationPosition)" Width="@AppData.СombinationWidth" Heigth="@AppData.TitleRowHeigth" Title="Соч." ShowValue="false"></DgTitleCol>
+                    <DgTitleCol X="@(AppData.StrightLeftPosition)" Width="@AppData.StrightWidth" Heigth="@AppData.TitleRowHeigth" Title="Рихтовка Л." ShowValue="true" Value="@rihtLeftValue"></DgTitleCol>
+                    <DgTitleCol X="@(AppData.StrgihtRightPosition)" Width="@AppData.StrightWidth" Heigth="@AppData.TitleRowHeigth" Title="Рихтовка Пр." ShowValue="true" Value="@rihtRightValue"></DgTitleCol>
+                    <DgTitleCol X="@(AppData.GaugePosition)" Width="@AppData.GaugeWidth" Heigth="@AppData.TitleRowHeigth" Title="Шаблон" ShowValue="true" Value="@gaugeValue"></DgTitleCol>
+                    <DgTitleCol X="@(AppData.DrawdownLeftPosition)" Width="@AppData.DrawdownWidth" Heigth="@AppData.TitleRowHeigth" Title="Прос. Л." ShowValue="true" Value="@drawdownLeftValue"></DgTitleCol>
+                    <DgTitleCol X="@(AppData.DrawdownRightPosition)" Width="@AppData.DrawdownWidth" Heigth="@AppData.TitleRowHeigth" Title="Прос. Пр." ShowValue="true" Value="@drawdownRightValue"></DgTitleCol>
+                }
+                @if (AppData.ShowJoints)
+                {
+                    <DgTitleCol X="@(AppData.JointPosition)" Width="@AppData.HeatWidth" Heigth="@AppData.TitleRowHeigth" Title="Забег" ShowValue="false" Value=""></DgTitleCol>
+                    <DgTitleCol X="@(AppData.JointLeftPosition)" Width="@AppData.JointWidth" Heigth="@AppData.TitleRowHeigth" Title="Зазор Л." ShowValue="true" Value="@AppData.Data[(int)Services.Series.GapLeft]"></DgTitleCol>
+                    <DgTitleCol X="@(AppData.JointRightPosition)" Width="@AppData.JointWidth" Heigth="@AppData.TitleRowHeigth" Title="Зазор Пр." ShowValue="true" Value="@AppData.Data[(int)Services.Series.GapRight]"></DgTitleCol>
+                }
 
+                @if (AppData.ShowRailProfile)
+                {
+                    try
+                    {
+                        <DgTitleCol X="@(AppData.RailProfilePosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Износ бок. Л." ShowValue="true" Value="@AppData.Data[(int)Services.Series.SideWearLeft]"></DgTitleCol>
+                        <DgTitleCol X="@(AppData.SideWearRightPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Износ бок. Пр." ShowValue="true" Value="@AppData.Data[(int)Services.Series.SideWearRight]"></DgTitleCol>
+                        <DgTitleCol X="@(AppData.VertWearLeftPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Износ верт. Л." ShowValue="true" Value="@AppData.Data[(int)Services.Series.VertWearLeft]"></DgTitleCol>
+                        <DgTitleCol X="@(AppData.VertWearRightPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Износ верт. Пр." ShowValue="true" Value="@AppData.Data[(int)Services.Series.VertWearRight]"></DgTitleCol>
+                        <DgTitleCol X="@(AppData.GivenWearLeftPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Износ прив. Л." ShowValue="true" Value="@AppData.Data[(int)Services.Series.GivenWearLeft]"></DgTitleCol>
+                        <DgTitleCol X="@(AppData.GivenWearRightPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Износ прив. Пр." ShowValue="true" Value="@AppData.Data[(int)Services.Series.GivenWearRight]"></DgTitleCol>
+                        <DgTitleCol X="@(AppData.TreadTiltLeftPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Наклон ПК Л." ShowValue="true" Value="@AppData.Data[(int)Services.Series.TreadTiltLeft]"></DgTitleCol>
+                        <DgTitleCol X="@(AppData.TreadTiltRightPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Наклон ПК Пр." ShowValue="true" Value="@AppData.Data[(int)Services.Series.TreadTiltRight]"></DgTitleCol>
+                        <DgTitleCol X="@(AppData.DownhillLeftPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Подуклонка Л." ShowValue="true" Value="@AppData.Data[(int)Services.Series.DownHillLeft]"></DgTitleCol>
+                        <DgTitleCol X="@(AppData.DownhillRightPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Подуклонка Пр." ShowValue="true" Value="@AppData.Data[(int)Services.Series.DownHillRight]"></DgTitleCol>
+                        <DgTitleCol X="@(AppData.HeadWear45LeftPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Износ 45° Л." ShowValue="true" Value="@AppData.Data[(int)Services.Series.HeadWear45Left]"></DgTitleCol>
+                        <DgTitleCol X="@(AppData.HeadWear45RightPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Износ 45° Пр." ShowValue="true" Value="@AppData.Data[(int)Services.Series.HeadWear45Right]"></DgTitleCol>
+
+                        <DgTitleCol X="@(AppData.ShortwavesLeftPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Кор. Волны Л." ShowValue="true" Value="@AppData.Data[(int)Services.Series.ShortWavesleft]"></DgTitleCol>
+                        <DgTitleCol X="@(AppData.ShortwavesRightPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Кор. Волны Пр." ShowValue="true" Value="@AppData.Data[(int)Services.Series.ShortWavesright]"></DgTitleCol>
+
+                        <DgTitleCol X="@(AppData.MediumwavesleftPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Сред. Волны Л." ShowValue="true" Value="@AppData.Data[(int)Services.Series.MediumWavesleft]"></DgTitleCol>
+                        <DgTitleCol X="@(AppData.MediumwavesrightPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Сред Волны Пр." ShowValue="true" Value="@AppData.Data[(int)Services.Series.MediumWavesright]"></DgTitleCol>
+
+                        <DgTitleCol X="@(AppData.LongwavesLeftPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Длин. Волны Л." ShowValue="true" Value="@AppData.Data[(int)Services.Series.LongWavesleft]"></DgTitleCol>
+                        <DgTitleCol X="@(AppData.LongwavesRightPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Длин. Волны Пр." ShowValue="true" Value="@AppData.Data[(int)Services.Series.LongWavesright]"></DgTitleCol>
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("COnsole" + e);
+                    }
+
+                    @*<DgTitleCol X="@(AppData.MediumWaves)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Средние Волны." ShowValue="true" Value="@AppData.Data[(int)Services.Series.Mediumwaves]"></DgTitleCol>
+                        <DgTitleCol X="@(AppData.LongWaves)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Длинные Волны." ShowValue="true" Value="@AppData.Data[(int)Services.Series.Longwaves]"></DgTitleCol>*@
+
+                }
+            </svg>
         }
-    </svg>
-            }
         }
     </div>
 </div>
 
 <div id="dgmainscroll" class="dg-main" @onscroll="OnMainScroll">
-
-    <svg preserveAspectRatio="none" width="@Width" height="@(AppData.GetLength()+300)" @onmousedown="OnMainMouseMove">
+    @if (AppData.ShowVideo)
+    {
+        <Video Kilometers=AppData.Kilometers></Video>
+    }
+    else
+    {
+    <svg preserveAspectRatio="none" width="@Width" height="@(AppData.GetLength() + 300)" @onmousedown="OnMainMouseMove">
         <rect x="0" y="0" width="60" height="@AppData.GetLength()" fill="#eceff1">
 
         </rect>
@@ -444,21 +447,21 @@
                                                    AppData.TreadTiltRightPosition + 20 + AppData.GetDIstanceFrom1div60(12)
                                                })" y1="0" y2="length" StrokeWidth="0.1" Zero="AppData.TreadTiltRightPosition" StrokeDashArray="0.1 5"></MinorGrid>
                     @*<MinorGrid MinorPositionsFloat="(new float[] {
-                                                   AppData.DownhillLeftPosition + 20 + AppData.GetDIstanceFrom1div60(60),
-                                                   AppData.DownhillLeftPosition + 20 + AppData.GetDIstanceFrom1div60(20),
-                                                   AppData.DownhillLeftPosition + 20 + AppData.GetDIstanceFrom1div60(16),
-                                                   AppData.DownhillLeftPosition + 20 + AppData.GetDIstanceFrom1div60(12)
-                                               })" y1="0" y2="length" StrokeWidth="0.1" Zero="AppData.DownhillLeftPosition" StrokeDashArray="0.1 5"></MinorGrid>
-                    <MinorGrid MinorPositionsFloat="(new float[] {
-                                                        AppData.DownhillRightPosition + 20 + AppData.GetDIstanceFrom1div60(60),
-                                                        AppData.DownhillRightPosition + 20 + AppData.GetDIstanceFrom1div60(20),
-                                                        AppData.DownhillRightPosition + 20 + AppData.GetDIstanceFrom1div60(16),
-                                                        AppData.DownhillRightPosition + 20 + AppData.GetDIstanceFrom1div60(12)
-                                                    })" y1="0" y2="length" StrokeWidth="0.1" Zero="AppData.DownhillRightPosition" StrokeDashArray="0.1 5"></MinorGrid>*@
-                    float iznosWAves = 70 / 16f;
+                                                       AppData.DownhillLeftPosition + 20 + AppData.GetDIstanceFrom1div60(60),
+                                                       AppData.DownhillLeftPosition + 20 + AppData.GetDIstanceFrom1div60(20),
+                                                       AppData.DownhillLeftPosition + 20 + AppData.GetDIstanceFrom1div60(16),
+                                                       AppData.DownhillLeftPosition + 20 + AppData.GetDIstanceFrom1div60(12)
+                                                   })" y1="0" y2="length" StrokeWidth="0.1" Zero="AppData.DownhillLeftPosition" StrokeDashArray="0.1 5"></MinorGrid>
+                        <MinorGrid MinorPositionsFloat="(new float[] {
+                                                            AppData.DownhillRightPosition + 20 + AppData.GetDIstanceFrom1div60(60),
+                                                            AppData.DownhillRightPosition + 20 + AppData.GetDIstanceFrom1div60(20),
+                                                            AppData.DownhillRightPosition + 20 + AppData.GetDIstanceFrom1div60(16),
+                                                            AppData.DownhillRightPosition + 20 + AppData.GetDIstanceFrom1div60(12)
+                                                        })" y1="0" y2="length" StrokeWidth="0.1" Zero="AppData.DownhillRightPosition" StrokeDashArray="0.1 5"></MinorGrid>*@
+            float iznosWAves = 70 / 16f;
 
                     @*<polyline transform="translate(@(AppData.RailProfilePosition), @y)" fill="none" stroke-width="0.5" stroke="black" points="@kilometer.SideWearLeft"></polyline>
-                    <polyline transform="translate(@(AppData.SideWearRightPosition), @y)" fill="none" stroke-width="0.5" stroke="black" points="@kilometer.SideWearRight"></polyline>*@
+                        <polyline transform="translate(@(AppData.SideWearRightPosition), @y)" fill="none" stroke-width="0.5" stroke="black" points="@kilometer.SideWearRight"></polyline>*@
 
                     <polyline transform="translate(@(AppData.VertWearLeftPosition), @y)" fill="none" stroke-width="0.5" stroke="black" points="@kilometer.VertWearLeft"></polyline>
                     <polyline transform="translate(@(AppData.VertWearRightPosition), @y)" fill="none" stroke-width="0.5" stroke="black" points="@kilometer.VertWearRight"></polyline>
@@ -501,12 +504,12 @@
         @*<rect style="cursor:row-resize" x="0" width="@Width" height="20" opacity="0" y="@(AppData.SliderYPosition-10)"></rect>*@
         <line style="cursor:row-resize" x1="0" x2="@Width" y1="@AppData.SliderYPosition" y2="@AppData.SliderYPosition" stroke="black" stroke-width="1" marker-start="url(#rectmarker)" marker-end="url(#rectmarker)"></line>
     </svg>
-
+    }
 </div>
 
 
 <div class="dg-footer">
-    @if (AppData.DigressionChecked) 
+    @if (AppData.DigressionChecked)
     {
         <div style="float:left; height:100%">
             @if (AppData != null && AppData.Data != null)
@@ -517,70 +520,70 @@
         </div>
     }
 
-        @*<DigRailImage RailImage="AppData.RailImage"></DigRailImage>*@
-        @if (AppData.WorkMode == Services.WorkMode.Online)
+    @*<DigRailImage RailImage="AppData.RailImage"></DigRailImage>*@
+    @if (AppData.WorkMode == Services.WorkMode.Online)
+    {
+
+        <div class="float-left h-100">
+
+            <MatButton TrailingIcon="@(OnlineModeData.RouteEditable ? "check" : "edit")" OnClick="_=> RouteEditableChange(AppData.Trip)">@(OnlineModeData.RouteEditable ? "Сохранить маршрут" : "Изменить маршрут")</MatButton>
+            <Route Short="true" Editable="OnlineModeData.RouteEditable" Source="AppData.Trip.Route"></Route>
+
+            <AlarmImage Bitmap="AppData.CurrentFrame"></AlarmImage>
+        </div>
+        <div div class="float-left h-100">
+            <EscortList Style="margin:5px"></EscortList>
+        </div>
+        <div class="float-left">
+
+            <p>
+                <PointChart ViewBox="@AppData.ViewBoxLeft" Side="Side.Left" Points="@AppData.PointsLeft" NominalRail="@AppData.NominalRailScheme" NominalRailRotate="@AppData.NominalRotateLeft" NominalRailTranslate="@AppData.NominalTranslateLeft" Width="400" Heigth="400" Style="@($"transform:rotate({AppData.CalibrConstLeft}deg); margin-right: 50px;")" />
+                <PointChart ViewBox="@AppData.ViewBoxRight" Side="Side.Right" Points="@AppData.PointsRight" NominalRail="@AppData.NominalRailScheme" NominalRailRotate="@AppData.NominalRotateRight" NominalRailTranslate="@AppData.NominalTranslateRight" Width="400" Heigth="400" Style="@($"transform:rotate(-{AppData.CalibrConstRight}deg);")" />
+            </p>
+        </div>
+        <div style="float:left; height:100%; overflow-y:scroll">
+            @foreach (var correction in OnlineModeData.CorrectionsList)
+            {
+                <p>@correction</p>
+                <br />
+            }
+
+        </div>
+    }
+    else
+    {
+        @if (AppData.ShowRailProfile) // Appdata.ShowPointeChart
         {
-
-            <div class="float-left h-100">
-
-                <MatButton TrailingIcon="@(OnlineModeData.RouteEditable ? "check" : "edit")" OnClick="_=> RouteEditableChange(AppData.Trip)">@(OnlineModeData.RouteEditable ? "Сохранить маршрут" : "Изменить маршрут")</MatButton>
-                <Route Short="true" Editable="OnlineModeData.RouteEditable" Source="AppData.Trip.Route"></Route>
-
-                <AlarmImage Bitmap="AppData.CurrentFrame"></AlarmImage>
-            </div>
-            <div div class="float-left h-100">
-                <EscortList Style="margin:5px"></EscortList>
-            </div>
             <div class="float-left">
-
                 <p>
-                    <PointChart ViewBox="@AppData.ViewBoxLeft" Side="Side.Left" Points="@AppData.PointsLeft" NominalRail="@AppData.NominalRailScheme" NominalRailRotate="@AppData.NominalRotateLeft" NominalRailTranslate="@AppData.NominalTranslateLeft" Width="400" Heigth="400" Style="@($"transform:rotate({AppData.CalibrConstLeft}deg); margin-right: 50px;")" />
-                    <PointChart ViewBox="@AppData.ViewBoxRight" Side="Side.Right" Points="@AppData.PointsRight" NominalRail="@AppData.NominalRailScheme" NominalRailRotate="@AppData.NominalRotateRight" NominalRailTranslate="@AppData.NominalTranslateRight" Width="400" Heigth="400" Style="@($"transform:rotate(-{AppData.CalibrConstRight}deg);")" />
+                    <PointChart ViewBox="@AppData.ViewBoxLeft" DownHill="@AppData.DownHillLeftValue" Tilt="@AppData.TiltLeftValue" Side="Side.Left" Points="@AppData.PointsLeft" NominalRail="@AppData.NominalRailScheme" NominalRailRotate="@AppData.NominalRotateLeft" NominalRailTranslate="@AppData.NominalTranslateLeft" Width="400" Heigth="400" Style="@($"transform:rotate({AppData.CalibrConstLeft}deg); margin-right: 50px;")" />
+                    <PointChart ViewBox="@AppData.ViewBoxRight" DownHill="@AppData.DownHillRightValue" Tilt="@AppData.TiltRightValue" Side="Side.Right" Points="@AppData.PointsRight" NominalRail="@AppData.NominalRailScheme" NominalRailRotate="@AppData.NominalRotateRight" NominalRailTranslate="@AppData.NominalTranslateRight" Width="400" Heigth="400" Style="@($"transform:rotate(-{AppData.CalibrConstRight}deg);")" />
                 </p>
             </div>
-            <div style="float:left; height:100%; overflow-y:scroll">
-                @foreach (var correction in OnlineModeData.CorrectionsList)
-                {
-                    <p>@correction</p>
-                    <br />
-                }
+        }
+    }
 
-            </div>
-        }
-        else
-        {
-            @if (AppData.ShowRailProfile) // Appdata.ShowPointeChart
-            {
-                <div class="float-left">
-                    <p>
-                        <PointChart ViewBox="@AppData.ViewBoxLeft" DownHill="@AppData.DownHillLeftValue" Tilt="@AppData.TiltLeftValue" Side="Side.Left" Points="@AppData.PointsLeft" NominalRail="@AppData.NominalRailScheme" NominalRailRotate="@AppData.NominalRotateLeft" NominalRailTranslate="@AppData.NominalTranslateLeft" Width="400" Heigth="400" Style="@($"transform:rotate({AppData.CalibrConstLeft}deg); margin-right: 50px;")" />
-                        <PointChart ViewBox="@AppData.ViewBoxRight" DownHill="@AppData.DownHillRightValue" Tilt="@AppData.TiltRightValue" Side="Side.Right" Points="@AppData.PointsRight" NominalRail="@AppData.NominalRailScheme" NominalRailRotate="@AppData.NominalRotateRight" NominalRailTranslate="@AppData.NominalTranslateRight" Width="400" Heigth="400" Style="@($"transform:rotate(-{AppData.CalibrConstRight}deg);")" />
-                    </p>
-                </div>
-            }
-        }
+    @if (AppData.ShowCorrection)
+    {
+        <div class="float-left">
+            <Alarmcheck kilometers="@AppData.Kilometers"></Alarmcheck>
+        </div>
+    }
 
-        @if (AppData.ShowCorrection)
-        {
-            <div class="float-left">
-                <Alarmcheck kilometers="@AppData.Kilometers" ></Alarmcheck>
-            </div>
-        }
+    @if (AppData.AddDigressionChecked)
+    {
+        <div class="float-left">
+            <AdditionalParams Kilometers="@AppData.Kilometers"></AdditionalParams>
+        </div>
+    }
+    @if (AppData.ByKilometerChecked)
+    {
+        <div class="float-left">
+            <ByKilometer Kilometers="@AppData.Kilometers" BedKilometers="@AppData.BedKilometers"></ByKilometer>
+        </div>
+    }
 
-        @if (AppData.AddDigressionChecked)
-        {
-            <div class="float-left">
-                <AdditionalParams Kilometers="@AppData.Kilometers"></AdditionalParams>
-            </div>
-        }
-        @if (AppData.ByKilometerChecked)
-        {
-            <div class="float-left">
-                <ByKilometer Kilometers="@AppData.Kilometers"  BedKilometers="@AppData.BedKilometers"></ByKilometer>
-            </div>
-        }
-
-    </div>
+</div>
 <MatDialog @bind-IsOpen="@StopDialog" Stacked="true">
     <MatDialogContent>Завершить проезд?</MatDialogContent>
     <MatDialogActions>

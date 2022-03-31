@@ -3,211 +3,213 @@
 @inject IMatToaster Toaster
 @using ALARm.Core.Report
 
-@if (AppData != null && AppData.Data != null)
-{
-    <p>@AppData.Data[(int)Services.Series.Section] Путь: @AppData.CurrentKilometer.Track_name Км: @AppData.CurrentKm М:@AppData.CurrentKmMeter Направление @AppData.CurrentKilometer.Direction_name: Перегон :@AppData.CurrentKilometer.Sector </p>
-}
+<div style="width: 100%; height: 65%; overflow: hidden; margin:auto">
+    @*@if (AppData != null && AppData.Data != null)
+    {
+        <p>@AppData.Data[(int)Services.Series.Section] Путь: @AppData.CurrentKilometer.Track_name Км: @AppData.CurrentKm М:@AppData.CurrentKmMeter Направление @AppData.CurrentKilometer.Direction_name: Перегон :@AppData.CurrentKilometer.Sector </p>
+    }*@
 
-<div class="row">
-    <div class="column">
-        <MatSlideToggle Value="@AppData.VideoProcessing" ValueChanged="(async (bool i) => await OnTimedEventAsync())">@(!AppData.VideoProcessing ? "Пауза" : "Продолжить")</MatSlideToggle>
-        <MatNumericUpDownField @bind-Value="@N_rows" Label="Кол-во кадров"></MatNumericUpDownField>
-        <MatSlider @bind-Value="@AppData.Speed" ValueMin="1" ValueMax="100" Label="Скорость перемотки" Style="width:100px"></MatSlider>
+    <div class="row">
+        <div class="column">
+            <MatSlideToggle Value="@AppData.VideoProcessing" ValueChanged="(async (bool i) => await OnTimedEventAsync())">@(!AppData.VideoProcessing ? "Пауза" : "Продолжить")</MatSlideToggle>
+            <MatNumericUpDownField @bind-Value="@N_rows" Label="Кол-во кадров"></MatNumericUpDownField>
+            <MatSlider @bind-Value="@AppData.Speed" ValueMin="1" ValueMax="100" Label="Скорость перемотки" Style="width:100px"></MatSlider>
+        </div>
+        <div class="column">
+            <MatNumericUpDownField @bind-Value="@Number" Label="Километр"></MatNumericUpDownField><br />
+            <label>Метр: @CurrentMeter</label><br />
+            <label>Пикет: @(CurrentMeter/100+1)</label><br />
+            <label>Кадр: @CurrentVideoFrame</label>
+        </div>
+        <div class="column">
+            <AlarmButton Text="" Symbol="⬅️" Tooltip="Предыдущий кадр" OnClick="() => PrevClick()"></AlarmButton>
+            <AlarmButton Text="" Symbol="➡️" Tooltip="Следующий кадр" OnClick="() => NextClick()"></AlarmButton>
+        </div>
     </div>
-    <div class="column">
-        <MatNumericUpDownField @bind-Value="@Number" Label="Километр"></MatNumericUpDownField><br />
-        <label>Метр: @CurrentMeter</label><br />
-        <label>Пикет: @(CurrentMeter/100+1)</label><br />
-        <label>Кадр: @CurrentVideoFrame</label>
+
+
+    <div class="row">
+        <div id="imgdiv1" style="max-width: 100%;">
+            <img src="data:image/jpeg;base64,@Base64" style="max-width:100%" />
+        </div>
     </div>
-    <div class="column">
-        <AlarmButton Text="" Symbol="⬅️" Tooltip="Предыдущий кадр" OnClick="() => PrevClick()"></AlarmButton>
-        <AlarmButton Text="" Symbol="➡️" Tooltip="Следующий кадр" OnClick="() => NextClick()"></AlarmButton>
-    </div>
+    @*<MatButton Raised="true" OnClick="() => GetObjectsFromFrame()">Редактировать</MatButton>
+        <MatButton Raised="true" OnClick="_=> { VideoDialog = false; AppData.VideoProcessing = false; }">Закрыть</MatButton>*@
 </div>
 
 
-<div class="row">
-    <div id="imgdiv1" style="max-width: 100%;">
-        <img src="data:image/jpeg;base64,@Base64"style="max-width:100%" />
-    </div>
-</div>
-<MatButton Raised="true" Text="Редактировать" OnClick="() => GetObjectsFromFrame()"></MatButton>
+    @*<MatDialog @bind-IsOpen="@ObjectsDialog" Stacked="true" Style="width:40%; height:30%">
+        <MatDialogTitle>Дефекты пути на @CurrentMeter метре</MatDialogTitle>
+        <MatDialogContent>
+            @if (Gaps != null && Gaps.Count > 0)
+            {
+                <h2>Стыковые зазоры:</h2>
+                <table>
+                    <tr>
+                        <th style="border-right: 1px solid grey; width:35px;">Км</th>
+                        <th style="border-right: 1px solid grey; width: 35px;">М</th>
+                        <th style="border-right: 1px solid grey; width: 110px;">Отступление</th>
+                        <th style="border-right: 1px solid grey; width: 90px;">Дополнение</th>
+                        <th style="border-right: 1px solid grey; width: 125px;">Зазоры</th>
+                        <th style="border-right: 1px solid grey; width: 125px;">Огр. скор.</th>
+                        <th style="border-right: 1px solid grey; width: 50px;">Балл</th>
+                        <th style="border-right: 1px solid grey; width: 125px;"></th>
+                    </tr>
+                    <tbody>
+                        @foreach (var digression in Gaps.Select((value, i) => new { i, value }))
+                        {
+                            <tr>
+                                <td style="border-right: 1px solid grey; width: 35px;">@Number</td>
+                                <td style="border-right: 1px solid grey;  width:35px;">@digression.value.Meter</td>
+                                <td style="border-right: 1px solid grey;  width:110px;">@digression.value.Otst</td>
+                                <td style="border-right: 1px solid grey;   width:90px;"></td>
+                                <td style="border-right: 1px solid grey; width: 125px;">@($"З л:{digression.value.Zazor} З пр:{digression.value.R_zazor}")</td>
+                                <td style="border-right: 1px solid grey; width: 125px;">@("Огр.ск: " + digression.value.Vdop )</td>
+                                <th style="border-right: 1px solid grey; width: 50px;">@(digression.value.GetPoint() == -1 ? "-": digression.value.GetPoint())</th>
+                                <td>
+                                    <AlarmButton Text="" Symbol="" Tooltip="Удалить" OnClick="() => DigressionTable.DeleteGapClick(digression.value)"></AlarmButton>
+                                    <AlarmButton Text="" Symbol="" Tooltip="Редактировать" OnClick="() => DigressionTable.GetImageGaps(digression.value, digression.i, 1)"></AlarmButton>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
 
+                </table>
 
-
-<MatDialog @bind-IsOpen="@ObjectsDialog" Stacked="true" Style="width:40%; height:30%" >
-    <MatDialogTitle>Дефекты пути на @CurrentMeter метре</MatDialogTitle>
-    <MatDialogContent>
-        @if (Gaps != null && Gaps.Count > 0)
-        {
-            <h2>Стыковые зазоры:</h2>
-            <table>
-                <tr>
-                    <th style="border-right: 1px solid grey; width:35px;">Км</th>
-                    <th style="border-right: 1px solid grey; width: 35px;">М</th>
-                    <th style="border-right: 1px solid grey; width: 110px;">Отступление</th>
-                    <th style="border-right: 1px solid grey; width: 90px;">Дополнение</th>
-                    <th style="border-right: 1px solid grey; width: 125px;">Зазоры</th>
-                    <th style="border-right: 1px solid grey; width: 125px;">Огр. скор.</th>
-                    <th style="border-right: 1px solid grey; width: 50px;">Балл</th>
-                    <th style="border-right: 1px solid grey; width: 125px;"></th>
-                </tr>
-                <tbody>
-                    @foreach (var digression in Gaps.Select((value, i) => new { i, value }))
+            }
+            else if (Fasteners != null && Fasteners.Count > 0)
+            {
+                <h2>Скрепления:</h2>
+                <table>
+                    <tr>
+                        <th style="border-right: 1px solid grey; width:35px;">Км</th>
+                        <th style="border-right: 1px solid grey; width: 35px;">М</th>
+                        <th style="border-right: 1px solid grey; width: 110px;">Отступление</th>
+                        <th style="border-right: 1px solid grey; width: 90px;">Скрепление</th>
+                        <th style="border-right: 1px solid grey; width: 125px;">Сторона</th>
+                        <th style="border-right: 1px solid grey; width: 125px;">Балл</th>
+                        <th style="border-right: 1px solid grey; width: 125px;"></th>
+                    </tr>
+                    @foreach (var fastener in Fasteners.Select((value, i) => new { i, value }))
                     {
                         <tr>
                             <td style="border-right: 1px solid grey; width: 35px;">@Number</td>
-                            <td style="border-right: 1px solid grey;  width:35px;">@digression.value.Meter</td>
-                            <td style="border-right: 1px solid grey;  width:110px;">@digression.value.Otst</td>
-                            <td style="border-right: 1px solid grey;   width:90px;"></td>
-                            <td style="border-right: 1px solid grey; width: 125px;">@($"З л:{digression.value.Zazor} З пр:{digression.value.R_zazor}")</td>
-                            <td style="border-right: 1px solid grey; width: 125px;">@("Огр.ск: " + digression.value.Vdop )</td>
-                            <th style="border-right: 1px solid grey; width: 50px;">@(digression.value.GetPoint() == -1 ? "-": digression.value.GetPoint())</th>
+                            <td style="border-right: 1px solid grey;  width:35px;">@fastener.value.Mtr</td>
+                            <td style="border-right: 1px solid grey;  width:110px;">@fastener.value.Otst</td>
+                            <td style="border-right: 1px solid grey;   width:90px; text-align:right">@fastener.value.Fastening</td>--> 
+                            <td style="border-right: 1px solid grey; width: 125px;">@fastener.value.Threat_id</td>
+                            <td style="border-right: 1px solid grey; width: 125px;"></td>
                             <td>
-                                <AlarmButton Text="" Symbol="" Tooltip="Удалить" OnClick="() => DigressionTable.DeleteGapClick(digression.value)"></AlarmButton>
-                                <AlarmButton Text="" Symbol="" Tooltip="Редактировать" OnClick="() => DigressionTable.GetImageGaps(digression.value, digression.i, 1)"></AlarmButton>
+                                <AlarmButton Text="" Symbol="" Tooltip="Удалить" OnClick="() => DigressionTable.DeleteFastenerClick(fastener.value)"></AlarmButton>
+                                <AlarmButton Text="" Symbol="" Tooltip="Редактировать" OnClick="() => DigressionTable.ModifyFastenerClick(fastener.value)"></AlarmButton>
+                                <AlarmButton Text="" Symbol="📷" Tooltip="Фото" OnClick="() => DigressionTable.GetImageFasteners(fastener.value, fastener.i, 3)"></AlarmButton>
                             </td>
                         </tr>
                     }
-                </tbody>
 
-            </table>
-
-        }
-        else if (Fasteners != null && Fasteners.Count > 0)
-        {
-            <h2>Скрепления:</h2>
-            <table>
-                <tr>
-                    <th style="border-right: 1px solid grey; width:35px;">Км</th>
-                    <th style="border-right: 1px solid grey; width: 35px;">М</th>
-                    <th style="border-right: 1px solid grey; width: 110px;">Отступление</th>
-                    <th style="border-right: 1px solid grey; width: 90px;">Скрепление</th>
-                    <th style="border-right: 1px solid grey; width: 125px;">Сторона</th>
-                    <th style="border-right: 1px solid grey; width: 125px;">Балл</th>
-                    <th style="border-right: 1px solid grey; width: 125px;"></th>
-                </tr>
-                @foreach (var fastener in Fasteners.Select((value, i) => new { i, value }))
-                {
+                </table>
+            }
+            else if (Bolts != null && Bolts.Count > 0)
+            {
+                <h2>Болты:</h2>
+                <table>
                     <tr>
-                        <td style="border-right: 1px solid grey; width: 35px;">@Number</td>
-                        <td style="border-right: 1px solid grey;  width:35px;">@fastener.value.Mtr</td>
-                        <td style="border-right: 1px solid grey;  width:110px;">@fastener.value.Otst</td>
-                        <td style="border-right: 1px solid grey;   width:90px; text-align:right">@fastener.value.Fastening</td> @*скрепелние*@
-                        <td style="border-right: 1px solid grey; width: 125px;">@fastener.value.Threat_id</td>
-                        <td style="border-right: 1px solid grey; width: 125px;"></td>
-                        <td>
-                            <AlarmButton Text="" Symbol="" Tooltip="Удалить" OnClick="() => DigressionTable.DeleteFastenerClick(fastener.value)"></AlarmButton>
-                            <AlarmButton Text="" Symbol="" Tooltip="Редактировать" OnClick="() => DigressionTable.ModifyFastenerClick(fastener.value)"></AlarmButton>
-                            <AlarmButton Text="" Symbol="📷" Tooltip="Фото" OnClick="() => DigressionTable.GetImageFasteners(fastener.value, fastener.i, 3)"></AlarmButton>
-                        </td>
+                        <th style="border-right: 1px solid grey; width:35px;">Км</th>
+                        <th style="border-right: 1px solid grey; width: 35px;">М</th>
+                        <th style="border-right: 1px solid grey; width: 110px;">Накладка</th>
+                        <th style="border-right: 1px solid grey; width: 90px;">Дополнение</th>
+                        <th style="border-right: 1px solid grey; width: 125px;">До стыка</th>
+                        <th style="border-right: 1px solid grey; width: 125px;">После стыка</th>
+                        <th style="border-right: 1px solid grey; width: 125px;">Огр. скор.</th>
+                        <th style="border-right: 1px solid grey; width: 125px;"></th>
                     </tr>
-                }
-
-            </table>
-        }
-        else if (Bolts != null && Bolts.Count > 0)
-        {
-            <h2>Болты:</h2>
-            <table>
-                <tr>
-                    <th style="border-right: 1px solid grey; width:35px;">Км</th>
-                    <th style="border-right: 1px solid grey; width: 35px;">М</th>
-                    <th style="border-right: 1px solid grey; width: 110px;">Накладка</th>
-                    <th style="border-right: 1px solid grey; width: 90px;">Дополнение</th>
-                    <th style="border-right: 1px solid grey; width: 125px;">До стыка</th>
-                    <th style="border-right: 1px solid grey; width: 125px;">После стыка</th>
-                    <th style="border-right: 1px solid grey; width: 125px;">Огр. скор.</th>
-                    <th style="border-right: 1px solid grey; width: 125px;"></th>
-                </tr>
-                @foreach (var bolt in Bolts.Select((value, i) => new { i, value }))
-                {
+                    @foreach (var bolt in Bolts.Select((value, i) => new { i, value }))
+                    {
+                        <tr>
+                            <td style="border-right: 1px solid grey; width:35px; ">@bolt.value.Meter</td>
+                            <td style="border-right: 1px solid grey; width:110px;">@bolt.value.Overlay</td>
+                            <td style="border-right: 1px solid grey; width:90px; "></td>
+                            <td style="border-right: 1px solid grey; width: 125px;">@(bolt.value.Before)</td>
+                            <td style="border-right: 1px solid grey; width: 125px;">@(bolt.value.After)</td>
+                            <td style="border-right: 1px solid grey; width: 125px;">
+                                @("Огр.ск: " + bolt.value.FullSpeed )
+                            </td>
+                            <td>
+                                <AlarmButton Text="" Symbol="" Tooltip="Удалить" OnClick="() => DigressionTable.DeleteBoltClick(bolt.value)"></AlarmButton>
+                                <AlarmButton Text="" Symbol="" Tooltip="Редактировать" OnClick="() =>  DigressionTable.ModifyBoltClick(bolt.value)"></AlarmButton>
+                                <AlarmButton Text="" Symbol="📷" Tooltip="Фото" OnClick="() => DigressionTable.GetImageBolts(bolt.value, bolt.i, 2)"></AlarmButton>
+                            </td>
+                        </tr>
+                    }
+                </table>
+            }
+            else if (DefShpals != null && DefShpals.Count > 0)
+            {
+                <h2>Деффектные шпалы:</h2>
+                <table>
                     <tr>
-                        <td style="border-right: 1px solid grey; width:35px; ">@bolt.value.Meter</td>
-                        <td style="border-right: 1px solid grey; width:110px;">@bolt.value.Overlay</td>
-                        <td style="border-right: 1px solid grey; width:90px; "></td>
-                        <td style="border-right: 1px solid grey; width: 125px;">@(bolt.value.Before)</td>
-                        <td style="border-right: 1px solid grey; width: 125px;">@(bolt.value.After)</td>
-                        <td style="border-right: 1px solid grey; width: 125px;">
-                            @("Огр.ск: " + bolt.value.FullSpeed )
-                        </td>
-                        <td>
-                            <AlarmButton Text="" Symbol="" Tooltip="Удалить" OnClick="() => DigressionTable.DeleteBoltClick(bolt.value)"></AlarmButton>
-                            <AlarmButton Text="" Symbol="" Tooltip="Редактировать" OnClick="() =>  DigressionTable.ModifyBoltClick(bolt.value)"></AlarmButton>
-                            <AlarmButton Text="" Symbol="📷" Tooltip="Фото" OnClick="() => DigressionTable.GetImageBolts(bolt.value, bolt.i, 2)"></AlarmButton>
-                        </td>
+                        <th style="border-right: 1px solid grey; width:35px;">Км</th>
+                        <th style="border-right: 1px solid grey; width: 35px;">М</th>
+                        <th style="border-right: 1px solid grey; width: 110px;">Отступление</th>
+                        <th style="border-right: 1px solid grey; width: 90px;">Скрепление</th>
+                        <th style="border-right: 1px solid grey; width: 125px;">Мероприятие</th>
+                        <th style="border-right: 1px solid grey; width: 125px;">Примечание</th>
+                        <th style="border-right: 1px solid grey; width: 125px;"></th>
                     </tr>
-                }
-            </table>
-        }
-        else if (DefShpals != null && DefShpals.Count > 0)
-        {
-            <h2>Деффектные шпалы:</h2>
-            <table>
-                <tr>
-                    <th style="border-right: 1px solid grey; width:35px;">Км</th>
-                    <th style="border-right: 1px solid grey; width: 35px;">М</th>
-                    <th style="border-right: 1px solid grey; width: 110px;">Отступление</th>
-                    <th style="border-right: 1px solid grey; width: 90px;">Скрепление</th>
-                    <th style="border-right: 1px solid grey; width: 125px;">Мероприятие</th>
-                    <th style="border-right: 1px solid grey; width: 125px;">Примечание</th>
-                    <th style="border-right: 1px solid grey; width: 125px;"></th>
-                </tr>
-                @foreach (var digression in DefShpals.Select((value, i) => new { i, value }))
-                {
+                    @foreach (var digression in DefShpals.Select((value, i) => new { i, value }))
+                    {
+                        <tr>
+                            <td style="border-right: 1px solid grey;  width: 35px;">@Number</td>
+                            <td style="border-right: 1px solid grey;  width:35px; ">@digression.value.Meter</td>
+                            <td style="border-right: 1px solid grey;  width:110px; ">@digression.value.Otst</td>
+                            <td style="border-right: 1px solid grey;   width:90px; ">@digression.value.Fastening</td>
+                            <td style="border-right: 1px solid grey;  width: 125px; ">@digression.value.Meropr</td>
+                            <td style="border-right: 1px solid grey; width: 125px;">@digression.value.Notice</td>
+                            <td>
+                                <AlarmButton Text="" Symbol="" Tooltip="Удалить" OnClick="() => DigressionTable.DeleteDefShpalClick(digression.value)"></AlarmButton>
+                                <AlarmButton Text="" Symbol="" Tooltip="Редактировать" OnClick="() => DigressionTable.ModifyDefShpalClick(digression.value)"></AlarmButton>
+                                <AlarmButton Text="" Symbol="📷" Tooltip="Фото" OnClick="() => DigressionTable.GetImageDefShpals(digression.value, digression.i, 5)"></AlarmButton>
+                            </td>
+                        </tr>
+                    }
+                </table>
+            }
+            else if (PerShpals != null && PerShpals.Count > 0)
+            {
+                <h2>Перпендикулярные шпалы:</h2>
+                <table>
                     <tr>
-                        <td style="border-right: 1px solid grey;  width: 35px;">@Number</td>
-                        <td style="border-right: 1px solid grey;  width:35px; ">@digression.value.Meter</td>
-                        <td style="border-right: 1px solid grey;  width:110px; ">@digression.value.Otst</td>
-                        <td style="border-right: 1px solid grey;   width:90px; ">@digression.value.Fastening</td>
-                        <td style="border-right: 1px solid grey;  width: 125px; ">@digression.value.Meropr</td>
-                        <td style="border-right: 1px solid grey; width: 125px;">@digression.value.Notice</td>
-                        <td>
-                            <AlarmButton Text="" Symbol="" Tooltip="Удалить" OnClick="() => DigressionTable.DeleteDefShpalClick(digression.value)"></AlarmButton>
-                            <AlarmButton Text="" Symbol="" Tooltip="Редактировать" OnClick="() => DigressionTable.ModifyDefShpalClick(digression.value)"></AlarmButton>
-                            <AlarmButton Text="" Symbol="📷" Tooltip="Фото" OnClick="() => DigressionTable.GetImageDefShpals(digression.value, digression.i, 5)"></AlarmButton>
-                        </td>
+                        <th style="border-right: 1px solid grey; width:35px;">Км</th>
+                        <th style="border-right: 1px solid grey; width: 35px;">М</th>
+                        <th style="border-right: 1px solid grey; width: 110px;">Отступление</th>
+                        <th style="border-right: 1px solid grey; width: 90px;">Градус</th>
+                        <th style="border-right: 1px solid grey; width: 125px;">Скрепление</th>
+                        <th style="border-right: 1px solid grey; width: 125px;">Примечание</th>
+                        <th style="border-right: 1px solid grey; width: 125px;"></th>
                     </tr>
-                }
-            </table>
-        }
-        else if (PerShpals != null && PerShpals.Count > 0)
-        {
-            <h2>Перпендикулярные шпалы:</h2>
-            <table>
-                <tr>
-                    <th style="border-right: 1px solid grey; width:35px;">Км</th>
-                    <th style="border-right: 1px solid grey; width: 35px;">М</th>
-                    <th style="border-right: 1px solid grey; width: 110px;">Отступление</th>
-                    <th style="border-right: 1px solid grey; width: 90px;">Градус</th>
-                    <th style="border-right: 1px solid grey; width: 125px;">Скрепление</th>
-                    <th style="border-right: 1px solid grey; width: 125px;">Примечание</th>
-                    <th style="border-right: 1px solid grey; width: 125px;"></th>
-                </tr>
-                @foreach (var digression in PerShpals.Select((value, i) => new { i, value }))
-                {
-                    <tr>
-                        <td style="border-right: 1px solid grey;  width: 35px;">@Number</td>
-                        <td style="border-right: 1px solid grey;  width:35px;">@digression.value.Meter</td>
-                        <td style="border-right: 1px solid grey;  width:110px;">@digression.value.Otst</td>
-                        <td style="border-right: 1px solid grey;   width:90px; ">@digression.value.Angle.ToString("0.00")</td>
-                        <td style="border-right: 1px solid grey; width: 125px;">@digression.value.Fastener</td>
-                        <td style="border-right: 1px solid grey; width: 125px;"></td>
-                        <td>
-                            <AlarmButton Text="" Symbol="" Tooltip="Удалить" OnClick="() => DigressionTable.DeletePerShpalClick(digression.value)"></AlarmButton>
-                            <AlarmButton Text="" Symbol="" Tooltip="Редактировать" OnClick="() => DigressionTable.ModifyPerShpalClick(digression.value)"></AlarmButton>
-                            <AlarmButton Text="" Symbol="📷" Tooltip="Фото" OnClick="() => DigressionTable.GetImagePerShpals(digression.value, digression.i, 4)"></AlarmButton>
-                        </td>
-                    </tr>
-                }
-            </table>
-        }
-    </MatDialogContent>
-    <MatDialogActions>
-        <MatButton Raised="true" OnClick="_=> { ObjectsDialog = false;}">Закрыть</MatButton>
-    </MatDialogActions>
-</MatDialog>
+                    @foreach (var digression in PerShpals.Select((value, i) => new { i, value }))
+                    {
+                        <tr>
+                            <td style="border-right: 1px solid grey;  width: 35px;">@Number</td>
+                            <td style="border-right: 1px solid grey;  width:35px;">@digression.value.Meter</td>
+                            <td style="border-right: 1px solid grey;  width:110px;">@digression.value.Otst</td>
+                            <td style="border-right: 1px solid grey;   width:90px; ">@digression.value.Angle.ToString("0.00")</td>
+                            <td style="border-right: 1px solid grey; width: 125px;">@digression.value.Fastener</td>
+                            <td style="border-right: 1px solid grey; width: 125px;"></td>
+                            <td>
+                                <AlarmButton Text="" Symbol="" Tooltip="Удалить" OnClick="() => DigressionTable.DeletePerShpalClick(digression.value)"></AlarmButton>
+                                <AlarmButton Text="" Symbol="" Tooltip="Редактировать" OnClick="() => DigressionTable.ModifyPerShpalClick(digression.value)"></AlarmButton>
+                                <AlarmButton Text="" Symbol="📷" Tooltip="Фото" OnClick="() => DigressionTable.GetImagePerShpals(digression.value, digression.i, 4)"></AlarmButton>
+                            </td>
+                        </tr>
+                    }
+                </table>
+            }
+        </MatDialogContent>
+        <MatDialogActions>
+            <MatButton Raised="true" OnClick="_=> { ObjectsDialog = false;}">Закрыть</MatButton>
+        </MatDialogActions>
+    </MatDialog>*@
 
 
 
