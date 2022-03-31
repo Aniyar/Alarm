@@ -189,19 +189,32 @@ namespace AlarmPP.Web.Services
         {
             get { return HeadWear45LeftPosition + WearWidth; }
         }
-
-
-        public int ShortWaves
+        public int ShortwavesLeftPosition
         {
-            get { return HeadWear45LeftPosition + WearWidth; }
+            get { return HeadWear45RightPosition + WearWidth; }
         }
-        public int Mediumwavesleft
+        public int ShortwavesRightPosition
         {
-            get { return HeadWear45LeftPosition + WearWidth +20; }
+            get { return ShortwavesLeftPosition + WearWidth; }
         }
-        public int LongWaves
+
+        public int MediumwavesleftPosition
         {
-            get { return HeadWear45LeftPosition + WearWidth; }
+            get { return ShortwavesRightPosition + WearWidth ; }
+        }
+        public int MediumwavesrightPosition
+        {
+            get { return MediumwavesleftPosition + WearWidth ; }
+        }
+     
+
+        public int LongwavesLeftPosition
+        {
+            get { return MediumwavesrightPosition + WearWidth; }
+        }
+        public int LongwavesRightPosition
+        {
+            get { return LongwavesLeftPosition + WearWidth; }
         }
 
 
@@ -646,7 +659,7 @@ namespace AlarmPP.Web.Services
         {
             if (_kilometers == null)
                 return false;
-            Data = new string[] { "", "", "", "", "", "", "", "", "", "", "", "", "", "", "","", "", "", "", "", "", "", "", "", "", "", "", "", "","" };
+            Data = new string[] { "", "", "", "", "", "", "", "", "", "", "", "", "", "", "","", "", "", "", "", "", "", "", "", "", "", "", "", "","", "", "", "", "", "", "","" };
 
         
             int position = (int)yPosition;
@@ -670,7 +683,7 @@ namespace AlarmPP.Web.Services
                         Data[(int)Series.Section] += km.PdbSection[0].ToString();
                     int currentMetre = Trip.Travel_Direction == Direction.Direct ? ((int)yPosition - (length - km.GetLength()) + km.Start_m) : km.Final_m - ((int)yPosition - (length - km.GetLength()));
 
-                    for (int index = 0; index < km.Speed.Count; index++)
+                    for (int index = 0; index < km.Speed.Count-km.Start_m; index++)
                     {
                         int metre = Trip.Travel_Direction != Direction.Direct ? km.Length - index : index;
                         if (metre == currentMetre)
@@ -692,9 +705,20 @@ namespace AlarmPP.Web.Services
 
                             Data[(int)Series.DrawdownLeft] = km.DrawdownLeft[index].ToString("0.00");
                             Data[(int)Series.DrwadownRight] = km.DrawdownRight[index].ToString("0.00");
-                            Data[(int)Series.Speed] = km.Speed[index].ToString();
 
-                            Data[(int)Series.Mediumwavesleft] = km.DrawdownLeft[index].ToString("0.00");
+                     
+
+
+                            Data[(int)Series.ShortWavesleft] = km.CrossRailProfile.Shortwavesleft[index].ToString("0.00");
+                            Data[(int)Series.ShortWavesright] = km.CrossRailProfile.Shortwavesleft[index].ToString("0.00");
+
+                            Data[(int)Series.MediumWavesleft] = km.CrossRailProfile.Mediumwavesleft[index].ToString("0.00");
+                            Data[(int)Series.MediumWavesright] = km.CrossRailProfile.Mediumwavesright[index].ToString("0.00");
+
+                            Data[(int)Series.LongWavesleft] = km.CrossRailProfile.Longwavesleft[index].ToString("0.00");
+                            Data[(int)Series.LongWavesright] = km.CrossRailProfile.Longwavesright[index].ToString("0.00");
+
+                            //Data[(int)Series.Mediumwavesleft] = km.DrawdownLeft[index].ToString("0.00");
                             //Data[(int)Series.Mediumwaves] = km.DrawdownLeft[index].ToString("0.00");
                             //Data[(int)Series.Longwaves] = km.DrawdownLeft[index].ToString("0.00");
 
@@ -703,12 +727,13 @@ namespace AlarmPP.Web.Services
                     }
                     if (km.CrossRailProfile != null)
                     {
-
-                        int indexCross = km.CrossRailProfile.Meters.IndexOf(Trip.Travel_Direction == Direction.Reverse ? (float)currentMetre : km.Length - (float)currentMetre);
+                        
+                        int indexCross = km.CrossRailProfile.Meters.IndexOf(Trip.Travel_Direction == Direction.Reverse ? (float)currentMetre : (km.Length - (float)currentMetre));
                         try
                         {
-                            if (indexCross < 0) indexCross = 0;
-                            if (indexCross > 0)
+                            //if (indexCross < 0) indexCross = 1;
+                          
+                            if (indexCross > -1)
                             {
 
                                 Data[(int)Series.SideWearLeft] = km.CrossRailProfile.SideWearLeft[indexCross].ToString("0.00");
@@ -724,9 +749,16 @@ namespace AlarmPP.Web.Services
                                 Data[(int)Series.HeadWear45Left] = km.CrossRailProfile.HeadWearLeft[indexCross].ToString("0.00");
                                 Data[(int)Series.HeadWear45Right] = km.CrossRailProfile.HeadWearRight[indexCross].ToString("0.00");
 
-                                //Data[(int)Series.Mediumwavesleft] = km.CrossRailProfile.Shortwavesleft[indexCross].ToString("0.00");
-                                //Data[(int)Series.Mediumwaves] = km.CrossRailProfile.Mediumwavesleft[indexCross].ToString("0.00");
-                                //Data[(int)Series.Longwaves] = km.CrossRailProfile.Longwavesleft[indexCross].ToString("0.00");
+                                
+
+                                Data[(int)Series.ShortWavesleft] = km.CrossRailProfile.Shortwavesleft[indexCross].ToString("0.00");
+                                Data[(int)Series.ShortWavesright] = km.CrossRailProfile.Shortwavesleft[indexCross].ToString("0.00");
+
+                                Data[(int)Series.MediumWavesleft] = km.CrossRailProfile.Mediumwavesleft[indexCross].ToString("0.00");
+                                Data[(int)Series.MediumWavesright] = km.CrossRailProfile.Mediumwavesright[indexCross].ToString("0.00");
+
+                                Data[(int)Series.LongWavesleft] = km.CrossRailProfile.Longwavesleft[indexCross].ToString("0.00");
+                                Data[(int)Series.LongWavesright] = km.CrossRailProfile.Longwavesright[indexCross].ToString("0.00");
 
                                 ViewBoxLeft = "-100 -30 200 300"; // Уакытша
                                 ViewBoxRight = "-100 -30 200 300"; // Уакытша
@@ -748,7 +780,7 @@ namespace AlarmPP.Web.Services
                         {
                             Console.WriteLine("ads" + e);
                         }
-                     
+
                     }
                     //if (km.Gaps != null)
                     //{
@@ -1060,8 +1092,9 @@ namespace AlarmPP.Web.Services
         StrightLeftZero = 7, StrightLeftPasport = 8, StrightLeftSignal = 9,
         GaugePasport = 10, GaugeSignal = 11, DrawdownLeft = 12, DrwadownRight = 13, GapLeft = 14, GapRight = 15,
         SideWearLeft = 16, SideWearRight = 17, VertWearLeft = 18, VertWearRight = 19, GivenWearLeft = 20, GivenWearRight = 21,
-        TreadTiltLeft = 22, TreadTiltRight = 23, DownHillLeft = 24, DownHillRight = 25, HeadWear45Left = 26, HeadWear45Right = 27, Speed = 28,
-        Section = 29, Mediumwavesleft =30 , Mediumwavesright = 31, Shortwavesleft = 32, Shortwavesright= 33 ,Longwavesleft = 34, Longwavesright =35
+        TreadTiltLeft = 22, TreadTiltRight = 23, DownHillLeft = 24, DownHillRight = 25, HeadWear45Left = 26, HeadWear45Right = 27,
+        Speed = 28, Section = 29,
+         ShortWavesleft = 30, ShortWavesright = 31, MediumWavesleft =32 , MediumWavesright = 33,  LongWavesleft = 34, LongWavesright =35,
     }
     public enum WorkMode { 
         NotSet = -1, Postprocessing = 0, Online = 1
