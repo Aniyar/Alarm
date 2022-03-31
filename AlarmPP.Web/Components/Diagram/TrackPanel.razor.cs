@@ -26,7 +26,7 @@ namespace AlarmPP.Web.Components.Diagram
         [Parameter]
         public double CurrentPosition { get; set; } = 0;
         // double SliderXPosition = 0, SliderCenterXPosition = 25, SliderYPosition=0;
-        private int Width { get; set; } = 3000;
+        private int Width { get; set; } = 4000;
         double ScrollLeft = 0;
         double ScrollTop = 0;
         private DigressionTable digressionTable;
