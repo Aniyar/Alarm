@@ -23,6 +23,7 @@
         {
 
             int rowIndex = 1;
+            int currentKMPosition = 0;
             foreach (var km in Kilometers)
             {
                 var digs = new List<Digression> { };
@@ -60,16 +61,18 @@
                 }
                 foreach (var addDig in digs)
                 {
-                    var Lenth = @addDig.Length / 100;
-                    <tr>
-
+                    int metre = km.Direction == ALARm.Core.Direction.Direct ? addDig.Meter + addDig.Length / 2 : km.Length - addDig.Meter - addDig.Length / 2;
+                    int pos = currentKMPosition + metre - km.Start_m;
+                    int index = rowIndex;
+                    <tr style="background:@(CurrentRow == index ? "#75d2ff" : "lightgray")" @onmousedown="@(_ => GoToMark(pos, index))">
                         <td>@rowIndex</td>
                         <td>@addDig.Km</td>
                         <td>@addDig.Meter</td>
                         <td>@addDig.DigName</td>
                         <td>@addDig.Typ</td>
                         <td>@addDig.Value.ToString("0.00")</td>
-                        <td>@Lenth</td>
+                        <td>@(addDig.Length/100)</td>
+
                         <td>@addDig.Count</td>
                         <td>@addDig.AllowSpeed</td>
                         <td>
@@ -79,7 +82,9 @@
                     </tr>
                     rowIndex++;
                 }
+            currentKMPosition = currentKMPosition + km.GetLength();
             }
+
 
         }
     </table>

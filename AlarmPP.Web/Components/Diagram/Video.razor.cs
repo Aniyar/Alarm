@@ -35,7 +35,7 @@ namespace AlarmPP.Web.Components.Diagram
         public string Base64 { get; set; }
         public List<long> FileIdList { get; set; }
         public int Number { get; set; }
-        public int N_rows { get; set; } = 2;
+        public int N_rows { get; set; } 
         public bool ObjectsDialog { get; set; } = false;
 
         List<Gap> Gaps { get; set; } = new List<Gap>();
@@ -43,6 +43,7 @@ namespace AlarmPP.Web.Components.Diagram
         List<Digression> Fasteners { get; set; } = new List<Digression>();
         List<Digression> PerShpals { get; set; } = new List<Digression>();
         List<Digression> DefShpals { get; set; } = new List<Digression>();
+        
         public Image RotateImage(Image img, float rotationAngle)
         {
             Bitmap bmp = new Bitmap(img.Width, img.Height);
@@ -74,13 +75,22 @@ namespace AlarmPP.Web.Components.Diagram
                 var commonBitMap = new Bitmap(W * 5 - 87, H * N_rows - 175);
                 Graphics g = Graphics.FromImage(commonBitMap);
 
+                //for (int i = 0; i < N_rows; i++)
+                //{
+                //    g.DrawImageUnscaled(rows[N_rows - i - 1][0], 0, (H - upperKoef) * i);
+                //    g.DrawImageUnscaled(rows[N_rows - i - 1][1], W, (H - upperKoef) * i );
+                //    g.DrawImageUnscaled(rows[N_rows - i - 1][2], W * 2, (H - upperKoef) * i);
+                //    g.DrawImageUnscaled(rows[N_rows - i - 1][3], W * 3, (H - upperKoef) * i);
+                //    g.DrawImageUnscaled(rows[N_rows - i - 1][4], W * 4, (H - upperKoef) * i);
+                //}
+
                 for (int i = 0; i < N_rows; i++)
                 {
-                    g.DrawImageUnscaled(RotateImage(rows[N_rows-i-1][0], -1), -12, (H - upperKoef) * i - 46);
-                    g.DrawImageUnscaled(RotateImage(rows[N_rows-i-1][1], 1), W - 12, (H - upperKoef) * i - 65);
-                    g.DrawImageUnscaled(RotateImage(rows[N_rows-i-1][2], 1), W * 2 - 33, (H - upperKoef) * i - 35);
-                    g.DrawImageUnscaled(RotateImage(rows[N_rows-i-1][3], -3), W * 3 - 50, (H - upperKoef) * i - 24);
-                    g.DrawImageUnscaled(RotateImage(rows[N_rows-i-1][4], 4), W * 4 - 130, (H - upperKoef) * i - 24);
+                    g.DrawImageUnscaled(RotateImage(rows[N_rows - i - 1][0], -1), 0, (H - upperKoef) * i - 46);
+                    g.DrawImageUnscaled(RotateImage(rows[N_rows - i - 1][1], 1), W, (H - upperKoef) * i - 65);
+                    g.DrawImageUnscaled(RotateImage(rows[N_rows - i - 1][2], 1), W * 2, (H - upperKoef) * i - 35);
+                    g.DrawImageUnscaled(RotateImage(rows[N_rows - i - 1][3], -3), W * 3, (H - upperKoef) * i - 24);
+                    g.DrawImageUnscaled(RotateImage(rows[N_rows - i - 1][4], 4), W * 4, (H - upperKoef) * i - 24);
                 }
 
                 if (rows[1] != null)
@@ -125,12 +135,20 @@ namespace AlarmPP.Web.Components.Diagram
 
         void GetObjectsFromFrame()
         {
-            Gaps = CurrentKm.Gaps.Where(o => o.Meter == CurrentMeter).ToList();
-            Fasteners = CurrentKm.Fasteners.Where(o => o.Meter == CurrentMeter).ToList();
-            Bolts = CurrentKm.Bolts.Where(o => o.Meter == CurrentMeter).ToList();
-            DefShpals = CurrentKm.DefShpals.Where(o => o.Meter == CurrentMeter).ToList();
-            PerShpals = CurrentKm.PerShpals.Where(o => o.Meter == CurrentMeter).ToList();
-            ObjectsDialog = true;
+            try
+            {
+                Gaps = CurrentKm.Gaps.Where(o => o.Meter == CurrentMeter).ToList();
+                Fasteners = CurrentKm.Fasteners.Where(o => o.Meter == CurrentMeter).ToList();
+                Bolts = CurrentKm.Bolts.Where(o => o.Meter == CurrentMeter).ToList();
+                DefShpals = CurrentKm.DefShpals.Where(o => o.Meter == CurrentMeter).ToList();
+                PerShpals = CurrentKm.PerShpals.Where(o => o.Meter == CurrentMeter).ToList();
+                ObjectsDialog = true;
+            }
+            catch(Exception e)
+            {
+                Toaster.Add($"Отсутствуют данные по указанному километру", MatBlazor.MatToastType.Warning, "Просмотр видео проезда");
+            }
+            
         }
 
         public void NextClick()

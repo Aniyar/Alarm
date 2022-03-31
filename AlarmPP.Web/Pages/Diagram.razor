@@ -66,8 +66,8 @@
                                 </MatListItem>
 
                                 @*<MatListItem OnClick="(_ => SetShowStatus(Services.ShowButtons.DangerousForEmtyWagon))">
-                        <MatCheckbox Value="@AppData.ShowDangerousForEmtyWagon" Label="Опасные для порожных вагонов" Style="color:hotpink;width:100%;" ValueChanged="@((bool value) => SetShowStatus(Services.ShowButtons.DangerousForEmtyWagon))"></MatCheckbox>
-                    </MatListItem>*@
+                                    <MatCheckbox Value="@AppData.ShowDangerousForEmtyWagon" Label="Опасные для порожных вагонов" Style="color:hotpink;width:100%;" ValueChanged="@((bool value) => SetShowStatus(Services.ShowButtons.DangerousForEmtyWagon))"></MatCheckbox>
+                                </MatListItem>*@
                                 <MatListItem OnClick="(_ => SetShowStatus(Services.ShowButtons.ByKilometer))">
                                     <MatCheckbox Value="@AppData.ByKilometerChecked" Label="Покилометровая оценка отступлений" Style="color: black; width: 100%;" ValueChanged="@((bool value) => SetShowStatus(Services.ShowButtons.ByKilometer))"></MatCheckbox>
                                 </MatListItem>
@@ -152,6 +152,21 @@
                                     <MatCheckbox Value="@AppData.ShowIznosPriv" Label="Износ приведенный" Style="color: red; width: 100%;" ValueChanged="@((bool value) => SetShowStatus(Services.ShowButtons.IznosPriv))"></MatCheckbox>
                                 </MatListItem>
 
+                                @*///средние короткие волны
+                                <MatListItem OnClick="(_ => SetShowStatus(Services.ShowButtons.IznosPriv))">
+                                    <MatCheckbox Value="@AppData.ShowIznosPriv" Label="Износ приведенный" Style="color: red; width: 100%;" ValueChanged="@((bool value) => SetShowStatus(Services.ShowButtons.IznosPriv))"></MatCheckbox>
+                                </MatListItem>
+                                <MatListItem OnClick="(_ => SetShowStatus(Services.ShowButtons.IznosPriv))">
+                                    <MatCheckbox Value="@AppData.ShowIznosPriv" Label="Износ приведенный" Style="color: red; width: 100%;" ValueChanged="@((bool value) => SetShowStatus(Services.ShowButtons.IznosPriv))"></MatCheckbox>
+                                </MatListItem>
+                                <MatListItem OnClick="(_ => SetShowStatus(Services.ShowButtons.IznosPriv))">
+                                    <MatCheckbox Value="@AppData.ShowIznosPriv" Label="Износ приведенный" Style="color: red; width: 100%;" ValueChanged="@((bool value) => SetShowStatus(Services.ShowButtons.IznosPriv))"></MatCheckbox>
+                                </MatListItem>
+                                <MatListItem OnClick="(_ => SetShowStatus(Services.ShowButtons.IznosPriv))">
+                                    <MatCheckbox Value="@AppData.ShowIznosPriv" Label="Износ приведенный" Style="color: red; width: 100%;" ValueChanged="@((bool value) => SetShowStatus(Services.ShowButtons.IznosPriv))"></MatCheckbox>
+                                </MatListItem>
+                                *@
+
                             </MatList>
                         </MatMenu>
                     </MatTooltip>
@@ -203,7 +218,7 @@
                         </MatFAB>
                     </MatTooltip>
                     <MatTooltip Tooltip="Просмотр видео" Wrap="true">
-                        <MatFAB Mini="true" Style="font-size: 150%; box-shadow: none;" OnClick="@(_ => VideoDialog = true)">📹</MatFAB>
+                        <MatFAB Mini="true" Style="font-size: 150%; box-shadow: none;" OnClick="@(_ => { AppData.ShowVideo = !AppData.ShowVideo;  })">📹</MatFAB>
                     </MatTooltip>
                     @if (AppData.Trip.Processed == true)
                     {
@@ -235,10 +250,9 @@
         </MatAppBar>
 
         <MatAppBarContent Style="height:100%;">
-            <TrackPanel @ref="TrackPanel" Kilometers="@Kilometers"></TrackPanel>
-            <TripChooserDialog Theme="@MainTheme"  Kilometers="@Kilometers" OnlineModeStarted="_=>Refresh()"></TripChooserDialog>
-            
-            
+           
+                <TrackPanel @ref="TrackPanel" Kilometers="@Kilometers"></TrackPanel>
+                <TripChooserDialog Theme="@MainTheme" Kilometers="@Kilometers" OnlineModeStarted="_=>Refresh()"></TripChooserDialog>
             
         </MatAppBarContent>
     </MatAppBarContainer>
@@ -252,10 +266,3 @@
     </MatDialogActions>
 </MatDialog>
 
-<MatDialog @bind-IsOpen="@VideoDialog" Stacked="true" Class="image-modal">
-        <MatDialogTitle>Просмотр видео проезда</MatDialogTitle>
-        <Video Kilometers=AppData.Kilometers></Video>
-        <MatDialogActions>
-            <MatButton Raised="true" OnClick="_=> { VideoDialog = false; AppData.VideoProcessing = false; }">Закрыть</MatButton>
-        </MatDialogActions>
-</MatDialog>

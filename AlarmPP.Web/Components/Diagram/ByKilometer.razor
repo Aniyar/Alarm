@@ -27,6 +27,7 @@
         @if (Kilometers != null)
         {
             int rowIndex = 1;
+            int currentKMPosition = 0;
             foreach (var km in Kilometers)
             {
                 int dig2count = 0, dig3count = 0, dig4count = 0;
@@ -50,7 +51,7 @@
                                 dig3count += 1;
                                 points += digression.GetPoint(km);
                             }
-                            else if (digression.Degree == 4 ) //!(digression.Value == DigressionName.StrighteningOnSwitch.Value && digression.GetDigName().ToString().Equals("Рнр"))
+                            else if (digression.Degree == 4) //!(digression.Value == DigressionName.StrighteningOnSwitch.Value && digression.GetDigName().ToString().Equals("Рнр"))
                             {
                                 if (digression.DigName.Contains("Рнрст"))
                                 {
@@ -61,7 +62,9 @@
                             }
 
                         }
-                        <tr>
+                        int index = rowIndex;
+                        int pos = currentKMPosition;
+                        <tr style="background:@(CurrentRow == index ? "#75d2ff" : "lightgray")" @onmousedown="@(_ => GoToMark(pos, index))">
                             <th style="border-right: 1px solid grey; border-left: 1px solid grey; width: 30px;">@rowIndex</th>
                             <th style="border-right: 1px solid grey; border-left: 1px solid grey; width: 30px;">@km.Number</th>
                             <th style="border-right: 1px solid grey; border-left: 1px solid grey; width: 30px;">@sec.Split('/')[0].Split('-')[1]</th>
@@ -80,11 +83,13 @@
                         </tr>
                         rowIndex++;
                     }
+
                 }
                 catch (Exception e)
                 {
                     System.Console.WriteLine(e.Message);
                 }
+                currentKMPosition = currentKMPosition + km.GetLength();
 
             }
 

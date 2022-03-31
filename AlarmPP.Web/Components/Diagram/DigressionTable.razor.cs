@@ -34,14 +34,10 @@ namespace AlarmPP.Web.Components.Diagram
         private DigressionMark digression { get; set; } = new DigressionMark();
         private bool DigressionDeleteDialog { get; set; } = false;
         private bool DigressionEditDialog { get; set; } = false;
-        private string DigressionEditor { get; set; }
-        private string EditReason { get; set; }
 
         private Gap digressionGap { get; set; } = new Gap();
         private bool GapDeleteDialog { get; set; } = false;
         private bool GapEditDialog { get; set; } = false;
-        private string GapEditor { get; set; }
-        private string GapEditReason { get; set; }
 
 /*
         private Digression digressionBolt { get; set; } = new Digression();*/
@@ -106,23 +102,30 @@ namespace AlarmPP.Web.Components.Diagram
         void UpdateDigression(RdAction action)
         {
 
-            if (DigressionEditor == null || EditReason == null || DigressionEditor.Equals("") || EditReason.Equals("") || DigressionEditor.Equals(string.Empty) || EditReason.Equals(string.Empty))
+            if (AppData.Editor == null || AppData.EditReason == null || AppData.Editor.Equals("") || AppData.EditReason.Equals("") || AppData.Editor.Equals(string.Empty) || AppData.EditReason.Equals(string.Empty))
             {
                 Toaster.Add($"Заполните все поля диалогового окна", MatBlazor.MatToastType.Warning, "Редактирование отступлений");
                 return;
             }
-            digression.EditReason = EditReason;
-            digression.Editor = DigressionEditor;
+            digression.EditReason = AppData.EditReason;
+            digression.Editor = AppData.Editor;
             try
             {
                 var kilometer = (from km in Kilometers where km.Number == digression.Km select km).First();
                 if (AppData.RdStructureRepository.UpdateDigression(digression, kilometer, action) > 0)
                 {
-                    Toaster.Add($"Редактирование успешно завершено", MatBlazor.MatToastType.Success, "Редактирование отступлений");
+
                     if (action == RdAction.Delete)
+                    { 
                         DigressionDeleteDialog = false;
-                    else
+                        Toaster.Add($"Удаление успешно завершено", MatBlazor.MatToastType.Success, "Редактирование отступлений");
+                    }
+                    else 
+                    {
                         DigressionEditDialog = false;
+                        StateHasChanged();
+                        Toaster.Add($"Редактирование успешно завершено", MatBlazor.MatToastType.Success, "Редактирование отступлений"); 
+                    }
                 }
             }
             catch (Exception e)
@@ -134,14 +137,14 @@ namespace AlarmPP.Web.Components.Diagram
         void UpdateGap(RdAction action)
         {
 
-            if (GapEditor == null || GapEditReason == null || GapEditor.Equals("") || GapEditReason.Equals("") || GapEditor.Equals(string.Empty) || GapEditReason.Equals(string.Empty))
+            if (AppData.Editor == null || AppData.EditReason == null || AppData.Editor.Equals("") || AppData.EditReason.Equals("") || AppData.Editor.Equals(string.Empty) || AppData.EditReason.Equals(string.Empty))
             {
                 Toaster.Add($"Заполните все поля диалогового окна", MatBlazor.MatToastType.Warning, "Редактирование отступлений");
                 return;
             }
-            digressionGap.EditReason = GapEditReason;
-            digressionGap.Editor = GapEditor;
-
+            digressionGap.EditReason = AppData.EditReason;
+            digressionGap.Editor = AppData.Editor;
+            //digressionGap.Zabeg = hidzazor.value;
             try
             {
                 var kilometer = (from km in Kilometers where km.Number == digressionGap.Km select km).First();
@@ -168,13 +171,13 @@ namespace AlarmPP.Web.Components.Diagram
         void EditDigression(RdAction action, int type, bool dialog)
         {
 
-            if (DigressionEditor == null || EditReason == null || DigressionEditor.Equals("") || EditReason.Equals("") || DigressionEditor.Equals(string.Empty) || EditReason.Equals(string.Empty))
+            if (AppData.Editor == null || AppData.EditReason == null || AppData.Editor.Equals("") || AppData.EditReason.Equals("") || AppData.Editor.Equals(string.Empty) || AppData.EditReason.Equals(string.Empty))
             {
                 Toaster.Add($"Заполните все поля диалогового окна", MatBlazor.MatToastType.Warning, "Редактирование отступлений");
                 return;
             }
-            digressionO.EditReason = EditReason;
-            digressionO.Editor = DigressionEditor;
+            digressionO.EditReason = AppData.EditReason;
+            digressionO.Editor = AppData.Editor;
             try
             {
                 var kilometer = (from km in Kilometers where km.Number == digressionO.Km select km).First();
@@ -881,12 +884,14 @@ namespace AlarmPP.Web.Components.Diagram
 
         public void ModifyGapClick(Gap gap)
         {
+            StateHasChanged();
             digressionGap = gap;
             GapEditDialog = true;
         }
 
         public void DeleteGapClick(Gap gap)
         {
+            StateHasChanged();
             digressionGap = gap;
             GapDeleteDialog = true;
         }
@@ -945,5 +950,6 @@ namespace AlarmPP.Web.Components.Diagram
             digType = type;
             DeleteModalState = true;
         }
+
     }
 }

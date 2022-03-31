@@ -161,7 +161,8 @@ namespace ALARm.Core
        // public float StrightKoef = 3.5f;
         public float StrightKoef = 1f;
         public float GaugeKoef = 2;
-        public float WearKoef = 4;
+        public float WearKoef = 5;
+        public float WavesKoef = 30;
         public float DegKoef = 1000;
 
         public List<double> Level = new List<double>();
@@ -185,6 +186,15 @@ namespace ALARm.Core
             {
                 for (int i = 0; i < Speed.Count; i++)
                 {
+                    kilometer.ShortWavesLeft.Add(ShortWavesLeft[i]);
+                    kilometer.ShortWavesRight.Add(ShortWavesRight[i]);
+
+                    kilometer.MediumWavesLeft.Add(MediumWavesLeft[i]);
+                    kilometer.MediumWavesRight.Add(MediumWavesRight[i]);
+
+                    kilometer.LongWavesLeft.Add(LongWavesLeft[i]);
+                    kilometer.LongWavesRight.Add(LongWavesRight[i]);
+
                     kilometer.Speed.Add(Speed[i]);
                     kilometer.DrawdownRight.Add(DrawdownRight[i]);
                     kilometer.DrawdownLeft.Add(DrawdownLeft[i]);
@@ -237,6 +247,13 @@ namespace ALARm.Core
             }
             if (clearCount == -1)
             {
+                ShortWavesRight.Clear();
+                ShortWavesLeft.Clear();
+                MediumWavesLeft.Clear();
+                MediumWavesRight.Clear();
+                LongWavesLeft.Clear();
+                LongWavesRight.Clear();
+
                 Speed.Clear();
                 DrawdownRight.Clear();
                 DrawdownLeft.Clear();
@@ -457,6 +474,15 @@ namespace ALARm.Core
             int sign = 1;
             foreach (var outdata in outdatas)
             {
+
+                //km.LongWavesLeft
+                //km.LongWavesRight
+                //km.ShortwavesLeft
+                //km.ShortWavesRight
+                //km.LongWavesLeft
+                //km.LongWavesRight
+
+
                 km.Speed.Add(outdata.speed);
                 km.DrawdownRight.Add(outdata.drawdown_right);
                 km.DrawdownLeft.Add(outdata.drawdown_left);
@@ -522,6 +548,16 @@ namespace ALARm.Core
         public List<int> Corrections = new List<int>();
         public List<double> DrawdownLeft = new List<double>();
         public List<double> DrawdownRight = new List<double>();
+
+        public List<double> ShortWavesLeft = new List<double>();
+        public List<double> ShortWavesRight = new List<double>();
+
+        public List<double> MediumWavesLeft = new List<double>();
+        public List<double> MediumWavesRight = new List<double>();
+
+        public List<double> LongWavesLeft = new List<double>();
+        public List<double> LongWavesRight = new List<double>();
+
         public List<double> XCamLeft = new List<double>();
         public List<double> XCamRight = new List<double>();
         public List<double> SwitchesReal = new List<double>();
@@ -700,52 +736,46 @@ namespace ALARm.Core
 
         public void CalcRailProfileLines(Trips trip)
         {
-            if (CrossRailProfile == null)
-                return;
-            var sideWearLeft = new StringBuilder();
-            var sideWearRight = new StringBuilder();
-            var vertWearLeft = new StringBuilder();
-            var vertWearRight = new StringBuilder();
-            var givenWearLeft = new StringBuilder();
-            var givenWearRight = new StringBuilder();
-            var treadTiltLeft = new StringBuilder();
-            var treadTiltRight = new StringBuilder();
-            var downHillLeft = new StringBuilder();
-            var downHillRight = new StringBuilder();
-            var headWear45Left = new StringBuilder();
-            var headWear45Right = new StringBuilder();
+            //if (CrossRailProfile == null)
+                //return;
+         
 
+
+            var shortwavesLeft = new StringBuilder();
+            var shortwavesRight = new StringBuilder();
+            var mediumwavesLeft = new StringBuilder();
+            var mediumwavesRight = new StringBuilder();
+            var longwavesLeft = new StringBuilder();
+            var longwavesRight = new StringBuilder();
+
+
+          
             foreach (var meter in CrossRailProfile.Meters.Where(meter => meter % 1 == 0).ToList())
             {
 
                 int index = CrossRailProfile.Meters.IndexOf(meter);
                 var cmeter = trip.Travel_Direction == Direction.Reverse ? meter : Length - meter;
-                sideWearLeft.Append((CrossRailProfile.SideWearLeft[index] * WearKoef).ToString().Replace(",", ".") + "," + cmeter.ToString().Replace(",", ".") + " ");
-                sideWearRight.Append((CrossRailProfile.SideWearRight[index] * WearKoef).ToString().Replace(",", ".") + "," + cmeter.ToString().Replace(",", ".") + " ");
-                vertWearLeft.Append((CrossRailProfile.VertIznosL[index] * WearKoef).ToString().Replace(",", ".") + "," + cmeter.ToString().Replace(",", ".") + " ");
-                vertWearRight.Append((CrossRailProfile.VertIznosR[index] * WearKoef).ToString().Replace(",", ".") + "," + cmeter.ToString().Replace(",", ".") + " ");
-                givenWearLeft.Append((CrossRailProfile.ReducedWearLeft[index] * WearKoef).ToString().Replace(",", ".") + "," + cmeter.ToString().Replace(",", ".") + " ");
-                givenWearRight.Append((CrossRailProfile.ReducedWearRight[index] * WearKoef).ToString().Replace(",", ".") + "," + cmeter.ToString().Replace(",", ".") + " ");
-                treadTiltLeft.Append((CrossRailProfile.TreadTiltLeft[index] * DegKoef).ToString().Replace(",", ".") + "," + cmeter.ToString().Replace(",", ".") + " ");
-                treadTiltRight.Append((CrossRailProfile.TreadTiltRight[index] * DegKoef).ToString().Replace(",", ".") + "," + cmeter.ToString().Replace(",", ".") + " ");
-                downHillLeft.Append((CrossRailProfile.DownhillLeft[index] * DegKoef).ToString().Replace(",", ".") + "," + cmeter.ToString().Replace(",", ".") + " ");
-                downHillRight.Append((CrossRailProfile.DownhillRight[index] * DegKoef).ToString().Replace(",", ".") + "," + cmeter.ToString().Replace(",", ".") + " ");
-                headWear45Left.Append((CrossRailProfile.HeadWearLeft[index] * WearKoef).ToString().Replace(",", ".") + "," + cmeter.ToString().Replace(",", ".") + " ");
-                headWear45Right.Append((CrossRailProfile.HeadWearRight[index] * WearKoef).ToString().Replace(",", ".") + "," + cmeter.ToString().Replace(",", ".") + " ");
+               
+
+                shortwavesLeft.Append((CrossRailProfile.Shortwavesleft[index] * WavesKoef).ToString().Replace(",", ".") + "," + cmeter.ToString().Replace(",", ".") + " ");
+                shortwavesRight.Append((CrossRailProfile.Shortwavesright[index] * WavesKoef).ToString().Replace(",", ".") + "," + cmeter.ToString().Replace(",", ".") + " ");
+                mediumwavesLeft.Append((CrossRailProfile.Mediumwavesleft[index] * WavesKoef).ToString().Replace(",", ".") + "," + cmeter.ToString().Replace(",", ".") + " ");
+                mediumwavesRight.Append((CrossRailProfile.Mediumwavesright[index] * WavesKoef).ToString().Replace(",", ".") + "," + cmeter.ToString().Replace(",", ".") + " ");
+                longwavesLeft.Append((CrossRailProfile.Longwavesleft[index] * WavesKoef).ToString().Replace(",", ".") + "," + cmeter.ToString().Replace(",", ".") + " ");
+                longwavesRight.Append((CrossRailProfile.Longwavesright[index] * WavesKoef).ToString().Replace(",", ".") + "," + cmeter.ToString().Replace(",", ".") + " ");
 
             }
-            SideWearLeft = sideWearLeft.ToString();
-            SideWearRight = sideWearRight.ToString();
-            VertWearLeft = vertWearLeft.ToString();
-            VertWearRight = vertWearRight.ToString();
-            GivenWearLeft = givenWearLeft.ToString();
-            GivenWearRight = givenWearRight.ToString();
-            TreadTiltLeft = treadTiltLeft.ToString();
-            TreadTiltRight = treadTiltRight.ToString();
-            DownHillLeft = downHillLeft.ToString();
-            DownHillRight = downHillRight.ToString();
-            HeadWear45Left = headWear45Left.ToString();
-            HeadWear45Right = headWear45Right.ToString();
+        
+
+            ShortwavesLeft = shortwavesLeft.ToString();
+            ShortwavesRight = shortwavesRight.ToString();
+
+            MediumwavesLeft = mediumwavesLeft.ToString();
+            MediumwavesRight = mediumwavesRight.ToString();
+         
+            LongwavesLeft = longwavesLeft.ToString();
+            LongwavesRight = longwavesRight.ToString();
+            
         }
 
         public string GetdigressionsCount =>
@@ -1134,7 +1164,15 @@ namespace ALARm.Core
         public string DownHillLeft { get; set; } = "";
         public string DownHillRight { get; set; } = "";
         public string HeadWear45Left { get; set; } = "";
+           
         public string HeadWear45Right { get; set; } = "";
+        public string MediumwavesLeft { get; set; } = "";
+        public string MediumwavesRight { get; set; } = "";
+        public string ShortwavesLeft { get; set; } = "";
+        public string ShortwavesRight { get; set; } = "";
+        public string LongwavesLeft { get; set; } = "";
+        public string LongwavesRight { get; set; } = "";
+
         public int Start_Index { get; set; } = -1;
         public int Final_Index => Start_Index + GetLength();
         public string TrapezLevel { get; set; } = "";
