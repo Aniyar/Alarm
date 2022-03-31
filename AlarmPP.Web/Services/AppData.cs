@@ -662,8 +662,9 @@ namespace AlarmPP.Web.Services
             if (_kilometers == null)
                 return false;
             Data = new string[] { "", "", "", "", "", "", "", "", "", "", "", "", "", "", "","", "", "", "", "", "", "", "", "", "", "", "", "", "","", "", "", "", "", "", "","" };
+           
 
-        
+
             int position = (int)yPosition;
             int length = 0;
    
@@ -711,14 +712,14 @@ namespace AlarmPP.Web.Services
                      
 
 
-                            Data[(int)Series.ShortWavesleft] = km.CrossRailProfile.Shortwavesleft[index].ToString("0.00");
-                            Data[(int)Series.ShortWavesright] = km.CrossRailProfile.Shortwavesleft[index].ToString("0.00");
+                            //Data[(int)Series.ShortWavesleft] = km.CrossRailProfile.Shortwavesleft[index].ToString("0.00");
+                            //Data[(int)Series.ShortWavesright] = km.CrossRailProfile.Shortwavesleft[index].ToString("0.00");
 
-                            Data[(int)Series.MediumWavesleft] = km.CrossRailProfile.Mediumwavesleft[index].ToString("0.00");
-                            Data[(int)Series.MediumWavesright] = km.CrossRailProfile.Mediumwavesright[index].ToString("0.00");
+                            //Data[(int)Series.MediumWavesleft] = km.CrossRailProfile.Mediumwavesleft[index].ToString("0.00");
+                            //Data[(int)Series.MediumWavesright] = km.CrossRailProfile.Mediumwavesright[index].ToString("0.00");
 
-                            Data[(int)Series.LongWavesleft] = km.CrossRailProfile.Longwavesleft[index].ToString("0.00");
-                            Data[(int)Series.LongWavesright] = km.CrossRailProfile.Longwavesright[index].ToString("0.00");
+                            //Data[(int)Series.LongWavesleft] = km.CrossRailProfile.Longwavesleft[index].ToString("0.00");
+                            //Data[(int)Series.LongWavesright] = km.CrossRailProfile.Longwavesright[index].ToString("0.00");
 
                             //Data[(int)Series.Mediumwavesleft] = km.DrawdownLeft[index].ToString("0.00");
                             //Data[(int)Series.Mediumwaves] = km.DrawdownLeft[index].ToString("0.00");
@@ -726,6 +727,7 @@ namespace AlarmPP.Web.Services
 
                             break;
                         }
+
                     }
                     if (km.CrossRailProfile != null)
                     {
