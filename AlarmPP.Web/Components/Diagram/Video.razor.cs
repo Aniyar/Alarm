@@ -118,6 +118,7 @@ namespace AlarmPP.Web.Components.Diagram
         public async Task OnTimedEventAsync()
         {
             AppData.VideoProcessing = !AppData.VideoProcessing;
+
             CurrentKm = Kilometers.Where(km => km.Number == Number).First();
             StartMeter = CurrentKm.Start_m;
             while (AppData.VideoProcessing)

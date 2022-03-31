@@ -29,6 +29,7 @@ namespace AlarmPP.Web.Components.Diagram
         private int Width { get; set; } = 4000;
         double ScrollLeft = 0;
         double ScrollTop = 0;
+
         private DigressionTable digressionTable;
         private bool StopDialog { get; set; } = false;
         private bool loading = false;
