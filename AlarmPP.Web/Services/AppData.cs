@@ -63,6 +63,7 @@ namespace AlarmPP.Web.Services
         public double SliderXPosition { get; set; } = 0;
         public double SliderCenterXPosition { get; set; } = 25;
         public double SliderYPosition { get; set; } = 0;
+        public bool ShowVideo { get; set; } = false; 
         public Trips Trip { get; set; } = new Trips();
         public bool IsDialogOpen { get; set; } = true;
         private string _color;
