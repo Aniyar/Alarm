@@ -1,5 +1,6 @@
 ﻿
 
+using Accord;
 using ALARm.Core;
 using ALARm.Core.AdditionalParameteres;
 using ALARm.Core.Report;
@@ -15,11 +16,14 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace ALARm.DataAccess
 {
     public class AdditionalParametersRepository : IAdditionalParametersRepository
     {
+        private int[,] Filter = null;
+
         object IAdditionalParametersRepository.Insert_deviationsinballast(long trip_id, int iD, List<RailFastener> digressions)
         {
             
@@ -886,6 +890,8 @@ namespace ALARm.DataAccess
 	                                        otst,
 	                                        threat_id,
 											fastening,
+                                            oid,    
+                                            next_oid,
 											notice,
 	                                        fileid,
 	                                        ms,
@@ -901,6 +907,8 @@ namespace ALARm.DataAccess
                                             '{fastener.Digressions[0].GetName()}',
 										    '{fastener.Threat_id}',
 										    '{fastener.Fastening}',
+                                            '{fastener.Oid}',
+                                            '{fastener.Next_oid}',   
                                             '{fastener.Notice}',
                                             '{fastener.Fileid}',
                                             '{fastener.Ms}',
@@ -2359,7 +2367,78 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
             });
             return bitMaps;
         }
-        
+
+        public int[,] getFilter(long fileId, long ms)
+        {
+            var filePath = getFilesPathById(fileId)[0];
+            List<Dictionary<String, Object>> shapes = new List<Dictionary<string, object>>();
+            using (BinaryReader reader = new BinaryReader(File.Open(filePath["fileName"] as string, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)))
+            {
+                try
+                {
+                    int width = reader.ReadInt32();
+                    int height = reader.ReadInt32();
+                    int frameSize = width * height;
+                    long position = (long)0 * (long)frameSize + 8;
+                    reader.BaseStream.Seek(position, SeekOrigin.Begin);
+                    byte[] by = reader.ReadBytes(frameSize);
+                    var arr = by.Skip(8).Take(4).ToArray();
+                    var km = BitConverter.ToInt32(by.Skip(40).Take(4).ToArray(), 0);
+                    var encoderCounter_1 = BitConverter.ToInt32(arr, 0);
+                    position = (long)(Math.Abs(ms - encoderCounter_1) / 200) * (long)frameSize + 8;
+                    reader.BaseStream.Seek(position, SeekOrigin.Begin);
+                    by = reader.ReadBytes(frameSize);
+                    byte[] first = new byte[width];
+                    Array.Copy(by, 0, first, 0, width);
+                    int sum = 0;
+                    for (int i=0; i<width; i++)
+                    {
+                        sum += first[i];
+                    }
+                    int firstavg = sum / width;
+                    byte[] last = new byte[width];
+                    Array.Copy(by, by.Length-width, last, 0, width);
+                    sum = 0;
+                    for (int i = 0; i < width; i++)
+                    {
+                        sum += last[i];
+                    }
+                    int lastavg = sum / width;
+                    int[,] matrix = new int[height, width];
+                    for (int i=0; i<height; i++)
+                    {
+                        for (int j=0; j < width; j++)
+                        {
+                            matrix[i, j] = (firstavg + lastavg) / 2 + (lastavg - firstavg) / height * i;
+                        }
+                    }
+                    Filter = matrix;
+                    return matrix;
+                }
+                catch (Exception e)
+                {
+                    
+                    System.Console.WriteLine("getBitmaps error: " + e.StackTrace);
+                    return new int[0, 0];
+                }
+            }
+        }
+
+        private Color ChangeColorBrightness(Color color, float correctionFactor)
+        {
+            float red = (float)color.R;
+            float green = (float)color.G;
+            float blue = (float)color.B;
+
+            red *= correctionFactor;
+            green *= correctionFactor;
+            blue *= correctionFactor;
+            red = (red > 255 ? 255 : red);
+            green = (green > 255 ? 255 : green);
+            blue = (blue > 255 ? 255 : blue);
+            return Color.FromArgb(color.A, (int)red, (int)green, (int)blue);
+        }
+
         public Dictionary<string,Object> getBitMaps(long fileId, long ms, int fnum, RepType RepType){
             List<Bitmap> bitMaps = new List<Bitmap>();
             var filePaths = getFilesPathById(fileId);
@@ -2389,6 +2468,54 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
                             if (encoderCounter_1 == ms)
                             {
                                 Bitmap bitMap = Convert2Bitmap(by, width, height);
+                                //if (Filter == null)
+                                //{
+                                //    byte[] first = new byte[width];
+                                //    Array.Copy(by, 0, first, 0, width);
+                                //    int sum = 0;
+                                //    for (int i = 0; i < width; i++)
+                                //    {
+                                //        sum += first[i];
+                                //    }
+                                //    int firstavg = sum / width;
+                                //    byte[] last = new byte[width];
+                                //    Array.Copy(by, by.Length - width, last, 0, width);
+                                //    sum = 0;
+                                //    for (int i = 0; i < width; i++)
+                                //    {
+                                //        sum += last[i];
+                                //    }
+                                //    int lastavg = sum / width;
+                                //    int[,] matrix = new int[height, width];
+                                //    for (int i = 0; i < height; i++)
+                                //    {
+                                //        for (int j = 0; j < width; j++)
+                                //        {
+                                //            matrix[i, j] = (firstavg + lastavg) / 2 + (lastavg - firstavg) / height * i;
+                                //        }
+                                //    }
+                                //    Filter = matrix;
+                                //}
+                                for (int row = 0; row < bitMap.Width; row++)
+                                {
+                                    for (int col = 0; col < bitMap.Height; col++)
+                                    {
+                                        Color pixel = bitMap.GetPixel(row, col);
+                                        if (pixel.GetBrightness() > 120)
+                                        {
+                                            pixel = ChangeColorBrightness(pixel, 0.80f);
+                                            bitMap.SetPixel(row, col, pixel);
+                                        }
+                                        else
+                                        {
+                                            pixel = ChangeColorBrightness(pixel, 1.2f);
+                                            bitMap.SetPixel(row, col, pixel);
+                                        }
+                                    }
+                                }
+
+
+
 
                                 Graphics gr = Graphics.FromImage(bitMap);
                                 using (Pen selPen = new Pen(Color.White))
@@ -2414,6 +2541,23 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
                                 reader.BaseStream.Seek(position, SeekOrigin.Begin);
                                 by = reader.ReadBytes(frameSize);
                                 Bitmap bitMapL = Convert2Bitmap(by, width, height);
+                                for (int row = 0; row < bitMapL.Width; row++)
+                                {
+                                    for (int col = 0; col < bitMapL.Height; col++)
+                                    {
+                                        Color pixel = bitMapL.GetPixel(row, col);
+                                        if (pixel.GetBrightness() > 120)
+                                        {
+                                            pixel = ChangeColorBrightness(pixel, 0.80f);
+                                            bitMapL.SetPixel(row, col, pixel);
+                                        }
+                                        else
+                                        {
+                                            pixel = ChangeColorBrightness(pixel, 1.2f);
+                                            bitMapL.SetPixel(row, col, pixel);
+                                        }
+                                    }
+                                }
                                 Graphics grl = Graphics.FromImage(bitMapL);
                                 using (Pen selPen = new Pen(Color.White))
                                 {

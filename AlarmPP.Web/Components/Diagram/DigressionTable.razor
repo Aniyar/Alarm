@@ -269,28 +269,29 @@
                                     <AlarmButton Text="" Symbol="📷" Tooltip="Фото" OnClick="() => GetImageBolts(bolt.value, bolt.i, 2)"></AlarmButton>
                                 </td>
                             </tr>
-                            rowIndex++;
-                        }
-                    }
+                    rowIndex++;
                 }
+            }
+        }
 
-                if (kilometer.Fasteners != null)
+        if (kilometer.Fasteners != null)
+        {
+            kilometer.Fasteners = kilometer.Fasteners.Where(o => o.Km == kilometer.Number).ToList();
+            foreach (var fastener in kilometer.Fasteners.Select((value, i) => new { i, value }))
+            {
+                int metre = kilometer.Direction == ALARm.Core.Direction.Direct ? fastener.value.Meter : kilometer.Length - fastener.value.Meter;
+                int pos = currentKMPosition + metre;
+                fastener.value.Direction_num = (kilometer.Direction == ALARm.Core.Direction.Direct) ? 1 : -1;
+                fastener.value.Put = kilometer.Track_name;
+                fastener.value.Fragment = kilometer.Sector;
+                fastener.value.Pdb_section = kilometer.PdbSection.Count > 0 ? kilometer.PdbSection[0].ToString() : "";
+                fastener.value.Date = DateTime.Today.ToShortDateString();
+                int index = rowIndex;
+                //AppData.RdStructureRepository.SetFileID(fastener.value.Km, fastener.value.Fileid, 242);     
+
+                if (AppData.ShowFasteners)
                 {
-                    kilometer.Fasteners = kilometer.Fasteners.Where(o => o.Km == kilometer.Number).ToList();
-                    foreach (var fastener in kilometer.Fasteners.Select((value, i) => new { i, value }))
-                    {
-                        int metre = kilometer.Direction == ALARm.Core.Direction.Direct ? fastener.value.Meter : kilometer.Length - fastener.value.Meter;
-                        int pos = currentKMPosition + metre;
-                        fastener.value.Direction_num = (kilometer.Direction == ALARm.Core.Direction.Direct) ? 1 : -1;
-                        fastener.value.Put = kilometer.Track_name;
-                        fastener.value.Fragment = kilometer.Sector;
-                        fastener.value.Pdb_section = kilometer.PdbSection.Count > 0 ? kilometer.PdbSection[0].ToString() : "";
-                        fastener.value.Date = DateTime.Today.ToShortDateString();
-                        int index = rowIndex;
-                        //AppData.RdStructureRepository.SetFileID(fastener.value.Km, fastener.value.Fileid, 242);     
-                            
-                        if (AppData.ShowFasteners)
-                        {
+                    
                             <tr style="background:@(CurrentRow == index ? "#75d2ff" : "lightgray")" @onmousedown="@(_ => GoToMark(pos, index))">
                                 <td style="border-right: 1px solid grey; width: 35px;">@rowIndex</td>
                                 <td style="border-right: 1px solid grey; width: 35px;">@kilometer.Number</td>

@@ -29,8 +29,8 @@ namespace ALARm.Core.Report
         public string Sleeper { get; set; }
         public string Pchu { get; set; }
         public string Meropr { get; set; }
-      
-   
+
+
         public string Vdop { get; set; }
         //  public string PdbSection { get; set; }
 
@@ -57,7 +57,7 @@ namespace ALARm.Core.Report
         public int Next_oid { get; set; }
         public int Koord { get; set; }
         public string Note { get; set; }
-         public string Station { get; set; }
+        public string Station { get; set; }
         public string Speed { get; set; }
         public string Overlay { get; set; }
         public string Fastening { get; set; }
@@ -89,7 +89,8 @@ namespace ALARm.Core.Report
         public DateTime FoundDate { get; set; }
         public string Name { get; set; }
         public float Value { get; set; }
-        public int Length { get; set; }
+        public int Length { get; set; } 
+        
         public string dig_rim { get; set; }
         
         public int Count { get; set; } = 1;

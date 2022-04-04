@@ -679,11 +679,12 @@ namespace ALARm.DataAccess
                         return db.Query<CrossTie>(txt).ToList();
                     //скрепления
                     case MainTrackStructureConst.MtoRailsBrace:
+                        directionCode = "00002";
                         try
                         {
                             directionCode = new List<String>(directionCode.Split("(".ToCharArray())).First();
                         }
-                        catch
+                        catch(Exception e)
                         {
 
                         }
@@ -702,8 +703,9 @@ namespace ALARm.DataAccess
                         return db.Query<RailsBrace>(txt2).ToList();
                     //тип рельса
                     case MainTrackStructureConst.MtoRailSection:
-
-                        directionCode = directionCode.Split('(').Any() ? directionCode.Split('(')[0] : directionCode;
+                        directionCode = "00002";
+                        //directionCode = directionCode.Split('(').Any() ? directionCode.Split('(')[0] : directionCode;
+                       
                         var txt3 = $@"SELECT
 	                                    ars.* ,
 	                                    crt.NAME 
