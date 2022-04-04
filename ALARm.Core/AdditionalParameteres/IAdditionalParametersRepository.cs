@@ -30,7 +30,7 @@ namespace ALARm.Core
         List<Gap> GetFusGap(long process_id, int direction);
         List<Bitmap> GetBitMap(long fileid, long ms);
         Dictionary<String,Object> getBitMaps(long fileId , long ms , int fnum, RepType RepType = RepType.Undefined);
-
+        int[,] getFilter(long fileId, long ms);
         List<VideoObject> GetObjectsByFrameNumber(long fileId, long ms, int fnum, RepType RepType = RepType.Undefined);
 
 

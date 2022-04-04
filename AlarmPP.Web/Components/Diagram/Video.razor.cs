@@ -29,6 +29,7 @@ namespace AlarmPP.Web.Components.Diagram
         public int CurrentMs = 0;
         public int StartMeter { get; set; }
         public int CurrentMeter { get; set; }
+        public int[,] Filter { get; set; } = null;
         //[Parameter]
 
         private DigressionTable DigressionTable { get; set; } = new DigressionTable();
@@ -57,6 +58,19 @@ namespace AlarmPP.Web.Components.Diagram
             return bmp;
         }
 
+        public void GetFilter(long fileid)
+        {
+            try
+            {
+                int carPosition = (int)AppData.Trip.Car_Position;
+                int direction = (int)CurrentKm.Direction;
+                Filter = AppData.AdditionalParametersRepository.getFilter(fileid, CurrentMs + 200 * carPosition * direction);
+            }
+            catch (Exception e)
+            {
+                Filter = null;
+            }
+        }
 
         public void GetImage2(long fileid)
         {
@@ -72,7 +86,7 @@ namespace AlarmPP.Web.Components.Diagram
                     rows[i] = (List<Bitmap>)AppData.AdditionalParametersRepository.getBitMaps(fileid, CurrentMs + 200 * i * carPosition * direction, CurrentVideoFrame + i * direction * carPosition, RepType.Undefined)["bitMaps"];
                 }
                 int W = rows[0][0].Width, H = rows[0][0].Height;
-                var commonBitMap = new Bitmap(W * 5 - 87, H * N_rows - 175);
+                var commonBitMap = new Bitmap(W * 5, H * N_rows);
                 Graphics g = Graphics.FromImage(commonBitMap);
 
                 //for (int i = 0; i < N_rows; i++)
@@ -133,6 +147,13 @@ namespace AlarmPP.Web.Components.Diagram
             }
         }
 
+        void RestartKm()
+        {
+            CurrentKm = Kilometers.Where(km => km.Number == Number).First();
+            CurrentMeter = StartMeter = CurrentKm.Start_m;
+            CurrentMs = 0;
+            CurrentVideoFrame = 0;
+        }
         void GetObjectsFromFrame()
         {
             try

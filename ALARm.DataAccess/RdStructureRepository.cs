@@ -4322,7 +4322,7 @@ namespace ALARm.DataAccess
                 {
                     return db.Query<CrosProf>(
                     $@"SELECT 
-                            ID,
+                             ID,
 	                        meter,
 	                        pu_l,
 	                        pu_r,
@@ -4339,7 +4339,14 @@ namespace ALARm.DataAccess
                             longwavesleft,
                             longwavesright,
 	                        iz_45_l,
-	                        iz_45_r 
+	                        iz_45_r,
+                            kmimp,
+	                        meterimp,
+	                        imp,
+	                        intensity_formula,
+	                        impdiff,
+	                        implen,
+	                        impthreat
                         FROM
 	                        PUBLIC.profiledata_{trip_id}
                         WHERE

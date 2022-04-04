@@ -26,6 +26,10 @@
             int currentKMPosition = 0;
             foreach (var km in Kilometers)
             {
+                if (km.AdditionalDigressions == null)
+                {
+                    continue;
+                }
                 var digs = new List<Digression> { };
                 if (AppData.ShowPU)
                 {
