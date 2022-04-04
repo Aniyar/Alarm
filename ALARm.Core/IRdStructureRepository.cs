@@ -166,6 +166,8 @@ namespace ALARm.Core
         public List<Kilometer> GetPU32Kilometers(DateTime from, DateTime to, long distance_id, TripType trip_type);
         List<Trips> GetTripFromFileId(int fileId);
         List<CrosProf> GetNextProfileDatas(int meter, int count, long trip_id);
+        List<CrosProf> GetImpulses(int meter, int count, long trip_id);
+        
         List<CrosProf> GetNextProfileDatasByKm(int number, long id);
         //List<Digression> TotalSleeper(long processId);
         public void UpdateGap(Gap gap);

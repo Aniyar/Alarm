@@ -1867,7 +1867,7 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
             }
         }
         
-        public List<CrosProf> GetCrossRailProfileFromDBbyKm(int nkm, int index, int count, long trip_id)
+        public List<CrosProf> GetCrossRailProfileFromDBbyKm_forPPWEB(int nkm, int index, int count, long trip_id)
         {
             using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
             {
@@ -1903,7 +1903,7 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
                             ORDER BY
 	                            id 
                             Limit {count}
-", commandType: CommandType.Text).ToList();
+                ", commandType: CommandType.Text).ToList();
                 }
                 catch (Exception e)
                 {
@@ -1914,52 +1914,53 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
 
             }
         }
-        //public List<CrosProf> GetCrossRailProfileFromDBbyKm(int nkm, long trip_id)
-        //{
-        //    using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
-        //    {
-        //        if (db.State == ConnectionState.Closed)
-        //            db.Open();
-        //        try
-        //        {
-        //            return db.Query<CrosProf>($@"
-        //                    SELECT DISTINCT
-	       //                     meter,
-	       //                     AVG ( pu_l ) pu_l,
-	       //                     AVG ( pu_r ) pu_r,
-	       //                     AVG ( vert_l ) vert_l,
-	       //                     AVG ( vert_r ) vert_r,
-	       //                     AVG ( bok_l ) bok_l,
-	       //                     AVG ( bok_r ) bok_r,
-	       //                     AVG ( npk_l ) npk_l,
-	       //                     AVG ( npk_r ) npk_r,
-	       //                     AVG ( shortwavesleft ) shortwavesleft,
-	       //                     AVG ( shortwavesright ) shortwavesright,
-	       //                     AVG ( mediumwavesleft ) mediumwavesleft,
-	       //                     AVG ( mediumwavesright ) mediumwavesright,
-	       //                     AVG ( longwavesleft ) longwavesleft,
-	       //                     AVG ( longwavesright ) longwavesright,
-	       //                     AVG ( iz_45_l ) iz_45_l,
-	       //                     AVG ( iz_45_r ) iz_45_r 
-        //                    FROM
-	       //                     PUBLIC.profiledata_{trip_id}
-        //                    WHERE
-	       //                     km = {nkm}
-	       //                     AND meter > 0 
-        //                    GROUP BY
-	       //                     meter 
-        //                    ORDER BY
-	       //                     meter DESC ", commandType: CommandType.Text).ToList();
-        //        }
-        //        catch (Exception e)
-        //        {
-        //            //Console.WriteLine("GetCrossRailProfileFromDBbyKm error: " + e.Message);
-        //            return new List<CrosProf> { };
-        //        }
+       
+        public List<CrosProf> GetCrossRailProfileFromDBbyKm(int nkm, long trip_id)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                try
+                {
+                    return db.Query<CrosProf>($@"
+                            SELECT DISTINCT
+	                            meter,
+	                            AVG ( pu_l ) pu_l,
+	                            AVG ( pu_r ) pu_r,
+	                            AVG ( vert_l ) vert_l,
+	                            AVG ( vert_r ) vert_r,
+	                            AVG ( bok_l ) bok_l,
+	                            AVG ( bok_r ) bok_r,
+	                            AVG ( npk_l ) npk_l,
+	                            AVG ( npk_r ) npk_r,
+	                            AVG ( shortwavesleft ) shortwavesleft,
+	                            AVG ( shortwavesright ) shortwavesright,
+	                            AVG ( mediumwavesleft ) mediumwavesleft,
+	                            AVG ( mediumwavesright ) mediumwavesright,
+	                            AVG ( longwavesleft ) longwavesleft,
+	                            AVG ( longwavesright ) longwavesright,
+	                            AVG ( iz_45_l ) iz_45_l,
+	                            AVG ( iz_45_r ) iz_45_r 
+                            FROM
+	                            PUBLIC.profiledata_{trip_id}
+                            WHERE
+	                            km = {nkm}
+	                            AND meter > 0 
+                            GROUP BY
+	                            meter 
+                            ORDER BY
+	                            meter DESC ", commandType: CommandType.Text).ToList();
+                }
+                catch (Exception e)
+                {
+                    //Console.WriteLine("GetCrossRailProfileFromDBbyKm error: " + e.Message);
+                    return new List<CrosProf> { };
+                }
 
 
-        //    }
-        //}
+            }
+        }
         public List<CrosProf> GetCrossRailProfileFromDBbyTripId(long trip_id)
         {
             using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
@@ -1987,7 +1988,10 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
 	                            longwavesleft,
 	                            longwavesright,
 	                            iz_45_l,
-	                            iz_45_r 
+	                            iz_45_r,
+                                imp_left,
+                                imp_right
+                                
                             FROM
 	                            PUBLIC.profiledata_{trip_id}
                             WHERE
@@ -2121,15 +2125,16 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
 
             }
         }
-        public CrossRailProfile GetCrossRailProfileFromDBParse(List<CrosProf> DBcrossRailProfile)
+        public CrossRailProfile GetCrossRailProfileFromDBParse(List<CrosProf> crosProfs)
         {
             var crossRailProfile = new CrossRailProfile();
-            foreach (var elem in DBcrossRailProfile)
+            foreach (var elem in crosProfs)
             {
                 crossRailProfile.ParseDB(elem);
             }
             return crossRailProfile;
         }
+       
 
         public CrossRailProfile GetCrossRailProfileFromText(int nkm)
         {

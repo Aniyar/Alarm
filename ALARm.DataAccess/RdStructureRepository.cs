@@ -4340,11 +4340,7 @@ namespace ALARm.DataAccess
                             longwavesright,
 	                        iz_45_l,
 	                        iz_45_r,
-                            kmimp,
-	                        meterimp,
 	                        imp,
-	                        intensity_formula,
-	                        impdiff,
 	                        implen,
 	                        impthreat
                         FROM
@@ -4362,6 +4358,44 @@ namespace ALARm.DataAccess
                     return new List<CrosProf> { };
                 }
                 
+            }
+        }
+
+        public List<CrosProf> GetImpulses(int nkm,  int count, long trip_id)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                try
+                {
+                    return db.Query<CrosProf>($@"
+                            SELECT DISTINCT
+                                id,
+	                            kmimp,
+	                             meterimp,
+	                             imp,
+	                             intensity_formula,
+	                             impdiff,
+	                             implen,
+	                             impthreat
+	                        
+                            FROM
+	                            PUBLIC.impulses_{trip_id}
+                            WHERE
+	                            km = {nkm}
+                            ORDER BY
+	                            id 
+                            Limit {count}
+                ", commandType: CommandType.Text).ToList();
+                }
+                catch (Exception e)
+                {
+                    //Console.WriteLine("GetCrossRailProfileFromDBbyKm error: " + e.Message);
+                    return new List<CrosProf> { };
+                }
+
+
             }
         }
 

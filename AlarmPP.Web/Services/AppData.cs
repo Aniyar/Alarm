@@ -217,6 +217,19 @@ namespace AlarmPP.Web.Services
         {
             get { return LongwavesLeftPosition + WearWidth; }
         }
+        /// <summary>
+        /// ширина столбца "зазоры"
+        /// </summary>
+        public int ImpWidth = 140;
+        public int ImpulsesLeftPosition
+        {
+            get { return LongwavesRightPosition + ImpWidth; }
+        }
+        public int ImpulsesRightPosition
+        {
+            get { return ImpulsesLeftPosition + ImpWidth; }
+        }
+
 
 
         /// <summary>
@@ -573,8 +586,10 @@ namespace AlarmPP.Web.Services
                             km.Fasteners = AdditionalParametersRepository.Check_badfastening_state(Trip.Id, 999);
                             km.DefShpals = AdditionalParametersRepository.Check_defshpal_state(Trip.Id, 999);
                             km.PerShpals = AdditionalParametersRepository.Check_ViolPerpen(Trip.Id);
+
+                            km.Impuls = AdditionalParametersRepository.GetCrossRailProfileFromDBbyTripId(Trip.Id);
                             //km.direction_name = RdStructureService.Check_direction_name(Trip.Id);
-                            
+
                             //if (!km.CorrectionNotes.Any())
                             //{
                             //    km.CorrectionNotes = RdStructureRepository.GetCorrectionNotes(Trip.Id, km.Track_id, km.Number, coord, km.CorrectionValue);
@@ -646,6 +661,7 @@ namespace AlarmPP.Web.Services
                             km.DefShpals = AdditionalParametersRepository.Check_defshpal_state(Trip.Id, 999);
                             km.PerShpals = AdditionalParametersRepository.Check_ViolPerpen(Trip.Id);
                             km.AdditionalDigressions = RdStructureRepository.GetAdditional(km.Number);
+                            km.Impuls = AdditionalParametersRepository.GetCrossRailProfileFromDBbyTripId(Trip.Id);
                             //km.direction_name = RdStructureService.GetTracksOnTrip(Trip.Id);
                             Kilometers.Add(km);
 
@@ -661,8 +677,8 @@ namespace AlarmPP.Web.Services
         {
             if (_kilometers == null)
                 return false;
-            Data = new string[] { "", "", "", "", "", "", "", "", "", "", "", "", "", "", "","", "", "", "", "", "", "", "", "", "", "", "", "", "","", "", "", "", "", "", "","" };
-           
+
+            Data = new string[] { "", "", "", "", "", "", "", "", "", "", "", "", "", "", "","", "", "", "", "", "", "", "", "", "", "", "", "", "","", "", "", "", "", "", "","", "", "", "", "", "", "", "", "", "" };
 
 
             int position = (int)yPosition;
@@ -763,6 +779,8 @@ namespace AlarmPP.Web.Services
 
                                 Data[(int)Series.LongWavesleft] = km.CrossRailProfile.Longwavesleft[indexCross].ToString("0.00");
                                 Data[(int)Series.LongWavesright] = km.CrossRailProfile.Longwavesright[indexCross].ToString("0.00");
+
+                                //Data[(int)Series.Impuls] = km.CrossRailProfile.imp[indexCross].ToString("0.00");
 
                                 ViewBoxLeft = "-100 -30 200 300"; // Уакытша
                                 ViewBoxRight = "-100 -30 200 300"; // Уакытша
@@ -1098,7 +1116,7 @@ namespace AlarmPP.Web.Services
         SideWearLeft = 16, SideWearRight = 17, VertWearLeft = 18, VertWearRight = 19, GivenWearLeft = 20, GivenWearRight = 21,
         TreadTiltLeft = 22, TreadTiltRight = 23, DownHillLeft = 24, DownHillRight = 25, HeadWear45Left = 26, HeadWear45Right = 27,
         Speed = 28, Section = 29,
-         ShortWavesleft = 30, ShortWavesright = 31, MediumWavesleft =32 , MediumWavesright = 33,  LongWavesleft = 34, LongWavesright =35,
+         ShortWavesleft = 30, ShortWavesright = 31, MediumWavesleft =32 , MediumWavesright = 33,  LongWavesleft = 34, LongWavesright =35, ImpulsesRight=36, Impuls = 37, ImpulsLeft = 38,ImpulsRight = 39
     }
     public enum WorkMode { 
         NotSet = -1, Postprocessing = 0, Online = 1

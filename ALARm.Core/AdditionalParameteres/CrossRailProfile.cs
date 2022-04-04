@@ -46,6 +46,11 @@ namespace ALARm.Core.AdditionalParameteres
         public List<float> Mediumwavesright { get; set; }
         public List<float> Shortwavesleft { get; set; }
         public List<float> Shortwavesright { get; set; }
+        public List<float> ImpulsLeft{ get; set; }
+        public List<float> ImpulsRight { get; set; }
+        public List<float> Kmimp{ get; set; }
+        public List<float> Meterimp { get; set; }
+        public List<string> Impthreat { get; set; }
 
         private float CurrentSm = 0;
         private int prevMetr = -1;
@@ -100,6 +105,8 @@ namespace ALARm.Core.AdditionalParameteres
             Mediumwavesright.Add(elem.Mediumwavesright );
             Shortwavesleft.Add(elem.Shortwavesleft );
             Shortwavesright.Add(elem.Shortwavesright );
+          
+         
             CurrentSm -= 0.2f;
             if (kilometer == null)
                 return;
@@ -123,6 +130,31 @@ namespace ALARm.Core.AdditionalParameteres
             kilometer.HeadWear45Right += (iznosKoef45 * elem.Iz_45_r).ToString().Replace(",", ".") + "," + kilometer.CrossRailProfile.Meters.Count.ToString().Replace(",", ".") + " ";
             //Gauge.Add(float.Parse(parameters[6], CultureInfo.InvariantCulture.NumberFormat));
             
+        }
+        public void ParseDB_for_impulses(CrosProf elem, Kilometer kilometer = null)
+        {
+            int meter = elem.Meter;
+
+            if (prevMetr != meter)
+            {
+                prevMetr = meter;
+                CurrentSm = 1.0f;
+            }
+
+
+            Meters.Add(meter - 1.0f + CurrentSm);
+            //нпк
+         
+
+         
+            CurrentSm -= 0.2f;
+            if (kilometer == null)
+                return;
+            //kilometer.CrossRailProfile.Meter.Last() += 1;
+
+          
+            //Gauge.Add(float.Parse(parameters[6], CultureInfo.InvariantCulture.NumberFormat));
+
         }
 
         public void ParseDBList(List<CrosProf> elemList, Kilometer kilometer = null)
@@ -166,6 +198,11 @@ namespace ALARm.Core.AdditionalParameteres
                 Mediumwavesright.Add(elem.Mediumwavesright);
                 Shortwavesleft.Add(elem.Shortwavesleft);
                 Shortwavesright.Add(elem.Shortwavesright);
+
+                
+                Impthreat.Add(elem.Impthreat);
+                Meterimp.Add(elem.Meterimp);
+                Kmimp.Add(elem.Kmimp);
                 CurrentSm -= 0.2f;
                 if (kilometer == null)
                     return;
@@ -292,6 +329,8 @@ namespace ALARm.Core.AdditionalParameteres
             Mediumwavesright = new List<float>();
             Shortwavesleft = new List<float>();
             Shortwavesright = new List<float>();
+
+          
 
             CurrentSm = -1;
         }

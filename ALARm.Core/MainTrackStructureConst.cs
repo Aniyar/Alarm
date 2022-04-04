@@ -98,6 +98,6 @@
     }
 
     public enum Side { NotDefined = 0, Right = 1, Left = 2 }
-    public enum Threat { Left = 1, Middle = 0, Right = 2 }
+    public enum Threat { Left = 1, Middle = 0, Right = 2 ,None =3}
     public enum SwitchDirection { Direct = -1, NotDefined = 0, Reverse = 1 }
 }

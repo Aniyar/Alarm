@@ -60,6 +60,8 @@ namespace ALARm_Report.Forms
         public List<double> LongWavesRight { get; set; } = new List<double>();
 
         public List<Digression> Impuls { get; set; } = new List<Digression>();
+        public List<Digression> ImpulsRight { get; set; } = new List<Digression>();
+        public List<Digression> ImpulsLeft { get; set; } = new List<Digression>();
 
         public List<double> LongWavesLeft_m { get; set; } = new List<double>();
         public List<double> MediumWavesLeft_m { get; set; } = new List<double>();
@@ -528,6 +530,7 @@ namespace ALARm_Report.Forms
             var cmd = new NpgsqlCommand();
             cmd.Connection = con;
             con.Close();
+            Impuls.Clear();
             LongWavesLeft.Clear(); MediumWavesLeft.Clear(); ShortWavesLeft.Clear(); LongWavesRight.Clear();
             MediumWavesRight.Clear();
             ShortWavesRight.Clear();
@@ -550,7 +553,7 @@ namespace ALARm_Report.Forms
             
             var Dr = new List<double> { };
             var Dl = new List<double> { };
-
+            var Count = 0;
             for (int i = 0; i < 5; i++)
             {
                 Dr.Add(0.0);
@@ -704,8 +707,9 @@ namespace ALARm_Report.Forms
 
 
                 }
+
                 var koef_long = 0.15;
-               var   koef_medium = 0.15;
+                var koef_medium = 0.15;
                 var koef_short = 0.15;
 
                 LongWavesLeft.Add(l * koef_long);
@@ -717,60 +721,88 @@ namespace ALARm_Report.Forms
                 ShortWavesRight.Add(sr * koef_short);
 
 
-
-                if (j / 5 == j / 5.0)
+                Count += Count;
+                if (j / 5 == j / 5.0 || (Math.Abs(short_meter[j] - short_meter[j - 1]) > 1 && j > 1) && Count < 5)
                 {
+
+                    Count = 0;
                     LongWavesLeft_m.Add(l * koef_long);
-                    MediumWavesLeft_m.Add(m * koef_medium);
-                    ShortWavesLeft_m.Add(s * koef_short);
+                        MediumWavesLeft_m.Add(m * koef_medium);
+                        ShortWavesLeft_m.Add(s * koef_short);
 
-                    LongWavesRight_m.Add(lr * koef_long);
-                    MediumWavesRight_m.Add(mr * koef_medium);
-                    ShortWavesRight_m.Add(sr * koef_short);
+                        LongWavesRight_m.Add(lr * koef_long);
+                        MediumWavesRight_m.Add(mr * koef_medium);
+                        ShortWavesRight_m.Add(sr * koef_short);
 
-                    METERS_long_M.Add(short_meter[j]);
-
-                    Diff_L.Add(Dl.Max()- Dl.Average());
-                    Diff_R.Add(Dr.Max() - Dr.Average());
-                    METERS_Trip_id.Add(trip);
-                    METERS_Track_name.Add(trackname);
-                    METERS_Track_id.Add(track);
+                        METERS_long_M.Add(short_meter[j]);
                 }
-               
+
+                
+             
             }
-            
             //импульсы
             for (int i = 0; i < bolshe0.Count; i++)
             {
-                if (bolshe0[i].H < 0.8) continue;
-
-                Impuls.Add(new Digression
+                if (bolshe0[i].H < 0.8)
                 {
-                    Km = number,
-                    Length = (int)bolshe0[i].Count,
-                    Len = (int)bolshe0[i].Count,
-                    Intensity_ra = bolshe0[i].H,
-                    Meter = Meters[bolshe0[i].H_ind],
-                    Threat = Threat.Left
-                });
+                    ImpulsLeft.Add(new Digression
+                    {
+                        Km = number,
+                        Length = 0,
+                        Len = 0,
+                        Intensity_ra = 0,
+                        Meter = Meters[bolshe0[i].H_ind],
+                        Threat = Threat.Left
+                    });
+                }
+                else
+                {
+                    ImpulsLeft.Add(new Digression
+                    {
+                        Km = number,
+                        Length = (int)bolshe0[i].Count,
+                        Len = (int)bolshe0[i].Count,
+                        Intensity_ra = bolshe0[i].H,
+                        Meter = Meters[bolshe0[i].H_ind],
+                        Threat = Threat.Left
+                    });
+                }
+               
+
             }
             for (int i = 0; i < bolshe0_r.Count; i++)
             {
-                if (bolshe0_r[i].H < 0.6) continue;
-
-                Impuls.Add(new Digression
+                if (bolshe0_r[i].H < 0.6)
                 {
-                    Km = number,
-                    Length = (int)bolshe0_r[i].Count,
-                    Len = (int)bolshe0_r[i].Count,
-                    Intensity_ra = bolshe0_r[i].H,
-                    Meter = Meters[bolshe0_r[i].H_ind],
-                    Threat = Threat.Right
-                });
+                    ImpulsRight.Add(new Digression
+                    {
+                        Km = number,
+                        Length = 0,
+                        Len = 0,
+                        Intensity_ra = 0,
+                        Meter = Meters[bolshe0_r[i].H_ind],
+                        Threat = Threat.Right
+                    });
+                }
+                else 
+                {
+                    ImpulsRight.Add(new Digression
+                    {
+                        Km = number,
+                        Length = (int)bolshe0_r[i].Count,
+                        Len = (int)bolshe0_r[i].Count,
+                        Intensity_ra = bolshe0_r[i].H,
+                        Meter = Meters[bolshe0_r[i].H_ind],
+                        Threat = Threat.Right
+                    });
+                }
+           
             }
             SendShortDataDBMEDIUMWAYES(number);
+            SendPoverhDataDB();
+            //ShortData.Clear();
         }
-    
+ 
 
         private string GetXByDigName(DigName digName)
         {
@@ -810,6 +842,49 @@ namespace ALARm_Report.Forms
             public double Diff_l { get; set; }
             public double Diff_r { get; set; }
         }
+
+        private void SendPoverhDataDB()
+        {
+            var trip_id = "242";
+            
+            var cs = "Host=DESKTOP-EMAFC5J;Username=postgres;Password=alhafizu;Database=railway";
+            var con = new NpgsqlConnection(cs);
+            con.Open();
+
+            var cmd = new NpgsqlCommand();
+            cmd.Connection = con;
+        
+
+            try
+            {
+                for (int i = 0; i < ImpulsLeft.Count; i++)
+                {
+                    var qrStr = $@"UPDATE  profiledata_{trip_id}
+                                   SET   imp_left ={(ImpulsLeft[i].Intensity_ra).ToString("0.0000").Replace(",", ".")},
+                                   implen_left = {ImpulsLeft[i].Length},impthreat_left = '{ImpulsLeft[i].Threat}'
+                                   where km = {ImpulsLeft[i].Km} and meter = {ImpulsLeft[i].Meter}";
+                    cmd.CommandText = qrStr;
+                    cmd.ExecuteNonQuery();
+                }
+                for (int i = 0; i < ImpulsRight.Count; i++)
+                {
+                    var qrStr = $@"UPDATE  profiledata_{trip_id}
+                                   SET   imp_right ={(ImpulsRight[i].Intensity_ra).ToString("0.0000").Replace(",", ".")},
+                                   implen_right = {ImpulsRight[i].Length},impthreat_right = '{ImpulsRight[i].Threat}'
+                                   where km = {ImpulsRight[i].Km} and meter = {ImpulsRight[i].Meter}";
+                    cmd.CommandText = qrStr;
+                    cmd.ExecuteNonQuery();
+                }
+
+
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Ошибка записи в БД " + e.Message);
+            }
+            con.Close();
+        }
         private void SendShortDataDBMEDIUMWAYES(int km)
         {
             var trip_id = 242;
@@ -821,6 +896,9 @@ namespace ALARm_Report.Forms
 
             var cmd = new NpgsqlCommand();
             cmd.Connection = con;
+
+
+        
             for (int i = 0; i < METERS_long_M.Count; i++)
             {
                 try
@@ -829,11 +907,7 @@ namespace ALARm_Report.Forms
                                    SET  longwavesleft = {(LongWavesLeft_m[i]).ToString("0.0000").Replace(",", ".")},
                                    mediumwavesleft =  {(MediumWavesLeft_m[i]).ToString("0.0000").Replace(",", ".")},shortwavesleft = {(ShortWavesLeft_m[i]).ToString("0.0000").Replace(",", ".")},
                                    longwavesright =   {(LongWavesRight_m[i]).ToString("0.0000").Replace(",", ".")},mediumwavesright =  {(MediumWavesRight_m[i]).ToString("0.0000").Replace(",", ".")}
-                                 ,shortwavesright = {(ShortWavesRight_m[i]).ToString("0.0000").Replace(",", ".")},
-                                diff_L =  {(Diff_L[i]).ToString("0.0000").Replace(",", ".")},
-                                diff_R =  {(Diff_R[i]).ToString("0.0000").Replace(",", ".")},
-                                track_id  =  {(METERS_Track_id[i])},    trip_id  =  {(METERS_Trip_id[i])},  track_name  =  {(METERS_Track_name[i])}
-
+                                 ,shortwavesright = {(ShortWavesRight_m[i]).ToString("0.0000").Replace(",", ".")}
                                    where km = {km} and meter = {METERS_long_M[i]}";
 
                     cmd.CommandText = qrStr;
