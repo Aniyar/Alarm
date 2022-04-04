@@ -220,7 +220,7 @@ namespace AlarmPP.Web.Services
         /// <summary>
         /// ширина столбца "зазоры"
         /// </summary>
-        public int ImpWidth = 140;
+        public int ImpWidth = 110;
         public int ImpulsesLeftPosition
         {
             get { return LongwavesRightPosition + ImpWidth; }

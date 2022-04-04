@@ -18,7 +18,10 @@ namespace ALARm.Core.AdditionalParameteres
 
         public float Imp_left { get; set; }
         public float Imp_Right { get; set; }
-     
+
+        public float Implen_left { get; set; }
+        public float Implen_Right { get; set; }
+
         public int Kmimp { get; set; }
         public int Meterimp { get; set; }
         public float Imp { get; set; }

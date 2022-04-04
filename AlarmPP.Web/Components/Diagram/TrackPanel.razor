@@ -389,7 +389,15 @@
                                                    //Пу
                                                    AppData.DownhillLeftPosition + AppData.WearWidth,  AppData.DownhillRightPosition + AppData.WearWidth,
                                                    //износ45
-                                                   AppData.HeadWear45LeftPosition + AppData.WearWidth, AppData.HeadWear45RightPosition + AppData.WearWidth
+                                                   AppData.HeadWear45LeftPosition + AppData.WearWidth, AppData.HeadWear45RightPosition + AppData.WearWidth,
+                                                   //кор волны
+                                                   AppData.ShortwavesLeftPosition + AppData.WearWidth, AppData.ShortwavesRightPosition + AppData.WearWidth,
+                                                   //ср волны
+                                                   AppData.MediumwavesleftPosition + AppData.WearWidth, AppData.MediumwavesrightPosition + AppData.WearWidth,
+                                                   //дл волны
+                                                   AppData.LongwavesLeftPosition + AppData.WearWidth, AppData.LongwavesRightPosition + AppData.WearWidth,
+                                                   //импульс
+                                                   AppData.ImpulsesLeftPosition + AppData.WearWidth, AppData.ImpulsesRightPosition + AppData.WearWidth
                                                })" y1="0" y2="length" StrokeWidth="0.1" Zero="AppData.MainParamsPosition + AppData.LevelZero" StrokeDashArray="" Color="grey"></MinorGrid>
 
                 //Верт износ разделители значении
@@ -466,7 +474,7 @@
                                                         AppData.DownhillRightPosition + 20 + AppData.GetDIstanceFrom1div60(16),
                                                         AppData.DownhillRightPosition + 20 + AppData.GetDIstanceFrom1div60(12)
                                                     })" y1="0" y2="length" StrokeWidth="0.1" Zero="AppData.DownhillRightPosition" StrokeDashArray="0.1 5"></MinorGrid>*@
-        float iznosWAves = 70 / 16f;
+                float iznosWAves = 70 / 16f;
 
                 <polyline transform="translate(@(AppData.RailProfilePosition), @y)" fill="none" stroke-width="0.5" stroke="black" points="@kilometer.SideWearLeft"></polyline>
                 <polyline transform="translate(@(AppData.SideWearRightPosition), @y)" fill="none" stroke-width="0.5" stroke="black" points="@kilometer.SideWearRight"></polyline>
@@ -497,54 +505,26 @@
                 <polyline transform="translate(@(AppData.LongwavesLeftPosition ), @y)" fill="none" stroke-width="0.5" stroke="black" points="@kilometer.LongwavesLeft"></polyline>
                 <polyline transform="translate(@(AppData.LongwavesRightPosition ), @y)" fill="none" stroke-width="0.5" stroke="black" points="@kilometer.LongwavesRight"></polyline>
 
-                    
 
 
-                    var GapKoef = 140.0 / 40.0; //окошко для стыка
-                    <MinorGrid MinorPositions="(new int[] { AppData.ImpulsesLeftPosition + (int)(25 * GapKoef), AppData.ImpulsesLeftPosition + (int)(30 * GapKoef) })" y1="0" y2="length" StrokeWidth="0.1" Zero="AppData.ImpulsesLeftPosition" StrokeDashArray="0.1 5"></MinorGrid>
-                    <MinorGrid MinorPositions="(new int[] { AppData.ImpulsesRightPosition + (int)(25 * GapKoef), AppData.ImpulsesRightPosition + (int)(30 * GapKoef) })" y1="0" y2="length" StrokeWidth="0.1" Zero="AppData.ImpulsesRightPosition" StrokeDashArray="0.1 5"></MinorGrid>
 
-                    if (kilometer.Impuls != null)
+                var GapKoef = 140.0 / 40.0; //окошко для стыка
+                <MinorGrid MinorPositions="(new int[] { AppData.ImpulsesLeftPosition  + AppData.WearWidth/2 })" y1="0" y2="length" StrokeWidth="0.5" Zero="AppData.ImpulsesLeftPosition" StrokeDashArray="0.1 5"></MinorGrid>
+                <MinorGrid MinorPositions="(new int[] { AppData.ImpulsesRightPosition  + AppData.WearWidth/2 })" y1="0" y2="length" StrokeWidth="0.5" Zero="AppData.ImpulsesRightPosition" StrokeDashArray="0.1 5"></MinorGrid>
+
+                if (kilometer.Impuls != null)
+                {
+                    kilometer.Impuls = kilometer.Impuls.Where(o => o.Km == kilometer.Number).ToList();
+                    foreach (var imp in kilometer.Impuls.Where(o => o.Km == kilometer.Number).ToList())
                     {
-                        kilometer.Impuls = kilometer.Impuls.Where(o => o.Km == kilometer.Number).ToList();
-                       foreach (var gap in kilometer.Impuls.Where(o => o.Km == kilometer.Number).ToList())
-                        {
-                            index = kilometer.Direction == Direction.Direct ? 0 : kilometer.Length;
-                            <line transform="translate(0, @y)" stroke="red" stroke-width="3" x1="@AppData.ImpulsesLeftPosition" x2="@(AppData.ImpulsesLeftPosition + (int)(gap.Imp_left * GapKoef))" y1="@(index + (int)kilometer.Direction * gap.Meter)" y2="@(index + (int)kilometer.Direction * gap.Meter)"></line>
-                            <line transform="translate(0, @y)" stroke="red" stroke-width="3" x1="@AppData.ImpulsesRightPosition" x2="@(AppData.ImpulsesRightPosition + (int)(gap.Imp_Right * GapKoef))" y1="@(index + (int)kilometer.Direction * gap.Meter)" y2="@(index + (int)kilometer.Direction * gap.Meter)"></line>
-                        }
+                        index = kilometer.Direction == Direction.Direct ? 0 : kilometer.Length;
+                        <line transform="translate(0, @y)" stroke="red" stroke-width="3" x1="@(AppData.ImpulsesLeftPosition+ AppData.WearWidth/2) " x2="@(AppData.ImpulsesLeftPosition + AppData.WearWidth/2 + (int)(imp.Imp_left * GapKoef *5))" y1="@(index + (int)kilometer.Direction * imp.Meter)" y2="@(index + (int)kilometer.Direction * imp.Meter)"></line>
+                        <line transform="translate(0, @y)" stroke="red" stroke-width="3" x1="@(AppData.ImpulsesRightPosition + AppData.WearWidth/2)" x2="@(AppData.ImpulsesRightPosition + AppData.WearWidth/2 + (int)(imp.Imp_Right * GapKoef *5))" y1="@(index + (int)kilometer.Direction * imp.Meter)" y2="@(index + (int)kilometer.Direction * imp.Meter)"></line>
+                        <line transform="translate(0, @y)" stroke="red" stroke-width="3" x2="@(AppData.ImpulsesLeftPosition+ AppData.WearWidth/2) " x1="@(AppData.ImpulsesLeftPosition + AppData.WearWidth/2 - (int)(imp.Implen_left * GapKoef /5))" y1="@(index + (int)kilometer.Direction * imp.Meter)" y2="@(index + (int)kilometer.Direction * imp.Meter)"></line>
+                        <line transform="translate(0, @y)" stroke="red" stroke-width="3" x2="@(AppData.ImpulsesRightPosition + AppData.WearWidth/2)" x1="@(AppData.ImpulsesRightPosition + AppData.WearWidth/2 - (int)(imp.Implen_Right * GapKoef/5))" y1="@(index + (int)kilometer.Direction * imp.Meter)" y2="@(index + (int)kilometer.Direction * imp.Meter)"></line>
                     }
-                    @*<polyline transform="translate(@(AppData.ImpulsesRightPosition ), @y)" fill="none" stroke-width="0.5" stroke="black" points="@kilometer.ImpulsesRight"></polyline>*@
-
                 }
-                //if (AppData.ShowCorrection)
-                //{
-
-                //}
-                <!--Сторона паспорта-->
-                <Pasport Kilometer="kilometer" Width="Width" Y="y"></Pasport>
-                y += kilometer.GetLength();
-                index += kilometer.GetLength();
-
-                if (kilometer.AdditionalDigressions != null)
-                    foreach (var digression in kilometer.AdditionalDigressions)
-                    {
-                        if (digression.DigName.Name.Contains("Ип") && (AppData.ShowIznosPriv) ||
-                              digression.DigName.Name.Contains("Ив") && (AppData.ShowIznosVert) ||
-                              digression.DigName.Name.Contains("Иб") && (AppData.ShowIznosBok) ||
-                              digression.DigName.Name.Contains("ДВ") && (AppData.ShowLongWaves) ||
-                              digression.DigName.Name.Contains("КВ") && (AppData.ShowShortWaves) ||
-                              digression.DigName.Name.Contains("СВ") && (AppData.ShowMediumWaves) ||
-                              digression.DigName.Name.Contains("Нпк") && (AppData.ShowNPK) ||
-                              digression.DigName.Name.Contains("Пу") && (AppData.ShowPU) )
-                        {
-
-                            index = kilometer.Direction == ALARm.Core.Direction.Direct ? -kilometer.Start_m : kilometer.Length;
-                            //index = kilometer.Direction == ALARm.Core.Direction.Direct ? 0 : kilometer.Length;
-
-                            <line transform="translate(@(GetXByAddDigName(digression.DigName.Name)), @y)" stroke="@((int)digression.Typ == 4 ? "red" : (int)digression.Typ == 3 ? "darkorange" : (int)digression.Typ == 2 ? "aqua" : "coral")" stroke-width="@((int)digression.Typ * 4)" stroke-dasharray="1 1" x1="0" x2="0" y1="@(index + (int)kilometer.Direction * (digression.Meter - (digression.Length / 2)))" y2="@(index + (int)kilometer.Direction * (digression.Meter + digression.Length / 2 + 1))"></line>
-                        }
-                    }
+                @*<polyline transform="translate(@(AppData.ImpulsesRightPosition ), @y)" fill="none" stroke-width="0.5" stroke="black" points="@kilometer.ImpulsesRight"></polyline>*@
 
             }
             //if (AppData.ShowCorrection)
@@ -555,7 +535,29 @@
             <Pasport Kilometer="kilometer" Width="Width" Y="y"></Pasport>
             y += kilometer.GetLength();
             index += kilometer.GetLength();
+
+            if (kilometer.AdditionalDigressions != null)
+                foreach (var digression in kilometer.AdditionalDigressions)
+                {
+                    if (digression.DigName.Name.Contains("Ип") && (AppData.ShowIznosPriv) ||
+                          digression.DigName.Name.Contains("Ив") && (AppData.ShowIznosVert) ||
+                          digression.DigName.Name.Contains("Иб") && (AppData.ShowIznosBok) ||
+                          digression.DigName.Name.Contains("ДВ") && (AppData.ShowLongWaves) ||
+                          digression.DigName.Name.Contains("КВ") && (AppData.ShowShortWaves) ||
+                          digression.DigName.Name.Contains("СВ") && (AppData.ShowMediumWaves) ||
+                          digression.DigName.Name.Contains("Нпк") && (AppData.ShowNPK) ||
+                          digression.DigName.Name.Contains("Пу") && (AppData.ShowPU))
+                    {
+
+                        index = kilometer.Direction == ALARm.Core.Direction.Direct ? -kilometer.Start_m : kilometer.Length;
+                        //index = kilometer.Direction == ALARm.Core.Direction.Direct ? 0 : kilometer.Length;
+
+                        <line transform="translate(@(GetXByAddDigName(digression.DigName.Name)), @y)" stroke="@((int)digression.Typ == 4 ? "red" : (int)digression.Typ == 3 ? "darkorange" : (int)digression.Typ == 2 ? "aqua" : "coral")" stroke-width="@((int)digression.Typ * 4)" stroke-dasharray="1 1" x1="0" x2="0" y1="@(index + (int)kilometer.Direction * (digression.Meter - (digression.Length / 2)))" y2="@(index + (int)kilometer.Direction * (digression.Meter + digression.Length / 2 + 1))"></line>
+                    }
+                }
         }
+
+    }
     }
     <rect style="cursor:row-resize" x="0" width="@Width" height="20" opacity="0" y="@(AppData.SliderYPosition)"></rect>
     @*<rect style="cursor:row-resize" x="0" width="@Width" height="20" opacity="0" y="@(AppData.SliderYPosition-10)"></rect>*@
