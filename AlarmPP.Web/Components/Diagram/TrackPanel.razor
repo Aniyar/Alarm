@@ -197,6 +197,12 @@
 
                 <DgTitleCol X="@(AppData.LongwavesLeftPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Длин. Волны Л." ShowValue="true" Value="@AppData.Data[(int)Services.Series.LongWavesleft]"></DgTitleCol>
                 <DgTitleCol X="@(AppData.LongwavesRightPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Длин. Волны Пр." ShowValue="true" Value="@AppData.Data[(int)Services.Series.LongWavesright]"></DgTitleCol>
+
+               
+                ///ИМПУЛЬСЫ
+                <DgTitleCol X="@(AppData.ImpulsesLeftPosition)" Width="@AppData.ImpWidth" Heigth="@AppData.TitleRowHeigth" Title="Импульс Л." ShowValue="true" Value="@AppData.Data[(int)Services.Series.ImpulsLeft]"></DgTitleCol>
+                <DgTitleCol X="@(AppData.ImpulsesRightPosition)" Width="@AppData.ImpWidth" Heigth="@AppData.TitleRowHeigth" Title="Импульс Пр." ShowValue="true" Value="@AppData.Data[(int)Services.Series.ImpulsRight]"></DgTitleCol>
+                @*<DgTitleCol X="@(AppData.ImpulsesRightPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Импульс ЛВ Пр." ShowValue="true" Value="@AppData.Data[(int)Services.Series.ImpulsesRight]"></DgTitleCol>*@
             }
             catch (Exception e)
             {
@@ -485,6 +491,25 @@
 
                     <polyline transform="translate(@(AppData.LongwavesLeftPosition ), @y)" fill="none" stroke-width="0.5" stroke="black" points="@kilometer.LongwavesLeft"></polyline>
                     <polyline transform="translate(@(AppData.LongwavesRightPosition ), @y)" fill="none" stroke-width="0.5" stroke="black" points="@kilometer.LongwavesRight"></polyline>
+
+                    
+
+
+                    var GapKoef = 140.0 / 40.0; //окошко для стыка
+                    <MinorGrid MinorPositions="(new int[] { AppData.ImpulsesLeftPosition + (int)(25 * GapKoef), AppData.ImpulsesLeftPosition + (int)(30 * GapKoef) })" y1="0" y2="length" StrokeWidth="0.1" Zero="AppData.ImpulsesLeftPosition" StrokeDashArray="0.1 5"></MinorGrid>
+                    <MinorGrid MinorPositions="(new int[] { AppData.ImpulsesRightPosition + (int)(25 * GapKoef), AppData.ImpulsesRightPosition + (int)(30 * GapKoef) })" y1="0" y2="length" StrokeWidth="0.1" Zero="AppData.ImpulsesRightPosition" StrokeDashArray="0.1 5"></MinorGrid>
+
+                    if (kilometer.Impuls != null)
+                    {
+                        kilometer.Impuls = kilometer.Impuls.Where(o => o.Km == kilometer.Number).ToList();
+                       foreach (var gap in kilometer.Impuls.Where(o => o.Km == kilometer.Number).ToList())
+                        {
+                            index = kilometer.Direction == Direction.Direct ? 0 : kilometer.Length;
+                            <line transform="translate(0, @y)" stroke="red" stroke-width="3" x1="@AppData.ImpulsesLeftPosition" x2="@(AppData.ImpulsesLeftPosition + (int)(gap.Imp_left * GapKoef))" y1="@(index + (int)kilometer.Direction * gap.Meter)" y2="@(index + (int)kilometer.Direction * gap.Meter)"></line>
+                            <line transform="translate(0, @y)" stroke="red" stroke-width="3" x1="@AppData.ImpulsesRightPosition" x2="@(AppData.ImpulsesRightPosition + (int)(gap.Imp_Right * GapKoef))" y1="@(index + (int)kilometer.Direction * gap.Meter)" y2="@(index + (int)kilometer.Direction * gap.Meter)"></line>
+                        }
+                    }
+                    @*<polyline transform="translate(@(AppData.ImpulsesRightPosition ), @y)" fill="none" stroke-width="0.5" stroke="black" points="@kilometer.ImpulsesRight"></polyline>*@
 
                 }
                 //if (AppData.ShowCorrection)

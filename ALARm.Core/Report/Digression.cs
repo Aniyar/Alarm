@@ -15,6 +15,7 @@ namespace ALARm.Core.Report
         public int Y { get; set; }
         public int W { get; set; }
         public int H { get; set; }
+        public int Hight { get; set; }
 
         public string Tripplan { get; set; }
         public string Vpz { get; set; }

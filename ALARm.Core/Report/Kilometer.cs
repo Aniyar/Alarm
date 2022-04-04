@@ -573,6 +573,10 @@ namespace ALARm.Core
         //List<> GetCrossRailProfileFromDBbyKm(int kilometer, long trip_id);
         public List<CorrectionNote> CorrectionNotes = new List<CorrectionNote>();
         public List<Gap> Gaps { get; set; } = new List<Gap>();
+
+        public List<CrosProf> Impuls { get; set; } = new List<CrosProf>();
+        
+
         public List<Digression> Bolts { get; set; } = new List<Digression>();
         public List<Digression> Fasteners { get; set; } = new List<Digression>();
         public List<Digression> DefShpals { get; set; } = new List<Digression>();
@@ -584,6 +588,8 @@ namespace ALARm.Core
         public bool IsPrinted { get; set; } = false;
 
         public CrossRailProfile CrossRailProfile { get; set; } = new CrossRailProfile();
+
+        
 
         public bool WriteCurrentData(Trips trip, List<double> prev50, List<double> next50, List<double> prevStrightAvgPart, List<double> nextStrightAvgPart, IMainTrackStructureRepository mainTrackStructureRepository, IRdStructureRepository rdStructureRepository)
         {
@@ -736,10 +742,8 @@ namespace ALARm.Core
 
         public void CalcRailProfileLines(Trips trip)
         {
-            //if (CrossRailProfile == null)
-                //return;
-         
-
+            if (CrossRailProfile == null)
+                return;
 
             var shortwavesLeft = new StringBuilder();
             var shortwavesRight = new StringBuilder();
@@ -748,8 +752,14 @@ namespace ALARm.Core
             var longwavesLeft = new StringBuilder();
             var longwavesRight = new StringBuilder();
 
+            var impthreat = new StringBuilder();
+            var impmeter = new StringBuilder();
+            var impkm = new StringBuilder();
+            var impleft = new StringBuilder();
+            var impright = new StringBuilder();
 
-          
+
+
             foreach (var meter in CrossRailProfile.Meters.Where(meter => meter % 1 == 0).ToList())
             {
 
@@ -764,8 +774,13 @@ namespace ALARm.Core
                 longwavesLeft.Append((CrossRailProfile.Longwavesleft[index] * WavesKoef).ToString().Replace(",", ".") + "," + cmeter.ToString().Replace(",", ".") + " ");
                 longwavesRight.Append((CrossRailProfile.Longwavesright[index] * WavesKoef).ToString().Replace(",", ".") + "," + cmeter.ToString().Replace(",", ".") + " ");
 
+
+                impleft.Append((CrossRailProfile.ImpulsLeft[index] * WavesKoef).ToString().Replace(",", ".") + "," + cmeter.ToString().Replace(",", ".") + " ");
+                impright.Append((CrossRailProfile.ImpulsRight[index] * WavesKoef).ToString().Replace(",", ".") + "," + cmeter.ToString().Replace(",", ".") + " ");
+
+
             }
-        
+           
 
             ShortwavesLeft = shortwavesLeft.ToString();
             ShortwavesRight = shortwavesRight.ToString();
@@ -775,7 +790,11 @@ namespace ALARm.Core
          
             LongwavesLeft = longwavesLeft.ToString();
             LongwavesRight = longwavesRight.ToString();
-            
+
+            ImpulsesLeft = impleft.ToString();
+            ImpulsesRight = impright.ToString();
+
+
         }
 
         public string GetdigressionsCount =>
@@ -1172,6 +1191,8 @@ namespace ALARm.Core
         public string ShortwavesRight { get; set; } = "";
         public string LongwavesLeft { get; set; } = "";
         public string LongwavesRight { get; set; } = "";
+        public string ImpulsesRight { get; set; } = "";
+        public string ImpulsesLeft { get; set; } = "";
 
         public int Start_Index { get; set; } = -1;
         public int Final_Index => Start_Index + GetLength();
@@ -1207,6 +1228,7 @@ namespace ALARm.Core
             } }
 
         public Direction Direction { get; set; }
+       
 
         public static readonly int DefaultSpeed = 40;
         public static bool RepairProjectFlag = false;

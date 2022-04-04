@@ -111,11 +111,12 @@ namespace AlarmPP.Web.Components.Diagram
                 //kilometer.Heats = AdditionalParametersRepository.GetHeats(AppData.Trip.Id, kilometer.Number);
                 //var profileDataList = RdStructureRepository.GetNextProfileDatasByKm(kilometer.Number, AppData.Trip.Id);
                 //kilometer.CrossRailProfile.ParseDBList(profileDataList, kilometer);
-                var DBcrossRailProfile = AdditionalParametersRepository.GetCrossRailProfileFromDBbyKm(kilometer.Number, kilometer.Start_Index, kilometer.GetLength(), AppData.Trip.Id);
+                var DBcrossRailProfile = AdditionalParametersRepository.GetCrossRailProfileFromDBbyKm_forPPWEB(kilometer.Number, kilometer.Start_Index, kilometer.GetLength(), AppData.Trip.Id);
                 if (DBcrossRailProfile == null) continue;
+               
 
-                //kilometer.CrossRailProfile = AdditionalParametersRepository.GetCrossRailProfileFromDBParse(DBcrossRailProfile);
-                //foreach (var profileData in DBcrossRailProfile)
+                //kilometer.ImpulsesRailProfile = AdditionalParametersRepository.GetCrossRailProfileFromDBParse(ImpulsesRailProfile);
+                //foreach (var Impulses in ImpulsesRailProfile)
                 //{
 
                 //    if (kilometer.Meters.Count > kilometer.CrossRailProfile.Meters.Count)
@@ -128,19 +129,21 @@ namespace AlarmPP.Web.Components.Diagram
             }
           
             foreach (var km in AppData.Kilometers)
+
             {
+               
+             
                 var profileDatas = RdStructureRepository.GetNextProfileDatas(km.Start_Index, km.GetLength(), AppData.Trip.Id);
                 foreach (var profileData in profileDatas)
                 {
-
-                   
                     {
                         km.CrossRailProfile.ParseDB(profileData, km);
+                        
                     }
-
                 }
+             
                 km.CalcRailProfileLines(AppData.Trip);
-
+               
             }
 
 

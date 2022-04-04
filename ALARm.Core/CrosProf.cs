@@ -9,8 +9,22 @@ namespace ALARm.Core.AdditionalParameteres
 {
     public class CrosProf : RdObject
     {
- 
-        public int Kmetr { get; set; }
+
+
+        /// <summary>
+        /// импульсы для пост обработик
+        /// </summary>
+        /// 
+
+        public float Imp_left { get; set; }
+        public float Imp_Right { get; set; }
+     
+        public int Kmimp { get; set; }
+        public int Meterimp { get; set; }
+        public float Imp { get; set; }
+        public string Impthreat { get; set; }
+
+      
         public int Meter { get; set; }
         public string DigName { get; set; }
         public int Typ { get; set; }
@@ -32,6 +46,9 @@ namespace ALARm.Core.AdditionalParameteres
         public float Bok_r { get; set; }
         public float Npk_l { get; set; }
         public float Npk_r { get; set; }
+
+        public float Impulsesleft { get; set; }
+        public float Impulsesright { get; set; }
         public float Shortwavesleft { get; set; }
         public float Shortwavesright { get; set; }
         public float Mediumwavesleft { get; set; }

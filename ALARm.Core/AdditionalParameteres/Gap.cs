@@ -59,6 +59,16 @@ namespace ALARm.Core.AdditionalParameteres
         public int R_razn { get; set; }
         public Threat R_threat { get; set; }
 
+        /// <summary>
+        /// Импульсы
+        /// </summary>
+        /// 
+
+    
+
+
+
+
         public int R_y { get; set; }
         public int R_y2 { get; set; }
         public string R_ms { get; set; }
@@ -94,6 +104,7 @@ namespace ALARm.Core.AdditionalParameteres
         public string Otst_l { get; set; }
         public string Otst_r { get; set; }
         
+
 
         public int Start { get; set; }
         public string Code { get; set; }

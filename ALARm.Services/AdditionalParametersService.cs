@@ -37,6 +37,10 @@ namespace ALARm.Services
         {
             return Container.Resolve<IAdditionalParametersRepository>().GetCrossRailProfileFromDBbyKm(kilometer, trip_id);
         }
+        public static List<CrosProf> GetCrossRailProfileFromDBbyKm_forPPWEB(int kilometer, int index, int count, long trip_id)
+        {
+            return Container.Resolve<IAdditionalParametersRepository>().GetCrossRailProfileFromDBbyKm_forPPWEB(kilometer, index,count, trip_id);
+        }
         public static List<CrosProf> GetCrossRailProfileFromTrip(long trip_id)
         {
             return Container.Resolve<IAdditionalParametersRepository>().GetCrossRailProfileFromTrip(trip_id);
