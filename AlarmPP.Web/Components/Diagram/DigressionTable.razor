@@ -453,7 +453,7 @@
         <br />
         <MatTextField @bind-Value="@AppData.Editor" Label="Редактор" Style="width:45%" Outlined="true"></MatTextField>
         <MatAutocompleteList Items="@options" TItem="string" @bind-Value="@AppData.EditReason" Label="Причина корректировки" Style="width:45%" Outlined="true"></MatAutocompleteList>
-        <MatTextField @bind-Value="digressionGap.Otst" Label="Отступление" ReadOnly="true" Style="width:45%" Outlined="true"></MatTextField>
+        @*<MatTextField @bind-Value="digressionGap.Otst_l" Label="Отступление" ReadOnly="true" Style="width:45%" Outlined="true"></MatTextField>*@
         <MatNumericUpDownField @bind-Value="digressionGap.Zazor" Label="Зазор левый" Style="width:45%" TextArea="true" Outlined="true"></MatNumericUpDownField>
         <MatNumericUpDownField @bind-Value="digressionGap.R_zazor" Label="Зазор правый" Style="width:45%" TextArea="true" Outlined="true"></MatNumericUpDownField>
         <MatNumericUpDownField @bind-Value="digressionGap.Zabeg" Label="Забег" Style="width:45%" TextArea="true" Outlined="true"></MatNumericUpDownField>

@@ -411,14 +411,10 @@ namespace ALARm_Report.Forms
                             }
 
                             List<Digression> addDigressions = shortRoughness.GetDigressions_new(kilometer.Number);
-                            if (addDigressions.Any())
+                            // заполняет таблицу с доп параметрами
+                            if (addDigressions != null && addDigressions.Count != 0)
                             {
-                            if (addDigressions.Count != null && addDigressions.Count != 0)
-                            {
-                                //var Insert_additional_param_state = AdditionalParametersService.Insert_additional_param_state(addDigressions);
-                            }
-                                var Insert_additional_param_state = AdditionalParametersService.Insert_additional_param_state_aslan(addDigressions);
-
+                                var Insert_additional_param_state = AdditionalParametersService.Insert_additional_param_state(addDigressions, kilometer.Number);
                             }
                             foreach (var dig in addDigressions)
                             {

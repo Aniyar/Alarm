@@ -587,7 +587,7 @@ namespace AlarmPP.Web.Services
                             km.DefShpals = AdditionalParametersRepository.Check_defshpal_state(Trip.Id, 999);
                             km.PerShpals = AdditionalParametersRepository.Check_ViolPerpen(Trip.Id);
 
-                            km.Impuls = AdditionalParametersRepository.GetCrossRailProfileFromDBbyTripId(Trip.Id);
+                            //km.Impuls = AdditionalParametersRepository.GetCrossRailProfileFromDBbyTripId(Trip.Id);
                             //km.direction_name = RdStructureService.Check_direction_name(Trip.Id);
 
                             //if (!km.CorrectionNotes.Any())
@@ -1104,7 +1104,7 @@ namespace AlarmPP.Web.Services
 
         PU, NPK, ShortWaves, LongWaves, MediumWaves, IznosBok, IznosVert, IznosPriv, Correction, 
 
-        ByKilometer
+        ByKilometer, Video
 
     }
  

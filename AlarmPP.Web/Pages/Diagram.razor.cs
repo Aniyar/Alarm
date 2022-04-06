@@ -173,6 +173,13 @@ namespace AlarmPP.Web.Pages
                     AppData.ShowDigressions = !AppData.ShowDigressions;
                     RdStructureRepository.SetButtonStatus(ShowButtons.Digression.ToString(), AppData.ShowDigressions);
                     break;
+                case ShowButtons.Video:
+                    AppData.ShowVideo = !AppData.ShowVideo;
+                    RdStructureRepository.SetButtonStatus(ShowButtons.Video.ToString(), AppData.ShowVideo);
+                    if (!AppData.ShowVideo)
+                        AppData.VideoProcessing = false;
+                    StateHasChanged();
+                    return;
                 case ShowButtons.DangerousDigression:
                     AppData.ShowDangerousDigressions = !AppData.ShowDangerousDigressions;
                     RdStructureRepository.SetButtonStatus(ShowButtons.DangerousDigression.ToString(), AppData.ShowDangerousDigressions);

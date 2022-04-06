@@ -99,7 +99,7 @@ namespace ALARm_Report.Forms
                         progressBar.Maximum = kms.Count;
 
                         var check_gap_state = AdditionalParametersService.Check_gap_state(tripProcess.Id, template.ID); //стыки
-                        var Pu32_gap = check_gap_state.Where(o => o.Otst.Contains("З") || o.Otst.Contains("З?")).ToList();
+                        var Pu32_gap = check_gap_state.Where(o => o.Otst_l.Contains("З") || o.Otst_l.Contains("З?") || o.Otst_r.Contains("З") || o.Otst_r.Contains("З?")).ToList();
 
                         foreach (var km in kms)
                         {

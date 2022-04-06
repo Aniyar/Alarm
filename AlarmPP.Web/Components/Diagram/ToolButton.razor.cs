@@ -42,7 +42,12 @@ namespace AlarmPP.Web.Components.Diagram
                     return;
                 case ShowButtons.Pasport:
                     AppData.ShowPasport = !AppData.ShowPasport;
-                    RdStructureRepository.SetButtonStatus(ShowButtons.ZeroLines.ToString(), AppData.ShowPasport);
+                    RdStructureRepository.SetButtonStatus(ShowButtons.Pasport.ToString(), AppData.ShowPasport);
+                    return;
+                case ShowButtons.Video:
+                    AppData.ShowVideo = !AppData.ShowVideo;
+                    RdStructureRepository.SetButtonStatus(ShowButtons.Video.ToString(), AppData.ShowVideo);
+                    StateHasChanged();
                     return;
 
             }

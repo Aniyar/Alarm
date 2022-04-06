@@ -36,7 +36,7 @@ namespace AlarmPP.Web.Components.Diagram
         public string Base64 { get; set; }
         public List<long> FileIdList { get; set; }
         public int Number { get; set; }
-        public int N_rows { get; set; } 
+        public int N_rows { get; set; } = 2;
         public bool ObjectsDialog { get; set; } = false;
 
         List<Gap> Gaps { get; set; } = new List<Gap>();

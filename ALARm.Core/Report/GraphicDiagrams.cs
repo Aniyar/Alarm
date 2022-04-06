@@ -1679,17 +1679,20 @@ namespace ALARm.Core.Report
                                                  new XAttribute("fw", note.FontStyle())
                                 ));
                         }
-                        if (prim.Contains("гр"))
+                        if (prim != null)
                         {
-                            digElements.Add(new XElement("ogrsk",
-                                                new XAttribute("top", -meter),
-                                                new XAttribute("x", 170),
-                                                //new XAttribute("x", 145),
-                                                new XAttribute("Meter", note.Meter),
-                                                new XAttribute("note", "  "+"-/60"),
-                                                new XAttribute("fw", note.FontStyle())
-                               ));
+                            if (prim.Contains("гр"))
+                            {
+                                digElements.Add(new XElement("ogrsk",
+                                                    new XAttribute("top", -meter),
+                                                    new XAttribute("x", 170),
+                                                    //new XAttribute("x", 145),
+                                                    new XAttribute("Meter", note.Meter),
+                                                    new XAttribute("note", "  " + "-/60"),
+                                                    new XAttribute("fw", note.FontStyle())
+                                   ));
 
+                            }
                         }
                     }
 

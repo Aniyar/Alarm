@@ -3323,7 +3323,7 @@ namespace ALARm.DataAccess
                 //                         INNER JOIN adm_direction direction ON direction.ID = trips.direction_id 
                 //                        ORDER BY
                 //                         trip_date DESC limit {count}", commandType: CommandType.Text).ToList();
-                return db.Query<Trips>($@"SELECT * from trips WHERE id = 242", commandType: CommandType.Text).ToList();
+                return db.Query<Trips>($@"SELECT * from trips --WHERE id = 242", commandType: CommandType.Text).ToList();
             }
         }
         public int InsertKilometer(Kilometer km)
@@ -3779,7 +3779,8 @@ namespace ALARm.DataAccess
             {
                 if (db.State == ConnectionState.Closed)
                     db.Open();
-
+                //  WHERE
+	               //acu.ID IN ( SELECT DISTINCT curve_id FROM rd_curve WHERE trip_id = {tripId} ) 
                 var curves =  db.Query<Curve>($@"
                         SELECT
 	                        cs.NAME AS Side,
@@ -3788,8 +3789,7 @@ namespace ALARm.DataAccess
                         FROM
 	                        APR_CURVE AS acu
 	                        INNER JOIN CAT_SIDE AS cs ON cs.ID = acu.SIDE_ID 
-                        WHERE
-	                        acu.ID IN ( SELECT DISTINCT curve_id FROM rd_curve WHERE trip_id = {tripId} ) 
+                      
                         ORDER BY
 	                        acu.start_km,
 	                        acu.start_m ").ToList();
@@ -4340,9 +4340,9 @@ namespace ALARm.DataAccess
                             longwavesright,
 	                        iz_45_l,
 	                        iz_45_r,
-	                        imp,
-	                        implen,
-	                        impthreat
+	                        imp_left,
+                            imp_right
+	                      
                         FROM
 	                        PUBLIC.profiledata_{trip_id}
                         WHERE
@@ -4501,9 +4501,9 @@ namespace ALARm.DataAccess
                 {
                     command.CommandText = $@"
                     INSERT INTO report_gaps_history(
-	                   original_id, trip_id, modi_date, user_id, pdb_section, fragment, km, piket, m, vpz, zazor_r, zazor_l, temp, zabeg, vdop, otst, primech, file_id, fnum,ms,r_file_id,r_fnum,r_ms,template_id,r_t,x,y,h,x_r,y_r,h_r,editor,editreason, state_id)
+	                   original_id, trip_id, modi_date, user_id, pdb_section, fragment, km, piket, m, vpz, zazor_r, zazor_l, temp, zabeg, vdop, otst_l, otst_r, primech, file_id, fnum,ms,r_file_id,r_fnum,r_ms,template_id,r_t,x,y,h,x_r,y_r,h_r,editor,editreason, state_id)
                     SELECT
-                       id, trip_id, CURRENT_TIMESTAMP, user_id, pdb_section, fragment, km, piket, m, vpz, zazor_r, zazor_l, temp, zabeg, vdop, otst, primech, file_id, fnum,ms,r_file_id,r_fnum,r_ms,template_id,r_t,x,y,h,x_r,y_r,h_r,'{dGap.Editor}', '{dGap.EditReason}', {(int)action}
+                       id, trip_id, CURRENT_TIMESTAMP, user_id, pdb_section, fragment, km, piket, m, vpz, zazor_r, zazor_l, temp, zabeg, vdop, otst_l, otst_r, primech, file_id, fnum,ms,r_file_id,r_fnum,r_ms,template_id,r_t,x,y,h,x_r,y_r,h_r,'{dGap.Editor}', '{dGap.EditReason}', {(int)action}
                     FROM report_gaps WHERE report_gaps.id = {dGap.id}
                     ";
                     command.ExecuteNonQuery();
@@ -4518,7 +4518,7 @@ namespace ALARm.DataAccess
                     {
                         command.CommandText = $@"
                         UPDATE report_gaps
-                            SET zazor_r = {dGap.R_zazor}, zazor_l = {dGap.Zazor}, zabeg = {dGap.Zabeg}, otst = '{dGap.Otst}', vdop = '{dGap.AllowSpeed}', modi_date=CURRENT_TIMESTAMP
+                            SET zazor_r = {dGap.R_zazor}, zazor_l = {dGap.Zazor}, zabeg = {dGap.Zabeg}, otst_l = '{dGap.Otst_l}', otst_r = '{dGap.Otst_r}', vdop = '{dGap.AllowSpeed}', modi_date=CURRENT_TIMESTAMP
                         WHERE 
                             id = {dGap.id}
                         ";

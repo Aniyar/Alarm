@@ -59,8 +59,7 @@ namespace ALARm_Report.Forms
                     {
 
                         var trips = RdStructureService.GetTrips();
-                        var tr = trips.Where(t => t.Id == tripProcess.Trip_id).ToList().First();
-
+                        var tr = trips.Where(t => t.Id == tripProcess.Trip_id).First();
                         
                         var trip = RdStructureService.GetTrip(tripProcess.Id);
                         var kilometers = RdStructureService.GetKilometersByTrip(trip);
