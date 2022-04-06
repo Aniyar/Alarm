@@ -110,6 +110,8 @@ namespace ALARm.Core
         Railbreak_Stone_raskol = 48, //жб раскол
         Railbreak_Stone_midsection = 49, //жб по середине 
 
+
+
      //|--------------------------------------------------|
         
         stuck_styk = 222,    //слип. стык

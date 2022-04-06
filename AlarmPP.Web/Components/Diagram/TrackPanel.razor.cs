@@ -29,6 +29,7 @@ namespace AlarmPP.Web.Components.Diagram
         private int Width { get; set; } = 4000;
         double ScrollLeft = 0;
         double ScrollTop = 0;
+
         private DigressionTable digressionTable;
         private bool StopDialog { get; set; } = false;
         private bool loading = false;
@@ -421,6 +422,45 @@ namespace AlarmPP.Web.Components.Diagram
                     return 0;
             }
         }
+
+        private int GetXByAddDigName(string digname)
+        {
+            if (digname.Contains("КВ.л"))
+                return AppData.ShortwavesLeftPosition + 40;
+            if (digname.Contains("ДВ.л"))
+                return AppData.LongwavesLeftPosition + 40;
+            if (digname.Contains("СВ.л"))
+                return AppData.MediumwavesleftPosition + 40;
+            if (digname.Contains("КВ.п"))
+                return AppData.ShortwavesRightPosition + 40;
+            if (digname.Contains("ДВ.п"))
+                return AppData.LongwavesRightPosition + 40;
+            if (digname.Contains("СВ.п"))
+                return AppData.MediumwavesrightPosition + 40;
+            if (digname.Contains("Ив.л"))
+                return AppData.VertWearLeftPosition + 40;
+            if (digname.Contains("Ив.п"))
+                return AppData.SideWearRightPosition + 40;
+            if (digname.Contains("Иб.л"))
+                return AppData.RailProfilePosition + 40;
+            if (digname.Contains("Иб.п"))
+                return AppData.VertWearRightPosition + 40;
+            if (digname.Contains("Пу.л"))
+                return AppData.DownhillLeftPosition + 40;
+            if (digname.Contains("Пу.п"))
+                return AppData.DownhillRightPosition + 40;
+            if (digname.Contains("Нпк.л"))
+                return AppData.TreadTiltLeftPosition + 40;
+            if (digname.Contains("Нпк.п"))
+                return AppData.TreadTiltRightPosition + 40;
+            if (digname.Contains("Ип.л"))
+                return AppData.GivenWearLeftPosition + 40;
+            if (digname.Contains("Ип.п"))
+                return AppData.GivenWearRightPosition + 40;
+            return 0;
+            
+        }
+
         public void Refresh()
         {
             StateHasChanged();

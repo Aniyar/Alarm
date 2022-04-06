@@ -29,13 +29,14 @@ namespace AlarmPP.Web.Components.Diagram
         public int CurrentMs = 0;
         public int StartMeter { get; set; }
         public int CurrentMeter { get; set; }
+        public int[,] Filter { get; set; } = null;
         //[Parameter]
 
         private DigressionTable DigressionTable { get; set; } = new DigressionTable();
         public string Base64 { get; set; }
         public List<long> FileIdList { get; set; }
         public int Number { get; set; }
-        public int N_rows { get; set; } = 2;
+        public int N_rows { get; set; } 
         public bool ObjectsDialog { get; set; } = false;
 
         List<Gap> Gaps { get; set; } = new List<Gap>();
@@ -57,6 +58,19 @@ namespace AlarmPP.Web.Components.Diagram
             return bmp;
         }
 
+        public void GetFilter(long fileid)
+        {
+            try
+            {
+                int carPosition = (int)AppData.Trip.Car_Position;
+                int direction = (int)CurrentKm.Direction;
+                Filter = AppData.AdditionalParametersRepository.getFilter(fileid, CurrentMs + 200 * carPosition * direction);
+            }
+            catch (Exception e)
+            {
+                Filter = null;
+            }
+        }
 
         public void GetImage2(long fileid)
         {
@@ -72,16 +86,25 @@ namespace AlarmPP.Web.Components.Diagram
                     rows[i] = (List<Bitmap>)AppData.AdditionalParametersRepository.getBitMaps(fileid, CurrentMs + 200 * i * carPosition * direction, CurrentVideoFrame + i * direction * carPosition, RepType.Undefined)["bitMaps"];
                 }
                 int W = rows[0][0].Width, H = rows[0][0].Height;
-                var commonBitMap = new Bitmap(W * 5 - 87, H * N_rows - 175);
+                var commonBitMap = new Bitmap(W * 5, H * N_rows);
                 Graphics g = Graphics.FromImage(commonBitMap);
+
+                //for (int i = 0; i < N_rows; i++)
+                //{
+                //    g.DrawImageUnscaled(rows[N_rows - i - 1][0], 0, (H - upperKoef) * i);
+                //    g.DrawImageUnscaled(rows[N_rows - i - 1][1], W, (H - upperKoef) * i );
+                //    g.DrawImageUnscaled(rows[N_rows - i - 1][2], W * 2, (H - upperKoef) * i);
+                //    g.DrawImageUnscaled(rows[N_rows - i - 1][3], W * 3, (H - upperKoef) * i);
+                //    g.DrawImageUnscaled(rows[N_rows - i - 1][4], W * 4, (H - upperKoef) * i);
+                //}
 
                 for (int i = 0; i < N_rows; i++)
                 {
-                    g.DrawImageUnscaled(RotateImage(rows[N_rows-i-1][0], -1), -12, (H - upperKoef) * i - 46);
-                    g.DrawImageUnscaled(RotateImage(rows[N_rows-i-1][1], 1), W - 12, (H - upperKoef) * i - 65);
-                    g.DrawImageUnscaled(RotateImage(rows[N_rows-i-1][2], 1), W * 2 - 33, (H - upperKoef) * i - 35);
-                    g.DrawImageUnscaled(RotateImage(rows[N_rows-i-1][3], -3), W * 3 - 50, (H - upperKoef) * i - 24);
-                    g.DrawImageUnscaled(RotateImage(rows[N_rows-i-1][4], 4), W * 4 - 130, (H - upperKoef) * i - 24);
+                    g.DrawImageUnscaled(RotateImage(rows[N_rows - i - 1][0], -1), 0, (H - upperKoef) * i - 46);
+                    g.DrawImageUnscaled(RotateImage(rows[N_rows - i - 1][1], 1), W, (H - upperKoef) * i - 65);
+                    g.DrawImageUnscaled(RotateImage(rows[N_rows - i - 1][2], 1), W * 2, (H - upperKoef) * i - 35);
+                    g.DrawImageUnscaled(RotateImage(rows[N_rows - i - 1][3], -3), W * 3, (H - upperKoef) * i - 24);
+                    g.DrawImageUnscaled(RotateImage(rows[N_rows - i - 1][4], 4), W * 4, (H - upperKoef) * i - 24);
                 }
 
                 if (rows[1] != null)
@@ -109,6 +132,7 @@ namespace AlarmPP.Web.Components.Diagram
         public async Task OnTimedEventAsync()
         {
             AppData.VideoProcessing = !AppData.VideoProcessing;
+
             CurrentKm = Kilometers.Where(km => km.Number == Number).First();
             StartMeter = CurrentKm.Start_m;
             while (AppData.VideoProcessing)
@@ -123,6 +147,13 @@ namespace AlarmPP.Web.Components.Diagram
             }
         }
 
+        void RestartKm()
+        {
+            CurrentKm = Kilometers.Where(km => km.Number == Number).First();
+            CurrentMeter = StartMeter = CurrentKm.Start_m;
+            CurrentMs = 0;
+            CurrentVideoFrame = 0;
+        }
         void GetObjectsFromFrame()
         {
             try

@@ -1370,10 +1370,13 @@ namespace ALARm.DataAccess
                     var gaps = DB_obj.Where(o => o.Oid == (int)VideoObjectType.GapFull).ToList();
 
                     var AbsBoltList = new List<Digression> { };
-                    
+               
+             
 
                     foreach (var gap in gaps)
                     {
+
+                        
                         var Before_gap = new List<Digression> { };
                         var After_gap = new List<Digression> { };
                         var Find_gap = false;
@@ -1419,9 +1422,9 @@ namespace ALARm.DataAccess
                         var After = After_gap.Where(o => o.Oid == (int)VideoObjectType.no_bolt).ToList();
 
                         var cc = Math.Max(Before_gap.Count, After_gap.Count) * 2;
-
-                        string overlay = $"{ (cc >= 6 ? 6 : cc) } отверстия";
-
+                        //string overlay = "";
+                       string overlay = $"{ (cc >= 6 ? 6 : cc) } отверстия";
+                       
 
 
                         if (Before.Count == 0 && After.Count == 0)
@@ -3313,6 +3316,7 @@ namespace ALARm.DataAccess
             {
                 if (db.State == ConnectionState.Closed)
                     db.Open();
+
                 return db.Query<Trips>($@"SELECT
 	                                        trips.*,
 	                                        start_st.NAME AS Start_station_name,
@@ -4324,7 +4328,7 @@ namespace ALARm.DataAccess
                 {
                     return db.Query<CrosProf>(
                     $@"SELECT 
-                            ID,
+                             ID,
 	                        meter,
 	                        pu_l,
 	                        pu_r,

@@ -63,6 +63,7 @@ namespace AlarmPP.Web.Services
         public double SliderXPosition { get; set; } = 0;
         public double SliderCenterXPosition { get; set; } = 25;
         public double SliderYPosition { get; set; } = 0;
+        public bool ShowVideo { get; set; } = false; 
         public Trips Trip { get; set; } = new Trips();
         public bool IsDialogOpen { get; set; } = true;
         private string _color;
@@ -539,6 +540,7 @@ namespace AlarmPP.Web.Services
                         if (km.Start_Index > -1)
                         {
                             var outData = RdStructureRepository.GetNextOutDatas(km.Start_Index - 1, km.GetLength(), Trip.Id);
+
                             int meter = 0;
                             foreach (var data in outData)
                             {
@@ -676,9 +678,10 @@ namespace AlarmPP.Web.Services
         {
             if (_kilometers == null)
                 return false;
+
             Data = new string[] { "", "", "", "", "", "", "", "", "", "", "", "", "", "", "","", "", "", "", "", "", "", "", "", "", "", "", "", "","", "", "", "", "", "", "","", "", "", "", "", "", "", "", "", "" };
 
-        
+
             int position = (int)yPosition;
             int length = 0;
    
@@ -741,6 +744,7 @@ namespace AlarmPP.Web.Services
 
                             break;
                         }
+
                     }
                     if (km.CrossRailProfile != null)
                     {

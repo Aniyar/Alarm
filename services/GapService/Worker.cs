@@ -118,25 +118,25 @@ namespace GapService
                     km.AddDataRange(outData, km);
 
                     km.LoadTrackPasport(MainTrackStructureRepository, trip.Trip_date);
-                    
-                    try
-                    {
-                        GetGaps(trip, km, DistId); //стыки
-                        Console.WriteLine("Стык ОК!");
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("Стык ERROR! " + e.Message);
-                    }
+
+                    //try
+                    //{
+                    //    GetGaps(trip, km, DistId); //стыки
+                    //    Console.WriteLine("Стык ОК!");
+                    //}
+                    //catch (Exception e)
+                    //{
+                    //    Console.WriteLine("Стык ERROR! " + e.Message);
+                    //}
 
                     //try
                     //{
                     //    GetBolt(trip, km, DistId); //стыки
-                    //    Console.WriteLine("Болт ОК!");
+                    //    Console.WriteLine("болт ок!");
                     //}
                     //catch (Exception e)
                     //{
-                    //    Console.WriteLine("Болт ERROR! " + e.Message);
+                    //    Console.WriteLine("болт error! " + e.Message);
                     //}
                     //try
                     //{
@@ -158,25 +158,25 @@ namespace GapService
                     //    Console.WriteLine("Perpen ERROR! " + e.Message);
                     //}
 
-                    //try
-                    //{
-                    //    GetSleepers(trip, km, DistId);
-                    //    Console.WriteLine("Шпалы ОК!");
-                    //}
-                    //catch (Exception e)
-                    //{
-                    //    Console.WriteLine("Шпалы ERROR! " + e.Message);
-                    //}
+                    try
+                    {
+                        GetSleepers(trip, km, DistId);
+                        Console.WriteLine("Шпалы ОК!");
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Шпалы ERROR! " + e.Message);
+                    }
 
-                    //try
-                    //{
-                    //    GetdeviationsinSleepers(trip, km, DistId); //Огр шпалы
-                    //    Console.WriteLine("Огр шпалы ОК!");
-                    //}
-                    //catch (Exception e)
-                    //{
-                    //    Console.WriteLine("Огр шпалы ERROR! " + e.Message);
-                    //}
+                    try
+                    {
+                        GetdeviationsinSleepers(trip, km, DistId); //Огр шпалы
+                        Console.WriteLine("Огр шпалы ОК!");
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Огр шпалы ERROR! " + e.Message);
+                    }
 
                     //try
                     //{
@@ -603,6 +603,7 @@ namespace GapService
         /// <param name="DistId">ПЧ id</param>
         public void GetBolt(Trips trip, Kilometer km, int DistId)
         {
+            km.LoadTrackPasport(MainTrackStructureRepository, trip.Trip_date);
             var mainProcess = new MainParametersProcess { Trip_id = trip.Id };
             //левая сторона
             var AbsBoltListLeft = RdStructureService.NoBolt(mainProcess, Threat.Left, km.Number);
@@ -611,6 +612,19 @@ namespace GapService
             List<Digression> AbsBoltList = new List<Digression>(AbsBoltListLeft);
             AbsBoltList.AddRange(AbsBoltListRight);
             AbsBoltList = AbsBoltList.OrderBy(o => o.Km).ThenBy(o => o.Meter).ToList();
+
+
+        
+        
+            this.MainTrackStructureRepository = MainTrackStructureService.GetRepository();
+
+
+         
+
+
+
+
+
 
             foreach (var item in AbsBoltList)
             {
@@ -639,9 +653,11 @@ namespace GapService
         {
             var mainProcess = new MainParametersProcess { Trip_id = trip.Id };
             var trackName = AdmStructureService.GetTrackName(km.Track_id);
+            //var skreplenie = MainTrackStructureService.GetMtoObjectsByCoord(trip.Trip_date, km.Number,
+            //    MainTrackStructureConst.MtoRailsBrace, trip.Direction, trackName.ToString()) as List<RailsBrace>;
             var skreplenie = MainTrackStructureService.GetMtoObjectsByCoord(trip.Trip_date, km.Number,
-                MainTrackStructureConst.MtoRailsBrace, trip.Direction, trackName.ToString()) as List<RailsBrace>;
-
+              MainTrackStructureConst.MtoRailsBrace, "Петропавловск - Шу", trackName.ToString()) as List<RailsBrace>;
+            
             var ViolPerpen = RdStructureService.GetViolPerpen((int)trip.Id, new int[] { 7 }, km.Number);
 
             AdditionalParametersService.Insert_ViolPerpen(km, skreplenie, ViolPerpen);
@@ -697,7 +713,7 @@ namespace GapService
                         //sector = MainTrackStructureService.GetSector(km.Track_id, digressions[i].Km, trip.Trip_date);
                         //sector = sector == null ? "Нет данных" : sector;
                         //pdbSection = MainTrackStructureService.GetMtoObjectsByCoord(trip.Trip_date, digressions[i].Km, MainTrackStructureConst.MtoPdbSection, trip.Direction, trackName.ToString()) as List<PdbSection>;
-                        skreplenie = MainTrackStructureService.GetMtoObjectsByCoord(trip.Trip_date, digressions[i].Km, MainTrackStructureConst.MtoRailsBrace, trip.Direction, trackName.ToString()) as List<RailsBrace>;
+                        skreplenie = MainTrackStructureService.GetMtoObjectsByCoord(trip.Trip_date, digressions[i].Km, MainTrackStructureConst.MtoRailsBrace, "Петропавловск - Шу", trackName.ToString()) as List<RailsBrace>;
                     }
 
                     var pdb = km.PdbSection.Count > 0 ? km.PdbSection[0].ToString() : " ПЧ-/ПЧУ-/ПД-/ПДБ-";
