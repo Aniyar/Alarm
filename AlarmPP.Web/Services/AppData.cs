@@ -219,7 +219,7 @@ namespace AlarmPP.Web.Services
         /// <summary>
         /// ширина столбца "зазоры"
         /// </summary>
-        public int ImpWidth = 140;
+        public int ImpWidth = 110;
         public int ImpulsesLeftPosition
         {
             get { return LongwavesRightPosition + ImpWidth; }
@@ -504,6 +504,7 @@ namespace AlarmPP.Web.Services
 
                 foreach (var km in kms)
                 {
+                    km.Trip = Trip;
                     var coord = km.Final_m;
                     if (km.Number == 711)
                     {
