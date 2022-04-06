@@ -131,8 +131,6 @@ namespace AlarmPP.Web.Components.Diagram
             foreach (var km in AppData.Kilometers)
 
             {
-               
-             
                 var profileDatas = RdStructureRepository.GetNextProfileDatas(km.Start_Index, km.GetLength(), AppData.Trip.Id);
                 foreach (var profileData in profileDatas)
                 {
@@ -141,9 +139,7 @@ namespace AlarmPP.Web.Components.Diagram
                         
                     }
                 }
-             
                 km.CalcRailProfileLines(AppData.Trip);
-               
             }
 
 

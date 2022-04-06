@@ -18,31 +18,32 @@ using System.Xml.Linq;
 using System.Xml.Xsl;
 
 namespace ALARm_Report.Forms
+
 {
+    /// <summary>
+    /// ДУбликат
+    /// </summary>
     public class MainParameters : ALARm.Core.Report.GraphicDiagrams
     {
+
         private readonly float LevelPosition = 32.5f;
         private readonly float LevelStep = 7.5f;
         private readonly float LevelKoef = 0.25f;
 
         private readonly float StraighRighttPosition = 62f;
+        private readonly float StrightLeftPosition = 71f;
         private readonly float StrightStep = 15f;
         private readonly float StrightKoef = 0.5f;
 
-        private readonly float ProsKoef = 0.5f;
-
+        private readonly float GaugePosition = 100.5f;
         private readonly float GaugeKoef = 0.5f;
 
-        private readonly float StrightLeftPosition = 71f;
-
-        private readonly float GaugePosition = 100.5f;
-
-        private readonly float ProsRightPosition = 124.5f;
-
-        private readonly float ProsLeftPosition = 138.5f;
+        private readonly float ProsRightPosition = 138.5f;
+        private readonly float ProsLeftPosition = 124.5f;
+        private readonly float ProsKoef = 0.5f;
 
 
-   
+
         public override void Process(long parentId, ReportTemplate template, ReportPeriod period, MetroProgressBar progressBar)
         {
 
@@ -375,8 +376,9 @@ namespace ALARm_Report.Forms
                                     ));
 
                             //kil
-                            for (int index = 0; index < kilometer.meter.Count - 1; index++)
-                            {
+                           // for (int index = 0; index < kilometer.meter.Count - 1; index++)
+                                for (int index = 0; index < kilometer.meter.Count - 1; index++)
+                                {
                                 int metre = -kilometer.meter[index + 1];                               
                                 drawdownRight += MMToPixelChartString(kilometer.DrawdownLeft[index] * ProsKoef + ProsRightPosition) + "," + metre + " ";
                                 drawdownLeft += MMToPixelChartString(kilometer.DrawdownRight[index] * ProsKoef + ProsLeftPosition) + "," + metre + " ";
@@ -423,7 +425,11 @@ namespace ALARm_Report.Forms
                              
                             addParam.Add(new XElement("polyline", new XAttribute("points", level), new XAttribute("style", style)));
                             addParam.Add(new XElement("polyline", new XAttribute("points", averageLevel), new XAttribute("style", styleAverage)));
+
                             addParam.Add(new XElement("polyline", new XAttribute("points", zeroLevel), new XAttribute("style", style)));
+
+                    
+                            
 
                             char separator = CultureInfo.CurrentCulture.NumberFormat.CurrencyDecimalSeparator[0];
 
@@ -473,7 +479,7 @@ namespace ALARm_Report.Forms
                             new XAttribute("speedlimit",
                                 kilometer.CalcMainPoint() + " " +
                                 $"Кол.ст.- 1:{(GetBedomost.Any() ? GetBedomost.First().Type1 : 0)}; " + kilometer.GetdigressionsCount +
-                                "  Кол.огр.:" + fourStepOgrCoun + "/" + otherfourStepOgrCoun + " Огр: " + kilometer.SpeedLimit + " Пред:- ")
+                                "  Кол.огр.:" + fourStepOgrCoun + "/" + otherfourStepOgrCoun + " Огр: " + kilometer.SpeedLimit + $" Скор.{(int)kilometer.Speed.Average()}")
                     );
                             addParam.Add(digElemenets);
                             report.Add(addParam);

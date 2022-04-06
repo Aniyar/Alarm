@@ -226,6 +226,10 @@ namespace ALARm.Core
         }
 
         public string TrackCode { get; set; }
+        public override string ToString()
+        {
+            return $"ID: {Id}, Type: {Trip_Type}";
+        }
     }
 
     public class RdClasses

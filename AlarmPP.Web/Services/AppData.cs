@@ -505,6 +505,7 @@ namespace AlarmPP.Web.Services
 
                 foreach (var km in kms)
                 {
+                    km.Trip = Trip;
                     var coord = km.Final_m;
                     if (km.Number == 711)
                     {

@@ -1534,7 +1534,8 @@ namespace ALARm.Core.Report
 
                 int fourStepOgrCoun = 0, otherfourStepOgrCoun = 0;
 
-                svgLength = kilometer.GetLength() < 1000 ? 1000 : kilometer.GetLength();
+              //  svgLength = kilometer.GetLength() < 1000 ? 1000 : kilometer.GetLength();
+                svgLength = kilometer.GetLength() ;
                 var xp = (-kilometer.Start_m - svgLength - 50) + (svgLength + 105) - 52;
                 var direction = AdmStructureRepository.GetDirectionByTrack(kilometer.Track_id);
 
