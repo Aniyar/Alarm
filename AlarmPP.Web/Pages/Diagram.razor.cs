@@ -344,6 +344,12 @@ namespace AlarmPP.Web.Pages
                     AppData.ShowRailProfile = !AppData.ShowRailProfile;
                     RdStructureRepository.SetButtonStatus(ShowButtons.RailProfile.ToString(), AppData.ShowRailProfile);
                     break;
+                case ShowButtons.Video:
+                    AppData.ShowVideo = !AppData.ShowVideo;
+                    RdStructureRepository.SetButtonStatus(ShowButtons.Video.ToString(), AppData.ShowVideo);
+                    if (!AppData.ShowVideo)
+                        AppData.VideoProcessing = false;
+                    break;
                 case ShowButtons.Gaps:
                     AppData.ShowGaps = !AppData.ShowGaps;
                     RdStructureRepository.SetButtonStatus(ShowButtons.Gaps.ToString(), AppData.ShowGaps);
