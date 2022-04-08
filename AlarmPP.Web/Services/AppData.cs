@@ -1104,7 +1104,7 @@ namespace AlarmPP.Web.Services
 
         PU, NPK, ShortWaves, LongWaves, MediumWaves, IznosBok, IznosVert, IznosPriv, Correction, 
 
-        ByKilometer
+        ByKilometer, Video
 
     }
  
