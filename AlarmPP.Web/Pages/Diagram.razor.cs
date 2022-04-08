@@ -343,6 +343,11 @@ namespace AlarmPP.Web.Pages
                 case ShowButtons.RailProfile:
                     AppData.ShowRailProfile = !AppData.ShowRailProfile;
                     RdStructureRepository.SetButtonStatus(ShowButtons.RailProfile.ToString(), AppData.ShowRailProfile);
+
+                    if (AppData.ShowRailProfile)
+                        AppData.DigressionChecked = true;
+                    else
+                        AppData.DigressionChecked = false;
                     break;
                 case ShowButtons.Gaps:
                     AppData.ShowGaps = !AppData.ShowGaps;

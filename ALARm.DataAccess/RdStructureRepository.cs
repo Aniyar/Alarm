@@ -3239,6 +3239,7 @@ namespace ALARm.DataAccess
                 try
                 {
                     var res= db.Query<Kilometer>($@"select km as number, pch as pchcode, pchu as pchucode, pd as pdcode, pdb as pdbcode, ots_iv_st as speedlim, primech as primech, put as track_name, rating as Rating_bedomost from bedemost", commandType: CommandType.Text).ToList();
+    
                     return res;
                 }
                 catch (Exception e)
@@ -3310,20 +3311,21 @@ namespace ALARm.DataAccess
             {
                 if (db.State == ConnectionState.Closed)
                     db.Open();
-                //return db.Query<Trips>($@"SELECT
-                //                         trips.*,
-                //                         start_st.NAME AS Start_station_name,
-                //                         final_st.NAME AS Final_station_name,
-                //                         direction.NAME AS direction,
-                //                         direction.code AS directioncode 
-                //                        FROM
-                //                         trips
-                //                         INNER JOIN adm_station AS start_st ON start_st.ID = start_station
-                //                         INNER JOIN adm_station AS final_st ON final_st.ID = final_station
-                //                         INNER JOIN adm_direction direction ON direction.ID = trips.direction_id 
-                //                        ORDER BY
-                //                         trip_date DESC limit {count}", commandType: CommandType.Text).ToList();
-                return db.Query<Trips>($@"SELECT * from trips WHERE id = 242", commandType: CommandType.Text).ToList();
+                return db.Query<Trips>($@"SELECT
+                                         trips.*,
+                                         start_st.NAME AS Start_station_name,
+                                         final_st.NAME AS Final_station_name,
+                                         direction.NAME AS direction,
+                                         direction.code AS directioncode 
+                                        FROM
+                                         trips
+                                         INNER JOIN adm_station AS start_st ON start_st.ID = start_station
+                                         INNER JOIN adm_station AS final_st ON final_st.ID = final_station
+                                         INNER JOIN adm_direction direction ON direction.ID = trips.direction_id 
+                                        ORDER BY
+                                         trip_date DESC limit {count}", commandType: CommandType.Text).ToList();
+               
+                //return db.Query<Trips>($@"SELECT * from trips WHERE id = 242", commandType: CommandType.Text).ToList();
             }
         }
         public int InsertKilometer(Kilometer km)
@@ -4339,10 +4341,10 @@ namespace ALARm.DataAccess
                             longwavesleft,
                             longwavesright,
 	                        iz_45_l,
-	                        iz_45_r,
-	                        imp,
-	                        implen,
-	                        impthreat
+	                        iz_45_r
+	                        --imp_,
+	                        --implen,
+	                        --impthreat
                         FROM
 	                        PUBLIC.profiledata_{trip_id}
                         WHERE
@@ -4354,7 +4356,7 @@ namespace ALARm.DataAccess
                 }
                 catch (Exception ex)
                 {
-                    //Console.WriteLine("GetNextProfileDatas " + ex.Message);
+                    Console.WriteLine("GetNextProfileDatas " + ex.Message);
                     return new List<CrosProf> { };
                 }
                 

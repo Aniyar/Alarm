@@ -745,6 +745,14 @@ namespace ALARm.Core.Report
 
                 try
                 {
+                    if (note.DigName == null)
+                    {
+                        note.DigName = "";
+                    }
+                    if (note.Comment == null)
+                    {
+                        note.Comment = "";
+                    }
                     if (note.DigName == DigressionName.PatternRetraction.Name)
                     {
                         note.DigName = note.DigName;
@@ -887,14 +895,14 @@ namespace ALARm.Core.Report
                         continue;
 
                     }
-                    if (note.DigName.Any())
+                    if (note.DigName != null)
                     {
                         if (note.DigName.Contains("Рнрст"))
                         {
                             continue;
                         }
                     }
-                    if (note.DigName.Contains("ПрУ"))
+                    if (note.DigName != null && note.DigName.Contains("ПрУ"))
                     {
                         digElements.Add(new XElement("m",
                                                      new XAttribute("top", -meter),
@@ -938,7 +946,7 @@ namespace ALARm.Core.Report
                     {
                         note.Km = note.Km;
                     }
-                    if (note.DigName.Contains("Р+") || note.DigName.Contains("Рнр+"))
+                    if (note.DigName != null && (note.DigName.Contains("Р+") || note.DigName.Contains("Рнр+")))
                     {
                         digElements.Add(new XElement("m",
                                                      new XAttribute("top", -meter),
@@ -1424,13 +1432,19 @@ namespace ALARm.Core.Report
                             default: break;
                         }
                     }
-
+                    
                     var prim = note.Comment;
-
-                    if (prim.Contains("гр"))
+                    if (prim == null)
                     {
-                        otherfourStepOgrCoun += 1;
+                        prim = "";
                     }
+                    
+                        if ( prim.Contains("гр"))
+                        {
+                            otherfourStepOgrCoun += 1;
+                        }
+                    
+                   
                     //if (note.DigName.Contains("Рнрст"))
                     //{
                     //    note.DigName = "Рнр";

@@ -105,47 +105,48 @@ namespace AlarmPP.Web.Components.Diagram
             {
                 //_ = SetLabelById("status-label", "Загрузка данных по попречному профилю рельса для " + kilometer.Number + " км ...");
                 //kilometer.CrossRailProfile = AdditionalParametersRepository.GetCrossRailProfileFromText(kilometer.Number);
-              
+
                 //_ = SetLabelById("status-label", "Загрузка данных по стыкам для " + kilometer.Number + " км...");
                 //kilometer.Gaps = AdditionalParametersRepository.GetGaps(AppData.Trip.Id, kilometer.Number);
                 //kilometer.Heats = AdditionalParametersRepository.GetHeats(AppData.Trip.Id, kilometer.Number);
                 //var profileDataList = RdStructureRepository.GetNextProfileDatasByKm(kilometer.Number, AppData.Trip.Id);
                 //kilometer.CrossRailProfile.ParseDBList(profileDataList, kilometer);
-                var DBcrossRailProfile = AdditionalParametersRepository.GetCrossRailProfileFromDBbyKm_forPPWEB(kilometer.Number, kilometer.Start_Index, kilometer.GetLength(), AppData.Trip.Id);
-                if (DBcrossRailProfile == null) continue;
-               
+                //var DBcrossRailProfile = AdditionalParametersRepository.GetCrossRailProfileFromDBbyKm_forPPWEB(kilometer.Number, kilometer.Start_Index, kilometer.GetLength(), AppData.Trip.Id);
+                //if (DBcrossRailProfile == null) continue;
 
-                //kilometer.ImpulsesRailProfile = AdditionalParametersRepository.GetCrossRailProfileFromDBParse(ImpulsesRailProfile);
-                //foreach (var Impulses in ImpulsesRailProfile)
-                //{
+                //var DBcrossRailProfile = AdditionalParametersRepository.GetCrossRailProfileFromDBbyKm(kilometer.Number, AppData.Trip.Id);
+                //if (DBcrossRailProfile == null) continue;
 
-                //    if (kilometer.Meters.Count > kilometer.CrossRailProfile.Meters.Count)
-                //    {
-                //        kilometer.CrossRailProfile.ParseDB(profileData, kilometer);
-                //    }
-
-                //}
-
-            }
+                //var sortedData = DBcrossRailProfile.OrderByDescending(d => d.Meter).ToList();
+                //kilometer.CrossRailProfile = AdditionalParametersRepository.GetCrossRailProfileFromDBParse(sortedData);
           
-            foreach (var km in AppData.Kilometers)
-
-            {
-               
-             
-                var profileDatas = RdStructureRepository.GetNextProfileDatas(km.Start_Index, km.GetLength(), AppData.Trip.Id);
-                foreach (var profileData in profileDatas)
-                {
-                    {
-                        km.CrossRailProfile.ParseDB(profileData, km);
-                        
-                    }
-                }
-             
-                km.CalcRailProfileLines(AppData.Trip);
-               
             }
 
+            //foreach (var km in AppData.Kilometers)
+
+            //{
+            //    var profileDatas = RdStructureRepository.GetNextProfileDatas(km.Start_Index, km.GetLength(), AppData.Trip.Id);
+            //    foreach (var profileData in profileDatas)
+            //    {
+            //        {
+            //            km.CrossRailProfile.ParseDB(profileData, km);
+
+            //        }
+            //    }
+            //    km.CalcRailProfileLines(AppData.Trip);
+            //}
+            //var profileDatas = RdStructureRepository.GetNextProfileDatas(AppData.ProfileMeter, 100, AppData.Trip.Id);
+
+            //foreach (var profileData in profileDatas)
+            //{
+            //    foreach (var km in AppData.Kilometers)
+            //    {
+            //        if (km.Meters.Count > km.CrossRailProfile.Meters.Count)
+            //        {
+            //            km.CrossRailProfile.ParseDB(profileData, km);
+            //        }
+            //    }
+            //}
 
             AppData.IsDialogOpen = false;
             OnlineModeStarted.InvokeAsync(true);
