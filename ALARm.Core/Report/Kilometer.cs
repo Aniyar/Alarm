@@ -186,15 +186,6 @@ namespace ALARm.Core
             {
                 for (int i = 0; i < Speed.Count; i++)
                 {
-                    kilometer.ShortWavesLeft.Add(ShortWavesLeft[i]);
-                    kilometer.ShortWavesRight.Add(ShortWavesRight[i]);
-
-                    kilometer.MediumWavesLeft.Add(MediumWavesLeft[i]);
-                    kilometer.MediumWavesRight.Add(MediumWavesRight[i]);
-
-                    kilometer.LongWavesLeft.Add(LongWavesLeft[i]);
-                    kilometer.LongWavesRight.Add(LongWavesRight[i]);
-
                     kilometer.Speed.Add(Speed[i]);
                     kilometer.DrawdownRight.Add(DrawdownRight[i]);
                     kilometer.DrawdownLeft.Add(DrawdownLeft[i]);
@@ -220,8 +211,13 @@ namespace ALARm.Core
                     kilometer.GaugeCorrection.Add(GaugeCorrection[i]);
                     kilometer.Corrections.Add(Corrections[i]);
 
+                    kilometer.ShortWavesLeft.Add(ShortWavesLeft[i]);
+                    kilometer.ShortWavesRight.Add(ShortWavesRight[i]);
+                    kilometer.MediumWavesLeft.Add(MediumWavesLeft[i]);
+                    kilometer.MediumWavesRight.Add(MediumWavesRight[i]);
+                    kilometer.LongWavesLeft.Add(LongWavesLeft[i]);
+                    kilometer.LongWavesRight.Add(LongWavesRight[i]);
 
-                    
 
                     kilometer.SignalLevel += (-1 * Level[i]).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString() + " ";
                     kilometer.ZeroLevel += (-1 * LevelAvg[i]).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString() + " ";
@@ -247,13 +243,6 @@ namespace ALARm.Core
             }
             if (clearCount == -1)
             {
-                ShortWavesRight.Clear();
-                ShortWavesLeft.Clear();
-                MediumWavesLeft.Clear();
-                MediumWavesRight.Clear();
-                LongWavesLeft.Clear();
-                LongWavesRight.Clear();
-
                 Speed.Clear();
                 DrawdownRight.Clear();
                 DrawdownLeft.Clear();
@@ -274,6 +263,12 @@ namespace ALARm.Core
                 LevelCorrection.Clear();
                 GaugeCorrection.Clear();
                 Corrections.Clear();
+                ShortWavesRight.Clear();
+                ShortWavesLeft.Clear();
+                MediumWavesLeft.Clear();
+                MediumWavesRight.Clear();
+                LongWavesLeft.Clear();
+                LongWavesRight.Clear();
                 SignalLevel = " ";
                 ZeroLevel = " ";
                 SignalStraightLeft = " ";
@@ -320,6 +315,12 @@ namespace ALARm.Core
                 LevelCorrection.RemoveRange(clearIndex, clearCount);
                 GaugeCorrection.RemoveRange( clearIndex, clearCount);
                 Corrections.RemoveRange(clearIndex, clearCount);
+                ShortWavesRight.RemoveRange(clearIndex, clearCount);
+                ShortWavesLeft.RemoveRange(clearIndex, clearCount);
+                MediumWavesLeft.RemoveRange(clearIndex, clearCount);
+                MediumWavesRight.RemoveRange(clearIndex, clearCount);
+                LongWavesLeft.RemoveRange(clearIndex, clearCount);
+                LongWavesRight.RemoveRange(clearIndex, clearCount);
             }
         }
 
@@ -352,64 +353,64 @@ namespace ALARm.Core
             return Rating.О;
         }
 
-        public void AddData(OutData outdata, int direction, int meter, List<double> koefs)
-        {
+        //public void AddData(OutData outdata, int direction, int meter, List<double> koefs)
+        //{
 
-            Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("en-US");
-            Speed.Add(outdata.speed);
-            DrawdownRight.Add(outdata.drawdown_right);
-            DrawdownLeft.Add(outdata.drawdown_left);
-            Gauge.Add(outdata.gauge);
-            StrightRight.Add(outdata.stright_left);
-            StrightLeft.Add(outdata.stright_right);
-            Level.Add(outdata.level);
-            LevelAvg.Add(outdata.level_avg);
-            StrightAvg.Add(outdata.stright_avg);
-            Level0.Add(outdata.level_zero);
-            Meters.Add(meter);
-            _Meters.Add(outdata._meters);
-            RealKm.Add(outdata.km);
-            Latitude.Add(outdata.latitude);
-            Longitude.Add(outdata.longitude);
-            XCamLeft.Add(outdata.x101_kupe);
-            XCamRight.Add(outdata.x102_koridor);
-            SwitchesReal.Add(0);
-            LevelCorrection.Add(outdata.level_correction);
-            GaugeCorrection.Add(outdata.gauge_correction);
-            Corrections.Add(outdata.correction);
+        //    Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("en-US");
+        //    Speed.Add(outdata.speed);
+        //    DrawdownRight.Add(outdata.drawdown_right);
+        //    DrawdownLeft.Add(outdata.drawdown_left);
+        //    Gauge.Add(outdata.gauge);
+        //    StrightRight.Add(outdata.stright_left);
+        //    StrightLeft.Add(outdata.stright_right);
+        //    Level.Add(outdata.level);
+        //    LevelAvg.Add(outdata.level_avg);
+        //    StrightAvg.Add(outdata.stright_avg);
+        //    Level0.Add(outdata.level_zero);
+        //    Meters.Add(meter);
+        //    _Meters.Add(outdata._meters);
+        //    RealKm.Add(outdata.km);
+        //    Latitude.Add(outdata.latitude);
+        //    Longitude.Add(outdata.longitude);
+        //    XCamLeft.Add(outdata.x101_kupe);
+        //    XCamRight.Add(outdata.x102_koridor);
+        //    SwitchesReal.Add(0);
+        //    LevelCorrection.Add(outdata.level_correction);
+        //    GaugeCorrection.Add(outdata.gauge_correction);
+        //    Corrections.Add(outdata.correction);
 
-            _Kupe.Add(outdata.y101_kupe);
-            _Koridor.Add(outdata.y102_koridor);
+        //    _Kupe.Add(outdata.y101_kupe);
+        //    _Koridor.Add(outdata.y102_koridor);
 
-            SignalLevel += $"{-1 * outdata.level:0.00},{Meter} ";
-            SpeedSeries += $"{outdata.speed * 0.5:0.00},{Meter} ";
-            ZeroLevel += $"{-1 * outdata.level_avg:0.00},{Meter} ";
-            SignalStraightLeft += $"{-1 * outdata.stright_left * StrightKoef:0.00},{Meter} ";
-            SignalStraightRight += $"{-1 * outdata.stright_right * StrightKoef:0.00},{Meter} ";
-            ZeroStraightLeft += $"{-1 * outdata.stright_avg * StrightKoef:0.00},{Meter} ";
-            ZeroStraightRight += $"{-1 * outdata.stright_avg * StrightKoef:0.00},{Meter} ";
-            SignalDrawdownLeft += $"{-1 * outdata.drawdown_left:0.00},{Meter} ";
-            SignalDrawdownRight += $"{-1 * outdata.drawdown_right:0.00},{Meter} ";
-            SignalGauge += $"{(outdata.gauge - 1520) * GaugeKoef:0.00},{Meter} ";
-            Kupe += $"{(outdata.x101_kupe - 86) * -3:0.00},{Meter} ";
-            Koridor += $"{(outdata.x102_koridor - 100) * -3:0.00}, {Meter} ";
+        //    SignalLevel += $"{-1 * outdata.level:0.00},{Meter} ";
+        //    SpeedSeries += $"{outdata.speed * 0.5:0.00},{Meter} ";
+        //    ZeroLevel += $"{-1 * outdata.level_avg:0.00},{Meter} ";
+        //    SignalStraightLeft += $"{-1 * outdata.stright_left * StrightKoef:0.00},{Meter} ";
+        //    SignalStraightRight += $"{-1 * outdata.stright_right * StrightKoef:0.00},{Meter} ";
+        //    ZeroStraightLeft += $"{-1 * outdata.stright_avg * StrightKoef:0.00},{Meter} ";
+        //    ZeroStraightRight += $"{-1 * outdata.stright_avg * StrightKoef:0.00},{Meter} ";
+        //    SignalDrawdownLeft += $"{-1 * outdata.drawdown_left:0.00},{Meter} ";
+        //    SignalDrawdownRight += $"{-1 * outdata.drawdown_right:0.00},{Meter} ";
+        //    SignalGauge += $"{(outdata.gauge - 1520) * GaugeKoef:0.00},{Meter} ";
+        //    Kupe += $"{(outdata.x101_kupe - 86) * -3:0.00},{Meter} ";
+        //    Koridor += $"{(outdata.x102_koridor - 100) * -3:0.00}, {Meter} ";
 
-            Level1 += $"{-1 * outdata.level1 * koefs[0]:0.00},{Meter} ";
-            Level2 += $"{-1 * outdata.level2 * koefs[1]:0.00},{Meter} ";
-            Level3 += $"{-1 * outdata.level3 * koefs[2]:0.00},{Meter} ";
-            Level4 += $"{-1 * outdata.level4 * koefs[3]:0.00},{Meter} ";
-            Level5 += $"{-1 * outdata.level5 * koefs[4]:0.00},{Meter} ";
+        //    Level1 += $"{-1 * outdata.level1 * koefs[0]:0.00},{Meter} ";
+        //    Level2 += $"{-1 * outdata.level2 * koefs[1]:0.00},{Meter} ";
+        //    Level3 += $"{-1 * outdata.level3 * koefs[2]:0.00},{Meter} ";
+        //    Level4 += $"{-1 * outdata.level4 * koefs[3]:0.00},{Meter} ";
+        //    Level5 += $"{-1 * outdata.level5 * koefs[4]:0.00},{Meter} ";
 
-            Stright1 += $"{-1 * outdata.stright1 * koefs[1]:0.00},{Meter} ";
-            Stright2 += $"{-1 * outdata.stright2 * koefs[2]:0.00},{Meter} ";
-            Stright3 += $"{-1 * outdata.stright3 * koefs[3]:0.00},{Meter} ";
-            Stright4 += $"{-1 * outdata.stright4 * koefs[4]:0.00},{Meter} ";
-            Stright5 += $"{-1 * outdata.stright5 * koefs[5]:0.00},{Meter} ";
+        //    Stright1 += $"{-1 * outdata.stright1 * koefs[1]:0.00},{Meter} ";
+        //    Stright2 += $"{-1 * outdata.stright2 * koefs[2]:0.00},{Meter} ";
+        //    Stright3 += $"{-1 * outdata.stright3 * koefs[3]:0.00},{Meter} ";
+        //    Stright4 += $"{-1 * outdata.stright4 * koefs[4]:0.00},{Meter} ";
+        //    Stright5 += $"{-1 * outdata.stright5 * koefs[5]:0.00},{Meter} ";
 
 
 
-            Meter++;
-        }
+        //    Meter++;
+        //}
 
         public void AddData(OutData outdata, int meter, List<double> koefs, CrosProf profdata = null)
         {
@@ -437,6 +438,16 @@ namespace ALARm.Core
             LevelCorrection.Add(outdata.level_correction);
             GaugeCorrection.Add(outdata.gauge_correction);
             Corrections.Add(outdata.correction);
+
+            if (profdata != null)
+            {
+                ShortWavesRight.Add(profdata.Shortwavesright);
+                ShortWavesLeft.Add(profdata.Shortwavesleft);
+                MediumWavesLeft.Add(profdata.Mediumwavesleft);
+                MediumWavesRight.Add(profdata.Mediumwavesright);
+                LongWavesLeft.Add(profdata.Longwavesleft);
+                LongWavesRight.Add(profdata.Longwavesright);
+            }
 
             _Kupe.Add(outdata.y101_kupe);
             _Koridor.Add(outdata.y102_koridor);
@@ -468,21 +479,12 @@ namespace ALARm.Core
         }
 
 
-        public void AddDataRange(List<OutData> outdatas, Kilometer km)
+        public void AddDataRange(List<OutData> outdatas, Kilometer km, List<CrosProf> profdatas = null)
         {
             Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("en-US");
-            int sign = 1;
+            int sign = 1, profindex = 0;
             foreach (var outdata in outdatas)
             {
-
-                //km.LongWavesLeft
-                //km.LongWavesRight
-                //km.ShortwavesLeft
-                //km.ShortWavesRight
-                //km.LongWavesLeft
-                //km.LongWavesRight
-
-
                 km.Speed.Add(outdata.speed);
                 km.DrawdownRight.Add(outdata.drawdown_right);
                 km.DrawdownLeft.Add(outdata.drawdown_left);
@@ -505,6 +507,16 @@ namespace ALARm.Core
                 km.GaugeCorrection.Add(outdata.gauge_correction);
                 km.Corrections.Add(outdata.correction);
 
+                if (profdatas[profindex] != null)
+                {
+                    ShortWavesRight.Add(profdatas[profindex].Shortwavesright);
+                    ShortWavesLeft.Add(profdatas[profindex].Shortwavesleft);
+                    MediumWavesLeft.Add(profdatas[profindex].Mediumwavesleft);
+                    MediumWavesRight.Add(profdatas[profindex].Mediumwavesright);
+                    LongWavesLeft.Add(profdatas[profindex].Longwavesleft);
+                    LongWavesRight.Add(profdatas[profindex].Longwavesright);
+                }
+
                 km._Kupe.Add(outdata.y101_kupe);
                 km._Koridor.Add(outdata.y102_koridor);
 
@@ -519,6 +531,7 @@ namespace ALARm.Core
                 km.SignalGauge += $"{(outdata.gauge - 1520) * GaugeKoef:0.00},{Meter} ";
                 km.Kupe += $"{(outdata.x101_kupe - 86) * -3:0.00},{Meter} ";
                 km.Koridor += $"{(outdata.x102_koridor - 100) * -3:0.00}, {Meter} ";
+                profindex++;
 
                 //km.Level1 += $"{(-1 * outdata.level1 * koefs[0]).ToString("0.00")},{Meter} ";
                 //km.Level2 += $"{(-1 * outdata.level2 * koefs[1]).ToString("0.00")},{Meter} ";
