@@ -1,4 +1,4 @@
-program ALARmProcess;
+п»їprogram ALARmProcess;
 
 {$APPTYPE CONSOLE}
 {$R *.res}
@@ -38,7 +38,7 @@ begin
 
     if not(FileExists(FileName)) then
     begin
-      writeln('Не найден файл: ' + FileName);
+      writeln('РќРµ РЅР°Р№РґРµРЅ С„Р°Р№Р»: ' + FileName);
       exit;
     end;
     if FileExists('DConfig.txt') then
@@ -57,7 +57,7 @@ begin
     reset(km_shifrovka_file);
     readln(km_shifrovka_file, GTripId);
     readln(km_shifrovka_file, Glb_PutList_GNapr);
-    // ,  START_ST_F);    //начальная станция
+    // ,  START_ST_F);    //РЅР°С‡Р°Р»СЊРЅР°СЏ СЃС‚Р°РЅС†РёСЏ
     readln(km_shifrovka_file, Glb_GNapr);
     readln(km_shifrovka_file, CHIEF_F);
     readln(km_shifrovka_file, GlbKmTrue);
@@ -65,12 +65,12 @@ begin
     readln(km_shifrovka_file, GlbTrackId);
     readln(km_shifrovka_file, DIRECTION_F);
     readln(km_shifrovka_file, tripDate);
-    readln(km_shifrovka_file, NUMBERCAR_F); // номер вагона
+    readln(km_shifrovka_file, NUMBERCAR_F); // РЅРѕРјРµСЂ РІР°РіРѕРЅР°
     readln(km_shifrovka_file);
     // Glb_GNapr := StrToInt(dirId);
 
     NAPR_DBIJ := 1;
-    // IF (DIRECTION_F = 'Обратный') THEN
+    // IF (DIRECTION_F = 'РћР±СЂР°С‚РЅС‹Р№') THEN
     // begin
     // NAPR_DBIJ := -1;
     // end;

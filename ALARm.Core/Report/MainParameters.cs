@@ -6,6 +6,7 @@ using System.Drawing.Printing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Xsl;
@@ -1240,8 +1241,8 @@ namespace ALARm.Core.Report
                 //htReport.Save($@"\\192.168.1.200\form\{kilometer.Number}_{kilometer.Track_id}.html");
                 var svg = htReport.Element("html").Element("body").Element("div").Element("div").Element("svg");
                 var svgDoc = SvgDocument.FromSvg<SvgDocument>(svg.ToString());
-                svgDoc.Width = 830 * 3;
-                svgDoc.Height = (svgLength + 105) * 3;
+                svgDoc.Width = 800 * 3;
+                svgDoc.Height = (svgLength + 95) * 3;
 
                 if (autoprint)
                 {
@@ -1254,18 +1255,15 @@ namespace ALARm.Core.Report
                     {
                         var i = svgDoc.Draw();
                         //i.Save($@"g:\form\{kilometer.Number}_{kilometer.Track_id}.png");
+                        htReport.Save($@"g:\form\{kilometer.Number}_{kilometer.Track_id}.html");
                         pd.DefaultPageSettings.Margins = new Margins(0, 0, 0, 0);
-                        pd.OriginAtMargins = false;
+                        pd.OriginAtMargins = true;
                         pd.DefaultPageSettings.Landscape = true;
                         Point p = new Point(0, 0);
                         args.Graphics.DrawImage(i, 0, 0, i.Width / 3, i.Height / 3 - 15);
                     };
                     pd.Print();
-
                 }
-
-
-
             }
             catch (Exception e)
             {
@@ -1277,6 +1275,11 @@ namespace ALARm.Core.Report
             }
         }
 
+        private void pd_print(object sender, PrintPageEventArgs e)
+{    
+  Graphics gr = e.Graphics;
+  gr.DrawString("Sales", new Font(FontFamily.GenericMonospace, 12, FontStyle.Bold), new SolidBrush(Color.Black), new Point(40, 40));
+}
         public void ProcessRegion(ReportTemplate template, Kilometer kilometer, Trips trip, bool autoprint, int currentKmMeter)
         {
             XDocument htReport = new XDocument();
