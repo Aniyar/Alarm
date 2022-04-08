@@ -1,4 +1,4 @@
-unit DataModule;
+Ôªøunit DataModule;
 
 interface
 
@@ -124,7 +124,7 @@ end;
 {$R *.dfm}
 
 // ------------------------------------------------------------------------------
-// «¿œ»—‹ ¬ “¿¡. BEDOMOST
+// –ó–ê–ü–ò–°–¨ –í –¢–ê–ë. BEDOMOST
 // ------------------------------------------------------------------------------
 {
   1- ukl
@@ -219,7 +219,7 @@ procedure Ubedom_db(m, kol, otkl, lng, typ, v, vg, vop, vog: integer;
 var
   crd, cu, us, p1, p2, ur, pr, r1, r2, pdb, bas, vop_, vog_: integer;
 begin
-  if ((st < 4) and (prm.Contains('Ì'))) then
+  if ((st < 4) and (prm.Contains('—Ä–Ω'))) then
     exit;
   cu := 0;
   us := 0;
@@ -232,7 +232,7 @@ begin
 
   vop_ := vop;
   vog_ := vog;
-  if (not(ContainsText(ots, 'ÿ10')) and not(GlbOgrSkorKm)) then
+  if (not(ContainsText(ots, '–®10')) and not(GlbOgrSkorKm)) then
   begin
     vop_ := -1;
     vog_ := -1;
@@ -244,19 +244,19 @@ begin
   if (vog <> -1) and (vog < glb_vog) then
     glb_vog := vog;
 
-  if ots = '”¯' then
+  if ots = '–£—à' then
     us := 1
-  else if ots = '—ÛÊ' then
+  else if ots = '–°—É–∂' then
     cu := 1
-  else if ots = 'œ.Ô' then
+  else if ots = '–ü—Ä.–ø' then
     p1 := 1
-  else if ots = 'œ.Î' then
+  else if ots = '–ü—Ä.–ª' then
     p2 := 1
-  else if ots = 'œ' then
+  else if ots = '–ü' then
     pr := 1
-  else if ots = '”' then
+  else if ots = '–£' then
     ur := 1
-  else if ots = '–' then
+  else if ots = '–†' then
     r1 := 1;
   r2 := r1;
   pdb := 1;
@@ -319,7 +319,7 @@ procedure Ubedom_db3(m, kol, otkl, lng, typ, v, vg: integer; ots, prm: string;
 var
   crd, cu, us, p1, p2, ur, pr, r1, r2, pdb, bas: integer;
 begin
-  if ((st < 3) and (prm.Contains('Ì'))) then
+  if ((st < 3) and (prm.Contains('—Ä–Ω'))) then
     exit;
 
   cu := 0;
@@ -330,19 +330,19 @@ begin
   pr := 0;
   r1 := 0;
   r2 := 0;
-  if ots = '”¯' then
+  if ots = '–£—à' then
     us := kol
-  else if ots = '—ÛÊ' then
+  else if ots = '–°—É–∂' then
     cu := kol
-  else if ots = 'œ.Ô' then
+  else if ots = '–ü—Ä.–ø' then
     p1 := 1
-  else if ots = 'œ.Î' then
+  else if ots = '–ü—Ä.–ª' then
     p2 := 1
-  else if ots = 'œ' then
+  else if ots = '–ü' then
     pr := 1
-  else if ots = '”' then
+  else if ots = '–£' then
     ur := kol
-  else if ots = '–' then
+  else if ots = '–†' then
     r1 := 1;
   r2 := r1;
 
@@ -400,7 +400,7 @@ end;
 procedure Deconnect;
 begin
   try
-    // SabLog('Deconnect - ÓÚÍÎ˛˜ËÚ¸ ÒÓÂ‰ËÌÂÌËÂ ¡ƒ');
+    // SabLog('Deconnect - –æ—Ç–∫–ª—é—á–∏—Ç—å —Å–æ–µ–¥–∏–Ω–µ–Ω–∏–µ –ë–î');
 
     // if (DBDATAPRK.Connected = TRUE) then
     if MainDataModule.pgsConnection.Connected then
@@ -445,7 +445,7 @@ end;
 procedure Startup;
 begin
   try
-    // SabLog('Startup - ÔÓˆÂ‰Û‡ Á‡ÔÛÒÍ‡ Ú‡ÈÏÂ‡ ËÎË ÒÓ·˚ÚËˇ');
+    // SabLog('Startup - –ø—Ä–æ—Ü–µ–¥—É—Ä–∞ –∑–∞–ø—É—Å–∫–∞ —Ç–∞–π–º–µ—Ä–∞ –∏–ª–∏ —Å–æ–±—ã—Ç–∏—è');
     if not(MainDataModule.pgsConnection.Connected) then
     begin
       MainDataModule.pgsConnection.Connected := TRUE;
@@ -467,7 +467,7 @@ begin
   try
     if not StopFlag then
     begin
-      // SabLog('—Ú‡Ú Ó·‡·ÓÚÍË ‰‡ÌÌ˚ı');
+      // SabLog('–°—Ç–∞—Ä—Ç –æ–±—Ä–∞–±–æ—Ç–∫–∏ –¥–∞–Ω–Ω—ã—Ö');
 
       RWTB_PRK(FileName);
 

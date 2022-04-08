@@ -768,8 +768,6 @@ namespace ALARm.Core
             var impthreat = new StringBuilder();
             var impmeter = new StringBuilder();
             var impkm = new StringBuilder();
-            var impleft = new StringBuilder();
-            var impright = new StringBuilder();
 
 
 
@@ -788,8 +786,6 @@ namespace ALARm.Core
                 longwavesRight.Append((CrossRailProfile.Longwavesright[index] * WavesKoef).ToString().Replace(",", ".") + "," + cmeter.ToString().Replace(",", ".") + " ");
 
 
-                impleft.Append((CrossRailProfile.ImpulsLeft[index] * WavesKoef).ToString().Replace(",", ".") + "," + cmeter.ToString().Replace(",", ".") + " ");
-                impright.Append((CrossRailProfile.ImpulsRight[index] * WavesKoef).ToString().Replace(",", ".") + "," + cmeter.ToString().Replace(",", ".") + " ");
 
 
             }
@@ -803,9 +799,6 @@ namespace ALARm.Core
          
             LongwavesLeft = longwavesLeft.ToString();
             LongwavesRight = longwavesRight.ToString();
-
-            ImpulsesLeft = impleft.ToString();
-            ImpulsesRight = impright.ToString();
 
 
         }
