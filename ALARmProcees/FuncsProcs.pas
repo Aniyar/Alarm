@@ -4307,7 +4307,6 @@ begin
         WUsh[ns].Vrg := Vrg;
         WUsh[ns].flg := false;
         ns := ns + 1;
-
         x4a := 0;
         x4b := 0;
         k4 := 0;

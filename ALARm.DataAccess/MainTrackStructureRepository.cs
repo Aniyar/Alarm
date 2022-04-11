@@ -2597,8 +2597,6 @@ namespace ALARm.DataAccess
                 {
                     return db.Query<string>(sqltext).Last();
                 }
-
-
                 catch (Exception e)
                 {
                     Console.WriteLine("GetSectorError: " + e.Message);

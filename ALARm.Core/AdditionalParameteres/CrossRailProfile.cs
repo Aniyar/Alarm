@@ -1352,7 +1352,7 @@ namespace ALARm.Core.AdditionalParameteres
                     if ((DownhillRight[i] >= OneDiv60) && (PUfound4Right))
                     {
                         PUdig4Right.Length = Math.Abs(PUdig4Right.Meter - (int)Meters[i]);
-                        PUdig3Right.Km = NKm;
+                        PUdig4Right.Km = NKm;
                         PUdig4Right.Kmetr = (int)Meters[i];
                         PUdig4Right.Value = PUdig4RightValue;
                         PUdig4RightValue = 0;

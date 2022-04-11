@@ -16,7 +16,7 @@ using System.Text;
 using System.ServiceProcess;
 using ALARm.DataAccess;
 using AlarmPP.Web.Services;
-
+using System.Diagnostics;
 namespace AlarmPP.Web.Components.Diagram
 {
     public partial class TrackPanel : ComponentBase
@@ -26,15 +26,18 @@ namespace AlarmPP.Web.Components.Diagram
         [Parameter]
         public double CurrentPosition { get; set; } = 0;
         // double SliderXPosition = 0, SliderCenterXPosition = 25, SliderYPosition=0;
-        private int Width { get; set; } = 4000;
+        private int Width { get; set; } = 3000;
         double ScrollLeft = 0;
         double ScrollTop = 0;
-
+      
         private DigressionTable digressionTable;
         private bool StopDialog { get; set; } = false;
         private bool loading = false;
+        private static System.Timers.Timer aTimer;
+
         private Kilometer CurrKm { get; set; } = null;
         public bool MousePressed { get; set; } = false;
+      
         public async Task OnMouseMove(MouseEventArgs args)
         {
             if (args.Buttons == 1)
@@ -62,42 +65,58 @@ namespace AlarmPP.Web.Components.Diagram
                 MousePressed = false;
             }
         }
+        private static void SetTimer()
+        {
+            // Create a timer with a two second interval.
+            aTimer = new System.Timers.Timer(1000);
+            // Hook up the Elapsed event for the timer. 
+            //aTimer.Elapsed += OnTimedEventAsync;
+            aTimer.AutoReset = true;
+            aTimer.Enabled = true;
+        }
+
+        async Task AutoRefresh()
+        {
+            await Task.Delay(AppData.Speed * 10);
+            Refresh();
+        }
 
         private async Task OnTimedEventAsync()
         {
             Random rnd = new Random();
-
+          
             AppData.Processing = !AppData.Processing;
             OutData prevData = null;
-
+          
             while (!AppData.Processing)
             {
                 //AppData.CurrentProfileLeft();
                 //AppData.CurrentFrameIndex++;
 
                 var outdatas     = RdStructureRepository.GetNextOutDatas(AppData.Meter, 100, AppData.Trip.Id);
-                var profileDatas = RdStructureRepository.GetNextProfileDatas(AppData.ProfileMeter, 100, AppData.Trip.Id);
+                //var profileDatas = RdStructureRepository.GetNextProfileDatas(AppData.ProfileMeter, 100, AppData.Trip.Id);
 
-                foreach (var profileData in profileDatas)
-                {
-                    int length = 0;
-                    foreach (var km in AppData.Kilometers)
-                    {
-                        length += km.GetLength();
-                        if (AppData.ProfileMeter < length)
-                        {
-                            km.CrossRailProfile.ParseDB(profileData, km);
-                            AppData.ProfileMeter += 1;
-                            AppData.CalibrConstLeft = km.CrossRailProfile.DownhillLeft.Any() ? km.CrossRailProfile.DownhillLeft.Last().RadianToAngle().ToString("0.00").Replace(",", ".") : "0";
-                            AppData.CalibrConstRight = km.CrossRailProfile.DownhillRight.Any() ? km.CrossRailProfile.DownhillRight.Last().RadianToAngle().ToString("0.00").Replace(",", ".") : "0   ";
-                            break;
-                        }
-                    }
-                }
+            
 
-                object[] paramss = new object[] { 
-                    AppData.Meter + outdatas.Count ,
-                    AppData.ProfileMeter + profileDatas.Count
+                //foreach (var profileData in profileDatas)
+                //{
+                //    int length = 0;
+                //    foreach (var km in AppData.Kilometers)
+                //    {
+                //        length += km.GetLength();
+                //        if (AppData.ProfileMeter < length)
+                //        {
+                //            km.CrossRailProfile.ParseDB(profileData, km);
+                //            AppData.ProfileMeter += 1;
+                //            AppData.CalibrConstLeft = km.CrossRailProfile.DownhillLeft.Any() ? km.CrossRailProfile.DownhillLeft.Last().RadianToAngle().ToString("0.00").Replace(",", ".") : "0";
+                //            AppData.CalibrConstRight = km.CrossRailProfile.DownhillRight.Any() ? km.CrossRailProfile.DownhillRight.Last().RadianToAngle().ToString("0.00").Replace(",", ".") : "0   ";
+                //            break;
+                //        }
+                //    }
+                //}
+
+                object[] paramss = new object[] {  AppData.Meter + outdatas.Count 
+                    //AppData.ProfileMeter + profileDatas.Count
                 };
                 if (OnlineModeData.AutoScroll)
                     await JSRuntime.InvokeVoidAsync("ScrollMainSvg2", paramss);
@@ -105,6 +124,7 @@ namespace AlarmPP.Web.Components.Diagram
                 var profileIndex = 0;
                 foreach (var outdata in outdatas)
                 {
+                   
                     var crashed = false;
                     if (prevData != null)
                     {
@@ -124,7 +144,6 @@ namespace AlarmPP.Web.Components.Diagram
                     int length = 0;
                     foreach (var kilometer in AppData.Kilometers)
                     {
-
                         length += kilometer.GetLength();
                         if (AppData.Meter < length)
                         {
@@ -138,9 +157,6 @@ namespace AlarmPP.Web.Components.Diagram
 
                             if (kilometer.Meter <= 0)
                             {
-
-                                
-
                                 if (crashed)
                                     kilometer.Meter = outdata.meter;
                                 kilometer.Trip = AppData.Trip;
@@ -190,7 +206,7 @@ namespace AlarmPP.Web.Components.Diagram
                                                 //RdStructureRepository.SendEkasuiData(AppData.Trip, AppData.Kilometers[prevIndex].Number);
 
                                                 AppData.Kilometers[prevIndex].Digressions = RdStructureRepository.GetDigressionMarks(AppData.Trip.Id, AppData.Kilometers[prevIndex].Number, AppData.Kilometers[prevIndex].Track_id, new int[] { 3, 4 });
-                                              
+
 
 
                                                 if (AppData.Kilometers[prevIndex].Digressions != null)
@@ -217,7 +233,9 @@ namespace AlarmPP.Web.Components.Diagram
                                                 Console.WriteLine("AppData ошибка обработки:" + e.Message);
                                             }
                                         }
-                                    }catch (Exception e) {
+                                    }
+                                      catch (Exception e)
+                                    {
 
                                         Console.WriteLine("WRITE ERROR " + e.Message);
                                     }
@@ -255,6 +273,7 @@ namespace AlarmPP.Web.Components.Diagram
                                         else
                                         if (kmforchange != kilometer)
                                         {
+                                           
                                             if (kilometer.RealMeterInOnline < 500)
                                             {
                                                 if (kmforchange.Direction == Direction.Direct)
@@ -307,7 +326,7 @@ namespace AlarmPP.Web.Components.Diagram
                             }
                             if (Math.Abs(OnlineModeData.GlobalMeter - outdata._meters) != 1)
                             {
-                                // AppData.Meter = GetCurrentCoordinate(AppData.Kilometers, outdata.km, outdata.meter);
+                                //AppData.Meter = GetCurrentCoordinate(AppData.Kilometers, outdata.km, outdata.meter);
                             }
                             //AppData.Meter = GetCurrentCoordinate(AppData.Kilometers, outdata.km, outdata.meter);
                             //System.Console.WriteLine($"{AppData.Meter}-{OnlineModeData.GlobalMeter}");
@@ -322,30 +341,36 @@ namespace AlarmPP.Web.Components.Diagram
                             kilometer.SideWearRight_.Add(OnlineModeData.SideWearRight);
 
                             AppData.Meter += 1;
+                          
                             OnlineModeData.CurrentFrameIndex = AppData.Meter;
-                            OnlineModeData.GetBitmapAsync();
+                            //OnlineModeData.GetBitmapAsync();
 
-                            kilometer.DownHillLeft += (OnlineModeData.DownhillLeft.ToRadians() * kilometer.DegKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
-                            kilometer.DownHillRight += (OnlineModeData.DownhillRight.ToRadians() * kilometer.DegKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
-                            kilometer.VertWearLeft += (OnlineModeData.VertWearLeft * kilometer.WearKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
-                            kilometer.VertWearRight += (OnlineModeData.VertWearRight * kilometer.WearKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
-                            kilometer.SideWearLeft += (OnlineModeData.SideWearLeft * kilometer.WearKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
-                            kilometer.SideWearRight += (OnlineModeData.SideWearRight * kilometer.WearKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
-                            kilometer.HeadWear45Left += (OnlineModeData.Wear45Left * kilometer.WearKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
-                            kilometer.HeadWear45Right += (OnlineModeData.Wear45Right * kilometer.WearKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
+                            //kilometer.DownHillLeft += (OnlineModeData.DownhillLeft.ToRadians() * kilometer.DegKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
+                            //kilometer.DownHillRight += (OnlineModeData.DownhillRight.ToRadians() * kilometer.DegKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
+                            //kilometer.VertWearLeft += (OnlineModeData.VertWearLeft * kilometer.WearKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
+                            //kilometer.VertWearRight += (OnlineModeData.VertWearRight * kilometer.WearKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
+                            //kilometer.SideWearLeft += (OnlineModeData.SideWearLeft * kilometer.WearKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
+                            //kilometer.SideWearRight += (OnlineModeData.SideWearRight * kilometer.WearKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
+                            //kilometer.HeadWear45Left += (OnlineModeData.Wear45Left * kilometer.WearKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
+                            //kilometer.HeadWear45Right += (OnlineModeData.Wear45Right * kilometer.WearKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
+                            
                             break;
                         }
                     }
                     profileIndex++;
+                
                 }
-
-                if (AppData.Meter % 10 == 0)
+                if (AppData.Meter % 1 == 0 )
                 {
                     await Task.Delay(AppData.Speed);
                     StateHasChanged();
+
                 }
             }
+            
         }
+   
+
 
         public async Task OnScroll()
         {

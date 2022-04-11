@@ -578,7 +578,7 @@ namespace AlarmPP.Web.Services
                         if (km.IsPrinted)
                         {
                            
-                            km.AdditionalDigressions = RdStructureRepository.GetAdditional(km.Number);
+                            //km.AdditionalDigressions = RdStructureRepository.GetAdditional(km.Number);
                             km.Digressions = RdStructureRepository.GetDigressionMarks(Trip.Id, km.Number, km.Track_id, new int[] {1,2, 3, 4 });
                             km.CorrectionNotes = RdStructureRepository.GetCorrectionNotes(Trip.Id, km.Track_id, km.Number, coord, km.CorrectionValue);
                             km.Gaps = AdditionalParametersRepository.Check_gap_state(Trip.Id, 999);
@@ -587,7 +587,7 @@ namespace AlarmPP.Web.Services
                             km.DefShpals = AdditionalParametersRepository.Check_defshpal_state(Trip.Id, 999);
                             km.PerShpals = AdditionalParametersRepository.Check_ViolPerpen(Trip.Id);
 
-                            km.Impuls = AdditionalParametersRepository.GetCrossRailProfileFromDBbyTripId(Trip.Id);
+                            //km.Impuls = AdditionalParametersRepository.GetCrossRailProfileFromDBbyTripId(Trip.Id);
                             //km.direction_name = RdStructureService.Check_direction_name(Trip.Id);
 
                             //if (!km.CorrectionNotes.Any())
@@ -660,8 +660,8 @@ namespace AlarmPP.Web.Services
                             km.Fasteners = AdditionalParametersRepository.Check_badfastening_state(Trip.Id, 999);
                             km.DefShpals = AdditionalParametersRepository.Check_defshpal_state(Trip.Id, 999);
                             km.PerShpals = AdditionalParametersRepository.Check_ViolPerpen(Trip.Id);
-                            km.AdditionalDigressions = RdStructureRepository.GetAdditional(km.Number);
-                            km.Impuls = AdditionalParametersRepository.GetCrossRailProfileFromDBbyTripId(Trip.Id);
+                            //km.AdditionalDigressions = RdStructureRepository.GetAdditional(km.Number);
+                            //km.Impuls = AdditionalParametersRepository.GetCrossRailProfileFromDBbyTripId(Trip.Id);
                             //km.direction_name = RdStructureService.GetTracksOnTrip(Trip.Id);
                             Kilometers.Add(km);
 
@@ -703,6 +703,7 @@ namespace AlarmPP.Web.Services
                     int currentMetre = Trip.Travel_Direction == Direction.Direct ? ((int)yPosition - (length - km.GetLength()) + km.Start_m) : km.Final_m - ((int)yPosition - (length - km.GetLength()));
 
                     for (int index = 0; index < km.Speed.Count-km.Start_m; index++)
+                    //for (int index = 0; index < km.Speed.Count; index++)
                     {
                         int metre = Trip.Travel_Direction != Direction.Direct ? km.Length - index : index;
                         if (metre == currentMetre)
@@ -725,7 +726,7 @@ namespace AlarmPP.Web.Services
                             Data[(int)Series.DrawdownLeft] = km.DrawdownLeft[index].ToString("0.00");
                             Data[(int)Series.DrwadownRight] = km.DrawdownRight[index].ToString("0.00");
 
-                     
+                            Data[(int)Series.Speed] = km.Speed[index].ToString();
 
 
                             //Data[(int)Series.ShortWavesleft] = km.CrossRailProfile.Shortwavesleft[index].ToString("0.00");
@@ -747,13 +748,15 @@ namespace AlarmPP.Web.Services
                     }
                     if (km.CrossRailProfile != null)
                     {
-                        
-                        int indexCross = km.CrossRailProfile.Meters.IndexOf(Trip.Travel_Direction == Direction.Reverse ? (float)currentMetre : (km.Length - (float)currentMetre));
+
+                        int indexCross = km.CrossRailProfile.Meters.IndexOf(Trip.Travel_Direction == Direction.Reverse ? (float)currentMetre : km.Length - (float)currentMetre);
                         try
                         {
-                            //if (indexCross < 0) indexCross = 1;
-                          
-                            if (indexCross > -1)
+                            if (indexCross < 0) indexCross = 0;
+                            if (indexCross > 0)
+                                //if (indexCross < 0) indexCross = 1;
+
+                                //if (indexCross > -1)
                             {
 
                                 Data[(int)Series.SideWearLeft] = km.CrossRailProfile.SideWearLeft[indexCross].ToString("0.00");
@@ -916,6 +919,7 @@ namespace AlarmPP.Web.Services
         public bool VideoProcessing = false;
         public int Kilometer { get; set; } = -1;
         public int Meter { get; set; } = 0;
+        public int RefreshCounter { get; set; } = 0;
         public int ProfileMeter { get; set; } = 0;
         public int Picket { get; set; } = -1;
         public string DataS { get; set; }

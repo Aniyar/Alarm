@@ -146,8 +146,8 @@ namespace ALARm.Core
 
         public float Lkm { get; set; }
         public int GetLength() {
-            return Math.Abs(Start_m - Final_m)+1 ;
-            //return Math.Abs(Start_m - Final_m) + 1;
+            return Math.Abs(Start_m - Final_m) + 1 ;
+            
         }
         public int Track_id { get; set; }
         public string Track_name { get; set; }
@@ -765,10 +765,6 @@ namespace ALARm.Core
             var longwavesLeft = new StringBuilder();
             var longwavesRight = new StringBuilder();
 
-            var impthreat = new StringBuilder();
-            var impmeter = new StringBuilder();
-            var impkm = new StringBuilder();
-
 
 
             foreach (var meter in CrossRailProfile.Meters.Where(meter => meter % 1 == 0).ToList())
@@ -786,8 +782,6 @@ namespace ALARm.Core
                 longwavesRight.Append((CrossRailProfile.Longwavesright[index] * WavesKoef).ToString().Replace(",", ".") + "," + cmeter.ToString().Replace(",", ".") + " ");
 
 
-
-
             }
            
 
@@ -799,6 +793,7 @@ namespace ALARm.Core
          
             LongwavesLeft = longwavesLeft.ToString();
             LongwavesRight = longwavesRight.ToString();
+
 
 
         }
@@ -865,6 +860,7 @@ namespace ALARm.Core
             IsoJoints = mainTrackStructureRepository.GetMtoObjectsByCoord(trip_date, Number, MainTrackStructureConst.MtoProfileObject, Track_id) as List<ProfileObject>;
             NonstandardKms = mainTrackStructureRepository.GetMtoObjectsByCoord(trip_date, Number, MainTrackStructureConst.MtoNonStandard, Track_id) as List<NonstandardKm>;
             Fragment = mainTrackStructureRepository.GetMtoObjectsByCoord(trip_date, Number, MainTrackStructureConst.Fragments, Track_id) as Fragment;
+            //Fragment= Fragment.GetNextFrgament(mainTrackStructureRepository, Direction) as Fragment;
             Sector = mainTrackStructureRepository.GetSector(Track_id, Number, trip_date);
             StationSection = mainTrackStructureRepository.GetMtoObjectsByCoord(trip_date, Number, MainTrackStructureConst.MtoStationSection, Track_id) as List<StationSection>;
             PdbSection = mainTrackStructureRepository.GetMtoObjectsByCoord(trip_date, Number, MainTrackStructureConst.MtoPdbSection, Track_id) as List<PdbSection>;
@@ -2355,7 +2351,8 @@ namespace ALARm.Core
             else
             {
                 var temp = outdatas.Where(o => o.km == km).ToList();
-
+                if (temp.Count() == 0 )
+                    return 0;
                 if (dCoord > temp.Last().RealCoordinate)
                 {
                     var d = (dCoord - temp.Last().RealCoordinate)*10000;
