@@ -332,37 +332,10 @@ namespace AlarmPP.Web.Components.Diagram
                             //System.Console.WriteLine($"{AppData.Meter}-{OnlineModeData.GlobalMeter}");
                             OnlineModeData.GlobalMeter = outdata._meters;
 
-                            //List<CamBitmap> bitmaps = new List<CamBitmap>()
-                            //{
-                            //    new CamBitmap(@"H:\059M\SKH-2-4\2020_06",".s10"),
-                            //    new CamBitmap(@"H:\059M\SKH-2-2\2020_06", ".s9"),
-                            //    new CamBitmap(@"H:\059M\Mid_Shpala\2020_06",".s11"),
-                            //    new CamBitmap(@"G:\059m\SKH-1-1\2020_06",".s7"),
-                            //    new CamBitmap(@"G:\059m\SKH-1-3\2020_06",".s8")
-
-                            //};
-                            //Parallel.ForEach(bitmaps, (bitmap) =>
-                            //{
-                            //   var result = OnlineModeData.GetBitmapAsync(bitmap.FilePath, AppData.Meter*5);
-                            //    if (result != null)
-                            //    {
-                            //        bitmap.Bitmap = result;
-                            //        bitmap.Bitmap = new Bitmap(bitmap.Bitmap, new Size(bitmap.Bitmap.Width / 4, bitmap.Bitmap.Height / 4));
-                            //    }
-
-                            //});
-                            //AppData.CurrentFrame = new Bitmap(bitmaps[0].Bitmap.Width + bitmaps[1].Bitmap.Width + bitmaps[2].Bitmap.Width + bitmaps[3].Bitmap.Width + bitmaps[4].Bitmap.Width, bitmaps[0].Bitmap.Height);
-
-                            //    Graphics g = Graphics.FromImage(AppData.CurrentFrame);
-                            //    g.DrawImageUnscaled(bitmaps[0].Bitmap, 0, 0);
-                            //    g.DrawImageUnscaled(bitmaps[1].Bitmap, bitmaps[0].Bitmap.Width, 0);
-                            //    g.DrawImageUnscaled(bitmaps[2].Bitmap, bitmaps[0].Bitmap.Width + bitmaps[1].Bitmap.Width, 0);
-                            //    g.DrawImageUnscaled(bitmaps[3].Bitmap, bitmaps[0].Bitmap.Width + bitmaps[1].Bitmap.Width + bitmaps[2].Bitmap.Width, 0);
-                            //    g.DrawImageUnscaled(bitmaps[4].Bitmap, bitmaps[0].Bitmap.Width + bitmaps[1].Bitmap.Width + bitmaps[2].Bitmap.Width + bitmaps[3].Bitmap.Width, 0);
-
+                            
                             int currentMetre = kilometer.Direction == Direction.Direct ? (AppData.Meter - (length - kilometer.GetLength()) + kilometer.Start_m) : kilometer.Final_m - (AppData.Meter - (length - kilometer.GetLength()));
                             Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("en-US");
-                            kilometer.AddData(outdata, currentMetre, AppData.Koefs);
+                            kilometer.AddData(outdata, currentMetre, AppData.Koefs, profileDatas[profileIndex]);
 
                             kilometer.SideWearLeft_.Add(OnlineModeData.SideWearLeft);
                             kilometer.SideWearRight_.Add(OnlineModeData.SideWearRight);

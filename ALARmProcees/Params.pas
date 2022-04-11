@@ -1,4 +1,4 @@
-unit Params;
+п»їunit Params;
 
 interface
 
@@ -83,13 +83,13 @@ Type
     MFuncs2 = array of TFuncs2;
     // ------------------------------------------------------------------------------
 
-    // флаг для крив. уч.
+    // С„Р»Р°Рі РґР»СЏ РєСЂРёРІ. СѓС‡.
     ConFlagsKrv = record
         FNpk1, FKpk1, FKpk2, FNpk2: boolean;
     end;
 
     // ------------------------------------------------------------------------------
-    // массив для крив уч.
+    // РјР°СЃСЃРёРІ РґР»СЏ РєСЂРёРІ СѓС‡.
     FeatKrv = record
         km, Npk1, Kpk1, Kpk2, Npk2, NNB1, KNB1, KNB2, NNB2, nach_krv, piket_krv,
           Radius, v, put, pik, Wear: integer;
@@ -113,7 +113,7 @@ TPartKm = record pch, put, pchu, pd, pdb, km, a_mtr, b_mtr: integer;
 end;
 UPartKm = array of TPartKm;
 
-// Для нового путевого листа
+// Р”Р»СЏ РЅРѕРІРѕРіРѕ РїСѓС‚РµРІРѕРіРѕ Р»РёСЃС‚Р°
 TAdmin = record pch, mex, pd, pdb, nkm, kkm: integer;
 nput:
 longint;
@@ -223,13 +223,13 @@ procedure SabLog(NamePnt: string);
 
                 const
                     // ProgVer='1.93.1 ';
-                    Ins = 'ЦП-617/11 от 27.06.11 '; // 'ЦП-515 от 2006 ';
-                    Vagon = 'МДК-АЛАРм:';
+                    Ins = 'Р¦Рџ-617/11 РѕС‚ 27.06.11 '; // 'Р¦Рџ-515 РѕС‚ 2006 ';
+                    Vagon = 'РњР”Рљ-РђР›РђР Рј:';
 
-                    BPO = 'ВПО';
-                    BPOBPR = 'ВПО или ВПР';
-                    BPOIBPR = 'ВПО+ВПР';
-                    BPOBPRDCP = 'ВПО+ВПР+ДСП';
+                    BPO = 'Р’РџРћ';
+                    BPOBPR = 'Р’РџРћ РёР»Рё Р’РџР ';
+                    BPOIBPR = 'Р’РџРћ+Р’РџР ';
+                    BPOBPRDCP = 'Р’РџРћ+Р’РџР +Р”РЎРџ';
 
                     RD_CURVE_TYPE_RADIUS = 1;
 
@@ -237,7 +237,7 @@ procedure SabLog(NamePnt: string);
                     // CouPointAvgSR = 28;
                     CONS_ECOUNT = 9;
 
-                    // Для масштаба график
+                    // Р”Р»СЏ РјР°СЃС€С‚Р°Р±Р° РіСЂР°С„РёРє
                     k_mash = 5.28 * 16 / 14 * 60 / 59;
                     k_jyl = -25; // 0;//-8;
                     k_jylrih = 0; // 28;
@@ -251,17 +251,17 @@ procedure SabLog(NamePnt: string);
 
                     k_jylrih1 = 3.4; // 2.55; //3.4;
                     k_jylrih2 = -3.4; // -2.55; //-3.4;
-                    // Для линейкй шаблона
+                    // Р”Р»СЏ Р»РёРЅРµР№РєР№ С€Р°Р±Р»РѕРЅР°
                     c_sh_1520 = 25; // 25.0;
                     sh_koef = 1.44; // 1.33;
 
-                    // Локальная папка
+                    // Р›РѕРєР°Р»СЊРЅР°СЏ РїР°РїРєР°
                     {
                       Path_info_put_file=   'd:\work_shifrovka\info_put.svgp';// '\\192.168.1.2\work_shifrovka\info_put.svgp'; //; //'.\work_shifrovka\info_put.svgp';    //
                       Path_km_shifrovka_file= 'd:\work_shifrovka\';  //'\\192.168.1.2\work_shifrovka\'; //; //'.\work_shifrovka\';                //
                     }
 
-                    // сетевая папка
+                    // СЃРµС‚РµРІР°СЏ РїР°РїРєР°
                     {
                       Path_info_put_file=      '\\192.168.1.2\work_shifrovka\info_put.svgp';
                       Path_km_shifrovka_file=  '\\192.168.1.2\work_shifrovka\';
@@ -280,9 +280,9 @@ procedure SabLog(NamePnt: string);
                     NetPathAx = { 'd:\work\filesAx\'; // }
                       '\\192.168.16.20\d\work\files\';
 
-                    // Коеффиценты поправки для параметров рельсовой колеи
+                    // РљРѕРµС„С„РёС†РµРЅС‚С‹ РїРѕРїСЂР°РІРєРё РґР»СЏ РїР°СЂР°РјРµС‚СЂРѕРІ СЂРµР»СЊСЃРѕРІРѕР№ РєРѕР»РµРё
 
-                    koefUrob = 1; // 0.5; //Коефицент для уровня
+                    koefUrob = 1; // 0.5; //РљРѕРµС„РёС†РµРЅС‚ РґР»СЏ СѓСЂРѕРІРЅСЏ
                     kfPro = 0.9; //
                     kfShab = 1.0; // 1.002;
                     kfUrb = 1.0;
@@ -726,7 +726,7 @@ procedure SabLog(NamePnt: string);
                     gkmtrueind: integer = 0;
                     gkmtrue: integer = 0;
 
-                    GlbTypeGrp: string = 'Оригинал'; // Дубликат
+                    GlbTypeGrp: string = 'РћСЂРёРіРёРЅР°Р»'; // Р”СѓР±Р»РёРєР°С‚
                     Glb3: string = '';
                     vt: integer = 80;
 
@@ -746,7 +746,7 @@ procedure SabLog(NamePnt: string);
 implementation
 
 // =========================================
-// Процедура записи на лог файл
+// РџСЂРѕС†РµРґСѓСЂР° Р·Р°РїРёСЃРё РЅР° Р»РѕРі С„Р°Р№Р»
 // ========================================
 procedure SabLog(NamePnt: string);
 begin
@@ -858,7 +858,7 @@ begin
                 tb := true;
                 ip := '';
                 if tmp_pic > 0 then
-                    ip := ' пк' + inttostr(tmp_pic);
+                    ip := ' РїРє' + inttostr(tmp_pic);
                 if vmin > tmp_v then
                     vmin := tmp_v;
                 GlbTempTipRemontKm := tmp_type + ip + ' V=' +
@@ -922,10 +922,10 @@ begin
             if (km = tmp_km) and (tmp_adat = datetostr(date)) then
             begin
                 GlbFlagCorrKm := true;
-                GlbTempTipRemontKm := 'Коррек. ' + tmp_type + ' Пк' +
+                GlbTempTipRemontKm := 'РљРѕСЂСЂРµРє. ' + tmp_type + ' РџРє' +
                   inttostr(tmp_pic) + ' ';
                 if tmp_pic = 0 then
-                    GlbTempTipRemontKm := 'Коррек. ' + tmp_type + ' ';
+                    GlbTempTipRemontKm := 'РљРѕСЂСЂРµРє. ' + tmp_type + ' ';
             end;
         end;
         closefile(fffff);
@@ -934,7 +934,7 @@ begin
 end;
 
 // ------------------------------------------------------------------------------
-// Жок км-ге тексеру
+// Р–РѕРє РєРј-РіРµ С‚РµРєСЃРµСЂСѓ
 // ------------------------------------------------------------------------------
 function ZhokKm(pkm: integer): boolean;
 var

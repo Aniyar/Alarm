@@ -1,4 +1,4 @@
-unit REPORTS;
+п»їunit REPORTS;
 
 interface
 
@@ -41,7 +41,7 @@ implementation
 
 uses funcsProcs, forots, rwun;
 // ----------------------------------------------------------------------
-// Опред. f sred крив.
+// РћРїСЂРµРґ. f sred РєСЂРёРІ.
 // ----------------------------------------------------------------------
 //
 
@@ -62,7 +62,7 @@ var
 begin
   opr_usk := false;
   for i := 0 to length(ubed) do
-    if copy(ubed, i, 3) = 'Анп' then
+    if copy(ubed, i, 3) = 'РђРЅРї' then
       opr_usk := true;
 end;
 
@@ -72,7 +72,7 @@ var
 begin
   opr_ukl := false;
   for i := 0 to length(ubed) do
-    if copy(ubed, i, 3) = 'Укл' then
+    if copy(ubed, i, 3) = 'РЈРєР»' then
       opr_ukl := true;
 
 end;
@@ -83,7 +83,7 @@ var
 begin
   opr_otv := false;
   for i := 0 to length(ubed) do
-    if copy(ubed, i, 5) = 'Oтв.ш' then
+    if copy(ubed, i, 5) = 'OС‚РІ.С€' then
       opr_otv := true;
 end;
 
@@ -102,8 +102,8 @@ begin
   masofzamech[kolzamen - 1].Top := zam1;
   lenclob := length(GlobUbedOgr);
   lenclob := length(strr) - length(GlobUbedOgr);
-  if ((St = 3) or (St = 4) or containstext(strr, 'Укл') or containstext(strr,
-    'Анп') or (copy(strr, lenclob + 1, length(GlobUbedOgr) + 1) = GlobUbedOgr)
+  if ((St = 3) or (St = 4) or containstext(strr, 'РЈРєР»') or containstext(strr,
+    'РђРЅРї') or (copy(strr, lenclob + 1, length(GlobUbedOgr) + 1) = GlobUbedOgr)
     and (GlobUbedOgr <> '')) { or GlbFlagRemontKm } then
   begin
 
@@ -165,7 +165,7 @@ begin
     kfWablon := c_sh_1520 + +sh_koef;
 end;
 // ------------------------------------------------------------------------------
-// ЭКСПОРТИРОВАТЬ ОТЧЕТ В XML ФАЙЛ
+// Р­РљРЎРџРћР РўРР РћР’РђРўР¬ РћРўР§Р•Рў Р’ XML Р¤РђР™Р›
 // ------------------------------------------------------------------------------
 
 procedure ReportToXml;
@@ -242,8 +242,8 @@ begin
   str_PDB := '';
 
   necorr := '';
-  if GlbCommentPaspData = 'Не корр.паспорт' then
-    necorr := ' '#13'Режим оценки: Не корр.пасп.';
+  if GlbCommentPaspData = 'РќРµ РєРѕСЂСЂ.РїР°СЃРїРѕСЂС‚' then
+    necorr := ' '#13'Р РµР¶РёРј РѕС†РµРЅРєРё: РќРµ РєРѕСЂСЂ.РїР°СЃРї.';
   coord := '';
 
 
@@ -371,11 +371,11 @@ begin
   sind := '';
 
   if flag_sablog then
-    Writeln('отчетный файл сформирован');
+    Writeln('РѕС‚С‡РµС‚РЅС‹Р№ С„Р°Р№Р» СЃС„РѕСЂРјРёСЂРѕРІР°РЅ');
 
 end;
 // ------------------------------------------------------------------------------
-// ФОРМИР. ГРАФОТЧЕТА, ПЕЧАТЬ И СОХР. НА ФАЙЛ
+// Р¤РћР РњРР . Р“Р РђР¤РћРўР§Р•РўРђ, РџР•Р§РђРўР¬ Р РЎРћРҐР . РќРђ Р¤РђР™Р›
 // ------------------------------------------------------------------------------
 
 procedure PaintGrph;
@@ -394,24 +394,24 @@ begin
 
     case GTipPoezdki of
       0:
-        tip_proezd := 'раб.';
+        tip_proezd := 'СЂР°Р±.';
       1:
-        tip_proezd := 'контр.';
+        tip_proezd := 'РєРѕРЅС‚СЂ.';
       2:
-        tip_proezd := 'доп.';
+        tip_proezd := 'РґРѕРї.';
       3:
-        tip_proezd := 'колиб.';
+        tip_proezd := 'РєРѕР»РёР±.';
     end;
 
-    Caption := 'ТУЛПАР-ИНТЕХ: ПО версии ' + ProgVER + Ins + VAgon + NUMBERCAR_F
-      + '(' + chief_f + ')<КАЗ><' + Dateofinser + '><д.о.:' + datetimetostr(now)
+    Caption := 'РўРЈР›РџРђР -РРќРўР•РҐ: РџРћ РІРµСЂСЃРёРё ' + ProgVER + Ins + VAgon + NUMBERCAR_F
+      + '(' + chief_f + ')<РљРђР—><' + Dateofinser + '><Рґ.Рѕ.:' + datetimetostr(now)
       + '>' + '<' + direction_f + '><' + Gays + '-' + Gjyl + '><' + tip_proezd +
-      '><Проезд:' + num_proberki + '><' + GlbTypeGrp + '>'; // Дубликат>
+      '><РџСЂРѕРµР·Рґ:' + num_proberki + '><' + GlbTypeGrp + '>'; // Р”СѓР±Р»РёРєР°С‚>
 
-    Caption := inttostr(glbKmTrue) + ' км'; //
+    Caption := inttostr(glbKmTrue) + ' РєРј'; //
     for ii := 0 to high(UNst) do
     begin
-      NestCaption := 'Нестанд.км';
+      NestCaption := 'РќРµСЃС‚Р°РЅРґ.РєРј';
       break;
     end;
     for ii := 0 to high(Uras) do
@@ -457,7 +457,7 @@ begin
   end;
 end;
 // ------------------------------------------------------------------------------
-// ФОРМИР. ОТЧЕТА BEDEMOST, ПЕЧАТЬ И СОХР. НА ФАЙЛ
+// Р¤РћР РњРР . РћРўР§Р•РўРђ BEDEMOST, РџР•Р§РђРўР¬ Р РЎРћРҐР . РќРђ Р¤РђР™Р›
 // ------------------------------------------------------------------------------
 
 procedure FORM_BEDOTCHETKM(TKM: integer);
@@ -492,7 +492,7 @@ var
   korek: integer;
   i_krap, j_krap, jjjj, iii, i, si, ll, id, JJ: integer;
   ijk: integer;
-  // для сортировки отсинф
+  // РґР»СЏ СЃРѕСЂС‚РёСЂРѕРІРєРё РѕС‚СЃРёРЅС„
   m1: integer;
   Otst1: string[5]; // string;
   prich_ogr_v1: string;
@@ -504,8 +504,8 @@ begin
   for i := 0 to high(kv) do
   begin
     strm := inttostr(kv[i].nach_krv) + ' R:' + inttostr(kv[i].Radius) + ' h:' +
-      inttostr(round(kv[i].Fsr_Urob)) + ' Ш:' + inttostr(round(kv[i].Fsr_Shab))
-      + ' И:' + inttostr(kv[i].Wear);
+      inttostr(round(kv[i].Fsr_Urob)) + ' РЁ:' + inttostr(round(kv[i].Fsr_Shab))
+      + ' Р:' + inttostr(kv[i].Wear);
 
     zamenamemo(lenofzamen, strm, kv[i].nach_krv, ll);
     if flagpic then
@@ -520,8 +520,8 @@ begin
   for i := 0 to high(mVPik) do
   begin
 
-    strm := inttostr(mVPik[i].mtr2) + ' Уст.ск:' + inttostr(mVPik[i].v11) + '/'
-      + inttostr(mVPik[i].v12) + ' Уст.ск:' + inttostr(mVPik[i].v21) + '/' +
+    strm := inttostr(mVPik[i].mtr2) + ' РЈСЃС‚.СЃРє:' + inttostr(mVPik[i].v11) + '/'
+      + inttostr(mVPik[i].v12) + ' РЈСЃС‚.СЃРє:' + inttostr(mVPik[i].v21) + '/' +
       inttostr(mVPik[i].v22);
     zamenamemo(lenofzamen, strm, mVPik[i].mtr2, ll);
   end;
@@ -534,34 +534,34 @@ begin
     sOTSTUPLENIE := OtsInf[JJ].Otst;
     OTSTUPLENIE := 0;
 
-    if UpperCase(sOTSTUPLENIE) = UpperCase('Пр.п') then
+    if UpperCase(sOTSTUPLENIE) = UpperCase('РџСЂ.Рї') then
       OTSTUPLENIE := 1;
-    if UpperCase(sOTSTUPLENIE) = UpperCase('Пр.л') then
+    if UpperCase(sOTSTUPLENIE) = UpperCase('РџСЂ.Р»') then
       OTSTUPLENIE := 2;
 
     if tanba_rih < 0 then
     begin
-      if UpperCase(sOTSTUPLENIE) = UpperCase('Пр.п') then
+      if UpperCase(sOTSTUPLENIE) = UpperCase('РџСЂ.Рї') then
         OTSTUPLENIE := 2;
-      if UpperCase(sOTSTUPLENIE) = UpperCase('Пр.л') then
+      if UpperCase(sOTSTUPLENIE) = UpperCase('РџСЂ.Р»') then
         OTSTUPLENIE := 1;
     end;
 
-    if UpperCase(sOTSTUPLENIE) = UpperCase('Уш') then
+    if UpperCase(sOTSTUPLENIE) = UpperCase('РЈС€') then
       OTSTUPLENIE := 3;
-    if UpperCase(sOTSTUPLENIE) = UpperCase('Суж') then
+    if UpperCase(sOTSTUPLENIE) = UpperCase('РЎСѓР¶') then
       OTSTUPLENIE := 6;
 
-    if UpperCase(sOTSTUPLENIE) = UpperCase('Р') then
+    if UpperCase(sOTSTUPLENIE) = UpperCase('Р ') then
       OTSTUPLENIE := 4;
-    if UpperCase(sOTSTUPLENIE) = UpperCase('Р') then
+    if UpperCase(sOTSTUPLENIE) = UpperCase('Р ') then
       OTSTUPLENIE := 4;
-    if UpperCase(sOTSTUPLENIE) = UpperCase('Рнр') then
+    if UpperCase(sOTSTUPLENIE) = UpperCase('Р РЅСЂ') then
       OTSTUPLENIE := 4;
 
-    if UpperCase(sOTSTUPLENIE) = UpperCase('П') then
+    if UpperCase(sOTSTUPLENIE) = UpperCase('Рџ') then
       OTSTUPLENIE := 5;
-    if UpperCase(sOTSTUPLENIE) = UpperCase('У') then
+    if UpperCase(sOTSTUPLENIE) = UpperCase('РЈ') then
       OTSTUPLENIE := 5;
 
     if not LftAxisINV then
@@ -584,8 +584,8 @@ begin
       begin
         strm := inttostr(OtsInf[id].M) + ' ' + OtsInf[id].Otst + ' ' +
           OtsInf[id].Otkl + ' ';
-        if ((OtsInf[id].Otst = 'Анп') or (OtsInf[id].Otst = '?Анп') or
-          (containstext(OtsInf[id].Otst, 'Пси'))) and (OtsInf[id].Dl > 20) then
+        if ((OtsInf[id].Otst = 'РђРЅРї') or (OtsInf[id].Otst = '?РђРЅРї') or
+          (containstext(OtsInf[id].Otst, 'РџСЃРё'))) and (OtsInf[id].Dl > 20) then
           strm := strm + '>20 '
         else
           strm := strm + inttostr(OtsInf[id].Dl) + ' ';
@@ -598,11 +598,11 @@ begin
           inttostr(OtsInf[id].St) + ' ' + OtsInf[id].Otkl + ' ' +
           inttostr(OtsInf[id].Dl);
 
-        if (OtsInf[id].prim.Contains('Стр.')) then
+        if (OtsInf[id].prim.Contains('РЎС‚СЂ.')) then
           strm := strm + ' ' + OtsInf[id].prim
         else
           strm := strm + ' ' + V_shekti(OtsInf[id].vop, OtsInf[id].vog);
-        if (OtsInf[id].prim.Contains('ис') or OtsInf[id].prim.Contains('t+'))
+        if (OtsInf[id].prim.Contains('РёСЃ') or OtsInf[id].prim.Contains('t+'))
         then
           strm := strm + ' ' + OtsInf[id].prim;
 
@@ -620,7 +620,7 @@ begin
 
       ijk := ijk + 1;
 
-      ubed1 := 'П ';
+      ubed1 := 'Рџ ';
 
     end // ;
     // *****************************************
@@ -636,7 +636,7 @@ begin
 end;
 // ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
-// ФОРМИР. ОТЧЕТЬ 'Graph', ПЕЧАТЬ И СОХР. НА ФАЙЛ
+// Р¤РћР РњРР . РћРўР§Р•РўР¬ 'Graph', РџР•Р§РђРўР¬ Р РЎРћРҐР . РќРђ Р¤РђР™Р›
 // ------------------------------------------------------------------------------
 
 procedure GRAPHREP(TKM: integer);
@@ -651,9 +651,9 @@ var
 
 begin
   if flag_sablog then
-    SabLog('GRAPHREP - формирование граф отчета и распечатка');
+    SabLog('GRAPHREP - С„РѕСЂРјРёСЂРѕРІР°РЅРёРµ РіСЂР°С„ РѕС‚С‡РµС‚Р° Рё СЂР°СЃРїРµС‡Р°С‚РєР°');
   if flag_sablog then
-    Writeln('GRAPHREP - формирование граф отчета и распечатка');
+    Writeln('GRAPHREP - С„РѕСЂРјРёСЂРѕРІР°РЅРёРµ РіСЂР°С„ РѕС‚С‡РµС‚Р° Рё СЂР°СЃРїРµС‡Р°С‚РєР°');
   ClearGrph;
   FORM_BEDOTCHETKM(gkmtrue);
 
@@ -674,10 +674,10 @@ begin
 
   RCOUNT1 := length(F_mtr);
   if flag_sablog then
-    Writeln('GRAPHREP - рисование');
+    Writeln('GRAPHREP - СЂРёСЃРѕРІР°РЅРёРµ');
   Write_InfoOts34(GlbInfOts);
   if flag_sablog then
-    Writeln('GRAPHREP - пишем отступление');
+    Writeln('GRAPHREP - РїРёС€РµРј РѕС‚СЃС‚СѓРїР»РµРЅРёРµ');
   // PaintGrph;
   // ------------------------------------------------------------------------------
   // FORM_BEDOTCHETKM(TKM);

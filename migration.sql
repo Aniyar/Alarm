@@ -97,6 +97,9 @@ CREATE TABLE public.bedemost_history
 );
 
 -- Ведемостьқа 1 деңгейлі қателіктер үшін бағандар қосу
+
+
+--alter table bedemost modify primech varchar(500) charset "utf-8";
 alter table bedemost add column if not exists fdbroad int4 default 0;
 alter table bedemost add column if not exists fdconstrict int4 default 0;
 alter table bedemost add column if not exists fdskew int4 default 0;

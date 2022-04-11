@@ -71,9 +71,9 @@ MatrixGauge = array [1 .. 4, 1 .. 3, 1 .. 5] of integer;
 MatrixR8 = array [1 .. 3] of integer;
 
 MatrixUR_Per = array [1 .. 3, 1 .. 5] of integer;
-// íîâàÿ ìàòðèöà  ïåðåêîñà âû÷èñëÿåìàÿ ñ ïîìîùüþ ïðîöåäóðû ïðîñàäîê â ñëó÷å äâóõ âåðøèí è áåç ñòóïåíåê
+// новая матрица  перекоса вычисляемая с помощью процедуры просадок в случе двух вершин и без ступенек
 Matrix_Riht = array [1 .. 3, 1 .. 6] of integer;
-// íîâàÿ ìàòðèöà  ðèõòîâêè âû÷èñëÿåìàÿ ñ ïîìîùüþ ïðîöåäóðû ïðîñàäîê â ñëó÷å äâóõ âåðøèí è áåç ñòóïåíåê
+// новая матрица  рихтовки вычисляемая с помощью процедуры просадок в случе двух вершин и без ступенек
 
 Matrix_Riht_New = array [1 .. 3, 1 .. 5] of integer;
 
@@ -207,7 +207,7 @@ procedure SaveToUvedomlenie(ogranichenie_v, tip: integer; s: string;
                                         // test proc
                                         // function GTF_su(var px,pf0,pna,pnb:integer; tsX,tsBel,tsDl,tsots:mas):integer;
                                         //
-                                        // ôóíêöèÿ âûäà÷è îãðàíè÷åíèÿ
+                                        // функция выдачи ограничения
                                         function OpredelenieOgr_SkorostiPer
                                         (var st, otkl: integer): integer;
                                         function OpredelenieOgr_SkorostiPro
@@ -380,7 +380,7 @@ procedure SaveToUvedomlenie(ogranichenie_v, tip: integer; s: string;
                                         (12, 14, 20, 25, 35),
                                         (16, 20, 25, 30, 50));
 
-                                        // (  ñòàðûé âàðèàíò äî 01,06,2021
+                                        // (  старый вариант до 01,06,2021
                                         // ( 7,  9, 11, 13, 13),
                                         // ( 9, 10, 14, 16, 16),
                                         // (12, 16, 20, 25, 30),
@@ -406,36 +406,36 @@ procedure SaveToUvedomlenie(ogranichenie_v, tip: integer; s: string;
                                         : MatrixUR_Per = ((8, 10, 12, 14, 16),
                                         (12, 16, 20, 25, 30),
                                         (16, 20, 25, 30, 50));
-                                        // íîâàÿ ìàòðèöà  ïåðåêîñà âû÷èñëÿåìàÿ ñ ïîìîùüþ ïðîöåäóðû ïðîñàäîê â ñëó÷å äâóõ âåðøèí è áåç ñòóïåíåê
-                                        // DeltaPro_Riht: Matrix_Riht=((10,10,15,15,20,25),(15,25,35,35,40,50),(25,35,40,40,50,65)); // íîâàÿ ìàòðèöà  ðèõòîâêè âû÷èñëÿåìàÿ ñ ïîìîùüþ ïðîöåäóðû ïðîñàäîê â ñëó÷å äâóõ âåðøèí è áåç ñòóïåíåê
-                                        // ïåðåäåëêà ïî ðàçìåðíîñòè ñîãëàñíî ïîëåòêå
+                                        // новая матрица  перекоса вычисляемая с помощью процедуры просадок в случе двух вершин и без ступенек
+                                        // DeltaPro_Riht: Matrix_Riht=((10,10,15,15,20,25),(15,25,35,35,40,50),(25,35,40,40,50,65)); // новая матрица  рихтовки вычисляемая с помощью процедуры просадок в случе двух вершин и без ступенек
+                                        // переделка по размерности согласно полетке
                                         DeltaPro_Riht
                                         : Matrix_Riht_New =
                                         ((10, 15, 15, 20, 25),
                                         (25, 35, 35, 40, 50),
                                         (35, 40, 40, 50, 65));
-                                        // íîâàÿ ìàòðèöà  ðèõòîâêè âû÷èñëÿåìàÿ ñ ïîìîùüþ ïðîöåäóðû ïðîñàäîê â ñëó÷å äâóõ âåðøèí è áåç ñòóïåíåê
+                                        // новая матрица  рихтовки вычисляемая с помощью процедуры просадок в случе двух вершин и без ступенек
                                         /// //
-                                        // DeltaPro_Riht1: Matrix_Riht_New=((4,5,7,8,10),(8,11,12,15,20),(11,12,15,20,31)); // íîâàÿ ìàòðèöà  ðèõòîâêè âû÷èñëÿåìàÿ ñ ïîìîùüþ ïðîöåäóðû ïðîñàäîê â ñëó÷å äâóõ âåðøèí è áåç ñòóïåíåê
-                                        // DeltaPro_Riht2: Matrix_Riht_New=((3,4,4,5,7),(5,6,7,10,12),(6,7,10,12,18)); // íîâàÿ ìàòðèöà  ðèõòîâêè âû÷èñëÿåìàÿ ñ ïîìîùüþ ïðîöåäóðû ïðîñàäîê â ñëó÷å äâóõ âåðøèí è áåç ñòóïåíåê
-                                        // DeltaPro_Riht3: Matrix_Riht_New=((4,5,6,7,8),(7,8,11,14,15),(8,11,14,16,21)); // íîâàÿ ìàòðèöà  ðèõòîâêè âû÷èñëÿåìàÿ ñ ïîìîùüþ ïðîöåäóðû ïðîñàäîê â ñëó÷å äâóõ âåðøèí è áåç ñòóïåíåê
+                                        // DeltaPro_Riht1: Matrix_Riht_New=((4,5,7,8,10),(8,11,12,15,20),(11,12,15,20,31)); // новая матрица  рихтовки вычисляемая с помощью процедуры просадок в случе двух вершин и без ступенек
+                                        // DeltaPro_Riht2: Matrix_Riht_New=((3,4,4,5,7),(5,6,7,10,12),(6,7,10,12,18)); // новая матрица  рихтовки вычисляемая с помощью процедуры просадок в случе двух вершин и без ступенек
+                                        // DeltaPro_Riht3: Matrix_Riht_New=((4,5,6,7,8),(7,8,11,14,15),(8,11,14,16,21)); // новая матрица  рихтовки вычисляемая с помощью процедуры просадок в случе двух вершин и без ступенек
                                         DeltaPro_Riht1
                                         : Matrix_Riht_New =
                                         ((8, 11, 14, 16, 20),
                                         (16, 22, 25, 31, 40),
                                         (22, 25, 31, 40, 62));
-                                        // íîâàÿ ìàòðèöà  ðèõòîâêè âû÷èñëÿåìàÿ ñ ïîìîùüþ ïðîöåäóðû ïðîñàäîê â ñëó÷å äâóõ âåðøèí è áåç ñòóïåíåê
+                                        // новая матрица  рихтовки вычисляемая с помощью процедуры просадок в случе двух вершин и без ступенек
                                         DeltaPro_Riht2
                                         : Matrix_Riht_New = ((6, 7, 8, 10, 13),
                                         (10, 13, 15, 20, 25),
                                         (13, 15, 20, 25, 37));
-                                        // íîâàÿ ìàòðèöà  ðèõòîâêè âû÷èñëÿåìàÿ ñ ïîìîùüþ ïðîöåäóðû ïðîñàäîê â ñëó÷å äâóõ âåðøèí è áåç ñòóïåíåê
+                                        // новая матрица  рихтовки вычисляемая с помощью процедуры просадок в случе двух вершин и без ступенек
                                         DeltaPro_Riht3
                                         : Matrix_Riht_New =
                                         ((8, 11, 13, 15, 17),
                                         (14, 16, 22, 28, 31),
                                         (17, 22, 28, 32, 43));
-                                        // íîâàÿ ìàòðèöà  ðèõòîâêè âû÷èñëÿåìàÿ ñ ïîìîùüþ ïðîöåäóðû ïðîñàäîê â ñëó÷å äâóõ âåðøèí è áåç ñòóïåíåê
+                                        // новая матрица  рихтовки вычисляемая с помощью процедуры просадок в случе двух вершин и без ступенек
 
                                         DeltaRst: Matrix7 =
                                         (((10, 10, 15, 15, 20, 25),
@@ -461,7 +461,7 @@ procedure SaveToUvedomlenie(ogranichenie_v, tip: integer; s: string;
                                         ((16, 22, 25, 31, 40, 62),
                                         (10, 14, 19, 25, 25, 38),
                                         (15, 18, 22, 29, 38, 44));
-                                        { Ìàòð. ðàäèóñîâ ïðè íîì. øèð. êîëåè }
+                                        { Матр. радиусов при ном. шир. колеи }
                                         MRd1: Matrix14 = ((0, 1, 300, 350),
                                         (0, 299, 349, 9000)); // 1520
                                         MRd2: Matrix11 = ((0, 1, 350, 450, 650),
@@ -470,14 +470,14 @@ procedure SaveToUvedomlenie(ogranichenie_v, tip: integer; s: string;
                                         1520); // 1520
                                         Rnom2: Vector2 = (1524, 1540, 1535,
                                         1530, 1524); // 1524
-                                        { Äåëüòà òåñò. ïðîäñåäóðû }
+                                        { Дельта тест. продседуры }
                                         TDelta: Vector7 = (500, 500, 200, 200,
                                         500, 700, 500, 500);
                                         // 1-ush,2-cuj,3-prop,4-prol,5-per,6-pot,7-rixp,8-rixl
-                                        { Íîðì. øèð. êîëåè }
+                                        { Норм. шир. колеи }
                                         R: Vector2 = (1520, 1524, 1530,
                                         1535, 1540);
-                                        { Íàç. îòñ. }
+                                        { Наз. отс. }
 
                                         Var
                                         // ush_:ubd;
@@ -837,7 +837,7 @@ begin
 end;
 
 // ------------------------------------------------------------------------------
-// Æûëäàìäûê øåêòåó
+// Жылдамдык шектеу
 // ------------------------------------------------------------------------------
 function Shekteu(a, b, vop, vog: integer): boolean;
 var
@@ -871,7 +871,7 @@ begin
 end;
 
 // ------------------------------------------------------------------------------
-// Æûëäàìäûê øåêòåó 22.10.2011
+// Жылдамдык шектеу 22.10.2011
 // ------------------------------------------------------------------------------
 function botos(b: boolean): String;
 begin
@@ -952,7 +952,7 @@ begin
 end;
 
 // ------------------------------------------------------------------------------
-// Æûëäàìäûê áîéûíøà øàáëîí èíäåêñèí êàéòàðàäû
+// Жылдамдык бойынша шаблон индексин кайтарады
 // ------------------------------------------------------------------------------
 function GIndexSpeedShab(Pv, v: integer): integer;
 var
@@ -993,7 +993,7 @@ begin
 end;
 
 // ------------------------------------------------------------------------------
-// Æûëäàìäûê áîéûíøà urb,per,pro èíäåêñèí êàéòàðàäû
+// Жылдамдык бойынша urb,per,pro индексин кайтарады
 // ------------------------------------------------------------------------------
 function GIndexSpeed_UPP(Pv, v: integer): integer;
 var
@@ -1037,7 +1037,7 @@ begin
 end;
 
 // ------------------------------------------------------------------------------
-// Íîðìà áîéûíøà øàáëîí èíäåêñèí êàéòàðàäû
+// Норма бойынша шаблон индексин кайтарады
 // ------------------------------------------------------------------------------
 function GIndexNorm(norm: integer): integer;
 var
@@ -1061,7 +1061,7 @@ begin
 end;
 
 // ------------------------------------------------------------------------------
-// Èíäåêñ áîéûíøà øàáëîí øåêòåóëè æûëäàìäûê êàéòàðàäû
+// Индекс бойынша шаблон шектеули жылдамдык кайтарады
 // ------------------------------------------------------------------------------
 function GOgrSpeedShab(Pv, k: integer): integer;
 var
@@ -1104,7 +1104,7 @@ begin
 end;
 
 // ------------------------------------------------------------------------------
-// Èíäåêñ áîéûíøà urb,per,pro øåêòåóëè æûëäàìäûê êàéòàðàäû
+// Индекс бойынша urb,per,pro шектеули жылдамдык кайтарады
 // ------------------------------------------------------------------------------
 function GOgrSpeed_UPP(Pv, k: integer): integer;
 var
@@ -1148,7 +1148,7 @@ begin
 end;
 
 // ------------------------------------------------------------------------------
-// Øåêòåëãåí æûëäàìäûê óøèðåíèå
+// Шектелген жылдамдык уширение
 // ------------------------------------------------------------------------------
 function V_ogr_ush(Pv, v, pnorm, push: integer): integer;
 var
@@ -1179,7 +1179,7 @@ begin
 end;
 
 // ------------------------------------------------------------------------------
-// Øåêòåëãåí æûëäàìäûê ñóææåíèå
+// Шектелген жылдамдык сужжение
 // ------------------------------------------------------------------------------
 function V_ogr_suj(Pv, v, pnorm, push: integer): integer;
 var
@@ -1209,7 +1209,7 @@ begin
 end;
 
 // ------------------------------------------------------------------------------
-// Øåêòåëãåí æûëäàìäûê urb,per,pro
+// Шектелген жылдамдык urb,per,pro
 // ------------------------------------------------------------------------------
 function V_ogr_UPP(Pv, v, H, g: integer; iso_joint: boolean = false): integer;
 // g-tip ots, h-belich ots
@@ -1260,7 +1260,7 @@ begin
 end;
 
 // ==============================================================================
-function DeltaR(Pv, x, v, k: integer): real; // k ñòåïåíü îòñ.
+function DeltaR(Pv, x, v, k: integer): real; // k степень отс.
 var
   a, b, C, D, kf1, kf2, h1, h2, xx, ab, bc, cd, res: real;
   j: integer;
@@ -1338,9 +1338,9 @@ begin
 end;
 
 // =========================================
-// 09.11.2010 ïàëåòêà ñêîðîñòè ðèõòîâêè
+// 09.11.2010 палетка скорости рихтовки
 // ========================================
-function Velich_table_3dot3(x, v, k: integer): real; // k ñòåïåíü îòñ.
+function Velich_table_3dot3(x, v, k: integer): real; // k степень отс.
 var
   xx: integer;
   vel: real;
@@ -1488,7 +1488,7 @@ begin
 end;
 
 // =========================================
-// îãðàíè÷åíèå ñêîðîñòè ðèõòîâêè
+// ограничение скорости рихтовки
 // ========================================
 function V_ogr_rih(L, H: integer): integer;
 var
@@ -1513,7 +1513,7 @@ begin
 end;
 
 // =========================================
-// 09.11.2010 îãðàíè÷åíèå ñêîðîñòè ðèõòîâêè
+// 09.11.2010 ограничение скорости рихтовки
 // ========================================
 function V_ogr_rih_tab_3dot3(Pv, v, L, H: integer;
   onJoint: boolean = false): integer;
@@ -1891,7 +1891,7 @@ begin
 end;
 
 // =========================================
-// Îïð. àëôà îò 1-ãî òèïà  óñò. ñêîð.
+// Опр. алфа от 1-го типа  уст. скор.
 // ========================================
 
 function G_Ind2_Remont(var s: string; Var v: integer): integer;
@@ -1979,7 +1979,7 @@ begin
 end; // fun
 
 // ========================================
-// Îïð. àëôà îò 2-ãî òèïà óñò. ñêîð.
+// Опр. алфа от 2-го типа уст. скор.
 // ========================================
 function G_Ind2(var k, v: integer): integer;
 var
@@ -2022,7 +2022,7 @@ end; // fun
 // fun
 
 // =========================================
-// Îïð. àëôà îò 3-ãî òèïà óñò. ñêîð.
+// Опр. алфа от 3-го типа уст. скор.
 // =========================================
 function G_Ind3(var k, v: integer): integer;
 var
@@ -2125,7 +2125,7 @@ Begin
 end;
 
 // =========================================
-// Îïð. àëôà îò 3-ãî òèïà óñò. ñêîð.
+// Опр. алфа от 3-го типа уст. скор.
 // =========================================
 function GStepen(var PHn, ps1, ps2, ps3: integer): integer;
 var
@@ -2241,7 +2241,7 @@ procedure GetFtobe;
 var
   L, j, k: integer;
 Begin
-  // SabLog('GetFtobe - âîçâðàùàåò ìàññèâ êîòîðûé ñîñòîèò èç âåðøèí äàííîãî ìàññèâà');
+  // SabLog('GetFtobe - возвращает массив который состоит из вершин данного массива');
   Try
     Setlength(Ft, 3000);
     Setlength(FtK, 3000);
@@ -2301,14 +2301,14 @@ end;
   WUsh[ns].st:= st; WUsh[ns].bel:= f; WUsh[ns].L0:= xa; WUsh[ns].Lm:= xb;
   ns:= ns + 1;
   end;
-  20: name_ots := 'Ñæ4 ïê';
+  20: name_ots := 'Сж4 пк';
   end;
 
   // 4st: 14-ush, 24-suj, 34-pr1, 44-pr2, 54-rh1, 64-rh2, 74-per, 84-urb
 
   case cst of
   14: begin
-  name_ots := 'Óø4 ïê';
+  name_ots := 'Уш4 пк';
   glbCount_Ush4s:= glbCount_Ush4s + 1;
   end;
   end;
@@ -2316,15 +2316,15 @@ end;
   end;
 
   if fSkor then
-  WRT_UBEDOM(xa, xb, 4, 'Óø4 ïê'
-  + inttostr(piket) + ' ' +Inttostr(f) +'ìì v=' + inttostr(ogranichenie1),
+  WRT_UBEDOM(xa, xb, 4, 'Уш4 пк'
+  + inttostr(piket) + ' ' +Inttostr(f) +'мм v=' + inttostr(ogranichenie1),
   Inttostr(f)+' ' ,inttostr(ogranichenie1),inttostr(ogranichenie1)); //FormatFloat('0.00',max4)
   S4_comment(1, piket);
 
 
   end; }
 // ------------------------------------------------------------------------------
-// Óøèðåíèå äëÿ 1548 mm
+// Уширение для 1548 mm
 // ------------------------------------------------------------------------------
 procedure GUsh_1548mm;
 label 1;
@@ -2348,7 +2348,7 @@ var
 Begin
   Try
     if Flag_sablog then
-      sablog('GUsh - Îïðåäåëåíèå Îòñ, ñòåïåí, âåëè÷èíà îòêë., íà÷. è êîíå÷. êîîðä. îòñòóïëåíèÿ ïî óøèðåíèþ');
+      sablog('GUsh - Определение Отс, степен, величина откл., нач. и конеч. коорд. отступления по уширению');
     Setlength(WUsh, 3000);
 
     ogr_flg := false;
@@ -2424,16 +2424,16 @@ Begin
           xxxx := (coordx mod 1000) div 100 + 1;
 
           { WRT_UBEDOM(L04, Lm4, 4,
-            'Óø ïê' + inttostr(xxxx) + ' ' +Inttostr(fff) +'ìì v=' + inttostr(ogranichenie1),
+            'Уш пк' + inttostr(xxxx) + ' ' +Inttostr(fff) +'мм v=' + inttostr(ogranichenie1),
             Inttostr(fff)+' ' ,inttostr(ogranichenie1),inttostr(ogranichenie1)); //FormatFloat('0.00',max4)
           }
-          WRT_UBEDOM(L04, Lm4, 4, 'V=0/0 ' + ' ïê' + inttostr(xxxx) +
-            ' Óø; ', 0, 0);
+          WRT_UBEDOM(L04, Lm4, 4, 'V=0/0 ' + ' пк' + inttostr(xxxx) +
+            ' Уш; ', 0, 0);
           // FormatFloat('0.00',max4)
           // S4_comment(1, xxxx); //01.10.2012
         end;
 
-        // ñáðîñ ôëàãîâ
+        // сброс флагов
         flg4st := false;
         ogranichenie1 := 140;
         max4 := 0;
@@ -2464,7 +2464,7 @@ end;
 
 /// /////////////////////////////////////////////////////////////////////////////
 // ------------------------------------------------------------------------------
-// Óøèðåíèå äëÿ 4 ñòåïåíè
+// Уширение для 4 степени
 // ------------------------------------------------------------------------------
 procedure GUsh_4;
 label 1;
@@ -2486,7 +2486,7 @@ var
   ogr_flg, not_ots: boolean;
 Begin
   Try
-    // SabLog('GUsh - Îïðåäåëåíèå Îòñ, ñòåïåí, âåëè÷èíà îòêë., íà÷. è êîíå÷. êîîðä. îòñòóïëåíèÿ ïî óøèðåíèþ');
+    // SabLog('GUsh - Определение Отс, степен, величина откл., нач. и конеч. коорд. отступления по уширению');
     Setlength(WUsh, 3000);
     ogranichenie1 := 140;
     ogr_flg := false;
@@ -2659,8 +2659,8 @@ Begin
           xxxx := L04 div 100 + 1;
 
           if stv = 4 then
-            WRT_UBEDOM(L04, Lm4 + 1, 4, ' V=' + V_shekti(v1, v2) + ' ïê' +
-              inttostr(xxxx) + ' Óø;', v1, v2);
+            WRT_UBEDOM(L04, Lm4 + 1, 4, ' V=' + V_shekti(v1, v2) + ' пк' +
+              inttostr(xxxx) + ' Уш;', v1, v2);
           // end;
           for j := 0 to high(FGm) do
             if ((L04 <= FGm[j]) and (FGm[j] <= Lm4 + 1)) or
@@ -2671,7 +2671,7 @@ Begin
           // S4_comment(1, xxxx); //01.10.2012
         end;
 
-        // ñáðîñ ôëàãîâ
+        // сброс флагов
         flg4st := false;
         ogranichenie1 := 140;
         max4 := 0;
@@ -2704,7 +2704,7 @@ Begin
 end;
 
 // ------------------------------------------------------------------------------
-// Óøèðåíèå äëÿ 3 ñòåïåíè  shablon count > 10
+// Уширение для 3 степени  shablon count > 10
 // ------------------------------------------------------------------------------
 function GetCountUsh3(FG: masr; FGm, Prds: mas; speed: integer): integer;
 var
@@ -2718,7 +2718,7 @@ var
   xa, xb, Leng, bolshek, count, xo, retCount: integer;
 Begin
   Try
-    // SabLog('GUsh - Îïðåäåëåíèå Îòñ, ñòåïåí, âåëè÷èíà îòêë., íà÷. è êîíå÷. êîîðä. îòñòóïëåíèÿ ïî óøèðåíèþ');
+    // SabLog('GUsh - Определение Отс, степен, величина откл., нач. и конеч. коорд. отступления по уширению');
     retCount := 0;
     piket1 := 0;
     piket2 := 0;
@@ -2803,7 +2803,7 @@ Begin
           if ((L04 <= FGm[j]) and (FGm[j] <= Lm4)) or
             ((L04 >= FGm[j]) and (FGm[j] >= Lm4)) then
             F_Sht[j] := 1520; // F0_sh[j];
-        // ñáðîñ ôëàãîâ
+        // сброс флагов
         flg4st := false;
       end;
       flg4st := false;
@@ -2825,7 +2825,7 @@ Begin
 end;
 
 // ------------------------------------------------------------------------------
-// Óøèðåíèå äëÿ 4 íîâàÿ èç òðåòüåé ñòåïåíè
+// Уширение для 4 новая из третьей степени
 // ------------------------------------------------------------------------------
 procedure GUsh_44;
 label 1;
@@ -2848,7 +2848,7 @@ var
   ogr_flg, not_ots: boolean;
 Begin
   Try
-    // SabLog('GUsh - Îïðåäåëåíèå Îòñ, ñòåïåí, âåëè÷èíà îòêë., íà÷. è êîíå÷. êîîðä. îòñòóïëåíèÿ ïî óøèðåíèþ');
+    // SabLog('GUsh - Определение Отс, степен, величина откл., нач. и конеч. коорд. отступления по уширению');
     Setlength(WUsh, 3000);
 
     piket1 := 0;
@@ -3012,14 +3012,14 @@ Begin
         xxxx := L04 div 100 + 1;
 
         if (WUsh[ns].st = 4) then
-          WRT_UBEDOM(L04, Lm4 + 1, 4, ' V=' + V_shekti(v1, v2) + ' ïê' +
-            inttostr(xxxx) + ' Óø ' + inttostr(fff)+'/'+  inttostr(Leng) + ';  ', v1, v2);
+          WRT_UBEDOM(L04, Lm4 + 1, 4, ' V=' + V_shekti(v1, v2) + ' пк' +
+            inttostr(xxxx) + ' Уш ' + inttostr(fff)+'/'+  inttostr(Leng) + ';  ', v1, v2);
 
         for j := 0 to high(FGm) do
           if ((L04 <= FGm[j]) and (FGm[j] <= Lm4)) or
             ((L04 >= FGm[j]) and (FGm[j] >= Lm4)) then
             F_Sht[j] := 1520; // F0_sh[j];
-        // ñáðîñ ôëàãîâ
+        // сброс флагов
         flg4st := false;
 
         ns := ns + 1;
@@ -3056,7 +3056,7 @@ Begin
 end;
 
 // ------------------------------------------------------------------------------
-// Óøèðåíèå äëÿ 3 ñòåïåíè
+// Уширение для 3 степени
 // ------------------------------------------------------------------------------
 procedure GUsh_3;
 var
@@ -3070,7 +3070,7 @@ var
   xa, xb, Leng, bolshek, count, xo: integer;
 Begin
   Try
-    // SabLog('GUsh - Îïðåäåëåíèå Îòñ, ñòåïåí, âåëè÷èíà îòêë., íà÷. è êîíå÷. êîîðä. îòñòóïëåíèÿ ïî óøèðåíèþ');
+    // SabLog('GUsh - Определение Отс, степен, величина откл., нач. и конеч. коорд. отступления по уширению');
     Setlength(WUsh, 3000);
 
     piket1 := 0;
@@ -3179,7 +3179,7 @@ Begin
           if ((L04 <= FGm[j]) and (FGm[j] <= Lm4)) or
             ((L04 >= FGm[j]) and (FGm[j] >= Lm4)) then
             F_Sht[j] := 1520; // F0_sh[j];
-        // ñáðîñ ôëàãîâ
+        // сброс флагов
         flg4st := false;
 
       end;
@@ -3203,7 +3203,7 @@ Begin
 end;
 
 // ------------------------------------------------------------------------------
-// Óøèðåíèå äëÿ 2 ñòåïåíè
+// Уширение для 2 степени
 // ------------------------------------------------------------------------------
 procedure GUsh_2;
 var
@@ -3218,7 +3218,7 @@ var
   xa, xb, Leng, bolshek, count: integer;
 Begin
   Try
-    // SabLog('GUsh - Îïðåäåëåíèå Îòñ, ñòåïåí, âåëè÷èíà îòêë., íà÷. è êîíå÷. êîîðä. îòñòóïëåíèÿ ïî óøèðåíèþ');
+    // SabLog('GUsh - Определение Отс, степен, величина откл., нач. и конеч. коорд. отступления по уширению');
 
     piket1 := 0;
     piket2 := 0;
@@ -3349,7 +3349,7 @@ Begin
         WUsh[ns].Leng := Leng;
 
         ns := ns + 1;
-        // ñáðîñ ôëàãîâ
+        // сброс флагов
         flg4st := false;
         k3 := 0;
       end;
@@ -3371,7 +3371,7 @@ Begin
 end;
 
 // ------------------------------------------------------------------------------
-// Óøèðåíèå äëÿ 1 ñòåïåíè
+// Уширение для 1 степени
 // ------------------------------------------------------------------------------
 procedure GUsh_1;
 var
@@ -3437,7 +3437,7 @@ Begin
       continue;
     end;
 
-    if (k3 > 3) then
+    if (k3 > 1) then
     begin
       fdBroad := fdBroad + (k3 div 4);
       if k3 mod 4 > 0 then
@@ -3447,10 +3447,6 @@ Begin
       WUsh[ns].st := 1;
       WUsh[ns].bel := fff; // max4;
       WUsh[ns].val := max4;
-
-
-
-
       WUsh[ns].L0 := L04;
       WUsh[ns].Lm := Lm4;
       WUsh[ns].v := vt;
@@ -3496,7 +3492,7 @@ var
 
 Begin
   Try
-    // SabLog('Gurv - Îïðåäåëåíèå Îòñ, ñòåïåí, âåëè÷èíà îòêë., íà÷. è êîíå÷. êîîðä. îòñòóïëåíèÿ ïî óøèðåíèþ');
+    // SabLog('Gurv - Определение Отс, степен, величина откл., нач. и конеч. коорд. отступления по уширению');
     Setlength(WUsh, 3000);
     i := 0;
     k := 0;
@@ -3563,7 +3559,7 @@ Begin
           xxxx:= ((L0v div 100) mod 1000) div 100 + 1;
 
           WRT_UBEDOM(L0v, Lmv, 4,
-          'Ó ' + Inttostr(max4) + ' ïê' + inttostr(xxxx) + ' v=' + inttostr(ogranichenie1),
+          'У ' + Inttostr(max4) + ' пк' + inttostr(xxxx) + ' v=' + inttostr(ogranichenie1),
           Inttostr(max4),inttostr(ogranichenie1),inttostr(ogranichenie1)); //FormatFloat('0.00',max4)
           end;
           end; }
@@ -3576,11 +3572,11 @@ Begin
           xxxx:= ((L0v div 100) mod 1000) div 100 + 1;
 
           WRT_UBEDOM(L0v, Lmv, 4,
-          'Ó v=' + v_shekti(v1, v1)+ ' ïê' + inttostr(xxxx), v1, v1); //FormatFloat('0.00',max4)
+          'У v=' + v_shekti(v1, v1)+ ' пк' + inttostr(xxxx), v1, v1); //FormatFloat('0.00',max4)
           end;
           end; }
         ns := ns + 1;
-        // ñáðîñ ôëàãîâ
+        // сброс флагов
         flg4st := false;
 
       end;
@@ -3706,8 +3702,8 @@ begin
           WUsh[ns].prim := GlbTempTipRemontKm;
         ns := ns + 1;
 
-        WRT_UBEDOM(x4a, x4b, 4, 'V=' + V_shekti(v1, v2) + ' ïê' + inttostr(xxxx)
-          + ' Ó; ', v1, v2);
+        WRT_UBEDOM(x4a, x4b, 4, 'V=' + V_shekti(v1, v2) + ' пк' + inttostr(xxxx)
+          + ' У; ', v1, v2);
 
         k4 := 0;
       end;
@@ -3814,8 +3810,8 @@ begin
           WUsh[ns].prim := GlbTempTipRemontKm;
         ns := ns + 1;
 
-        WRT_UBEDOM(x4a, x4b, 4, 'V=' + V_shekti(v1, v2) + ' ïê' + inttostr(xxxx)
-          + ' Ó; ', v1, v2);
+        WRT_UBEDOM(x4a, x4b, 4, 'V=' + V_shekti(v1, v2) + ' пк' + inttostr(xxxx)
+          + ' У; ', v1, v2);
 
         k4 := 0;
       end;
@@ -3946,8 +3942,8 @@ begin
           WUsh[ns].prim := GlbTempTipRemontKm;
         ns := ns + 1;
 
-        WRT_UBEDOM(x4a, x4b, 4, 'V=' + V_shekti(v1, v2) + ' ïê' + inttostr(xxxx)
-          + ' Ó '+inttostr(WUsh[ns].Leng)+';  ', v1, v2);
+        WRT_UBEDOM(x4a, x4b, 4, 'V=' + V_shekti(v1, v2) + ' пк' + inttostr(xxxx)
+          + ' У '+inttostr(WUsh[ns].Leng)+';  ', v1, v2);
 
         k4 := 0;
       end;
@@ -4267,9 +4263,7 @@ begin
 
     i := j;
     // ---------------------------------------------
-
-    if (k4 > 19) then
-
+    if (k4 > delta_length) then
     begin
       for fi := i - k4 to i do
       begin
@@ -4283,19 +4277,14 @@ begin
 
         count := 1;
 
-
-        if (ln4 > 19) then
-
+        if (ln4 > 15) then
         begin
-          if ((ln4 - 20) mod 10) > 0 then
+          if ((ln4 - 15) mod 10) > 0 then
             bolshek10 := 1;
-
-          count := ((ln4 - 20) div 10) + bolshek10 + 1;
+          count := ((ln4 - 15) div 10) + bolshek10 + 1;
         end;
-          if (ln4 > 19) then
-        begin
-             pot_s2 := pot_s2 + count;
 
+        pot_s2 := pot_s2 + count;
 
         // bolshek10:= 0;
         // if ln2 mod 10 > 0 then bolshek10:= 1;
@@ -4318,15 +4307,6 @@ begin
         WUsh[ns].Vrg := Vrg;
         WUsh[ns].flg := false;
         ns := ns + 1;
-        end;
-
-
-
-
-        //end;
-
-
-
         x4a := 0;
         x4b := 0;
         k4 := 0;
@@ -4541,7 +4521,7 @@ end;
   if (v1 = -1) and (v2 = -1) then WUsh[ns].prim:= GlbTempTipRemontKm;
   ns:= ns + 1;
   //0909
-  WRT_UBEDOM(x4a, x4b, 4, 'Ó v=' + v_shekti(v1, v2) + ' ïê'+ inttostr(xxxx) ,v1,v2);
+  WRT_UBEDOM(x4a, x4b, 4, 'У v=' + v_shekti(v1, v2) + ' пк'+ inttostr(xxxx) ,v1,v2);
   //FormatFloat('0.00',max4)
   //            S4_comment(7, xxxx); //01.10.2012
   k4:= 0;
@@ -4555,7 +4535,7 @@ end;
   Setlength(WUsh,ns);
   end; }
 // ------------------------------------------------------------------------------
-// Uroven äëÿ 4 ñòåïåíè
+// Uroven для 4 степени
 // ------------------------------------------------------------------------------
 procedure GUroven_4;
 var
@@ -4577,7 +4557,7 @@ var
   maxmax: real;
 Begin
   Try
-    // SabLog('Gurv - Îïðåäåëåíèå Îòñ, ñòåïåí, âåëè÷èíà îòêë., íà÷. è êîíå÷. êîîðä. îòñòóïëåíèÿ ïî óøèðåíèþ');
+    // SabLog('Gurv - Определение Отс, степен, величина откл., нач. и конеч. коорд. отступления по уширению');
     Setlength(WUsh, 3000);
     i := 0;
     k := 0;
@@ -4608,7 +4588,7 @@ Begin
 
       if (Fh > s3) then
       begin
-        OtklUsh := Fh; // Îøèáêà íóëåâîé
+        OtklUsh := Fh; // Ошибка нулевой
 
         k3 := k3 + 1;
         if (k3 = 1) then
@@ -4646,12 +4626,12 @@ Begin
         Leng := round(abs(L04 - Lm4) / 100);
 
         { WRT_UBEDOM(L0v, Lmv, 4,
-          'Ó4 ïê' + inttostr(xxxx) + ' ' + Inttostr(max4) +'ìì ' + inttostr(leng) + 'ì v=' + inttostr(ogranichenie1)
+          'У4 пк' + inttostr(xxxx) + ' ' + Inttostr(max4) +'мм ' + inttostr(leng) + 'м v=' + inttostr(ogranichenie1)
           ,Inttostr(max4)+' ',inttostr(ogranichenie1),inttostr(ogranichenie1)); //FormatFloat('0.00',max4)
 
           S4_comment(7, xxxx); }
 
-        // ñáðîñ ôëàãîâ
+        // сброс флагов
         flg4st := false;
 
       end;
@@ -4684,7 +4664,7 @@ end;
 
 /// /////////////////////////////////////////////////////////////////////////////
 // ------------------------------------------------------------------------------
-// Uroven äëÿ 3 ñòåïåíè
+// Uroven для 3 степени
 // ------------------------------------------------------------------------------
 procedure GUroven_3;
 var
@@ -4715,7 +4695,7 @@ var
   xa, xb, count, bolshek, Leng, typev: integer;
 Begin
   Try
-    // SabLog('Gurv - Îïðåäåëåíèå Îòñ, ñòåïåí, âåëè÷èíà îòêë., íà÷. è êîíå÷. êîîðä. îòñòóïëåíèÿ ïî óøèðåíèþ');
+    // SabLog('Gurv - Определение Отс, степен, величина откл., нач. и конеч. коорд. отступления по уширению');
     k := 0;
     Setlength(WUsh, 3000);
     i := 0;
@@ -4794,12 +4774,12 @@ Begin
 
         xa := (L04 div 100) mod 1000;
         xb := (Lm4 div 100) mod 1000;
-        glb3 := glb3 + 'Ó(' + inttostr(xa) + 'ì,L-' +
-          floattostr(abs(xa - xb)) + 'ì) ';
+        glb3 := glb3 + 'У(' + inttostr(xa) + 'м,L-' +
+          floattostr(abs(xa - xb)) + 'м) ';
 
         // ------------------------------
 
-        // ñáðîñ ôëàãîâ
+        // сброс флагов
         flg4st := false;
       end;
       flg4st := false;
@@ -4822,7 +4802,7 @@ Begin
   end; // try
 end;
 // ------------------------------------------------------------------------------
-// Uroven äëÿ 3 ñòåïåíè
+// Uroven для 3 степени
 // ------------------------------------------------------------------------------
 { procedure GUroven_2;
   var
@@ -4842,7 +4822,7 @@ end;
   max_sum:integer;
   Begin
   Try
-  //SabLog('Gurv - Îïðåäåëåíèå Îòñ, ñòåïåí, âåëè÷èíà îòêë., íà÷. è êîíå÷. êîîðä. îòñòóïëåíèÿ ïî óøèðåíèþ');
+  //SabLog('Gurv - Определение Отс, степен, величина откл., нач. и конеч. коорд. отступления по уширению');
   //------------------------------------------------------------------------------
   if flg_urv then flguuu:= 1 else flguuu:=0;
 
@@ -4973,7 +4953,7 @@ end;
   count:= leng div 10 + bolshek;                                     //dlya plabnogo otkl 10 metr
   pot_s2:= pot_s2 + count;
   //------------------------------
-  //ñáðîñ ôëàãîâ
+  //сброс флагов
   flg4st:= false;
   end;
   flg4st:= false;
@@ -5027,7 +5007,7 @@ var
   xa, xb, count, bolshek, Leng, typev: integer;
 Begin
   Try
-    // SabLog('Gurv - Îïðåäåëåíèå Îòñ, ñòåïåí, âåëè÷èíà îòêë., íà÷. è êîíå÷. êîîðä. îòñòóïëåíèÿ ïî óøèðåíèþ');
+    // SabLog('Gurv - Определение Отс, степен, величина откл., нач. и конеч. коорд. отступления по уширению');
     // ------------------------------------------------------------------------------
 
     k := 0;
@@ -5103,7 +5083,7 @@ Begin
         count := Leng div 10 + bolshek; // dlya plabnogo otkl 10 metr
         pot_s2 := pot_s2 + count;
         // ------------------------------
-        // ñáðîñ ôëàãîâ
+        // сброс флагов
         flg4st := false;
       end;
       flg4st := false;
@@ -5127,7 +5107,7 @@ end;
 
 // ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
-// Uroven äëÿ 4 ñòåïåíè  äëÿ êîððåê.
+// Uroven для 4 степени  для коррек.
 // ------------------------------------------------------------------------------
 procedure GUroven_4_PaspData;
 var
@@ -5147,7 +5127,7 @@ var
   tmps: string;
 Begin
   Try
-    // SabLog('Gurv - Îïðåäåëåíèå Îòñ, ñòåïåí, âåëè÷èíà îòêë., íà÷. è êîíå÷. êîîðä. îòñòóïëåíèÿ ïî óøèðåíèþ');
+    // SabLog('Gurv - Определение Отс, степен, величина откл., нач. и конеч. коорд. отступления по уширению');
     i := 0;
     k := 0;
     max4 := 0;
@@ -5211,7 +5191,7 @@ Begin
         if (not GlbFlagRemontKm and (GlobPassSkorost > ogranichenie1)) or
           (GlbFlagRemontKm and (ogranichenie1 < GlobPassSkorost)) then
         begin
-          GlbCommentPaspData := 'Íå êîðð.ïàñïîðò';
+          GlbCommentPaspData := 'Не корр.паспорт';
           NecorrPasportFlag := true;
         end
         else
@@ -5257,7 +5237,7 @@ var
   fff, minf, Fhr: real;
 Begin
   Try
-    // SabLog('GetFsuj - Îïðåäåëåíèå Îòñ, ñòåïåí, âåëè÷èíà îòêë., íà÷. è êîíå÷. êîîðä. îòñòóïëåíèÿ ïî ñóææåíèþ');
+    // SabLog('GetFsuj - Определение Отс, степен, величина откл., нач. и конеч. коорд. отступления по сужжению');
     ogranichenie1 := 140;
     cou_4st := 0;
     flg_add_ubed := false;
@@ -5339,8 +5319,8 @@ Begin
           begin
             glbCount_suj4s := glbCount_suj4s + 1;
             xxxx := L0v div 100 + 1;
-            WRT_UBEDOM(L0v, Lmv, 4, 'V=0/0;' + inttostr(round(fff)) + ' ïê' +
-              inttostr(xxxx) + ' Ñóæ; ', 0, 0);
+            WRT_UBEDOM(L0v, Lmv, 4, 'V=0/0;' + inttostr(round(fff)) + ' пк' +
+              inttostr(xxxx) + ' Суж; ', 0, 0);
           end;
           // FormatFloat('0.00',belv)  FormatFloat('0.00',fff) Inttostr(fff)
           // S4_comment(2, xxxx); //01.10.2012
@@ -5381,7 +5361,7 @@ var
 Begin
   Try
     if Flag_sablog then
-      sablog('GetFsuj - Îïðåäåëåíèå Îòñ, ñòåïåí, âåëè÷èíà îòêë., íà÷. è êîíå÷. êîîðä. îòñòóïëåíèÿ ïî ñóææåíèþ');
+      sablog('GetFsuj - Определение Отс, степен, величина откл., нач. и конеч. коорд. отступления по сужжению');
     // ------------------------------------------------------------------------------
     cou_4st := 0;
     flg_add_ubed := false;
@@ -5397,7 +5377,7 @@ Begin
         MTmp[k].Nrm := round(F0_Sh[i]); // F_Norm[i];
         MTmp[k].f0 := F0_Sh[i];
         MTmp[k].Rad := Prds[i];
-        // åñëè øïàë äî 2005 ãîäà 1524 áåðåì êàê 1520
+        // если шпал до 2005 года 1524 берем как 1520
         MTmp[k].Shpal := Shp[i];
         if (Shp[i] = 0) then
           MTmp[k].Nrm := 1520;
@@ -5473,7 +5453,7 @@ Begin
         Lmv := Lm4;
         Leng := abs(L04 - Lm4);
         // ogranichenie1 := V_ogr_suj(Nms1, round(fff));
-        // ñáðîñ ôëàãîâ
+        // сброс флагов
         flg4st := false;
         flg_add_ubed := true;
 
@@ -5510,8 +5490,8 @@ Begin
           begin
             glbCount_suj4s := glbCount_suj4s + 1;
             xxxx := L0v div 100 + 1;
-            WRT_UBEDOM(L0v, Lmv, 4, 'V=' + V_shekti(v1, v2) + ' ïê' +
-              inttostr(xxxx) + ' Ñóæ '+ inttostr( WSuj[ns].Leng)+';  ', v1, v2);
+            WRT_UBEDOM(L0v, Lmv, 4, 'V=' + V_shekti(v1, v2) + ' пк' +
+              inttostr(xxxx) + ' Суж '+ inttostr( WSuj[ns].Leng)+';  ', v1, v2);
           end;
 
           // FormatFloat('0.00',belv)  FormatFloat('0.00',fff)
@@ -5545,7 +5525,7 @@ var
 Begin
   Try
     if Flag_sablog then
-      sablog('GetFsuj2 - Îïðåäåëåíèå Îòñ, ñòåïåí, âåëè÷èíà îòêë., íà÷. è êîíå÷. êîîðä. îòñòóïëåíèÿ ïî ñóææåíèþ');
+      sablog('GetFsuj2 - Определение Отс, степен, величина откл., нач. и конеч. коорд. отступления по сужжению');
     // ------------------------------------------------------------------------------
     // Setlength(WSuj,3000);
     i := 0;
@@ -5571,7 +5551,7 @@ Begin
 
       Nms1 := round(F0_Sh[i]);
 
-      // åñëè øïàë äî 2005 ãîäà 1524 áåðåì êàê 1520
+      // если шпал до 2005 года 1524 берем как 1520
       // if (Shp[i] = 0) and (Nms1 = 1524) then
       // Nms1 := 1520;
 
@@ -5689,7 +5669,7 @@ var
 Begin
   Try
     if Flag_sablog then
-      sablog('GetFsuj3 - Îïðåäåëåíèå Îòñ, ñòåïåí, âåëè÷èíà îòêë., íà÷. è êîíå÷. êîîðä. îòñòóïëåíèÿ ïî ñóææåíèþ');
+      sablog('GetFsuj3 - Определение Отс, степен, величина откл., нач. и конеч. коорд. отступления по сужжению');
     // ------------------------------------------------------------------------------
     i := 0;
     k := 0;
@@ -5808,7 +5788,7 @@ var
 Begin
   Try
 
-    // SabLog('GetFsuj - Îïðåäåëåíèå Îòñ, ñòåïåí, âåëè÷èíà îòêë., íà÷. è êîíå÷. êîîðä. îòñòóïëåíèÿ ïî ñóææåíèþ');
+    // SabLog('GetFsuj - Определение Отс, степен, величина откл., нач. и конеч. коорд. отступления по сужжению');
     // ------------------------------------------------------------------------------
     Setlength(WSuj, 3000);
     i := 0;
@@ -6048,7 +6028,7 @@ var
   xxxx: integer;
 Begin
   Try
-    // SabLog('GetFpro - Îïðåäåëåíèå Îòñ, ñòåïåíè, âåëè÷èíà îòêë., íà÷. è êîíå÷. êîîðä. îòñòóïëåíèÿ ïî ïðîñàäêå');
+    // SabLog('GetFpro - Определение Отс, степени, величина откл., нач. и конеч. коорд. отступления по просадке');
 
     ns := 0;
     kk := PasGruzSkor;
@@ -6112,7 +6092,7 @@ Begin
 
             if not ProberkaNaStrelku(L0 div 100,7) then begin
             if shekteu(L0v div 100 , Lmv div 100, ogranichenie1) then
-            WRT_UBEDOM(L0v, Lmv, 4 , 'Ïð4', Inttostr(belv)+' '+ inttostr(pik), inttostr(ogranichenie1),inttostr(ogranichenie1));   //FormatFloat('0.00',belv)
+            WRT_UBEDOM(L0v, Lmv, 4 , 'Пр4', Inttostr(belv)+' '+ inttostr(pik), inttostr(ogranichenie1),inttostr(ogranichenie1));   //FormatFloat('0.00',belv)
 
             end; }
 
@@ -6136,11 +6116,11 @@ end;
 
 
 // ------------------------------------------------------------------------------
-// Íîâàÿ ïðîöåäóðà Ïðîñàäêè 11-09-2010
+// Новая процедура Просадки 11-09-2010
 // ------------------------------------------------------------------------------
 
 // ------------------------------------------------------------------------------
-// Íîâàÿ ïðîöåäóðà Ïðîñàäêè 12-09-2010
+// Новая процедура Просадки 12-09-2010
 // ------------------------------------------------------------------------------
 function GetExtremum(Fm: mas; start, final: integer): Extremum;
 var
@@ -6241,8 +6221,8 @@ begin
 
                       WRih[ns].isriht := isriht;
 
-              if not(isriht) and (not(WRih[ns].prim.Contains('ðí;'))) then
-        WRih[ns].prim := WRih[ns].prim + 'ðí;';
+              if not(isriht) and (not(WRih[ns].prim.Contains('рн;'))) then
+        WRih[ns].prim := WRih[ns].prim + 'рн;';
 
 
 
@@ -6304,7 +6284,7 @@ begin
         WRih[ns].prim := '';
         WRih[ns].isLong := temp[tempIndex].isLong;
 
-        // áëèçêèå ê 3 ñòåïåíè íà èçîñòûêå
+        // близкие к 3 степени на изостыке
         Ln2:=round(Ln);
 
 
@@ -6362,7 +6342,7 @@ begin
       end;
            if (belv/abs(L0v-Lmv)>5) then
       begin
-        // WRih[ns].prim := WRih[ns].prim + 'ÑáÐèõò';
+        // WRih[ns].prim := WRih[ns].prim + 'СбРихт';
       end;
 
 
@@ -6410,7 +6390,7 @@ begin
         if GlbFlagRemontKm and (v2 >= Vrg) and (0 <= Vrg) and (RemTab9 = 0) then
           v2 := -1;
 
-        // Åñëè ðèõòîâêà 3 ñòåï è Ò+ è áåññòûê ïóñòü òî íå îãðàíè÷èâàåì (ðàíüøå îãðàíè÷èâàëè 615)
+        // Если рихтовка 3 степ и Т+ и бесстык пусть то не ограничиваем (раньше ограничивали 615)
         if ((stv = 3) and (jointless)) then
         begin
           v1 := -1;
@@ -6422,10 +6402,10 @@ begin
             WRih[ns].onswitch := ProberkaNaStrelku(StartStr,  FinshStr  , 1);
 
            if (not( ProberkaNaStrelku(L0v, L0v + Ln, 1)) and  not(isriht) )then
-            comment:='V=' + V_shekti(v1, v2)+'ïê'+inttostr(xxxx)+' Ðíð '+inttostr(belv) +'/'+ inttostr(2*Ln)+ '; ' ;
+            comment:='V=' + V_shekti(v1, v2)+'пк'+inttostr(xxxx)+' Рнр '+inttostr(belv) +'/'+ inttostr(2*Ln)+ '; ' ;
 
 
-        if (isriht) then comment := 'V=' + V_shekti(v1, v2) + ' ïê' + inttostr(xxxx) + ' Ð '+inttostr(belv) + '/' + inttostr(2*Ln) + '; ' ;
+        if (isriht) then comment := 'V=' + V_shekti(v1, v2) + ' пк' + inttostr(xxxx) + ' Р '+inttostr(belv) + '/' + inttostr(2*Ln) + '; ' ;
 
 
             if  (stv=4)and (comment<> '') then
@@ -6466,7 +6446,7 @@ begin
         if (v1 = -1) and (v2 = -1) then
           WRih[ns].prim := GlbTempTipRemontKm;
         if not(isriht) then
-          WRih[ns].prim := WRih[ns].prim + 'ðí;';
+          WRih[ns].prim := WRih[ns].prim + 'рн;';
         if (jointless) then
         begin
           // WRih[ns].prim := WRih[ns].prim + 't+;';
@@ -6512,12 +6492,12 @@ begin
 
                if (iso_joint )then
       begin
-        WPro[ns].prim := WPro[ns].prim + 'èñ';
+        WPro[ns].prim := WPro[ns].prim + 'ис';
       end;
       if ((iso_joint )and (belv >=18 ))then
       begin
              WPro[ns].prim := '';
-        WPro[ns].prim := WPro[ns].prim + 'èñ?; ';
+        WPro[ns].prim := WPro[ns].prim + 'ис?; ';
       end;
 
 
@@ -6548,12 +6528,12 @@ begin
     begin
       stv := 2;
       pro_s2 := pro_s2 + 1;
-      if nt = 'ï' then
+      if nt = 'п' then
       begin
         pro1_s2 := pro1_s2 + 1;
         GetV_Remont(4, L0v, Lmv, vt, vtg, belv);
       end;
-      if nt = 'ë' then
+      if nt = 'л' then
       begin
         pro2_s2 := pro2_s2 + 1;
         GetV_Remont(5, L0v, Lmv, vt, vtg, belv);
@@ -6569,12 +6549,12 @@ begin
       if (not(iso_joint)) then
       begin
         pro_s3 := pro_s3 + 1;
-        if nt = 'ï' then
+        if nt = 'п' then
         begin
           pro1_s3 := pro1_s3 + 1;
           GetV_Remont(4, L0v, Lmv, vt, vtg, belv);
         end;
-        if nt = 'ë' then
+        if nt = 'л' then
         begin
           pro2_s3 := pro2_s3 + 1;
           GetV_Remont(5, L0v, Lmv, vt, vtg, belv);
@@ -6628,9 +6608,9 @@ begin
         if (v2 >= Vrg) then
           v2 := -1;
         // ogranichenie1:= V_ogr_UPP(belv, 1);
-        if nt = 'ï' then
+        if nt = 'п' then
           glbCount_1Pro4s := glbCount_1Pro4s + 1;
-        if nt = 'ë' then
+        if nt = 'л' then
           glbCount_2Pro4s := glbCount_2Pro4s + 1;
         // xxxx:= (((L0v + Lmv) div 200) mod 1000) div 100 + 1;
         xxxx := L0v div 100 + 1;
@@ -6655,8 +6635,8 @@ begin
          ots:= inttostr(belv)+'/'+inttostr(abs(L0v- Lmv)) ;
         if (V_shekti(v1, v2)<> '-/-')then
 
-        WRT_UBEDOM(L0v, Lmv, stv, 'V=' + V_shekti(v1, v2) + ' ïê' +
-          inttostr(xxxx) + ' Ïð.' + nt +ots+ ';  ', v1, v2);
+        WRT_UBEDOM(L0v, Lmv, stv, 'V=' + V_shekti(v1, v2) + ' пк' +
+          inttostr(xxxx) + ' Пр.' + nt +ots+ ';  ', v1, v2);
 
 
       end;
@@ -6806,7 +6786,7 @@ begin
   end;
 
 end;
-/// ////////  çàïèñü  ïåðåêîñîâ////////
+/// ////////  запись  перекосов////////
 
 procedure WriteTempOtsToPerOts(var temp: masots; pg: integer; D: real;
   nt: string; var ns: integer; var WPer: masots);
@@ -6848,7 +6828,7 @@ begin
     WPer[ns].prim := '';  //WPer
       //if iso_joint then
     ///  begin
-    //    WPer[ns].prim := WPer[ns].prim + 'èñ;';
+    //    WPer[ns].prim := WPer[ns].prim + 'ис;';
     //  end;
 
        // if (Fm[i] * Fm[i + 1] <= 0) then
@@ -6918,13 +6898,14 @@ begin
            comment_gr:= '';
            v1:=500;
            v2:=60;
-                      xxxx := L0v div 100 + 1;
-          WRT_UBEDOM(L0v, Lmv, stv, 'V=' + V_shekti(v1, v2)+ 'ïê' +
-          inttostr(xxxx) + 'Ï'+ots  +'ãð' +'; ', v1, v2);
-                    comment_gr:='ãð';
+                     xxxx := L0v div 100 + 1;
+
+          WRT_UBEDOM(L0v, Lmv, stv, 'V=' + V_shekti(v1, v2)+ 'пк' +
+          inttostr(xxxx) + 'П'+ots  +'гр' +'; ', v1, v2);
+                    comment_gr:='гр';
              // WPer[ns].prim comment_gr
-             //     WRT_UBEDOM(L0v, Lmv, stv, 'V=' + V_shekti(v1, v2) + ' ïê' +
-          //inttostr(xxxx) + ' Ï' + nt + '; ', v1, v2);
+             //     WRT_UBEDOM(L0v, Lmv, stv, 'V=' + V_shekti(v1, v2) + ' пк' +
+          //inttostr(xxxx) + ' П' + nt + '; ', v1, v2);
 
              ////
              end;
@@ -7032,9 +7013,9 @@ begin
         if (v2 >= Vrg) then
           v2 := -1;
         // ogranichenie1:= V_ogr_UPP(belv, 1);
-       // if nt = 'ï' then
+       // if nt = 'п' then
            // glbCount_Per4s  := glbCount_Per4s + 1;
-        //if nt = 'ë' then
+        //if nt = 'л' then
          glbCount_Per4s := glbCount_Per4s + 1;
         // xxx   glbCount_Per4s := 0;x:= (((L0v + Lmv) div 200) mod 1000) div 100 + 1;
         xxxx := L0v div 100 + 1;
@@ -7058,7 +7039,7 @@ begin
         ns := ns + 1;
         if V_shekti(v1, v2) <> '-/-'then
 
-        WRT_UBEDOM(L0v, Lmv, stv, 'V=' + V_shekti(v1, v2) + ' ïê' + inttostr(xxxx) + ' Ï'  +ots+ ';  ', v1, v2);
+        WRT_UBEDOM(L0v, Lmv, stv, 'V=' + V_shekti(v1, v2) + ' пк' + inttostr(xxxx) + ' П'  +ots+ ';  ', v1, v2);
       end;
     end;
     stv := 0;
@@ -7353,7 +7334,7 @@ end;
 
 // = = = = = = = = = = = = = = = = = = = = = = = = ============================================================================================================
 // ------------------------------------------------------------------------------
-// ïðîöåäóðà Ïåðåêîñà 12-09-2010
+// процедура Перекоса 12-09-2010
 // ------------------------------------------------------------------------------
 {procedure GetPerekos;
   const
@@ -7540,7 +7521,7 @@ end;
   ns:= ns + 1;
   //0909
   WRT_UBEDOM(L0v, Lmv, 4 ,
-  'Ï ï'+ inttostr(xxxx)+ ' v=' + v_shekti(v1, v2) + ';' , v1, v2); //FormatFloat('0.00',belv)
+  'П п'+ inttostr(xxxx)+ ' v=' + v_shekti(v1, v2) + ';' , v1, v2); //FormatFloat('0.00',belv)
 
 
   for j:= 0 to high(FmK) do begin
@@ -7571,7 +7552,7 @@ end;
   end;
   }
 // ------------------------------------------------------------------------------
-// Æàíà ïðîöåäóðà Ðèõòîâêà 13-08-2015
+// Жана процедура Рихтовка 13-08-2015
 // ------------------------------------------------------------------------------
 function CoordinateToReal(km, meter: integer): real;
 begin
@@ -7801,8 +7782,8 @@ begin
             filter := false;
             glbCount_Per4s := glbCount_Per4s + 1;
             xxxx := (L0v div 100) + 1;
-            comment := 'V=' + V_shekti(v1, v2) + ' ïê' + inttostr(xxxx)
-              + ' Ï; ';
+            comment := 'V=' + V_shekti(v1, v2) + ' пк' + inttostr(xxxx)
+              + ' П; ';
 
             WPer[ns].st := 4;
             WPer[ns].bel := belv;
@@ -7845,7 +7826,7 @@ begin
   end;
 end;
 
-// = = = = = = = = = = = = = = = = = = = = = = = = =       äëèííûå ïåðåêîñû
+// = = = = = = = = = = = = = = = = = = = = = = = = =       длинные перекосы
 
 procedure GetPerekosLong(Fm, Fm_sr, FmK: mas; var WPer: masots);
 const
@@ -8072,8 +8053,8 @@ begin
             filter := false;
             glbCount_Per4s := glbCount_Per4s + 1;
             xxxx := (L0v div 100) + 1;
-            comment := 'V=' + V_shekti(v1, v2) + ' ïê' + inttostr(xxxx)
-              + ' Ï; ';
+            comment := 'V=' + V_shekti(v1, v2) + ' пк' + inttostr(xxxx)
+              + ' П; ';
 
             WPer[ns].st := 4;
             WPer[ns].bel := belv;
@@ -8212,10 +8193,10 @@ Begin
             v2 := -1;
 
           xxxx := ((L0v div 100) mod 1000) div 100 + 1;
-          ots := 'V=' + V_shekti(v1, v2) + ' ïê' + inttostr(xxxx) + ' ÓÓ; ';
+          ots := 'V=' + V_shekti(v1, v2) + ' пк' + inttostr(xxxx) + ' УУ; ';
           WRT_UBEDOM(L0v, Lmv, 6, ots, v1, v2);
           // FormatFloat('0.00',belv)
-          wrt_baskalar('ÓÓ', '', Hn, L0 div 100, round(abs(L0 - Lm) / 100), 5,
+          wrt_baskalar('УУ', '', Hn, L0 div 100, round(abs(L0 - Lm) / 100), 5,
             0, vt, vtg, v1, v2, 1);
           GlbCountDGR := GlbCountDGR + 1;
         end;
@@ -8228,7 +8209,7 @@ Begin
 end;
 
 // ------------------------------------------------------------------------------
-// ñ ïîìîùüþ ïðîöåäóðû óøèðåíèÿ
+// с помощью процедуры уширения
 // ------------------------------------------------------------------------------
 function IndexV(Pv, v: integer): integer;
 var
@@ -8668,7 +8649,7 @@ end;
 // WRih[ns].Vrg := Vrg;
 // WRih[ns].flg := GlbFlagRihtUbed;
 // WRih[ns].prim := '';
-// //áëèçêèå ê 3 ñòåïåíè íà èçîñòûêå
+// //близкие к 3 степени на изостыке
 //
 //
 //
@@ -8764,8 +8745,8 @@ end;
 // rih_s3 := rih_s3 + 1;
 // rih1_s3 := rih1_s3 + 1;
 // end;
-// if not(isriht) and (not(WRih[ns].prim.Contains('ðí;'))) then
-// WRih[ns].prim:=WRih[ns].prim + 'ðí;';
+// if not(isriht) and (not(WRih[ns].prim.Contains('рн;'))) then
+// WRih[ns].prim:=WRih[ns].prim + 'рн;';
 // if (jointless) and (not(WRih[ns].prim.Contains('t+;'))) then
 // begin
 // WRih[ns].prim := WRih[ns].prim + 't+;';
@@ -8818,7 +8799,7 @@ end;
 // v2 := -1;
 //
 // xxxx := (L0v div 100) + 1;
-// comment := 'Ð ï' + inttostr(xxxx) + ' v=' +
+// comment := 'Р п' + inttostr(xxxx) + ' v=' +
 // V_shekti(v1, v2) + ';';
 //
 // WRih[ns].st := stv;
@@ -8843,7 +8824,7 @@ end;
 // if (v1 = -1) and (v2 = -1) then
 // WRih[ns].prim := GlbTempTipRemontKm;
 // if not(isriht) then
-// WRih[ns].prim := WRih[ns].prim +'ðí;';
+// WRih[ns].prim := WRih[ns].prim +'рн;';
 // if (jointless) then
 // begin
 // WRih[ns].prim := WRih[ns].prim + 't+;';
@@ -8897,7 +8878,7 @@ var
   i: integer;
   s3: integer;
 begin
-  // ïðèñâàèâàåì ãðàíèöû ñòåïåíåé
+  // присваиваем границы степеней
   OpredelenieOgr_Skorosti := 6;
   for i := 1 to 6 do
   begin
@@ -8918,7 +8899,7 @@ var
   i: integer;
   s3: integer;
 begin
-  // ïðèñâàèâàåì ãðàíèöû ñòåïåíåé
+  // присваиваем границы степеней
   OpredelenieOgr_SkorostiPro := 6;
   for i := 1 to 6 do
   begin
@@ -8938,7 +8919,7 @@ var
   i, j: integer;
   s3: integer;
 begin
-  // ïðèñâàèâàåì ãðàíèöû ñòåïåíåé
+  // присваиваем границы степеней
   OpredelenieOgr_SkorostiPer := 6;
   for i := 1 to 6 do
   begin
@@ -8960,7 +8941,7 @@ var
   i, j, v: integer;
   s2: real;
 begin
-  // ïðèñâàèâàåì ãðàíèöû ñòåïåíåé
+  // присваиваем границы степеней
 
   // DeltaR(Ln, GlobPassSkorost,2)
   j := 6;
@@ -8989,7 +8970,7 @@ var
   i: integer;
   s3: integer;
 begin
-  // ïðèñâàèâàåì ãðàíèöû ñòåïåíåé
+  // присваиваем границы степеней
   OpredelenieOgr_SkorostiUsh := 5;
 
   for i := 1 to 4 do
@@ -9034,7 +9015,7 @@ var
   i: integer;
   s3: integer;
 begin
-  // ïðèñâàèâàåì ãðàíèöû ñòåïåíåé
+  // присваиваем границы степеней
 
   OpredelenieOgr_SkorostiSuj := 5;
 
@@ -9056,7 +9037,7 @@ var
   i: integer;
   s3: integer;
 begin
-  // ïðèñâàèâàåì ãðàíèöû ñòåïåíåé
+  // присваиваем границы степеней
 
   OpredelenieOgr_SkorostiRem_Uroben := 4;
 
@@ -9079,7 +9060,7 @@ var
   i: integer;
   s3: integer;
 begin
-  // ïðèñâàèâàåì ãðàíèöû ñòåïåíåé
+  // присваиваем границы степеней
 
   OpredelenieOgr_SkorostiSuj_Uroben := 6;
 
@@ -9101,7 +9082,7 @@ var
   i: integer;
   s2: integer;
 begin
-  // ïðèñâàèâàåì ãðàíèöû ñòåïåíåé
+  // присваиваем границы степеней
 
   Most_Tonnel_Skorosti_Uroben := 6;
 
@@ -9124,7 +9105,7 @@ var
   i: integer;
   s2: integer;
 begin
-  // ïðèñâàèâàåì ãðàíèöû ñòåïåíåé
+  // присваиваем границы степеней
 
   Most_Tonnel_Skorosti_Prosadka := 6;
 
@@ -9147,7 +9128,7 @@ var
   i: integer;
   s2: integer;
 begin
-  // ïðèñâàèâàåì ãðàíèöû ñòåïåíåé
+  // присваиваем границы степеней
 
   Most_Tonnel_Skorosti_Perekos := 6;
 
@@ -9170,7 +9151,7 @@ var
   i: integer;
   s2: integer;
 begin
-  // ïðèñâàèâàåì ãðàíèöû ñòåïåíåé
+  // присваиваем границы степеней
 
   Most_Tonnel_Skorosti_Rihtovka := 6;
 
@@ -9377,7 +9358,7 @@ begin
 end;
 
 // =========================================
-procedure SaveToUvedomlenie; // Çàïèñü â òàáëèöó Óâåäîìëåíèÿ
+procedure SaveToUvedomlenie; // Запись в таблицу Уведомления
 begin
   with MainDataModule.spAddUbemDat do
   begin

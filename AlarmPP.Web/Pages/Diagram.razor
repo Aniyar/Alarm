@@ -218,7 +218,7 @@
                         </MatFAB>
                     </MatTooltip>
                     <MatTooltip Tooltip="Просмотр видео" Wrap="true">
-                        <MatFAB Mini="true" Style="font-size: 150%; box-shadow: none;" OnClick="@(_ => { AppData.ShowVideo = !AppData.ShowVideo;  })">📹</MatFAB>
+                        <MatFAB Mini="true" Style="font-size: 150%; box-shadow: none;" OnClick="@(_ => SetShowStatus(Services.ShowButtons.Video))">📹</MatFAB>
                     </MatTooltip>
                     @if (AppData.Trip.Processed == true)
                     {
