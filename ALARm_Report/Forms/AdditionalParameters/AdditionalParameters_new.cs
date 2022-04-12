@@ -559,7 +559,7 @@ namespace ALARm_Report.Forms
                 Dr.Add(0.0);
                 Dl.Add (0.0);
             }
-                var connection = new Npgsql.NpgsqlConnection("Host=DESKTOP-EMAFC5J;Username=postgres;Password=alhafizu;Database=railway");
+                var connection = new Npgsql.NpgsqlConnection("Host=DESKTOP-EMAFC5J;Username=postgres;Password=alhafizu;Database=railway_comp");
             var ShortData = connection.Query<DataFlow>($@"SELECT * FROM testdata_242 where km = {number}  ORDER BY  meter  ").ToList();
 
             var shortl = ShortData.Select(o => o.Diff_l / 8.0 < 1 / 8.0 ? 0 : o.Diff_l / 10.0).ToList();
@@ -708,9 +708,11 @@ namespace ALARm_Report.Forms
 
                 }
 
-                var koef_long = 0.15;
-                var koef_medium = 0.15;
-                var koef_short = 0.15;
+
+                // Коэфиценты увеличены с 0.15 до 1.15
+                var koef_long = 1.15;
+                var koef_medium = 1.15;
+                var koef_short = 1.15;
 
                 LongWavesLeft.Add(l * koef_long);
                 MediumWavesLeft.Add(m * koef_medium);
@@ -847,7 +849,7 @@ namespace ALARm_Report.Forms
         {
             var trip_id = "242";
             
-            var cs = "Host=DESKTOP-EMAFC5J;Username=postgres;Password=alhafizu;Database=railway";
+            var cs = "Host=DESKTOP-EMAFC5J;Username=postgres;Password=alhafizu;Database=railway_comp";
             var con = new NpgsqlConnection(cs);
             con.Open();
 
@@ -889,7 +891,7 @@ namespace ALARm_Report.Forms
         {
             var trip_id = 242;
 
-            var cs = "Host=DESKTOP-EMAFC5J;Username=postgres;Password=alhafizu;Database=railway";
+            var cs = "Host=DESKTOP-EMAFC5J;Username=postgres;Password=alhafizu;Database=railway_comp";
 
             var con = new NpgsqlConnection(cs);
             con.Open();

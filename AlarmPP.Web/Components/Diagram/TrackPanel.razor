@@ -188,7 +188,7 @@
                 <DgTitleCol X="@(AppData.HeadWear45LeftPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Износ 45° Л." ShowValue="true" Value="@AppData.Data[(int)Services.Series.HeadWear45Left]"></DgTitleCol>
                 <DgTitleCol X="@(AppData.HeadWear45RightPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Износ 45° Пр." ShowValue="true" Value="@AppData.Data[(int)Services.Series.HeadWear45Right]"></DgTitleCol>
 
-                <!--<DgTitleCol X="@(AppData.ShortwavesLeftPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Кор. Волны Л." ShowValue="true" Value="@AppData.Data[(int)Services.Series.ShortWavesleft]"></DgTitleCol>
+                <DgTitleCol X="@(AppData.ShortwavesLeftPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Кор. Волны Л." ShowValue="true" Value="@AppData.Data[(int)Services.Series.ShortWavesleft]"></DgTitleCol>
                 <DgTitleCol X="@(AppData.ShortwavesRightPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Кор. Волны Пр." ShowValue="true" Value="@AppData.Data[(int)Services.Series.ShortWavesright]"></DgTitleCol>
 
                 <DgTitleCol X="@(AppData.MediumwavesleftPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Сред. Волны Л." ShowValue="true" Value="@AppData.Data[(int)Services.Series.MediumWavesleft]"></DgTitleCol>
@@ -200,7 +200,7 @@
                
                 ///ИМПУЛЬСЫ
                 <DgTitleCol X="@(AppData.ImpulsesLeftPosition)" Width="@AppData.ImpWidth" Heigth="@AppData.TitleRowHeigth" Title="Импульс Л." ShowValue="true" Value="@AppData.Data[(int)Services.Series.ImpulsLeft]"></DgTitleCol>
-                <DgTitleCol X="@(AppData.ImpulsesRightPosition)" Width="@AppData.ImpWidth" Heigth="@AppData.TitleRowHeigth" Title="Импульс Пр." ShowValue="true" Value="@AppData.Data[(int)Services.Series.ImpulsRight]"></DgTitleCol>-->
+                <DgTitleCol X="@(AppData.ImpulsesRightPosition)" Width="@AppData.ImpWidth" Heigth="@AppData.TitleRowHeigth" Title="Импульс Пр." ShowValue="true" Value="@AppData.Data[(int)Services.Series.ImpulsRight]"></DgTitleCol>
                 @*<DgTitleCol X="@(AppData.ImpulsesRightPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Импульс ЛВ Пр." ShowValue="true" Value="@AppData.Data[(int)Services.Series.ImpulsesRight]"></DgTitleCol>*@
             }
             catch (Exception e)
@@ -494,7 +494,7 @@
                 <polyline transform="translate(@(AppData.HeadWear45LeftPosition), @y)" fill="none" stroke-width="0.5" stroke="black" points="@kilometer.HeadWear45Left"></polyline>
                 <polyline transform="translate(@(AppData.HeadWear45RightPosition ), @y)" fill="none" stroke-width="0.5" stroke="black" points="@kilometer.HeadWear45Right"></polyline>
 
-                @*<polyline transform="translate(@(AppData.ShortwavesLeftPosition  ), @y)" fill="none" stroke-width="0.5" stroke="black" points="@kilometer.ShortwavesLeft"></polyline>
+                <polyline transform="translate(@(AppData.ShortwavesLeftPosition  ), @y)" fill="none" stroke-width="0.5" stroke="black" points="@kilometer.ShortwavesLeft"></polyline>
                 <polyline transform="translate(@(AppData.ShortwavesRightPosition  ), @y)" fill="none" stroke-width="0.5" stroke="black" points="@kilometer.ShortwavesRight"></polyline>
 
                 <polyline transform="translate(@(AppData.MediumwavesleftPosition  ), @y)" fill="none" stroke-width="0.5" stroke="black" points="@kilometer.MediumwavesLeft"></polyline>
@@ -523,7 +523,7 @@
                         <line transform="translate(0, @y)" stroke="red" stroke-width="3" x2="@(AppData.ImpulsesLeftPosition+ AppData.WearWidth/2) " x1="@(AppData.ImpulsesLeftPosition + AppData.WearWidth/2 - (int)(imp.Implen_left * GapKoef /5))" y1="@(index + (int)kilometer.Direction * imp.Meter)" y2="@(index + (int)kilometer.Direction * imp.Meter)"></line>
                         <line transform="translate(0, @y)" stroke="red" stroke-width="3" x2="@(AppData.ImpulsesRightPosition + AppData.WearWidth/2)" x1="@(AppData.ImpulsesRightPosition + AppData.WearWidth/2 - (int)(imp.Implen_Right * GapKoef/5))" y1="@(index + (int)kilometer.Direction * imp.Meter)" y2="@(index + (int)kilometer.Direction * imp.Meter)"></line>
                     }
-                }*@
+                }
                 @*<polyline transform="translate(@(AppData.ImpulsesRightPosition ), @y)" fill="none" stroke-width="0.5" stroke="black" points="@kilometer.ImpulsesRight"></polyline>*@
 
             }

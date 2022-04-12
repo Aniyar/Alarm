@@ -26,7 +26,7 @@ namespace AlarmPP.Web.Components.Diagram
         [Parameter]
         public double CurrentPosition { get; set; } = 0;
         // double SliderXPosition = 0, SliderCenterXPosition = 25, SliderYPosition=0;
-        private int Width { get; set; } = 3000;
+        private int Width { get; set; } = 4000;
         double ScrollLeft = 0;
         double ScrollTop = 0;
       
@@ -94,7 +94,7 @@ namespace AlarmPP.Web.Components.Diagram
                 //AppData.CurrentFrameIndex++;
 
                 var outdatas     = RdStructureRepository.GetNextOutDatas(AppData.Meter, 100, AppData.Trip.Id);
-                //var profileDatas = RdStructureRepository.GetNextProfileDatas(AppData.ProfileMeter, 100, AppData.Trip.Id);
+                var profileDatas = RdStructureRepository.GetNextProfileDatas(AppData.ProfileMeter, 100, AppData.Trip.Id);
 
             
 

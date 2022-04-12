@@ -276,7 +276,6 @@ namespace AlarmPP.Web.Pages
                     {
                         AppData.DigressionChecked = true;
                         AppData.ShowDigressions = true;
-
                     }
                     else
                     {
@@ -345,9 +344,9 @@ namespace AlarmPP.Web.Pages
                     RdStructureRepository.SetButtonStatus(ShowButtons.RailProfile.ToString(), AppData.ShowRailProfile);
 
                     if (AppData.ShowRailProfile)
-                        AppData.DigressionChecked = true;
+                        AppData.AddDigressionChecked = true;
                     else
-                        AppData.DigressionChecked = false;
+                        AppData.AddDigressionChecked = false;
                     break;
                 case ShowButtons.Video:
                     AppData.ShowVideo = !AppData.ShowVideo;
@@ -468,6 +467,7 @@ namespace AlarmPP.Web.Pages
                     break;
                 case ShowButtons.PU:
                     AppData.ShowPU = !AppData.ShowPU;
+                    RdStructureRepository.SetButtonStatus(ShowButtons.PU.ToString(), AppData.ShowPU);
                     if (AppData.ShowPU)
                         AppData.AddDigressionChecked = true;
                     else
@@ -483,6 +483,7 @@ namespace AlarmPP.Web.Pages
                     break;
                 case ShowButtons.LongWaves:
                     AppData.ShowLongWaves = !AppData.ShowLongWaves;
+                    RdStructureRepository.SetButtonStatus(ShowButtons.LongWaves.ToString(), AppData.ShowLongWaves);
                     if (AppData.ShowLongWaves)
                         AppData.AddDigressionChecked = true;
                     else
@@ -490,6 +491,7 @@ namespace AlarmPP.Web.Pages
                     break;
                 case ShowButtons.MediumWaves:
                     AppData.ShowMediumWaves = !AppData.ShowMediumWaves;
+                    RdStructureRepository.SetButtonStatus(ShowButtons.MediumWaves.ToString(), AppData.ShowMediumWaves);
                     if (AppData.ShowMediumWaves)
                         AppData.AddDigressionChecked = true;
                     else
@@ -497,6 +499,7 @@ namespace AlarmPP.Web.Pages
                     break;
                 case ShowButtons.ShortWaves:
                     AppData.ShowShortWaves = !AppData.ShowShortWaves;
+                    RdStructureRepository.SetButtonStatus(ShowButtons.ShortWaves.ToString(), AppData.ShowShortWaves);
                     if (AppData.ShowShortWaves)
                         AppData.AddDigressionChecked = true;
                     else
@@ -504,6 +507,7 @@ namespace AlarmPP.Web.Pages
                     break;
                 case ShowButtons.IznosBok:
                     AppData.ShowIznosBok = !AppData.ShowIznosBok;
+                    RdStructureRepository.SetButtonStatus(ShowButtons.IznosBok.ToString(), AppData.ShowIznosBok);
                     if (AppData.ShowIznosBok)
                         AppData.AddDigressionChecked = true;
                     else
@@ -511,6 +515,7 @@ namespace AlarmPP.Web.Pages
                     break;
                 case ShowButtons.IznosPriv:
                     AppData.ShowIznosPriv = !AppData.ShowIznosPriv;
+                    RdStructureRepository.SetButtonStatus(ShowButtons.IznosPriv.ToString(), AppData.ShowIznosPriv);
                     if (AppData.ShowIznosPriv)
                         AppData.AddDigressionChecked = true;
                     else
@@ -518,6 +523,7 @@ namespace AlarmPP.Web.Pages
                     break;
                 case ShowButtons.IznosVert:
                     AppData.ShowIznosVert = !AppData.ShowIznosVert;
+                    RdStructureRepository.SetButtonStatus(ShowButtons.IznosVert.ToString(), AppData.ShowIznosVert);
                     if (AppData.ShowIznosVert)
                         AppData.AddDigressionChecked = true;
                     else
