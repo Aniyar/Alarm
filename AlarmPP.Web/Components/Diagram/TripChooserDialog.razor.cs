@@ -112,10 +112,11 @@ namespace AlarmPP.Web.Components.Diagram
                 //var profileDataList = RdStructureRepository.GetNextProfileDatasByKm(kilometer.Number, AppData.Trip.Id);
                 //kilometer.CrossRailProfile.ParseDBList(profileDataList, kilometer);
                 var DBcrossRailProfile = AdditionalParametersRepository.GetCrossRailProfileFromDBbyKm_forPPWEB(kilometer.Number, kilometer.Start_Index, kilometer.GetLength(), AppData.Trip.Id);
+
                 if (DBcrossRailProfile == null) continue;
 
                 //var DBcrossRailProfile = AdditionalParametersRepository.GetCrossRailProfileFromDBbyKm(kilometer.Number, AppData.Trip.Id);
-                //if (DBcrossRailProfile == null) continue;
+                if (DBcrossRailProfile == null) continue;
 
                 //var sortedData = DBcrossRailProfile.OrderByDescending(d => d.Meter).ToList();
                 //kilometer.CrossRailProfile = AdditionalParametersRepository.GetCrossRailProfileFromDBParse(sortedData);
