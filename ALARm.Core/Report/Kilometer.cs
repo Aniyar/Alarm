@@ -507,7 +507,7 @@ namespace ALARm.Core
                 km.GaugeCorrection.Add(outdata.gauge_correction);
                 km.Corrections.Add(outdata.correction);
 
-                if (profdatas[profindex] != null)
+                if (profdatas != null && profdatas[profindex] != null)
                 {
                     ShortWavesRight.Add(profdatas[profindex].Shortwavesright);
                     ShortWavesLeft.Add(profdatas[profindex].Shortwavesleft);
