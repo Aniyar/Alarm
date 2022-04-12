@@ -65,21 +65,7 @@ namespace AlarmPP.Web.Components.Diagram
                 MousePressed = false;
             }
         }
-        private static void SetTimer()
-        {
-            // Create a timer with a two second interval.
-            aTimer = new System.Timers.Timer(1000);
-            // Hook up the Elapsed event for the timer. 
-            //aTimer.Elapsed += OnTimedEventAsync;
-            aTimer.AutoReset = true;
-            aTimer.Enabled = true;
-        }
-
-        async Task AutoRefresh()
-        {
-            await Task.Delay(AppData.Speed * 10);
-            Refresh();
-        }
+        
 
         private async Task OnTimedEventAsync()
         {
@@ -96,7 +82,6 @@ namespace AlarmPP.Web.Components.Diagram
                 var outdatas     = RdStructureRepository.GetNextOutDatas(AppData.Meter, 100, AppData.Trip.Id);
                 var profileDatas = RdStructureRepository.GetNextProfileDatas(AppData.ProfileMeter, 100, AppData.Trip.Id);
 
-            
 
                 //foreach (var profileData in profileDatas)
                 //{
@@ -112,6 +97,7 @@ namespace AlarmPP.Web.Components.Diagram
                 //            AppData.CalibrConstRight = km.CrossRailProfile.DownhillRight.Any() ? km.CrossRailProfile.DownhillRight.Last().RadianToAngle().ToString("0.00").Replace(",", ".") : "0   ";
                 //            break;
                 //        }
+
                 //    }
                 //}
 

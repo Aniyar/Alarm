@@ -201,7 +201,8 @@
                 ///ИМПУЛЬСЫ
                 <DgTitleCol X="@(AppData.ImpulsesLeftPosition)" Width="@AppData.ImpWidth" Heigth="@AppData.TitleRowHeigth" Title="Импульс Л." ShowValue="true" Value="@AppData.Data[(int)Services.Series.ImpulsLeft]"></DgTitleCol>
                 <DgTitleCol X="@(AppData.ImpulsesRightPosition)" Width="@AppData.ImpWidth" Heigth="@AppData.TitleRowHeigth" Title="Импульс Пр." ShowValue="true" Value="@AppData.Data[(int)Services.Series.ImpulsRight]"></DgTitleCol>
-                @*<DgTitleCol X="@(AppData.ImpulsesRightPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Импульс ЛВ Пр." ShowValue="true" Value="@AppData.Data[(int)Services.Series.ImpulsesRight]"></DgTitleCol>*@
+
+                <DgTitleCol X="@(AppData.ImpulsesRightPosition)" Width="@AppData.WearWidth" Heigth="@AppData.TitleRowHeigth" Title="Импульс ЛВ Пр." ShowValue="true" Value="@AppData.Data[(int)Services.Series.ImpulsesRight]"></DgTitleCol>
             }
             catch (Exception e)
             {

@@ -361,13 +361,13 @@ namespace ALARm.Core.Report
             foreach (var longRails in longRailses)
             {
 
-                int start = longRails.Start_Km == kilometer.Number ? longRails.Start_M : y1 ;
-                int final = longRails.Final_Km == kilometer.Number ? longRails.Final_M : y2 ;
-            
+                int start = longRails.Start_Km == kilometer.Number ? longRails.Start_M : y1;
+                int final = longRails.Final_Km == kilometer.Number ? longRails.Final_M : y2;
+
                 result.Add(
                     new XElement("longRails",
-                    new XAttribute("y1", -y1 ),
-                    new XAttribute("y2", -y2 ))
+                    new XAttribute("y1", -y1),
+                    new XAttribute("y2", -y2))
                     );
             }
             //рисуем Изостыки
@@ -427,8 +427,8 @@ namespace ALARm.Core.Report
 
             foreach (var sw in switches)
             {
-               // if (kilometer.Number.ToDoubleCoordinate(Math.Max(kilometer.Start_m, kilometer.Final_m)) < Math.Max(sw.RealStartCoordinate, sw.RealFinalCoordinate))
-               //     continue;
+                // if (kilometer.Number.ToDoubleCoordinate(Math.Max(kilometer.Start_m, kilometer.Final_m)) < Math.Max(sw.RealStartCoordinate, sw.RealFinalCoordinate))
+                //     continue;
 
                 if (sw.Km == 711 && sw.Meter > 860 && sw.Meter < 900)
                 {
@@ -448,14 +448,14 @@ namespace ALARm.Core.Report
                     continue;
                 var txtX = -sw.Length / 2;
                 int ostryak = kilometer.Number == sw.Start_Km ? sw.Start_M : 0;
-                int end = kilometer.Number == sw.Final_Km ? sw.Final_M : sw.Start_M+ sw.Length;
+                int end = kilometer.Number == sw.Final_Km ? sw.Final_M : sw.Start_M + sw.Length;
 
-             
+
 
                 //Стрелка жогарыдан сызу
                 if (sw.Dir_Id == SwitchDirection.Reverse)
-                    //if (sw.Dir_Id == SwitchDirection.Direct)
-                    {
+                //if (sw.Dir_Id == SwitchDirection.Direct)
+                {
                     var temp = ostryak;
                     ostryak = end;
                     end = temp;
@@ -490,7 +490,7 @@ namespace ALARm.Core.Report
 
                 string points = null;
 
-                if (sw.Km == 711 && sw.Meter >860 && sw.Meter<900)
+                if (sw.Km == 711 && sw.Meter > 860 && sw.Meter < 900)
                 {
 
                 }
@@ -545,7 +545,7 @@ namespace ALARm.Core.Report
                     continue;
                 if (kilometer.Number.ToDoubleCoordinate(Math.Max(kilometer.Start_m, kilometer.Final_m)) < Math.Max(sw.RealStartCoordinate, sw.RealFinalCoordinate))
                     continue;
-               
+
 
 
                 int ostryak = kilometer.Number == sw.Start_Km ? sw.Start_M : 0;
@@ -745,14 +745,6 @@ namespace ALARm.Core.Report
 
                 try
                 {
-                    if (note.DigName == null)
-                    {
-                        note.DigName = "";
-                    }
-                    if (note.Comment == null)
-                    {
-                        note.Comment = "";
-                    }
                     if (note.DigName == DigressionName.PatternRetraction.Name)
                     {
                         note.DigName = note.DigName;
@@ -778,13 +770,13 @@ namespace ALARm.Core.Report
                             new XAttribute("points", $"188,-{ meter + 10} 195,-{ meter + 10} 195,-{note.Meter} 730,-{note.Meter}"),
                             new XAttribute("note1", $"{note.Note().Split(';')[0]}"),
                             new XAttribute("note2", note.Note().Split(';')[1])));
-                     
-                            usedTops.Add(meter + 10);
 
-                            usedTops.Add(meter);
+                        usedTops.Add(meter + 10);
 
-                       
-                       
+                        usedTops.Add(meter);
+
+
+
 
                     }
 
@@ -853,7 +845,7 @@ namespace ALARm.Core.Report
                                                      new XAttribute("fw", note.FontStyle())));
 
                         usedTops.Add(meter);
-                      //  usedTops.Add(meter);
+                        //  usedTops.Add(meter);
                         continue;
                     }
 
@@ -877,7 +869,7 @@ namespace ALARm.Core.Report
                         }
                         continue;
                     }
-                    if (note.Note().Contains("Стрелка")&& note.Meter > kilometer.Start_m)
+                    if (note.Note().Contains("Стрелка") && note.Meter > kilometer.Start_m)
                     {
                         digElements.Add(new XElement("rect",
                                                     new XAttribute("top", -meter - 9),
@@ -895,14 +887,14 @@ namespace ALARm.Core.Report
                         continue;
 
                     }
-                    if (note.DigName != null)
+                    if (note.DigName.Any())
                     {
                         if (note.DigName.Contains("Рнрст"))
                         {
                             continue;
                         }
                     }
-                    if (note.DigName != null && note.DigName.Contains("ПрУ"))
+                    if (note.DigName.Contains("ПрУ"))
                     {
                         digElements.Add(new XElement("m",
                                                      new XAttribute("top", -meter),
@@ -946,7 +938,7 @@ namespace ALARm.Core.Report
                     {
                         note.Km = note.Km;
                     }
-                    if (note.DigName != null && (note.DigName.Contains("Р+") || note.DigName.Contains("Рнр+")))
+                    if (note.DigName.Contains("Р+") || note.DigName.Contains("Рнр+"))
                     {
                         digElements.Add(new XElement("m",
                                                      new XAttribute("top", -meter),
@@ -1400,9 +1392,9 @@ namespace ALARm.Core.Report
                             }
                         }
                     }
-                    if (note.Km == 715 && note.Meter>371 && note.Meter <390)
+                    if (note.Km == 715 && note.Meter > 371 && note.Meter < 390)
                     {
-                        
+
                     }
 
                     string ogrSk = note.LimitSpeedToString(); ;
@@ -1432,19 +1424,13 @@ namespace ALARm.Core.Report
                             default: break;
                         }
                     }
-                    
+
                     var prim = note.Comment;
-                    if (prim == null)
+
+                    if (prim.Contains("гр"))
                     {
-                        prim = "";
+                        otherfourStepOgrCoun += 1;
                     }
-                    
-                        if ( prim.Contains("гр"))
-                        {
-                            otherfourStepOgrCoun += 1;
-                        }
-                    
-                   
                     //if (note.DigName.Contains("Рнрст"))
                     //{
                     //    note.DigName = "Рнр";
@@ -1637,8 +1623,8 @@ namespace ALARm.Core.Report
                                                      new XAttribute("x", 145),//выравниваем "Гр,ис,м,*" в одну линнию
                                                      new XAttribute("note", note.IsLong ? "*" : "")
                                                      ));
-                       
-                     
+
+
                         if (prim.Contains("ис") && prim.Contains("?"))
                         {
                             digElements.Add(new XElement("islong",
@@ -1689,7 +1675,7 @@ namespace ALARm.Core.Report
                                                  new XAttribute("x", 170),
                                                  //new XAttribute("x", 145),
                                                  new XAttribute("Meter", note.Meter),
-                                                 new XAttribute("note", note.Degree==1?"" : ogrSk),
+                                                 new XAttribute("note", note.Degree == 1 ? "" : ogrSk),
                                                  new XAttribute("fw", note.FontStyle())
                                 ));
                         }
@@ -1700,7 +1686,7 @@ namespace ALARm.Core.Report
                                                 new XAttribute("x", 170),
                                                 //new XAttribute("x", 145),
                                                 new XAttribute("Meter", note.Meter),
-                                                new XAttribute("note", "  "+"-/60"),
+                                                new XAttribute("note", "  " + "-/60"),
                                                 new XAttribute("fw", note.FontStyle())
                                ));
 

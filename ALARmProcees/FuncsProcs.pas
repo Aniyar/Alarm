@@ -4282,7 +4282,7 @@ begin
           if ((ln4 - 15) mod 10) > 0 then
             bolshek10 := 1;
           count := ((ln4 - 15) div 10) + bolshek10 + 1;
-        end;
+
 
         pot_s2 := pot_s2 + count;
 
@@ -4310,9 +4310,9 @@ begin
         x4a := 0;
         x4b := 0;
         k4 := 0;
+       end;
       end;
     end;
-
     v1 := -1;
     v2 := -1;
     i := i + 1;

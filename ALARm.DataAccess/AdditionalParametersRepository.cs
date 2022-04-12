@@ -1992,7 +1992,7 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
 	                            longwavesleft,
 	                            longwavesright,
 	                            iz_45_l,
-	                            iz_45_r,
+	                            iz_45_r
                                 imp_left,
                                 imp_right,
                                 implen_left,
