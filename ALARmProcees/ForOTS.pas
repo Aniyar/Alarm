@@ -4468,7 +4468,7 @@ BEGIN
     GUroven4(Furb1, F_mtr, F_urb_Per_sr, W1Pot);
     GUroven3(Furb1, F_mtr, F_urb_Per_sr, W1Pot);
     GUroven2(Furb1, F_mtr, F_urb_Per_sr, W1Pot);
-    GUroven1(Furb1, F_mtr, F_urb_Per_sr, W1Pot);
+    //GUroven1(Furb1, F_mtr, F_urb_Per_sr, W1Pot);
 
     ns := 0;
     Setlength(W1Rst, 3000);

@@ -578,7 +578,7 @@ namespace AlarmPP.Web.Services
                         if (km.IsPrinted)
                         {
                            
-                            //km.AdditionalDigressions = RdStructureRepository.GetAdditional(km.Number);
+                            km.AdditionalDigressions = RdStructureRepository.GetAdditional(km.Number);
                             km.Digressions = RdStructureRepository.GetDigressionMarks(Trip.Id, km.Number, km.Track_id, new int[] {1,2, 3, 4 });
                             km.CorrectionNotes = RdStructureRepository.GetCorrectionNotes(Trip.Id, km.Track_id, km.Number, coord, km.CorrectionValue);
                             km.Gaps = AdditionalParametersRepository.Check_gap_state(Trip.Id, 999);
@@ -587,7 +587,7 @@ namespace AlarmPP.Web.Services
                             km.DefShpals = AdditionalParametersRepository.Check_defshpal_state(Trip.Id, 999);
                             km.PerShpals = AdditionalParametersRepository.Check_ViolPerpen(Trip.Id);
 
-                            //km.Impuls = AdditionalParametersRepository.GetCrossRailProfileFromDBbyTripId(Trip.Id);
+                            km.Impuls = AdditionalParametersRepository.GetCrossRailProfileFromDBbyTripId(Trip.Id);
                             //km.direction_name = RdStructureService.Check_direction_name(Trip.Id);
 
                             //if (!km.CorrectionNotes.Any())
@@ -660,8 +660,8 @@ namespace AlarmPP.Web.Services
                             km.Fasteners = AdditionalParametersRepository.Check_badfastening_state(Trip.Id, 999);
                             km.DefShpals = AdditionalParametersRepository.Check_defshpal_state(Trip.Id, 999);
                             km.PerShpals = AdditionalParametersRepository.Check_ViolPerpen(Trip.Id);
-                            //km.AdditionalDigressions = RdStructureRepository.GetAdditional(km.Number);
-                            //km.Impuls = AdditionalParametersRepository.GetCrossRailProfileFromDBbyTripId(Trip.Id);
+                            km.AdditionalDigressions = RdStructureRepository.GetAdditional(km.Number);
+                            km.Impuls = AdditionalParametersRepository.GetCrossRailProfileFromDBbyTripId(Trip.Id);
                             //km.direction_name = RdStructureService.GetTracksOnTrip(Trip.Id);
                             Kilometers.Add(km);
 

@@ -1989,10 +1989,11 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
 	                            longwavesright,
 	                            iz_45_l,
 	                            iz_45_r
-                               -- imp_left,
-                              --  imp_right,
-                              --  implen_left,
-                              --  implen_right
+                                imp_left,
+                                imp_right,
+                                implen_left,
+                                implen_right
+                           
                             FROM
 	                            PUBLIC.profiledata_{trip_id}
                             WHERE
