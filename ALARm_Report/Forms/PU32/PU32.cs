@@ -1871,6 +1871,7 @@ namespace ALARm_Report.Forms
 			try
 			{
 				htReport.Save(Path.GetTempPath() + "/report-pu32.html");
+				htReport.Save($@"G:\form\G:\form\1.Основные и дополнительные параметры геометрии рельсовой колеи (ГРК)\4.Ведомость оценки состояния пути по ПЧ (ПУ-32 ).html");
 
 			}
 			catch

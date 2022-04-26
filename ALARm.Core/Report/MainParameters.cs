@@ -1242,7 +1242,7 @@ namespace ALARm.Core.Report
                 var svg = htReport.Element("html").Element("body").Element("div").Element("div").Element("svg");
                 var svgDoc = SvgDocument.FromSvg<SvgDocument>(svg.ToString());
                 svgDoc.Width = 800 * 3;
-                svgDoc.Height = (svgLength + 95) * 3;
+                svgDoc.Height = (svgLength + 105) * 3;
 
                 if (autoprint)
                 {
@@ -1719,7 +1719,7 @@ namespace ALARm.Core.Report
                 var svg = htReport.Element("html").Element("body").Element("div").Element("div").Element("svg");
                 var svgDoc = SvgDocument.FromSvg<SvgDocument>(svg.ToString());
                 svgDoc.Width = 830 * 3;
-                svgDoc.Height = (svgLength + 105) * 3;
+                svgDoc.Height = (svgLength + 115) * 3;
 
                 if (autoprint)
                 {

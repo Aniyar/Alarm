@@ -3277,7 +3277,8 @@ Begin
       s3 := DeltaUsh[j, 3, k];
 
       Fh := round(F_Sht[i] - F0_Sh[i]);
-      if fh > 18 then
+      if fh > s1 then
+         // if fh >= 18 then
       Fh:=fh;
 
       if ((F_Norm[i] = 1520) or (F_Norm[i] = 1524))
@@ -3322,7 +3323,7 @@ Begin
         xa := L04;
         xb := Lm4;
 
-        Leng := k3; // round(abs(xb - xa));
+        Leng :=k3 ; // round(abs(xb - xa))
         bolshek := 0;
         // sablog('kmtrue=' + inttostr(GlbKmTrue) + ' leng' + inttostr(leng) );
         if Leng mod 4 > 0 then
@@ -5804,7 +5805,8 @@ Begin
 
     while i <= High(FG) do
     begin
-      Fh := math.Floor(F0_Sh[i]) - math.Ceil(F_Sht[i]);
+    //  Fh := math.Floor(F0_Sh[i]) - math.Ceil(F_Sht[i]);
+      Fh := Round(F0_Sh[i] - F_Sht[i]);
 
       if Fh < 0 then
       begin
@@ -5854,7 +5856,7 @@ Begin
         BEGIN
           max4 := OtklSuj;
           imax := i;
-          belv := math.Floor(F_Sht[imax]);
+          belv := Round(F_Sht[imax]);
 
         END;
         i := i + 1;
@@ -5863,7 +5865,7 @@ Begin
       end; // if
       // ----------------------------------------------------------------------------
       if // (L04 <> Lm4) and
-        (L04 > 0) and (Lm4 > 0) and (k3 > 1) and (max4 > 0) then
+        (L04 > 0) and (Lm4 > 0) and (k3 >1) and (max4 > 0) then
         flg4st := true;
       LenOtkl := 200;
 
@@ -5883,7 +5885,7 @@ Begin
         // ---------------------------------
         WSuj[ns].st := 2;
         WSuj[ns].s3 := s2 - delta_shpal;
-        WSuj[ns].bel := math.Floor(F_Sht[imax]);
+        WSuj[ns].bel := Round(F_Sht[imax]);
         WSuj[ns].val := max4;
         WSuj[ns].L0 := L04;
         WSuj[ns].Lm := Lm4; // + LenOtkl;

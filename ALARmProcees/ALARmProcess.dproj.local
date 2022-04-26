@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <BorlandProject>
 	<Transactions>
-    <Transaction>1899.12.30 00:00:00.000.189,D:\sntfi\ALARm5\ALARm\ALARmProcees\Unit1.pas=D:\sntfi\ALARm5\ALARm\ALARmProcees\Parameters.pas</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.149,D:\sntfi\ALARm5\ALARm\ALARmProcees\DataModule.dfm=D:\sntfi\ALARm5\ALARm\ALARmProcees\Unit1.dfm</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.937,C:\Users\sntfi\Documents\Embarcadero\Studio\Projects\ALARmProcess.dproj=D:\sntfi\ALARm5\ALARm\ALARmProcees\ALARmProcess.dproj</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.198,C:\Users\sntfi\Documents\Embarcadero\Studio\Projects\Project1.dproj=C:\Users\sntfi\Documents\Embarcadero\Studio\Projects\Sapa.dproj</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.864,C:\Users\sntfi\Documents\Embarcadero\Studio\Projects\Sapa.dproj=C:\Users\sntfi\Documents\Embarcadero\Studio\Projects\ALARmProcess.dproj</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.046,D:\sntfi\ALARm5\ALARm\ALARmProcees\Parameters.pas=D:\sntfi\ALARm5\ALARm\ALARmProcees\Params.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.189,D:\sntfi\ALARm5\ALARm\ALARmProcees\Parameters.pas=D:\sntfi\ALARm5\ALARm\ALARmProcees\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.198,C:\Users\sntfi\Documents\Embarcadero\Studio\Projects\Sapa.dproj=C:\Users\sntfi\Documents\Embarcadero\Studio\Projects\Project1.dproj</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.864,C:\Users\sntfi\Documents\Embarcadero\Studio\Projects\ALARmProcess.dproj=C:\Users\sntfi\Documents\Embarcadero\Studio\Projects\Sapa.dproj</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.046,D:\sntfi\ALARm5\ALARm\ALARmProcees\Params.pas=D:\sntfi\ALARm5\ALARm\ALARmProcees\Parameters.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.149,D:\sntfi\ALARm5\ALARm\ALARmProcees\Unit1.dfm=D:\sntfi\ALARm5\ALARm\ALARmProcees\DataModule.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.937,D:\sntfi\ALARm5\ALARm\ALARmProcees\ALARmProcess.dproj=C:\Users\sntfi\Documents\Embarcadero\Studio\Projects\ALARmProcess.dproj</Transaction>
   </Transactions>
 	<ProjectSortOrder AutoSort="0" SortType="0">
     <File Path="ModelSupport_ALARmProcess"/>

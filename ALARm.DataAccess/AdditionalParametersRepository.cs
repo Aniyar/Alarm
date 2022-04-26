@@ -1893,7 +1893,9 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
 	                             longwavesleft,
 	                             longwavesright,
 	                             iz_45_l,
-	                             iz_45_r
+	                             iz_45_r,
+                                 x_big_l,
+                                 x_big_r
                                 --, imp_left, 
                                 --implen_left, 
                                 --imp_right, 
@@ -1911,7 +1913,7 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
                 }
                 catch (Exception e)
                 {
-                    //Console.WriteLine("GetCrossRailProfileFromDBbyKm error: " + e.Message);
+                    Console.WriteLine("GetCrossRailProfileFromDBbyKm error: " + e.Message);
                     return new List<CrosProf> { };
                 }
                
@@ -1945,7 +1947,9 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
 	                            AVG ( longwavesleft ) longwavesleft,
 	                            AVG ( longwavesright ) longwavesright,
 	                            AVG ( iz_45_l ) iz_45_l,
-	                            AVG ( iz_45_r ) iz_45_r 
+	                            AVG ( iz_45_r ) iz_45_r ,
+                                AVG ( x_big_l ) x_big_l ,
+                                AVG ( x_big_r ) x_big_r 
                             FROM
 	                            PUBLIC.profiledata_{trip_id}
                             WHERE
@@ -1958,7 +1962,7 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
                 }
                 catch (Exception e)
                 {
-                    //Console.WriteLine("GetCrossRailProfileFromDBbyKm error: " + e.Message);
+                    Console.WriteLine("GetCrossRailProfileFromDBbyKm error: " + e.Message);
                     return new List<CrosProf> { };
                 }
 

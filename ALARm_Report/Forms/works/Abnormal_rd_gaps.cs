@@ -279,6 +279,7 @@ namespace ALARm_Report.Forms
             try
             {
                 htReport.Save(Path.GetTempPath() + "/report.html");
+                htReport.Save($@"G:\form\G:\form\3.Износ рельсов,стыковые зазоры,деформативные характеристики пути\24.Ведомость сверхнормативных стыковых зазоров .html");
             }
             catch
             {

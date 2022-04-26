@@ -49,11 +49,14 @@ namespace ALARm.Core.AdditionalParameteres
         public float Bok_r { get; set; }
         public float Npk_l { get; set; }
         public float Npk_r { get; set; }
+        public float X_big_l{ get; set; }
+        public float X_big_r { get; set; }
 
         public float Impulsesleft { get; set; }
         public float Impulsesright { get; set; }
         public float Shortwavesleft { get; set; }
         public float Shortwavesright { get; set; }
+        
         public float Mediumwavesleft { get; set; }
         public float Mediumwavesright { get; set; }
         public float Longwavesleft { get; set; }

@@ -22,6 +22,7 @@
         public static DigName DrawdownLeft = new DigName() { Name = "Пр.л", Value = 12 };
         public static DigName DrawdownRight = new DigName() { Name = "Пр.п", Value = 13 };
         public static DigName Broadening = new DigName() { Name = "Уш", Value = 4 };
+
         public static DigName Constriction = new DigName() { Name = "Суж", Value = 15 };
 
         public static DigName NoneStrigtSide = new DigName() { Name = "рн", Value = 11 };

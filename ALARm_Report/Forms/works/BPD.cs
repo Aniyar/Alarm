@@ -278,6 +278,7 @@ namespace ALARm_Report.Forms
             try
             {
                 htReport.Save(Path.GetTempPath() + "/report.html");
+                htReport.Save($@"G:\form\2.Характеристики положения пути в плане и профиле\18.Ведомость кривых с несоответствием фактических и паспортных характеристик кривых.html");
             }
             catch
             {

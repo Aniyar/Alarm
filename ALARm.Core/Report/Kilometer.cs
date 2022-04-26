@@ -765,8 +765,9 @@ namespace ALARm.Core
             var longwavesLeft = new StringBuilder();
             var longwavesRight = new StringBuilder();
 
-
-
+            var x_big_l = new StringBuilder();
+            var x_big_r = new StringBuilder();
+            var x_big = new StringBuilder();
             foreach (var meter in CrossRailProfile.Meters.Where(meter => meter % 1 == 0).ToList())
             {
 
@@ -780,10 +781,12 @@ namespace ALARm.Core
                 mediumwavesRight.Append((CrossRailProfile.Mediumwavesright[index] * WavesKoef).ToString().Replace(",", ".") + "," + cmeter.ToString().Replace(",", ".") + " ");
                 longwavesLeft.Append((CrossRailProfile.Longwavesleft[index] * WavesKoef).ToString().Replace(",", ".") + "," + cmeter.ToString().Replace(",", ".") + " ");
                 longwavesRight.Append((CrossRailProfile.Longwavesright[index] * WavesKoef).ToString().Replace(",", ".") + "," + cmeter.ToString().Replace(",", ".") + " ");
-
+                
+            
+                x_big.Append(((CrossRailProfile.Xbig[index]) * WavesKoef).ToString().Replace(",", ".") + "," + cmeter.ToString().Replace(",", ".") + " ");
 
             }
-           
+
 
             ShortwavesLeft = shortwavesLeft.ToString();
             ShortwavesRight = shortwavesRight.ToString();
@@ -793,6 +796,9 @@ namespace ALARm.Core
          
             LongwavesLeft = longwavesLeft.ToString();
             LongwavesRight = longwavesRight.ToString();
+
+            X_big= x_big.ToString();
+        
 
 
 
@@ -1196,6 +1202,8 @@ namespace ALARm.Core
         public string ImpulsesRight { get; set; } = "";
         public string ImpulsesLeft { get; set; } = "";
 
+        public string X_big { get; set; } = "";
+        public string X_big_r { get; set; } = "";
         public int Start_Index { get; set; } = -1;
         public int Final_Index => Start_Index + GetLength();
         public string TrapezLevel { get; set; } = "";

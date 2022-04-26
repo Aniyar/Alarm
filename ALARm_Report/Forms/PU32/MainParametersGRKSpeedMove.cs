@@ -477,7 +477,7 @@ namespace ALARm_Report.Forms
             try
             {
                 htReport.Save(Path.GetTempPath() + "/1report.html");
-
+                htReport.Save($@"G:\form\G:\form\1.Основные и дополнительные параметры геометрии рельсовой колеи (ГРК)\2.Графическая диаграмма  основных парамеров ГРК на участвке скоросного движения.html");
                 var svg = htReport.Element("html").Element("body").Element("div").Element("div").Element("svg");
                 var svgDoc = SvgDocument.FromSvg<SvgDocument>(svg.ToString());
                 svgDoc.Width = 830 * 3;
