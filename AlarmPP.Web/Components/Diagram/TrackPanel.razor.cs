@@ -188,7 +188,13 @@ namespace AlarmPP.Web.Components.Diagram
                                             try
                                             {
                                                 mainParameters.diagramName = "Оригинал";
-                                                mainParameters.Process(template, AppData.Kilometers[prevIndex], AppData.Trip, OnlineModeData.AutoPrint);
+                                                //Kilometer prevKm = prevIndex - 1 >= 0 ? AppData.Kilometers[prevIndex - 1] : null;
+                                                //Kilometer next = prevIndex + 1 < AppData.Kilometers.Count ? AppData.Kilometers[prevIndex + 1] : null;
+
+                                                Kilometer prevKm =  null;
+                                                Kilometer next =  null;
+                                                mainParameters.Process(template, AppData.Kilometers[prevIndex], AppData.Trip, OnlineModeData.AutoPrint,prevKm, next);
+                                                
                                                 //RdStructureRepository.SendEkasuiData(AppData.Trip, AppData.Kilometers[prevIndex].Number);
 
                                                 AppData.Kilometers[prevIndex].Digressions = RdStructureRepository.GetDigressionMarks(AppData.Trip.Id, AppData.Kilometers[prevIndex].Number, AppData.Kilometers[prevIndex].Track_id, new int[] { 3, 4 });
@@ -542,7 +548,11 @@ namespace AlarmPP.Web.Components.Diagram
                     try
                     {
                         mainParameters.diagramName = "Оригинал";
-                        mainParameters.Process(template, AppData.Kilometers[prevIndex], AppData.Trip, OnlineModeData.AutoPrint);
+                        Kilometer prevKm = prevIndex - 1 >= 0 ? AppData.Kilometers[prevIndex - 1] : null;
+                        Kilometer next = prevIndex + 1 < AppData.Kilometers.Count ? AppData.Kilometers[prevIndex + 1] : null;
+
+
+                        mainParameters.Process(template, AppData.Kilometers[prevIndex], AppData.Trip, OnlineModeData.AutoPrint, prevKm, next);
                         //if (AppData.EmailCount < 3)
                         //{
                         //    RdStructureRepository.SendEkasuiData(AppData.Trip, AppData.Kilometers[prevIndex].Number);
@@ -607,7 +617,9 @@ namespace AlarmPP.Web.Components.Diagram
                 var mainParameters = new ALARm.Core.Report.MainParameters(RdStructureRepository, MainTrackStructureRepository, AdmStructureRepository);
                 var template = RdStructureRepository.GetReportTemplate("MainParametersOnline");
                 mainParameters.diagramName = "Дубликат";
-                mainParameters.Process(template, AppData.Kilometers[prevIndex], AppData.Trip, true);
+                Kilometer prevKm = prevIndex - 1 >= 0 ? AppData.Kilometers[prevIndex - 1] : null;
+                Kilometer next = prevIndex +1 < AppData.Kilometers.Count ? AppData.Kilometers[prevIndex + 1] : null;
+                mainParameters.Process(template, AppData.Kilometers[prevIndex], AppData.Trip, true, prevKm, next);
             }
             await JSRuntime.InvokeVoidAsync("loader", false);
         }

@@ -324,6 +324,8 @@ namespace ALARm.Core
             }
         }
 
+     
+
         public Rating CalcQualitiveRating(int mainParamPointSum, int districtedCount)
         {
             if (districtedCount > 0)
@@ -923,10 +925,11 @@ namespace ALARm.Core
 
             if (!AdditionalParam)
             {
-                foreach (var sw in Switches)
+                foreach (var sw in Switches) 
                 {
                     if ((sw.Km == Number ) && (sw.Final_Km == Number ) && (sw.Start_Km == Number))
-                        Digressions.Add(new DigressionMark() { Meter = sw.Meter, Alert = $"{sw.Meter} Стрелка № {sw.Num} {(sw.Dir_Id == SwitchDirection.Direct ? "ПШ" : "ПРШ")} {(sw.Side_Id == Side.Left ? "Лев." : "Прав.")} {sw.Mark}" });
+                        Digressions.Add(new DigressionMark() { Meter = sw.Meter, Alert = $"{sw.Meter} Стрелка № {sw.Num} {(sw.Dir_Id == SwitchDirection.Direct ? "ПШ" : "ПРШ")}" +
+                            $" {(sw.Side_Id == Side.Left ? "Лев." : (sw.Side_Id == Side.Right)? "Прав.":"?") } {sw.Mark}" });
 
                 }
 
@@ -945,6 +948,8 @@ namespace ALARm.Core
                             }
                             if (Number == Math.Round(trip.Travel_Direction == Direction.Reverse ? item.FirstTransitionEnd : item.SecondTransitionStart))
                             {
+                               // if (item.Radius > 4300) continue; 
+
                                 Digressions.Add(
                                 new DigressionMark()
                                 {
@@ -960,8 +965,11 @@ namespace ALARm.Core
                         {
                             var Radius = 0;
                             var Width = 0;
-                            var Wear = 0;
 
+                            var Wear = 0;
+                            var Start_km = 0;
+                            var Final_km = 0;
+                            var item_meter = 0;
                             var temp = curve.Straightenings.Where(o => item.FirstTransitionEnd.Between(o.RealStartCoordinate, o.RealFinalCoordinate)).ToList();
 
                             if (temp.Any())
@@ -969,17 +977,53 @@ namespace ALARm.Core
                                 Radius = (int)temp.First().Radius;
                                 Width = (int)temp.First().Width;
                                 Wear = (int)temp.First().Wear;
+                                Start_km=(int)temp.First().Start_Km;
+                               Final_km = (int)temp.First().Final_Km;
+                                item_meter = (int)(10000 * (item.FirstTransitionEnd - Math.Round(item.FirstTransitionEnd)));
                             }
 
-                            if (Number == Math.Round(trip.Travel_Direction == Direction.Reverse ? item.FirstTransitionEnd : item.SecondTransitionStart))
+                            if (Number == Math.Round(trip.Travel_Direction == Direction.Reverse ? item.FirstTransitionEnd : item.SecondTransitionStart) && Number == Start_km && Number == Final_km)
                             {
+                                //  if (Radius > 4300)  continue;
+
+
                                 Digressions.Add(
                                 new DigressionMark()
                                 {
+
                                     Meter = item.Start_M + item.Transition_1 ,
                                     Alert = $"{item.Start_M + item.Transition_1} R:{Radius} h:{item.Lvl} Ш:{Width} И:{Wear}"
+
+
                                 });
+
+
                             }
+
+
+                            if ((Number == Final_km || Number == Start_km) && (Start_km != Final_km))
+                            {
+                                //  if (Radius > 4300)  continue;
+
+                                if (Math.Round(item.FirstTransitionEnd) == Number)   { 
+                                Digressions.Add(
+                                new DigressionMark()
+                                {
+                                    Meter = item_meter,
+                                    Alert = $"{item_meter } R:{Radius} h:{item.Lvl} Ш:{Width} И:{Wear}"
+
+                                });
+
+                                }
+                            }
+
+
+
+
+
+
+
+
                         }
                     }
 
@@ -1120,8 +1164,8 @@ namespace ALARm.Core
                            Alert = $"{vpicket.Meter2} Уст.ск:{vpicket.Picket2PassengerSpeed}/{vpicket.Picket2FreightSpeed} Уст.ск:{vpicket.Picket1PassengerSpeed}/{vpicket.Picket1FreightSpeed}"
                        }).ToList());
             }
-            //Digressions = rdStructureRepository.GetDigressionMarks(Trip.Id, km.Number, km.Track_id, new int[] { 2, 3, 4 });
-            //Gaps = mainTrackStructureRepository.GetGaps(Trip.Id, GapSource.Laser, km.Number);
+            // Digressions = rdStructureRepository.GetDigressionMarks(Trip.Id, km.Number, km.Track_id, new int[] { 2, 3, 4 });
+            // Gaps = mainTrackStructureRepository.GetGaps(Trip.Id, GapSource.Laser, km.Number);
 
             //Убираем дублирование отступлении
             var newList = new List<DigressionMark> { };

@@ -131,37 +131,17 @@ namespace ALARm.Core.Report
                         <xsl:attribute name = ""y1""><xsl:value-of select = ""@end""/></xsl:attribute>
                         <xsl:attribute name = ""y2""><xsl:value-of select = ""@end""/></xsl:attribute>
                     </line>
+                  
                 </xsl:for-each>
-
-                <xsl:for-each select=""switchesnone"">
-                    <polyline marker-end=""url(#marker-arrow)"" marker-start=""url(#marker-arrow)""   style = ""fill:none;stroke:blue;vector-effect:non-scaling-stroke;stroke-linejoin:round;stroke-width:0.5"" >
-                        <xsl:attribute name = ""points"" ><xsl:value-of select = ""@points"" /></xsl:attribute>
-                    </polyline>
-
-                    <polyline style = ""fill:none;stroke:blue;vector-effect:non-scaling-stroke;stroke-linejoin:round;stroke-width:0.5"" >
-                        <xsl:attribute name = ""points"" ><xsl:value-of select = ""@center"" /></xsl:attribute>
-                    </polyline>
-                    <text font-size=""7px"" fill = ""blue"" transform=""rotate(90)"">
-                        <xsl:attribute name = ""y""><xsl:value-of select = ""@y""/></xsl:attribute>
-						<xsl:attribute name = ""x""><xsl:value-of select = ""@txtX""/></xsl:attribute>
-						<xsl:value-of select = ""@num""/>
-                    </text>
-                    <rect width=""110"" fill=""gray"" fill-opacity=""0.3"">
-                        <xsl:attribute name = ""x""><xsl:value-of select = ""@xs""/></xsl:attribute>
-                        <xsl:attribute name = ""y""><xsl:value-of select = ""@start""/></xsl:attribute>
-                        <xsl:attribute name = ""height""><xsl:value-of select = ""@height""/></xsl:attribute>
-                    </rect>
-                    <line stroke-width=""1"" fill = ""none"" stroke =""gray"" stroke-dasharray=""3,1"" x2=""750"" stroke-opacity=""0.3"">
-                        <xsl:attribute name = ""x1""><xsl:value-of select = ""@linex1""/></xsl:attribute>
-                        <xsl:attribute name = ""y1""><xsl:value-of select = ""@start""/></xsl:attribute>
-                        <xsl:attribute name = ""y2""><xsl:value-of select = ""@start""/></xsl:attribute>
-                    </line>
-                    <line stroke-width=""1"" fill = ""none"" stroke =""gray"" stroke-dasharray=""3,1"" x2=""750"" stroke-opacity=""0.3"">
-                        <xsl:attribute name = ""x1""><xsl:value-of select = ""@linex1""/></xsl:attribute>
-                        <xsl:attribute name = ""y1""><xsl:value-of select = ""@end""/></xsl:attribute>
-                        <xsl:attribute name = ""y2""><xsl:value-of select = ""@end""/></xsl:attribute>
-                    </line>
+                 <xsl:for-each select=""switchesline"">
+                    <line marker-end=""url(#marker-arrow)"" marker-start=""url(#marker-arrow)""  stroke = ""blue"" stroke-width=""0.5""  >
+                        <xsl:attribute name = ""x1"" ><xsl:value-of select = ""@x1"" /></xsl:attribute>
+                        <xsl:attribute name = ""x2"" ><xsl:value-of select = ""@x2"" /></xsl:attribute>
+                        <xsl:attribute name = ""y1"" ><xsl:value-of select = ""@y1"" /></xsl:attribute>
+                        <xsl:attribute name = ""y2"" ><xsl:value-of select = ""@y1"" /></xsl:attribute>
+                   </line>
                 </xsl:for-each>
+             
                 <xsl:for-each select=""artcons/entrance"">
                     <line stroke=""grey"" stroke-width=""0.5""  fill=""none"" stroke-dasharray=""0.5,0.5"">
                         <xsl:attribute name = ""x1"" ><xsl:value-of select = ""@x2"" /></xsl:attribute>
@@ -249,6 +229,35 @@ namespace ALARm.Core.Report
         ";
 
         }
+      //     <xsl:for-each select = ""switchesnone"">
+      //              <polyline marker-end=""url(#marker-arrow)"" marker-start=""url(#marker-arrow)""   style = ""fill:none;stroke:blue;vector-effect:non-scaling-stroke;stroke-linejoin:round;stroke-width:0.5"" >
+      //                  <xsl:attribute name = ""points"" ><xsl:value-of select = ""@points"" /></xsl:attribute>
+      //              </polyline>
+
+      //              <polyline style = ""fill:none; stroke:blue;vector-effect:non-scaling-stroke;stroke-linejoin:round;stroke-width:0.5"" >
+      //                  <xsl:attribute name = ""points"" ><xsl:value-of select = ""@center"" /></xsl:attribute>
+      //              </polyline>
+      //              <text font-size=""7px"" fill = ""blue"" transform=""rotate(90)"">
+      //                  <xsl:attribute name = ""y""><xsl:value-of select = ""@y""/></xsl:attribute>
+						//<xsl:attribute name = ""x""><xsl:value-of select = ""@txtX""/></xsl:attribute>
+						//<xsl:value-of select = ""@num""/>
+      //              </text>
+      //              <rect width = ""110"" fill=""gray"" fill-opacity=""0.3"">
+      //                  <xsl:attribute name = ""x""><xsl:value-of select = ""@xs""/></xsl:attribute>
+      //                  <xsl:attribute name = ""y""><xsl:value-of select = ""@start""/></xsl:attribute>
+      //                  <xsl:attribute name = ""height""><xsl:value-of select = ""@height""/></xsl:attribute>
+      //              </rect>
+      //              <line stroke-width=""1"" fill = ""none"" stroke =""gray"" stroke-dasharray=""3,1"" x2=""750"" stroke-opacity=""0.3"">
+      //                  <xsl:attribute name = ""x1""><xsl:value-of select = ""@linex1""/></xsl:attribute>
+      //                  <xsl:attribute name = ""y1""><xsl:value-of select = ""@start""/></xsl:attribute>
+      //                  <xsl:attribute name = ""y2""><xsl:value-of select = ""@start""/></xsl:attribute>
+      //              </line>
+      //              <line stroke-width=""1"" fill = ""none"" stroke =""gray"" stroke-dasharray=""3,1"" x2=""750"" stroke-opacity=""0.3"">
+      //                  <xsl:attribute name = ""x1""><xsl:value-of select = ""@linex1""/></xsl:attribute>
+      //                  <xsl:attribute name = ""y1""><xsl:value-of select = ""@end""/></xsl:attribute>
+      //                  <xsl:attribute name = ""y2""><xsl:value-of select = ""@end""/></xsl:attribute>
+      //              </line>
+      //          </xsl:for-each>
         public float ArtificalEntrance = 151.75f;
         public float ArtificialHeadWidth = 1.5f;
 
@@ -487,12 +496,16 @@ namespace ALARm.Core.Report
                 string notedefind = (kilometer.Rep_type_cni == true ? "763" : MMToPixelChartString(xGrid[0] - 1.5f)).Replace(",", ".") + "," + -(y - 2) + " " +
                                   (kilometer.Rep_type_cni == true ? "761" : MMToPixelChartString(xGrid[0] - 0.5f)).Replace(",", ".") + "," + -(y) + " " +
                                   (kilometer.Rep_type_cni == true ? "743.5" : MMToPixelChartString(xGrid[0] + 1.5f)).Replace(",", ".") + "," + -(y);
+               //string notedefind = (kilometer.Rep_type_cni == true ? "763" : MMToPixelChartString(xGrid[0] - 1.5f)).Replace(",", ".") + "," + -(y - 2) + " " +
+                         //         (kilometer.Rep_type_cni == true ? "761" : MMToPixelChartString(xGrid[0] - 0.5f)).Replace(",", ".") + "," + -(y) + " " +
+                          //   (kilometer.Rep_type_cni == true ? "743.5" : MMToPixelChartString(xGrid[0] + 1.5f)).Replace(",", ".") + "," + -(y);
 
                 string points = null;
 
-                if (sw.Km == 711 && sw.Meter > 860 && sw.Meter < 900)
-                {
 
+                if (sw.Km == 709 && sw.Meter > 598)
+                {
+                    sw.Km = 709;
                 }
                 //Стрелка онга карап туру
 
@@ -521,92 +534,136 @@ namespace ALARm.Core.Report
 
                 //var stylenone = "fill:none;stroke:dimgray;vector-effect:non-scaling-stroke;stroke-linejoin:round;stroke-width:0.3;marker - end - url(#marker-arrow);marker - start - url(#marker-arrow)";
                 //var style = "fill: none; stroke: blue; vector - effect:non - scaling - stroke; stroke - linejoin:round; stroke - width:0.5; marker - end - url(#marker-arrow)";
-                result.Add(new XElement("switch",
+                if (sw.Side_Id != Side.NotDefined)
+                {
+                    result.Add(new XElement("switch",
                  new XAttribute("start", -(ostryak > end ? ostryak : end)),
-                 new XAttribute("linex1", (sw.Side_Id == Side.Right ? 300 : 415) + 110),
+                 new XAttribute("linex1", (sw.Side_Id == Side.Right && sw.Side_Id != Side.NotDefined ? 300 : 415) + 110),
                  new XAttribute("height", Math.Abs(ostryak - end)),
-                 new XAttribute("xs", sw.Side_Id == Side.Right ? 300 : 415),
+                 new XAttribute("xs", sw.Side_Id == Side.Right && sw.Side_Id != Side.NotDefined ? 300 : 415),
                  new XAttribute("end", -(ostryak < end ? ostryak : end)),
-                 new XAttribute("points", points),
+                 new XAttribute("points", leftPSH),
                  new XAttribute("center", center),
                  new XAttribute("num", sw.Num),
                  new XAttribute("y", -760),
                  new XAttribute("x", -(end - 1)),
                  new XAttribute("txtX", -(end + txtX))
                  ));
-            }
-            //рисуем стрелочные переводы
-            var switchesnone = MainTrackStructureRepository.GetMtoObjectsByCoord(travelDate, kilometer.Number,
-                MainTrackStructureConst.MtoSwitch, trackId) as List<Switch>;
-
-            foreach (var sw in switchesnone)
-            {
-                if (sw.Start_Km != kilometer.Number && sw.Final_Km != kilometer.Number)
-                    continue;
-                if (kilometer.Number.ToDoubleCoordinate(Math.Max(kilometer.Start_m, kilometer.Final_m)) < Math.Max(sw.RealStartCoordinate, sw.RealFinalCoordinate))
-                    continue;
-
-
-
-                int ostryak = kilometer.Number == sw.Start_Km ? sw.Start_M : 0;
-                int end = kilometer.Number == sw.Final_Km ? sw.Final_M : kilometer.Final_m;
-
-                var txtX = -sw.Length / 2;
-
-                //Стрелка жогарыдан сызу
-                if (sw.Dir_Id == SwitchDirection.Reverse)
-                {
-                    var temp = ostryak;
-                    ostryak = end;
-                    end = temp;
-                    txtX = -1 * txtX;
                 }
-
-                string center = (kilometer.Rep_type_cni == true ? "754" : MMToPixelChartString(xGrid[0] + 0.75f)).Replace(",", ".") + "," + -(ostryak) + " " +
-                                (kilometer.Rep_type_cni == true ? "754" : MMToPixelChartString(xGrid[0] + 0.75f)).Replace(",", ".") + "," + -(end) + " ";
-
-                int y = ostryak;
-
-
-
-                string notedefind = (kilometer.Rep_type_cni == true ? "763" : MMToPixelChartString(xGrid[0] - 1.5f)).Replace(",", ".") + "," + -(y - 2) + " " +
-                                  (kilometer.Rep_type_cni == true ? "761" : MMToPixelChartString(xGrid[0] - 0.5f)).Replace(",", ".") + "," + -(y) + " " +
-                                  (kilometer.Rep_type_cni == true ? "743.5" : MMToPixelChartString(xGrid[0] + 1.5f)).Replace(",", ".") + "," + -(y);
-
-                string points = null;
-
-                if (sw.Km == 709 && sw.Meter == 592)
-                {
-
-                }
-                //Стрелка онга карап туру
-
-
-
                 if (sw.Side_Id == Side.NotDefined)
                 {
-                    points = notedefind;
+                   
+                    result.Add(new XElement("switch",
+                    
+                         new XAttribute("start", -(ostryak > end ? ostryak : end)),
+                         new XAttribute("linex1", (sw.Side_Id == Side.NotDefined ? 300 : 415) + 110),
+                         new XAttribute("height", Math.Abs(ostryak - end)),
+                         new XAttribute("xs", sw.Side_Id == Side.NotDefined ? 300 : 415),
+                         new XAttribute("end", -(ostryak < end ? ostryak : end)),
+                           new XAttribute("center", center),
+                         new XAttribute("num", sw.Num),
+                         new XAttribute("y", -760),
+                         new XAttribute("x", -(end - 1)),
+                         new XAttribute("txtX", -(end + txtX))
+                 ));
+                    result.Add(new XElement("switchesline",
+                       new XAttribute("x1", 749),
+                       new XAttribute("x2", 760),
+                       new XAttribute("y1", -(y)),
+                       new XAttribute("y2", -(y))
+                       ));
+                  result.Add(new XElement("switch",
+                                   new XAttribute("start", -(ostryak > end ? ostryak : end)),
+                                   new XAttribute("linex1", (sw.Side_Id == Side.NotDefined ? 415 : 415) + 110),
+                                   new XAttribute("height", Math.Abs(ostryak - end)),
+                                   new XAttribute("xs", sw.Side_Id == Side.NotDefined ? 415 : 415),
+                                   new XAttribute("end", -(ostryak < end ? ostryak : end)),
+                                   new XAttribute("center", center),
+                                   new XAttribute("num", sw.Num),
+                                   new XAttribute("y", -760),
+                                   new XAttribute("x", -(end - 1)),
+                                   new XAttribute("txtX", -(end + txtX))
+                                   ));
+
+
+
 
                 }
-                else
-                    continue;
 
-                //var stylenone = "fill:none;stroke:dimgray;vector-effect:non-scaling-stroke;stroke-linejoin:round;stroke-width:0.3;marker - end - url(#marker-arrow);marker - start - url(#marker-arrow)";
-                //var style = "fill: none; stroke: blue; vector - effect:non - scaling - stroke; stroke - linejoin:round; stroke - width:0.5; marker - end - url(#marker-arrow)";
-                result.Add(new XElement("switchesnone",
-                 new XAttribute("start", -(ostryak > end ? ostryak : end)),
-                 new XAttribute("linex1", (sw.Side_Id == Side.Right ? 300 : 415) + 110),
-                 new XAttribute("height", Math.Abs(ostryak - end)),
-                 new XAttribute("xs", sw.Side_Id == Side.Right ? 300 : 415),
-                 new XAttribute("end", -(ostryak < end ? ostryak : end)),
-                 new XAttribute("points", points),
-                 new XAttribute("center", center),
-                 new XAttribute("num", sw.Num),
-                 new XAttribute("y", -760),
-                 new XAttribute("x", -(end - 1)),
-                 new XAttribute("txtX", -(end + txtX))
-                 ));
+
             }
+            //рисуем стрелочные переводы
+            //var switchesnone = MainTrackStructureRepository.GetMtoObjectsByCoord(travelDate, kilometer.Number,
+            //    MainTrackStructureConst.MtoSwitch, trackId) as List<Switch>;
+
+            //foreach (var sw in switchesnone)
+            //{
+            //    if (sw.Start_Km != kilometer.Number && sw.Final_Km != kilometer.Number)
+            //        continue;
+            //    if (kilometer.Number.ToDoubleCoordinate(Math.Max(kilometer.Start_m, kilometer.Final_m)) < Math.Max(sw.RealStartCoordinate, sw.RealFinalCoordinate))
+            //        continue;
+
+
+
+            //    int ostryak = kilometer.Number == sw.Start_Km ? sw.Start_M : 0;
+            //    int end = kilometer.Number == sw.Final_Km ? sw.Final_M : kilometer.Final_m;
+
+            //    var txtX = -sw.Length / 2;
+
+            //    //Стрелка жогарыдан сызу
+            //    if (sw.Dir_Id == SwitchDirection.Reverse)
+            //    {
+            //        var temp = ostryak;
+            //        ostryak = end;
+            //        end = temp;
+            //        txtX = -1 * txtX;
+            //    }
+
+            //    string center = (kilometer.Rep_type_cni == true ? "754" : MMToPixelChartString(xGrid[0] + 0.75f)).Replace(",", ".") + "," + -(ostryak) + " " +
+            //                    (kilometer.Rep_type_cni == true ? "754" : MMToPixelChartString(xGrid[0] + 0.75f)).Replace(",", ".") + "," + -(end) + " ";
+
+            //    int y = ostryak;
+
+
+
+            //    string notedefind = (kilometer.Rep_type_cni == true ? "763" : MMToPixelChartString(xGrid[0] - 1.5f)).Replace(",", ".") + "," + -(y - 2) + " " +
+            //                      (kilometer.Rep_type_cni == true ? "761" : MMToPixelChartString(xGrid[0] - 0.5f)).Replace(",", ".") + "," + -(y) + " " +
+            //                      (kilometer.Rep_type_cni == true ? "743.5" : MMToPixelChartString(xGrid[0] + 1.5f)).Replace(",", ".") + "," + -(y);
+
+            //    string points = null;
+
+            //    if (sw.Km == 709 && sw.Meter == 592)
+            //    {
+
+            //    }
+            //    //Стрелка онга карап туру
+
+
+
+            //    if (sw.Side_Id == Side.NotDefined)
+            //    {
+            //        points = notedefind;
+
+            //    }
+            //    else
+            //        continue;
+
+            //    var stylenone = "fill:none;stroke:dimgray;vector-effect:non-scaling-stroke;stroke-linejoin:round;stroke-width:0.3;marker - end - url(#marker-arrow);marker - start - url(#marker-arrow)";
+            //    var style = "fill: none; stroke: blue; vector - effect:non - scaling - stroke; stroke - linejoin:round; stroke - width:0.5; marker - end - url(#marker-arrow)";
+            //    result.Add(new XElement("switchesnone",
+            //     new XAttribute("start", -(ostryak > end ? ostryak : end)),
+            //     new XAttribute("linex1", (sw.Side_Id == Side.Right ? 300 : 415) + 110),
+            //     new XAttribute("height", Math.Abs(ostryak - end)),
+            //     new XAttribute("xs", sw.Side_Id == Side.Right ? 300 : 415),
+            //     new XAttribute("end", -(ostryak < end ? ostryak : end)),
+            //     new XAttribute("points", points),
+            //     new XAttribute("center", center),
+            //     new XAttribute("num", sw.Num),
+            //     new XAttribute("y", -760),
+            //     new XAttribute("x", -(end - 1)),
+            //     new XAttribute("txtX", -(end + txtX))
+            //     ));
+            //}
 
 
 
@@ -887,13 +944,19 @@ namespace ALARm.Core.Report
                         continue;
 
                     }
-                    if (note.DigName.Any())
+                    if (note.DigName == null)
                     {
-                        if (note.DigName.Contains("Рнрст"))
-                        {
-                            continue;
-                        }
+                        continue;
                     }
+                        if (note.DigName.Any() )
+                        {
+                            if (note.DigName.Contains("Рнрст"))
+                            {
+                                continue;
+                            }
+                        }
+                    
+                  
                     if (note.DigName.Contains("ПрУ"))
                     {
                         digElements.Add(new XElement("m",

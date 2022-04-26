@@ -4282,7 +4282,7 @@ begin
           if ((ln4 - 15) mod 10) > 0 then
             bolshek10 := 1;
           count := ((ln4 - 15) div 10) + bolshek10 + 1;
-        end;
+
 
         pot_s2 := pot_s2 + count;
 
@@ -4307,14 +4307,12 @@ begin
         WUsh[ns].Vrg := Vrg;
         WUsh[ns].flg := false;
         ns := ns + 1;
-
-        //end;
         x4a := 0;
         x4b := 0;
         k4 := 0;
+       end;
       end;
     end;
-
     v1 := -1;
     v2 := -1;
     i := i + 1;
@@ -5551,7 +5549,7 @@ Begin
         continue;
       end;
 
-      Nms1 := round(F0_Sh[i]);
+      Nms1 := math.Floor(F0_Sh[i]);
 
       // если шпал до 2005 года 1524 берем как 1520
       // if (Shp[i] = 0) and (Nms1 = 1524) then
@@ -5806,7 +5804,7 @@ Begin
 
     while i <= High(FG) do
     begin
-      Fh := math.Floor(F0_Sh[i]) - math.Ceil(F_Sht[i]);
+      Fh := math.Floor(F0_Sh[i]) - math.Floor(F_Sht[i]);
 
       if Fh < 0 then
       begin
@@ -6218,7 +6216,8 @@ begin
                        isriht:= isriht;
         if   (( ProberkaNaStrelku(StartStr,  FinshStr  , 1)) and (FlagkrivPlus or FlagkrivMinus )   ) then
                isriht:=false;
-
+                 if  ( ProberkaNaStrelku(StartStr,  FinshStr  , 1) and( Side_Str = 0) )  then   isriht:=false;
+                 Side_Str := 10;
 
 
                       WRih[ns].isriht := isriht;

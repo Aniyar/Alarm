@@ -5549,7 +5549,7 @@ Begin
         continue;
       end;
 
-      Nms1 := round(F0_Sh[i]);
+      Nms1 := math.Floor(F0_Sh[i]);
 
       // если шпал до 2005 года 1524 берем как 1520
       // if (Shp[i] = 0) and (Nms1 = 1524) then
@@ -5804,7 +5804,7 @@ Begin
 
     while i <= High(FG) do
     begin
-      Fh := math.Floor(F0_Sh[i]) - math.Ceil(F_Sht[i]);
+      Fh := math.Floor(F0_Sh[i]) - math.Floor(F_Sht[i]);
 
       if Fh < 0 then
       begin
