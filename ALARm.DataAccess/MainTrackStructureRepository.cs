@@ -253,6 +253,7 @@ namespace ALARm.DataAccess
                             "INNER JOIN ADM_NOD as an on an.ID = ad.ADM_NOD_ID " +
                             "INNER JOIN ADM_ROAD as ar on ar.ID = an.ADM_ROAD_ID " +
                             "where PERIOD_ID=" + periodId + " order by tps.start_km * 1000 + tps.start_m, tps.final_km * 1000 + tps.final_m", commandType: CommandType.Text).ToList();
+                        //station.type_id as point_id
                     case MainTrackStructureConst.MtoStationSection:
                         return db.Query<StationSection>("Select ar.NAME as road, an.NAME as nod, ast.NAME as station, " +
                             "cpot.NAME as point, tss.* from TPL_STATION_SECTION as tss " +
@@ -490,7 +491,7 @@ namespace ALARm.DataAccess
                     //Один объект если координата внутри станции или станция неизвестна
                     //Два объекта если координата на перегоне (между двумя станциями)
                     case MainTrackStructureConst.MtoStationSection:
-                        List<StationSection> stationSections = db.Query<StationSection>($@"select ssection.*, station.name as station from tpl_station_section ssection
+                        List<StationSection> stationSections = db.Query<StationSection>($@"select ssection.*, station.type_id as point_id, station.name as station from tpl_station_section ssection
                             inner join tpl_period tperiod on tperiod.id = ssection.period_id and ('{date.ToString("dd-MM-yyyy")}' between tperiod.start_date and tperiod.final_date)
                             inner join adm_track track on track.id = tperiod.adm_track_id and track.id = {trackId}
                             inner join adm_station station on station.id = ssection.station_id

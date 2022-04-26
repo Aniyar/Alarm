@@ -229,7 +229,11 @@ namespace AlarmPP.Web.Services
         {
             get { return ImpulsesLeftPosition + ImpWidth; }
         }
-
+        public int X_bigPossition_left
+        {
+            get { return ImpulsesRightPosition + ImpWidth; }
+        }
+    
 
 
         /// <summary>
@@ -1120,7 +1124,8 @@ namespace AlarmPP.Web.Services
         SideWearLeft = 16, SideWearRight = 17, VertWearLeft = 18, VertWearRight = 19, GivenWearLeft = 20, GivenWearRight = 21,
         TreadTiltLeft = 22, TreadTiltRight = 23, DownHillLeft = 24, DownHillRight = 25, HeadWear45Left = 26, HeadWear45Right = 27,
         Speed = 28, Section = 29,
-         ShortWavesleft = 30, ShortWavesright = 31, MediumWavesleft =32 , MediumWavesright = 33,  LongWavesleft = 34, LongWavesright =35, ImpulsesRight=36, Impuls = 37, ImpulsLeft = 38,ImpulsRight = 39
+         ShortWavesleft = 30, ShortWavesright = 31, MediumWavesleft =32 , MediumWavesright = 33,  LongWavesleft = 34, LongWavesright =35, ImpulsesRight=36, Impuls = 37, ImpulsLeft = 38,ImpulsRight = 39,
+        X_big = 40, 
     }
     public enum WorkMode { 
         NotSet = -1, Postprocessing = 0, Online = 1

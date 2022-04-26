@@ -46,6 +46,9 @@ namespace ALARm.Core.AdditionalParameteres
         public List<float> Mediumwavesright { get; set; }
         public List<float> Shortwavesleft { get; set; }
         public List<float> Shortwavesright { get; set; }
+        public List<float> XBigleft { get; set; }
+        public List<float> Xbig { get; set; }
+
         public List<float> ImpulsLeft{ get; set; }
         public List<float> ImpulsRight { get; set; }
         public List<float> Kmimp{ get; set; }
@@ -105,8 +108,10 @@ namespace ALARm.Core.AdditionalParameteres
             Mediumwavesright.Add(elem.Mediumwavesright );
             Shortwavesleft.Add(elem.Shortwavesleft );
             Shortwavesright.Add(elem.Shortwavesright );
-          
-         
+
+            //XBigleft.Add(elem.X_big_l);
+            //XBigright.Add(elem.X_big_r);
+            Xbig.Add((elem.X_big_l - elem.X_big_r)/10);
             CurrentSm -= 0.2f;
             if (kilometer == null)
                 return;
@@ -330,7 +335,9 @@ namespace ALARm.Core.AdditionalParameteres
             Shortwavesleft = new List<float>();
             Shortwavesright = new List<float>();
 
+            Xbig = new List<float>();
           
+
 
             CurrentSm = -1;
         }

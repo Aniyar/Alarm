@@ -701,9 +701,9 @@
             this.dataGridViewTextBoxColumn12 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Sapsan = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Lastochka = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Empty_Freight = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Freight = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Empty_Freight = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.speedBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.toolStrip4 = new System.Windows.Forms.ToolStrip();
             this.toolStripLabel6 = new System.Windows.Forms.ToolStripLabel();
@@ -1490,7 +1490,7 @@
             this.mtpSections.Location = new System.Drawing.Point(4, 124);
             this.mtpSections.Name = "mtpSections";
             this.mtpSections.Padding = new System.Windows.Forms.Padding(2);
-            this.mtpSections.Size = new System.Drawing.Size(1225, 499);
+            this.mtpSections.Size = new System.Drawing.Size(1134, 467);
             this.mtpSections.TabIndex = 0;
             this.mtpSections.Text = "Участки дистанций";
             this.mtpSections.VerticalScrollbar = true;
@@ -1508,7 +1508,7 @@
             this.mpSections.HorizontalScrollbarSize = 10;
             this.mpSections.Location = new System.Drawing.Point(2, 137);
             this.mpSections.Name = "mpSections";
-            this.mpSections.Size = new System.Drawing.Size(1221, 360);
+            this.mpSections.Size = new System.Drawing.Size(1130, 328);
             this.mpSections.TabIndex = 3;
             this.mpSections.VerticalScrollbarBarColor = true;
             this.mpSections.VerticalScrollbarHighlightOnWheel = false;
@@ -1569,7 +1569,7 @@
             this.msSections.RowHeadersWidth = 51;
             this.msSections.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.msSections.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.msSections.Size = new System.Drawing.Size(1221, 329);
+            this.msSections.Size = new System.Drawing.Size(1130, 297);
             this.msSections.Style = MetroFramework.MetroColorStyle.Teal;
             this.msSections.TabIndex = 5;
             // 
@@ -1637,7 +1637,7 @@
             this.tsSections.Location = new System.Drawing.Point(0, 0);
             this.tsSections.Name = "tsSections";
             this.tsSections.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-            this.tsSections.Size = new System.Drawing.Size(1221, 31);
+            this.tsSections.Size = new System.Drawing.Size(1130, 31);
             this.tsSections.TabIndex = 3;
             this.tsSections.Text = "toolStrip3";
             // 
@@ -1691,7 +1691,7 @@
             this.metroPanel7.HorizontalScrollbarSize = 10;
             this.metroPanel7.Location = new System.Drawing.Point(2, 2);
             this.metroPanel7.Name = "metroPanel7";
-            this.metroPanel7.Size = new System.Drawing.Size(1221, 135);
+            this.metroPanel7.Size = new System.Drawing.Size(1130, 135);
             this.metroPanel7.TabIndex = 2;
             this.metroPanel7.VerticalScrollbarBarColor = true;
             this.metroPanel7.VerticalScrollbarHighlightOnWheel = false;
@@ -1704,7 +1704,7 @@
             this.pcSectionPeriod.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pcSectionPeriod.MtoType = 0;
             this.pcSectionPeriod.Name = "pcSectionPeriod";
-            this.pcSectionPeriod.Size = new System.Drawing.Size(1221, 135);
+            this.pcSectionPeriod.Size = new System.Drawing.Size(1130, 135);
             this.pcSectionPeriod.TabIndex = 0;
             this.pcSectionPeriod.PeriodSelectionChanged += new System.EventHandler(this.pcSectionPeriod_PeriodSelectionChanged);
             // 
@@ -1718,7 +1718,7 @@
             this.mtpPdbSections.Location = new System.Drawing.Point(4, 124);
             this.mtpPdbSections.Name = "mtpPdbSections";
             this.mtpPdbSections.Padding = new System.Windows.Forms.Padding(2);
-            this.mtpPdbSections.Size = new System.Drawing.Size(1225, 499);
+            this.mtpPdbSections.Size = new System.Drawing.Size(1134, 467);
             this.mtpPdbSections.TabIndex = 1;
             this.mtpPdbSections.Text = "Участки подразделений";
             this.mtpPdbSections.VerticalScrollbarBarColor = true;
@@ -1735,7 +1735,7 @@
             this.metroPanel19.HorizontalScrollbarSize = 10;
             this.metroPanel19.Location = new System.Drawing.Point(2, 156);
             this.metroPanel19.Name = "metroPanel19";
-            this.metroPanel19.Size = new System.Drawing.Size(1221, 341);
+            this.metroPanel19.Size = new System.Drawing.Size(1130, 309);
             this.metroPanel19.TabIndex = 8;
             this.metroPanel19.VerticalScrollbarBarColor = true;
             this.metroPanel19.VerticalScrollbarHighlightOnWheel = false;
@@ -1797,7 +1797,7 @@
             this.mgPdbSections.RowHeadersWidth = 51;
             this.mgPdbSections.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.mgPdbSections.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.mgPdbSections.Size = new System.Drawing.Size(1221, 310);
+            this.mgPdbSections.Size = new System.Drawing.Size(1130, 278);
             this.mgPdbSections.Style = MetroFramework.MetroColorStyle.Teal;
             this.mgPdbSections.TabIndex = 7;
             // 
@@ -1873,7 +1873,7 @@
             this.toolStrip7.Location = new System.Drawing.Point(0, 0);
             this.toolStrip7.Name = "toolStrip7";
             this.toolStrip7.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-            this.toolStrip7.Size = new System.Drawing.Size(1221, 31);
+            this.toolStrip7.Size = new System.Drawing.Size(1130, 31);
             this.toolStrip7.TabIndex = 6;
             this.toolStrip7.Text = "toolStrip3";
             // 
@@ -1928,7 +1928,7 @@
             this.metroPanel20.HorizontalScrollbarSize = 10;
             this.metroPanel20.Location = new System.Drawing.Point(2, 2);
             this.metroPanel20.Name = "metroPanel20";
-            this.metroPanel20.Size = new System.Drawing.Size(1221, 154);
+            this.metroPanel20.Size = new System.Drawing.Size(1130, 154);
             this.metroPanel20.TabIndex = 9;
             this.metroPanel20.VerticalScrollbarBarColor = true;
             this.metroPanel20.VerticalScrollbarHighlightOnWheel = false;
@@ -1941,7 +1941,7 @@
             this.pcPdbSectionPeriod.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pcPdbSectionPeriod.MtoType = 9;
             this.pcPdbSectionPeriod.Name = "pcPdbSectionPeriod";
-            this.pcPdbSectionPeriod.Size = new System.Drawing.Size(1221, 154);
+            this.pcPdbSectionPeriod.Size = new System.Drawing.Size(1130, 154);
             this.pcPdbSectionPeriod.TabIndex = 0;
             this.pcPdbSectionPeriod.PeriodSelectionChanged += new System.EventHandler(this.pcPdbSectionPeriod_PeriodSelectionChanged);
             // 
@@ -1955,7 +1955,7 @@
             this.mtpStationSections.Location = new System.Drawing.Point(4, 124);
             this.mtpStationSections.Name = "mtpStationSections";
             this.mtpStationSections.Padding = new System.Windows.Forms.Padding(2);
-            this.mtpStationSections.Size = new System.Drawing.Size(1225, 499);
+            this.mtpStationSections.Size = new System.Drawing.Size(1134, 467);
             this.mtpStationSections.TabIndex = 2;
             this.mtpStationSections.Text = "Раздельные пункты";
             this.mtpStationSections.VerticalScrollbarBarColor = true;
@@ -1972,7 +1972,7 @@
             this.metroPanel21.HorizontalScrollbarSize = 10;
             this.metroPanel21.Location = new System.Drawing.Point(2, 156);
             this.metroPanel21.Name = "metroPanel21";
-            this.metroPanel21.Size = new System.Drawing.Size(1221, 341);
+            this.metroPanel21.Size = new System.Drawing.Size(1130, 309);
             this.metroPanel21.TabIndex = 10;
             this.metroPanel21.VerticalScrollbarBarColor = true;
             this.metroPanel21.VerticalScrollbarHighlightOnWheel = false;
@@ -2037,7 +2037,7 @@
             this.mgStationSections.RowHeadersWidth = 51;
             this.mgStationSections.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.mgStationSections.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.mgStationSections.Size = new System.Drawing.Size(1221, 310);
+            this.mgStationSections.Size = new System.Drawing.Size(1130, 278);
             this.mgStationSections.Style = MetroFramework.MetroColorStyle.Teal;
             this.mgStationSections.TabIndex = 9;
             // 
@@ -2137,7 +2137,7 @@
             this.toolStrip8.Location = new System.Drawing.Point(0, 0);
             this.toolStrip8.Name = "toolStrip8";
             this.toolStrip8.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-            this.toolStrip8.Size = new System.Drawing.Size(1221, 31);
+            this.toolStrip8.Size = new System.Drawing.Size(1130, 31);
             this.toolStrip8.TabIndex = 8;
             this.toolStrip8.Text = "toolStrip3";
             // 
@@ -2191,7 +2191,7 @@
             this.metroPanel22.HorizontalScrollbarSize = 10;
             this.metroPanel22.Location = new System.Drawing.Point(2, 2);
             this.metroPanel22.Name = "metroPanel22";
-            this.metroPanel22.Size = new System.Drawing.Size(1221, 154);
+            this.metroPanel22.Size = new System.Drawing.Size(1130, 154);
             this.metroPanel22.TabIndex = 11;
             this.metroPanel22.VerticalScrollbarBarColor = true;
             this.metroPanel22.VerticalScrollbarHighlightOnWheel = false;
@@ -2204,7 +2204,7 @@
             this.pcStationSectionPeriod.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pcStationSectionPeriod.MtoType = 10;
             this.pcStationSectionPeriod.Name = "pcStationSectionPeriod";
-            this.pcStationSectionPeriod.Size = new System.Drawing.Size(1221, 150);
+            this.pcStationSectionPeriod.Size = new System.Drawing.Size(1130, 150);
             this.pcStationSectionPeriod.TabIndex = 0;
             this.pcStationSectionPeriod.PeriodSelectionChanged += new System.EventHandler(this.pcStationSectionPeriod_PeriodSelectionChanged);
             // 
@@ -2218,7 +2218,7 @@
             this.mtpDimension.HorizontalScrollbarSize = 10;
             this.mtpDimension.Location = new System.Drawing.Point(4, 124);
             this.mtpDimension.Name = "mtpDimension";
-            this.mtpDimension.Size = new System.Drawing.Size(1225, 499);
+            this.mtpDimension.Size = new System.Drawing.Size(1134, 467);
             this.mtpDimension.TabIndex = 36;
             this.mtpDimension.Text = "Габариты строений";
             this.mtpDimension.VerticalScrollbarBarColor = true;
@@ -2279,7 +2279,7 @@
             this.metroGrid15.RowHeadersWidth = 51;
             this.metroGrid15.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.metroGrid15.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.metroGrid15.Size = new System.Drawing.Size(1225, 333);
+            this.metroGrid15.Size = new System.Drawing.Size(1134, 301);
             this.metroGrid15.Style = MetroFramework.MetroColorStyle.Teal;
             this.metroGrid15.TabIndex = 8;
             // 
@@ -2339,7 +2339,7 @@
             this.toolStrip30.Location = new System.Drawing.Point(0, 135);
             this.toolStrip30.Name = "toolStrip30";
             this.toolStrip30.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-            this.toolStrip30.Size = new System.Drawing.Size(1225, 31);
+            this.toolStrip30.Size = new System.Drawing.Size(1134, 31);
             this.toolStrip30.TabIndex = 7;
             this.toolStrip30.Text = "toolStrip3";
             // 
@@ -2391,7 +2391,7 @@
             this.pcDimension.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pcDimension.MtoType = 37;
             this.pcDimension.Name = "pcDimension";
-            this.pcDimension.Size = new System.Drawing.Size(1225, 135);
+            this.pcDimension.Size = new System.Drawing.Size(1134, 135);
             this.pcDimension.TabIndex = 6;
             this.pcDimension.PeriodSelectionChanged += new System.EventHandler(this.pcDimensionPeriod_PeriodSelectionChanged);
             // 
@@ -2405,7 +2405,7 @@
             this.mtpBallast.Location = new System.Drawing.Point(4, 124);
             this.mtpBallast.Name = "mtpBallast";
             this.mtpBallast.Padding = new System.Windows.Forms.Padding(2);
-            this.mtpBallast.Size = new System.Drawing.Size(1225, 499);
+            this.mtpBallast.Size = new System.Drawing.Size(1134, 467);
             this.mtpBallast.TabIndex = 35;
             this.mtpBallast.Text = "Род балласта";
             this.mtpBallast.VerticalScrollbar = true;
@@ -2423,7 +2423,7 @@
             this.metroPanel32.HorizontalScrollbarSize = 10;
             this.metroPanel32.Location = new System.Drawing.Point(2, 137);
             this.metroPanel32.Name = "metroPanel32";
-            this.metroPanel32.Size = new System.Drawing.Size(1221, 360);
+            this.metroPanel32.Size = new System.Drawing.Size(1130, 328);
             this.metroPanel32.TabIndex = 3;
             this.metroPanel32.VerticalScrollbarBarColor = true;
             this.metroPanel32.VerticalScrollbarHighlightOnWheel = false;
@@ -2483,7 +2483,7 @@
             this.metroGrid14.RowHeadersWidth = 51;
             this.metroGrid14.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.metroGrid14.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.metroGrid14.Size = new System.Drawing.Size(1221, 329);
+            this.metroGrid14.Size = new System.Drawing.Size(1130, 297);
             this.metroGrid14.Style = MetroFramework.MetroColorStyle.Teal;
             this.metroGrid14.TabIndex = 5;
             // 
@@ -2543,7 +2543,7 @@
             this.toolStrip29.Location = new System.Drawing.Point(0, 0);
             this.toolStrip29.Name = "toolStrip29";
             this.toolStrip29.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-            this.toolStrip29.Size = new System.Drawing.Size(1221, 31);
+            this.toolStrip29.Size = new System.Drawing.Size(1130, 31);
             this.toolStrip29.TabIndex = 3;
             this.toolStrip29.Text = "toolStrip3";
             // 
@@ -2597,7 +2597,7 @@
             this.metroPanel33.HorizontalScrollbarSize = 10;
             this.metroPanel33.Location = new System.Drawing.Point(2, 2);
             this.metroPanel33.Name = "metroPanel33";
-            this.metroPanel33.Size = new System.Drawing.Size(1221, 135);
+            this.metroPanel33.Size = new System.Drawing.Size(1130, 135);
             this.metroPanel33.TabIndex = 2;
             this.metroPanel33.VerticalScrollbarBarColor = true;
             this.metroPanel33.VerticalScrollbarHighlightOnWheel = false;
@@ -2610,7 +2610,7 @@
             this.pcBallastType.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pcBallastType.MtoType = 36;
             this.pcBallastType.Name = "pcBallastType";
-            this.pcBallastType.Size = new System.Drawing.Size(1221, 135);
+            this.pcBallastType.Size = new System.Drawing.Size(1130, 135);
             this.pcBallastType.TabIndex = 0;
             this.pcBallastType.PeriodSelectionChanged += new System.EventHandler(this.pcBallast_PeriodSelectionChanged);
             // 
@@ -2624,7 +2624,7 @@
             this.mtpDeep.Location = new System.Drawing.Point(4, 124);
             this.mtpDeep.Name = "mtpDeep";
             this.mtpDeep.Padding = new System.Windows.Forms.Padding(2);
-            this.mtpDeep.Size = new System.Drawing.Size(1225, 499);
+            this.mtpDeep.Size = new System.Drawing.Size(1134, 467);
             this.mtpDeep.TabIndex = 34;
             this.mtpDeep.Text = "Пучины";
             this.mtpDeep.VerticalScrollbar = true;
@@ -2642,7 +2642,7 @@
             this.metroPanel30.HorizontalScrollbarSize = 10;
             this.metroPanel30.Location = new System.Drawing.Point(2, 137);
             this.metroPanel30.Name = "metroPanel30";
-            this.metroPanel30.Size = new System.Drawing.Size(1221, 360);
+            this.metroPanel30.Size = new System.Drawing.Size(1130, 328);
             this.metroPanel30.TabIndex = 3;
             this.metroPanel30.VerticalScrollbarBarColor = true;
             this.metroPanel30.VerticalScrollbarHighlightOnWheel = false;
@@ -2701,7 +2701,7 @@
             this.metroGrid13.RowHeadersWidth = 51;
             this.metroGrid13.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.metroGrid13.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.metroGrid13.Size = new System.Drawing.Size(1221, 329);
+            this.metroGrid13.Size = new System.Drawing.Size(1130, 297);
             this.metroGrid13.Style = MetroFramework.MetroColorStyle.Teal;
             this.metroGrid13.TabIndex = 5;
             // 
@@ -2753,7 +2753,7 @@
             this.toolStrip28.Location = new System.Drawing.Point(0, 0);
             this.toolStrip28.Name = "toolStrip28";
             this.toolStrip28.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-            this.toolStrip28.Size = new System.Drawing.Size(1221, 31);
+            this.toolStrip28.Size = new System.Drawing.Size(1130, 31);
             this.toolStrip28.TabIndex = 3;
             this.toolStrip28.Text = "toolStrip3";
             // 
@@ -2807,7 +2807,7 @@
             this.metroPanel31.HorizontalScrollbarSize = 10;
             this.metroPanel31.Location = new System.Drawing.Point(2, 2);
             this.metroPanel31.Name = "metroPanel31";
-            this.metroPanel31.Size = new System.Drawing.Size(1221, 135);
+            this.metroPanel31.Size = new System.Drawing.Size(1130, 135);
             this.metroPanel31.TabIndex = 2;
             this.metroPanel31.VerticalScrollbarBarColor = true;
             this.metroPanel31.VerticalScrollbarHighlightOnWheel = false;
@@ -2820,7 +2820,7 @@
             this.pcDeep.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pcDeep.MtoType = 35;
             this.pcDeep.Name = "pcDeep";
-            this.pcDeep.Size = new System.Drawing.Size(1221, 135);
+            this.pcDeep.Size = new System.Drawing.Size(1130, 135);
             this.pcDeep.TabIndex = 0;
             this.pcDeep.PeriodSelectionChanged += new System.EventHandler(this.pcDeep_PeriodSelectionChanged);
             // 
@@ -2834,7 +2834,7 @@
             this.mtpDefectsEarth.HorizontalScrollbarSize = 10;
             this.mtpDefectsEarth.Location = new System.Drawing.Point(4, 124);
             this.mtpDefectsEarth.Name = "mtpDefectsEarth";
-            this.mtpDefectsEarth.Size = new System.Drawing.Size(1225, 499);
+            this.mtpDefectsEarth.Size = new System.Drawing.Size(1134, 467);
             this.mtpDefectsEarth.TabIndex = 33;
             this.mtpDefectsEarth.Text = "Дефекты земполотна";
             this.mtpDefectsEarth.VerticalScrollbarBarColor = true;
@@ -2895,7 +2895,7 @@
             this.metroGrid12.RowHeadersWidth = 51;
             this.metroGrid12.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.metroGrid12.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.metroGrid12.Size = new System.Drawing.Size(1225, 333);
+            this.metroGrid12.Size = new System.Drawing.Size(1134, 301);
             this.metroGrid12.Style = MetroFramework.MetroColorStyle.Teal;
             this.metroGrid12.TabIndex = 20;
             // 
@@ -2955,7 +2955,7 @@
             this.toolStrip27.Location = new System.Drawing.Point(0, 135);
             this.toolStrip27.Name = "toolStrip27";
             this.toolStrip27.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-            this.toolStrip27.Size = new System.Drawing.Size(1225, 31);
+            this.toolStrip27.Size = new System.Drawing.Size(1134, 31);
             this.toolStrip27.TabIndex = 19;
             this.toolStrip27.Text = "toolStrip3";
             // 
@@ -3007,7 +3007,7 @@
             this.pcDefectsEarthPeriod.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pcDefectsEarthPeriod.MtoType = 33;
             this.pcDefectsEarthPeriod.Name = "pcDefectsEarthPeriod";
-            this.pcDefectsEarthPeriod.Size = new System.Drawing.Size(1225, 135);
+            this.pcDefectsEarthPeriod.Size = new System.Drawing.Size(1134, 135);
             this.pcDefectsEarthPeriod.TabIndex = 18;
             this.pcDefectsEarthPeriod.PeriodSelectionChanged += new System.EventHandler(this.pcDefectsEarthPeriod_PeriodSelectionChanged);
             // 
@@ -3021,7 +3021,7 @@
             this.mtpDistanceBetweenTracks.HorizontalScrollbarSize = 10;
             this.mtpDistanceBetweenTracks.Location = new System.Drawing.Point(4, 124);
             this.mtpDistanceBetweenTracks.Name = "mtpDistanceBetweenTracks";
-            this.mtpDistanceBetweenTracks.Size = new System.Drawing.Size(1225, 499);
+            this.mtpDistanceBetweenTracks.Size = new System.Drawing.Size(1134, 467);
             this.mtpDistanceBetweenTracks.TabIndex = 32;
             this.mtpDistanceBetweenTracks.Text = "Мин.меж.расстояние";
             this.mtpDistanceBetweenTracks.VerticalScrollbarBarColor = true;
@@ -3085,7 +3085,7 @@
             this.metroGrid11.RowHeadersWidth = 51;
             this.metroGrid11.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.metroGrid11.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.metroGrid11.Size = new System.Drawing.Size(1225, 333);
+            this.metroGrid11.Size = new System.Drawing.Size(1134, 301);
             this.metroGrid11.Style = MetroFramework.MetroColorStyle.Teal;
             this.metroGrid11.TabIndex = 20;
             // 
@@ -3169,7 +3169,7 @@
             this.toolStrip26.Location = new System.Drawing.Point(0, 135);
             this.toolStrip26.Name = "toolStrip26";
             this.toolStrip26.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-            this.toolStrip26.Size = new System.Drawing.Size(1225, 31);
+            this.toolStrip26.Size = new System.Drawing.Size(1134, 31);
             this.toolStrip26.TabIndex = 19;
             this.toolStrip26.Text = "toolStrip3";
             // 
@@ -3221,7 +3221,7 @@
             this.pcDistanceBetweenTracksPeriod.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pcDistanceBetweenTracksPeriod.MtoType = 30;
             this.pcDistanceBetweenTracksPeriod.Name = "pcDistanceBetweenTracksPeriod";
-            this.pcDistanceBetweenTracksPeriod.Size = new System.Drawing.Size(1225, 135);
+            this.pcDistanceBetweenTracksPeriod.Size = new System.Drawing.Size(1134, 135);
             this.pcDistanceBetweenTracksPeriod.TabIndex = 18;
             this.pcDistanceBetweenTracksPeriod.PeriodSelectionChanged += new System.EventHandler(this.pcDistanceBetweenTracksPeriod_PeriodSelectionChanged);
             // 
@@ -3235,7 +3235,7 @@
             this.mtpCommunication.HorizontalScrollbarSize = 10;
             this.mtpCommunication.Location = new System.Drawing.Point(4, 124);
             this.mtpCommunication.Name = "mtpCommunication";
-            this.mtpCommunication.Size = new System.Drawing.Size(1225, 499);
+            this.mtpCommunication.Size = new System.Drawing.Size(1134, 467);
             this.mtpCommunication.TabIndex = 31;
             this.mtpCommunication.Text = "Коммуникации";
             this.mtpCommunication.VerticalScrollbarBarColor = true;
@@ -3294,7 +3294,7 @@
             this.metroGrid10.RowHeadersWidth = 51;
             this.metroGrid10.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.metroGrid10.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.metroGrid10.Size = new System.Drawing.Size(1225, 333);
+            this.metroGrid10.Size = new System.Drawing.Size(1134, 301);
             this.metroGrid10.Style = MetroFramework.MetroColorStyle.Teal;
             this.metroGrid10.TabIndex = 20;
             // 
@@ -3338,7 +3338,7 @@
             this.toolStrip25.Location = new System.Drawing.Point(0, 135);
             this.toolStrip25.Name = "toolStrip25";
             this.toolStrip25.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-            this.toolStrip25.Size = new System.Drawing.Size(1225, 31);
+            this.toolStrip25.Size = new System.Drawing.Size(1134, 31);
             this.toolStrip25.TabIndex = 19;
             this.toolStrip25.Text = "toolStrip3";
             // 
@@ -3390,7 +3390,7 @@
             this.pcCommunicationPeriod.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pcCommunicationPeriod.MtoType = 31;
             this.pcCommunicationPeriod.Name = "pcCommunicationPeriod";
-            this.pcCommunicationPeriod.Size = new System.Drawing.Size(1225, 135);
+            this.pcCommunicationPeriod.Size = new System.Drawing.Size(1134, 135);
             this.pcCommunicationPeriod.TabIndex = 18;
             this.pcCommunicationPeriod.PeriodSelectionChanged += new System.EventHandler(this.pcCommunicationPeriod_PeriodSelectionChanged);
             // 
@@ -3404,7 +3404,7 @@
             this.mtpCoordinateGNSS.HorizontalScrollbarSize = 10;
             this.mtpCoordinateGNSS.Location = new System.Drawing.Point(4, 124);
             this.mtpCoordinateGNSS.Name = "mtpCoordinateGNSS";
-            this.mtpCoordinateGNSS.Size = new System.Drawing.Size(1225, 499);
+            this.mtpCoordinateGNSS.Size = new System.Drawing.Size(1134, 467);
             this.mtpCoordinateGNSS.TabIndex = 30;
             this.mtpCoordinateGNSS.Text = "Координаты ГНСС";
             this.mtpCoordinateGNSS.VerticalScrollbarBarColor = true;
@@ -3467,7 +3467,7 @@
             this.metroGrid9.RowHeadersWidth = 51;
             this.metroGrid9.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.metroGrid9.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.metroGrid9.Size = new System.Drawing.Size(1225, 333);
+            this.metroGrid9.Size = new System.Drawing.Size(1134, 301);
             this.metroGrid9.Style = MetroFramework.MetroColorStyle.Teal;
             this.metroGrid9.TabIndex = 20;
             // 
@@ -3543,7 +3543,7 @@
             this.toolStrip24.Location = new System.Drawing.Point(0, 135);
             this.toolStrip24.Name = "toolStrip24";
             this.toolStrip24.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-            this.toolStrip24.Size = new System.Drawing.Size(1225, 31);
+            this.toolStrip24.Size = new System.Drawing.Size(1134, 31);
             this.toolStrip24.TabIndex = 19;
             this.toolStrip24.Text = "toolStrip3";
             // 
@@ -3595,7 +3595,7 @@
             this.pcCoordinateGNSSPeriod.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pcCoordinateGNSSPeriod.MtoType = 32;
             this.pcCoordinateGNSSPeriod.Name = "pcCoordinateGNSSPeriod";
-            this.pcCoordinateGNSSPeriod.Size = new System.Drawing.Size(1225, 135);
+            this.pcCoordinateGNSSPeriod.Size = new System.Drawing.Size(1134, 135);
             this.pcCoordinateGNSSPeriod.TabIndex = 18;
             this.pcCoordinateGNSSPeriod.PeriodSelectionChanged += new System.EventHandler(this.pcCoordinateGNSSPeriod_PeriodSelectionChanged);
             // 
@@ -3716,7 +3716,7 @@
             this.startKmDataGridViewTextBoxColumn4.HeaderText = "Начало (км)";
             this.startKmDataGridViewTextBoxColumn4.MinimumWidth = 6;
             this.startKmDataGridViewTextBoxColumn4.Name = "startKmDataGridViewTextBoxColumn4";
-            this.startKmDataGridViewTextBoxColumn4.Width = 86;
+            this.startKmDataGridViewTextBoxColumn4.Width = 85;
             // 
             // startMDataGridViewTextBoxColumn4
             // 
@@ -3761,7 +3761,7 @@
             this.transition1DataGridViewTextBoxColumn1.HeaderText = "Переходная 1";
             this.transition1DataGridViewTextBoxColumn1.MinimumWidth = 6;
             this.transition1DataGridViewTextBoxColumn1.Name = "transition1DataGridViewTextBoxColumn1";
-            this.transition1DataGridViewTextBoxColumn1.Width = 95;
+            this.transition1DataGridViewTextBoxColumn1.Width = 94;
             // 
             // transition2DataGridViewTextBoxColumn1
             // 
@@ -3770,7 +3770,7 @@
             this.transition2DataGridViewTextBoxColumn1.HeaderText = "Переходная 2";
             this.transition2DataGridViewTextBoxColumn1.MinimumWidth = 6;
             this.transition2DataGridViewTextBoxColumn1.Name = "transition2DataGridViewTextBoxColumn1";
-            this.transition2DataGridViewTextBoxColumn1.Width = 95;
+            this.transition2DataGridViewTextBoxColumn1.Width = 94;
             // 
             // elCurveBindingSource
             // 
@@ -3918,7 +3918,7 @@
             this.startKmDataGridViewTextBoxColumn3.HeaderText = "Начало (км)";
             this.startKmDataGridViewTextBoxColumn3.MinimumWidth = 6;
             this.startKmDataGridViewTextBoxColumn3.Name = "startKmDataGridViewTextBoxColumn3";
-            this.startKmDataGridViewTextBoxColumn3.Width = 86;
+            this.startKmDataGridViewTextBoxColumn3.Width = 85;
             // 
             // startMDataGridViewTextBoxColumn3
             // 
@@ -3963,7 +3963,7 @@
             this.transition1DataGridViewTextBoxColumn.HeaderText = "Переходная 1";
             this.transition1DataGridViewTextBoxColumn.MinimumWidth = 6;
             this.transition1DataGridViewTextBoxColumn.Name = "transition1DataGridViewTextBoxColumn";
-            this.transition1DataGridViewTextBoxColumn.Width = 95;
+            this.transition1DataGridViewTextBoxColumn.Width = 94;
             // 
             // transition2DataGridViewTextBoxColumn
             // 
@@ -3972,7 +3972,7 @@
             this.transition2DataGridViewTextBoxColumn.HeaderText = "Переходная 2";
             this.transition2DataGridViewTextBoxColumn.MinimumWidth = 6;
             this.transition2DataGridViewTextBoxColumn.Name = "transition2DataGridViewTextBoxColumn";
-            this.transition2DataGridViewTextBoxColumn.Width = 95;
+            this.transition2DataGridViewTextBoxColumn.Width = 94;
             // 
             // widthDataGridViewTextBoxColumn
             // 
@@ -4234,7 +4234,7 @@
             this.mtpCheckSection.Location = new System.Drawing.Point(4, 124);
             this.mtpCheckSection.Name = "mtpCheckSection";
             this.mtpCheckSection.Padding = new System.Windows.Forms.Padding(2);
-            this.mtpCheckSection.Size = new System.Drawing.Size(1225, 499);
+            this.mtpCheckSection.Size = new System.Drawing.Size(1134, 467);
             this.mtpCheckSection.TabIndex = 29;
             this.mtpCheckSection.Text = "Контрольные участки";
             this.mtpCheckSection.VerticalScrollbar = true;
@@ -4252,7 +4252,7 @@
             this.metroPanel26.HorizontalScrollbarSize = 10;
             this.metroPanel26.Location = new System.Drawing.Point(2, 137);
             this.metroPanel26.Name = "metroPanel26";
-            this.metroPanel26.Size = new System.Drawing.Size(1221, 360);
+            this.metroPanel26.Size = new System.Drawing.Size(1130, 328);
             this.metroPanel26.TabIndex = 3;
             this.metroPanel26.VerticalScrollbarBarColor = true;
             this.metroPanel26.VerticalScrollbarHighlightOnWheel = false;
@@ -4315,7 +4315,7 @@
             this.metroGrid8.RowHeadersWidth = 51;
             this.metroGrid8.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.metroGrid8.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.metroGrid8.Size = new System.Drawing.Size(1221, 329);
+            this.metroGrid8.Size = new System.Drawing.Size(1130, 297);
             this.metroGrid8.Style = MetroFramework.MetroColorStyle.Teal;
             this.metroGrid8.TabIndex = 5;
             // 
@@ -4399,7 +4399,7 @@
             this.toolStrip22.Location = new System.Drawing.Point(0, 0);
             this.toolStrip22.Name = "toolStrip22";
             this.toolStrip22.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-            this.toolStrip22.Size = new System.Drawing.Size(1221, 31);
+            this.toolStrip22.Size = new System.Drawing.Size(1130, 31);
             this.toolStrip22.TabIndex = 3;
             this.toolStrip22.Text = "toolStrip3";
             // 
@@ -4453,7 +4453,7 @@
             this.metroPanel27.HorizontalScrollbarSize = 10;
             this.metroPanel27.Location = new System.Drawing.Point(2, 2);
             this.metroPanel27.Name = "metroPanel27";
-            this.metroPanel27.Size = new System.Drawing.Size(1221, 135);
+            this.metroPanel27.Size = new System.Drawing.Size(1130, 135);
             this.metroPanel27.TabIndex = 2;
             this.metroPanel27.VerticalScrollbarBarColor = true;
             this.metroPanel27.VerticalScrollbarHighlightOnWheel = false;
@@ -4466,7 +4466,7 @@
             this.pcCheckSection.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pcCheckSection.MtoType = 28;
             this.pcCheckSection.Name = "pcCheckSection";
-            this.pcCheckSection.Size = new System.Drawing.Size(1221, 135);
+            this.pcCheckSection.Size = new System.Drawing.Size(1130, 135);
             this.pcCheckSection.TabIndex = 0;
             this.pcCheckSection.PeriodSelectionChanged += new System.EventHandler(this.pcCheckSection_PeriodSelectionChanged);
             // 
@@ -4480,7 +4480,7 @@
             this.mtpRfid.Location = new System.Drawing.Point(4, 124);
             this.mtpRfid.Name = "mtpRfid";
             this.mtpRfid.Padding = new System.Windows.Forms.Padding(2);
-            this.mtpRfid.Size = new System.Drawing.Size(1225, 499);
+            this.mtpRfid.Size = new System.Drawing.Size(1134, 467);
             this.mtpRfid.TabIndex = 28;
             this.mtpRfid.Text = "Метки RFID";
             this.mtpRfid.VerticalScrollbar = true;
@@ -4498,7 +4498,7 @@
             this.metroPanel24.HorizontalScrollbarSize = 10;
             this.metroPanel24.Location = new System.Drawing.Point(2, 137);
             this.metroPanel24.Name = "metroPanel24";
-            this.metroPanel24.Size = new System.Drawing.Size(1221, 360);
+            this.metroPanel24.Size = new System.Drawing.Size(1130, 328);
             this.metroPanel24.TabIndex = 3;
             this.metroPanel24.VerticalScrollbarBarColor = true;
             this.metroPanel24.VerticalScrollbarHighlightOnWheel = false;
@@ -4556,7 +4556,7 @@
             this.metroGrid7.RowHeadersWidth = 51;
             this.metroGrid7.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.metroGrid7.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.metroGrid7.Size = new System.Drawing.Size(1221, 329);
+            this.metroGrid7.Size = new System.Drawing.Size(1130, 297);
             this.metroGrid7.Style = MetroFramework.MetroColorStyle.Teal;
             this.metroGrid7.TabIndex = 5;
             // 
@@ -4600,7 +4600,7 @@
             this.toolStrip21.Location = new System.Drawing.Point(0, 0);
             this.toolStrip21.Name = "toolStrip21";
             this.toolStrip21.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-            this.toolStrip21.Size = new System.Drawing.Size(1221, 31);
+            this.toolStrip21.Size = new System.Drawing.Size(1130, 31);
             this.toolStrip21.TabIndex = 3;
             this.toolStrip21.Text = "toolStrip3";
             // 
@@ -4654,7 +4654,7 @@
             this.metroPanel25.HorizontalScrollbarSize = 10;
             this.metroPanel25.Location = new System.Drawing.Point(2, 2);
             this.metroPanel25.Name = "metroPanel25";
-            this.metroPanel25.Size = new System.Drawing.Size(1221, 135);
+            this.metroPanel25.Size = new System.Drawing.Size(1130, 135);
             this.metroPanel25.TabIndex = 2;
             this.metroPanel25.VerticalScrollbarBarColor = true;
             this.metroPanel25.VerticalScrollbarHighlightOnWheel = false;
@@ -4667,7 +4667,7 @@
             this.pcRfid.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pcRfid.MtoType = 27;
             this.pcRfid.Name = "pcRfid";
-            this.pcRfid.Size = new System.Drawing.Size(1221, 135);
+            this.pcRfid.Size = new System.Drawing.Size(1130, 135);
             this.pcRfid.TabIndex = 0;
             this.pcRfid.PeriodSelectionChanged += new System.EventHandler(this.pcRfid_PeriodSelectionChanged);
             // 
@@ -4922,7 +4922,7 @@
             this.mtpTraffic.Location = new System.Drawing.Point(4, 124);
             this.mtpTraffic.Name = "mtpTraffic";
             this.mtpTraffic.Padding = new System.Windows.Forms.Padding(2);
-            this.mtpTraffic.Size = new System.Drawing.Size(1225, 499);
+            this.mtpTraffic.Size = new System.Drawing.Size(1134, 467);
             this.mtpTraffic.TabIndex = 26;
             this.mtpTraffic.Text = "Грузонапряженность";
             this.mtpTraffic.VerticalScrollbar = true;
@@ -4940,7 +4940,7 @@
             this.metroPanel15.HorizontalScrollbarSize = 10;
             this.metroPanel15.Location = new System.Drawing.Point(2, 137);
             this.metroPanel15.Name = "metroPanel15";
-            this.metroPanel15.Size = new System.Drawing.Size(1221, 360);
+            this.metroPanel15.Size = new System.Drawing.Size(1130, 328);
             this.metroPanel15.TabIndex = 3;
             this.metroPanel15.VerticalScrollbarBarColor = true;
             this.metroPanel15.VerticalScrollbarHighlightOnWheel = false;
@@ -5000,7 +5000,7 @@
             this.metroGrid5.RowHeadersWidth = 51;
             this.metroGrid5.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.metroGrid5.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.metroGrid5.Size = new System.Drawing.Size(1221, 329);
+            this.metroGrid5.Size = new System.Drawing.Size(1130, 297);
             this.metroGrid5.Style = MetroFramework.MetroColorStyle.Teal;
             this.metroGrid5.TabIndex = 5;
             // 
@@ -5060,7 +5060,7 @@
             this.toolStrip19.Location = new System.Drawing.Point(0, 0);
             this.toolStrip19.Name = "toolStrip19";
             this.toolStrip19.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-            this.toolStrip19.Size = new System.Drawing.Size(1221, 31);
+            this.toolStrip19.Size = new System.Drawing.Size(1130, 31);
             this.toolStrip19.TabIndex = 3;
             this.toolStrip19.Text = "toolStrip3";
             // 
@@ -5114,7 +5114,7 @@
             this.metroPanel16.HorizontalScrollbarSize = 10;
             this.metroPanel16.Location = new System.Drawing.Point(2, 2);
             this.metroPanel16.Name = "metroPanel16";
-            this.metroPanel16.Size = new System.Drawing.Size(1221, 135);
+            this.metroPanel16.Size = new System.Drawing.Size(1130, 135);
             this.metroPanel16.TabIndex = 2;
             this.metroPanel16.VerticalScrollbarBarColor = true;
             this.metroPanel16.VerticalScrollbarHighlightOnWheel = false;
@@ -5127,7 +5127,7 @@
             this.pcTraffic.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pcTraffic.MtoType = 23;
             this.pcTraffic.Name = "pcTraffic";
-            this.pcTraffic.Size = new System.Drawing.Size(1221, 135);
+            this.pcTraffic.Size = new System.Drawing.Size(1130, 135);
             this.pcTraffic.TabIndex = 0;
             this.pcTraffic.PeriodSelectionChanged += new System.EventHandler(this.pcTraffic_PeriodSelectionChanged);
             // 
@@ -5141,7 +5141,7 @@
             this.mtpWaycat.Location = new System.Drawing.Point(4, 124);
             this.mtpWaycat.Name = "mtpWaycat";
             this.mtpWaycat.Padding = new System.Windows.Forms.Padding(2);
-            this.mtpWaycat.Size = new System.Drawing.Size(1225, 499);
+            this.mtpWaycat.Size = new System.Drawing.Size(1134, 467);
             this.mtpWaycat.TabIndex = 25;
             this.mtpWaycat.Text = "Категория пути";
             this.mtpWaycat.VerticalScrollbar = true;
@@ -5159,7 +5159,7 @@
             this.metroPanel13.HorizontalScrollbarSize = 10;
             this.metroPanel13.Location = new System.Drawing.Point(2, 137);
             this.metroPanel13.Name = "metroPanel13";
-            this.metroPanel13.Size = new System.Drawing.Size(1221, 360);
+            this.metroPanel13.Size = new System.Drawing.Size(1130, 328);
             this.metroPanel13.TabIndex = 3;
             this.metroPanel13.VerticalScrollbarBarColor = true;
             this.metroPanel13.VerticalScrollbarHighlightOnWheel = false;
@@ -5219,7 +5219,7 @@
             this.metroGrid4.RowHeadersWidth = 51;
             this.metroGrid4.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.metroGrid4.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.metroGrid4.Size = new System.Drawing.Size(1221, 329);
+            this.metroGrid4.Size = new System.Drawing.Size(1130, 297);
             this.metroGrid4.Style = MetroFramework.MetroColorStyle.Teal;
             this.metroGrid4.TabIndex = 5;
             // 
@@ -5279,7 +5279,7 @@
             this.toolStrip18.Location = new System.Drawing.Point(0, 0);
             this.toolStrip18.Name = "toolStrip18";
             this.toolStrip18.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-            this.toolStrip18.Size = new System.Drawing.Size(1221, 31);
+            this.toolStrip18.Size = new System.Drawing.Size(1130, 31);
             this.toolStrip18.TabIndex = 3;
             this.toolStrip18.Text = "toolStrip3";
             // 
@@ -5333,7 +5333,7 @@
             this.metroPanel14.HorizontalScrollbarSize = 10;
             this.metroPanel14.Location = new System.Drawing.Point(2, 2);
             this.metroPanel14.Name = "metroPanel14";
-            this.metroPanel14.Size = new System.Drawing.Size(1221, 135);
+            this.metroPanel14.Size = new System.Drawing.Size(1130, 135);
             this.metroPanel14.TabIndex = 2;
             this.metroPanel14.VerticalScrollbarBarColor = true;
             this.metroPanel14.VerticalScrollbarHighlightOnWheel = false;
@@ -5346,7 +5346,7 @@
             this.pcWaycat.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pcWaycat.MtoType = 24;
             this.pcWaycat.Name = "pcWaycat";
-            this.pcWaycat.Size = new System.Drawing.Size(1221, 135);
+            this.pcWaycat.Size = new System.Drawing.Size(1130, 135);
             this.pcWaycat.TabIndex = 0;
             this.pcWaycat.PeriodSelectionChanged += new System.EventHandler(this.pcWaycat_PeriodSelectionChanged);
             // 
@@ -5360,7 +5360,7 @@
             this.mtpRefPoint.Location = new System.Drawing.Point(4, 124);
             this.mtpRefPoint.Name = "mtpRefPoint";
             this.mtpRefPoint.Padding = new System.Windows.Forms.Padding(2);
-            this.mtpRefPoint.Size = new System.Drawing.Size(1225, 499);
+            this.mtpRefPoint.Size = new System.Drawing.Size(1134, 467);
             this.mtpRefPoint.TabIndex = 24;
             this.mtpRefPoint.Text = "Реперные точки";
             this.mtpRefPoint.VerticalScrollbar = true;
@@ -5378,7 +5378,7 @@
             this.metroPanel11.HorizontalScrollbarSize = 10;
             this.metroPanel11.Location = new System.Drawing.Point(2, 137);
             this.metroPanel11.Name = "metroPanel11";
-            this.metroPanel11.Size = new System.Drawing.Size(1221, 360);
+            this.metroPanel11.Size = new System.Drawing.Size(1130, 328);
             this.metroPanel11.TabIndex = 3;
             this.metroPanel11.VerticalScrollbarBarColor = true;
             this.metroPanel11.VerticalScrollbarHighlightOnWheel = false;
@@ -5436,7 +5436,7 @@
             this.metroGrid3.RowHeadersWidth = 51;
             this.metroGrid3.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.metroGrid3.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.metroGrid3.Size = new System.Drawing.Size(1221, 329);
+            this.metroGrid3.Size = new System.Drawing.Size(1130, 297);
             this.metroGrid3.Style = MetroFramework.MetroColorStyle.Teal;
             this.metroGrid3.TabIndex = 5;
             // 
@@ -5480,7 +5480,7 @@
             this.toolStrip17.Location = new System.Drawing.Point(0, 0);
             this.toolStrip17.Name = "toolStrip17";
             this.toolStrip17.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-            this.toolStrip17.Size = new System.Drawing.Size(1221, 31);
+            this.toolStrip17.Size = new System.Drawing.Size(1130, 31);
             this.toolStrip17.TabIndex = 3;
             this.toolStrip17.Text = "toolStrip3";
             // 
@@ -5534,7 +5534,7 @@
             this.metroPanel12.HorizontalScrollbarSize = 10;
             this.metroPanel12.Location = new System.Drawing.Point(2, 2);
             this.metroPanel12.Name = "metroPanel12";
-            this.metroPanel12.Size = new System.Drawing.Size(1221, 135);
+            this.metroPanel12.Size = new System.Drawing.Size(1130, 135);
             this.metroPanel12.TabIndex = 2;
             this.metroPanel12.VerticalScrollbarBarColor = true;
             this.metroPanel12.VerticalScrollbarHighlightOnWheel = false;
@@ -5547,7 +5547,7 @@
             this.pcRefPoint.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pcRefPoint.MtoType = 25;
             this.pcRefPoint.Name = "pcRefPoint";
-            this.pcRefPoint.Size = new System.Drawing.Size(1221, 135);
+            this.pcRefPoint.Size = new System.Drawing.Size(1130, 135);
             this.pcRefPoint.TabIndex = 0;
             this.pcRefPoint.PeriodSelectionChanged += new System.EventHandler(this.pcRefPoint_PeriodSelectionChanged);
             // 
@@ -5561,7 +5561,7 @@
             this.mtpProfmarks.Location = new System.Drawing.Point(4, 124);
             this.mtpProfmarks.Name = "mtpProfmarks";
             this.mtpProfmarks.Padding = new System.Windows.Forms.Padding(2);
-            this.mtpProfmarks.Size = new System.Drawing.Size(1225, 499);
+            this.mtpProfmarks.Size = new System.Drawing.Size(1134, 467);
             this.mtpProfmarks.TabIndex = 23;
             this.mtpProfmarks.Text = "Продольный профиль";
             this.mtpProfmarks.VerticalScrollbar = true;
@@ -5579,7 +5579,7 @@
             this.metroPanel9.HorizontalScrollbarSize = 10;
             this.metroPanel9.Location = new System.Drawing.Point(2, 137);
             this.metroPanel9.Name = "metroPanel9";
-            this.metroPanel9.Size = new System.Drawing.Size(1221, 360);
+            this.metroPanel9.Size = new System.Drawing.Size(1130, 328);
             this.metroPanel9.TabIndex = 3;
             this.metroPanel9.VerticalScrollbarBarColor = true;
             this.metroPanel9.VerticalScrollbarHighlightOnWheel = false;
@@ -5637,7 +5637,7 @@
             this.metroGrid2.RowHeadersWidth = 51;
             this.metroGrid2.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.metroGrid2.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.metroGrid2.Size = new System.Drawing.Size(1221, 329);
+            this.metroGrid2.Size = new System.Drawing.Size(1130, 297);
             this.metroGrid2.Style = MetroFramework.MetroColorStyle.Teal;
             this.metroGrid2.TabIndex = 5;
             // 
@@ -5681,7 +5681,7 @@
             this.toolStrip16.Location = new System.Drawing.Point(0, 0);
             this.toolStrip16.Name = "toolStrip16";
             this.toolStrip16.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-            this.toolStrip16.Size = new System.Drawing.Size(1221, 31);
+            this.toolStrip16.Size = new System.Drawing.Size(1130, 31);
             this.toolStrip16.TabIndex = 3;
             this.toolStrip16.Text = "toolStrip3";
             // 
@@ -5735,7 +5735,7 @@
             this.metroPanel10.HorizontalScrollbarSize = 10;
             this.metroPanel10.Location = new System.Drawing.Point(2, 2);
             this.metroPanel10.Name = "metroPanel10";
-            this.metroPanel10.Size = new System.Drawing.Size(1221, 135);
+            this.metroPanel10.Size = new System.Drawing.Size(1130, 135);
             this.metroPanel10.TabIndex = 2;
             this.metroPanel10.VerticalScrollbarBarColor = true;
             this.metroPanel10.VerticalScrollbarHighlightOnWheel = false;
@@ -5748,7 +5748,7 @@
             this.pcProfmarks.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pcProfmarks.MtoType = 22;
             this.pcProfmarks.Name = "pcProfmarks";
-            this.pcProfmarks.Size = new System.Drawing.Size(1221, 135);
+            this.pcProfmarks.Size = new System.Drawing.Size(1130, 135);
             this.pcProfmarks.TabIndex = 0;
             this.pcProfmarks.PeriodSelectionChanged += new System.EventHandler(this.pcProfmarks_PeriodSelectionChanged);
             // 
@@ -5762,7 +5762,7 @@
             this.mtpChamJoint.Location = new System.Drawing.Point(4, 124);
             this.mtpChamJoint.Name = "mtpChamJoint";
             this.mtpChamJoint.Padding = new System.Windows.Forms.Padding(2);
-            this.mtpChamJoint.Size = new System.Drawing.Size(1225, 499);
+            this.mtpChamJoint.Size = new System.Drawing.Size(1134, 467);
             this.mtpChamJoint.TabIndex = 22;
             this.mtpChamJoint.Text = "Уравнительные приборы";
             this.mtpChamJoint.VerticalScrollbar = true;
@@ -5780,7 +5780,7 @@
             this.metroPanel4.HorizontalScrollbarSize = 10;
             this.metroPanel4.Location = new System.Drawing.Point(2, 137);
             this.metroPanel4.Name = "metroPanel4";
-            this.metroPanel4.Size = new System.Drawing.Size(1221, 360);
+            this.metroPanel4.Size = new System.Drawing.Size(1130, 328);
             this.metroPanel4.TabIndex = 3;
             this.metroPanel4.VerticalScrollbarBarColor = true;
             this.metroPanel4.VerticalScrollbarHighlightOnWheel = false;
@@ -5840,7 +5840,7 @@
             this.metroGrid1.RowHeadersWidth = 51;
             this.metroGrid1.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.metroGrid1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.metroGrid1.Size = new System.Drawing.Size(1221, 329);
+            this.metroGrid1.Size = new System.Drawing.Size(1130, 297);
             this.metroGrid1.Style = MetroFramework.MetroColorStyle.Teal;
             this.metroGrid1.TabIndex = 5;
             // 
@@ -5900,7 +5900,7 @@
             this.toolStrip15.Location = new System.Drawing.Point(0, 0);
             this.toolStrip15.Name = "toolStrip15";
             this.toolStrip15.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-            this.toolStrip15.Size = new System.Drawing.Size(1221, 31);
+            this.toolStrip15.Size = new System.Drawing.Size(1130, 31);
             this.toolStrip15.TabIndex = 3;
             this.toolStrip15.Text = "toolStrip3";
             // 
@@ -5954,7 +5954,7 @@
             this.metroPanel8.HorizontalScrollbarSize = 10;
             this.metroPanel8.Location = new System.Drawing.Point(2, 2);
             this.metroPanel8.Name = "metroPanel8";
-            this.metroPanel8.Size = new System.Drawing.Size(1221, 135);
+            this.metroPanel8.Size = new System.Drawing.Size(1130, 135);
             this.metroPanel8.TabIndex = 2;
             this.metroPanel8.VerticalScrollbarBarColor = true;
             this.metroPanel8.VerticalScrollbarHighlightOnWheel = false;
@@ -5967,7 +5967,7 @@
             this.pcChamJoint.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pcChamJoint.MtoType = 21;
             this.pcChamJoint.Name = "pcChamJoint";
-            this.pcChamJoint.Size = new System.Drawing.Size(1221, 135);
+            this.pcChamJoint.Size = new System.Drawing.Size(1130, 135);
             this.pcChamJoint.TabIndex = 0;
             this.pcChamJoint.PeriodSelectionChanged += new System.EventHandler(this.pcChamJoint_PeriodSelectionChanged);
             // 
@@ -5981,7 +5981,7 @@
             this.mtpProfileObject.HorizontalScrollbarSize = 10;
             this.mtpProfileObject.Location = new System.Drawing.Point(4, 124);
             this.mtpProfileObject.Name = "mtpProfileObject";
-            this.mtpProfileObject.Size = new System.Drawing.Size(1225, 499);
+            this.mtpProfileObject.Size = new System.Drawing.Size(1134, 467);
             this.mtpProfileObject.TabIndex = 21;
             this.mtpProfileObject.Text = "Изостыки";
             this.mtpProfileObject.VerticalScrollbarBarColor = true;
@@ -6040,7 +6040,7 @@
             this.mgProfileObject.RowHeadersWidth = 51;
             this.mgProfileObject.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.mgProfileObject.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.mgProfileObject.Size = new System.Drawing.Size(1225, 333);
+            this.mgProfileObject.Size = new System.Drawing.Size(1134, 301);
             this.mgProfileObject.Style = MetroFramework.MetroColorStyle.Teal;
             this.mgProfileObject.TabIndex = 17;
             // 
@@ -6084,7 +6084,7 @@
             this.tsProfileObject.Location = new System.Drawing.Point(0, 135);
             this.tsProfileObject.Name = "tsProfileObject";
             this.tsProfileObject.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-            this.tsProfileObject.Size = new System.Drawing.Size(1225, 31);
+            this.tsProfileObject.Size = new System.Drawing.Size(1134, 31);
             this.tsProfileObject.TabIndex = 16;
             this.tsProfileObject.Text = "profileObject";
             // 
@@ -6136,7 +6136,7 @@
             this.pcProfileObjectPeriod.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pcProfileObjectPeriod.MtoType = 19;
             this.pcProfileObjectPeriod.Name = "pcProfileObjectPeriod";
-            this.pcProfileObjectPeriod.Size = new System.Drawing.Size(1225, 135);
+            this.pcProfileObjectPeriod.Size = new System.Drawing.Size(1134, 135);
             this.pcProfileObjectPeriod.TabIndex = 15;
             this.pcProfileObjectPeriod.PeriodSelectionChanged += new System.EventHandler(this.pcProfileObjectPeriod_PeriodSelectionChanged);
             // 
@@ -6150,7 +6150,7 @@
             this.mtpNonExistKm.HorizontalScrollbarSize = 10;
             this.mtpNonExistKm.Location = new System.Drawing.Point(4, 124);
             this.mtpNonExistKm.Name = "mtpNonExistKm";
-            this.mtpNonExistKm.Size = new System.Drawing.Size(1225, 499);
+            this.mtpNonExistKm.Size = new System.Drawing.Size(1134, 467);
             this.mtpNonExistKm.TabIndex = 20;
             this.mtpNonExistKm.Text = "Несуществующие километры";
             this.mtpNonExistKm.VerticalScrollbarBarColor = true;
@@ -6207,7 +6207,7 @@
             this.mgNonExistKm.RowHeadersWidth = 51;
             this.mgNonExistKm.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.mgNonExistKm.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.mgNonExistKm.Size = new System.Drawing.Size(1225, 333);
+            this.mgNonExistKm.Size = new System.Drawing.Size(1134, 301);
             this.mgNonExistKm.Style = MetroFramework.MetroColorStyle.Teal;
             this.mgNonExistKm.TabIndex = 11;
             // 
@@ -6235,7 +6235,7 @@
             this.tsNonExistKm.Location = new System.Drawing.Point(0, 135);
             this.tsNonExistKm.Name = "tsNonExistKm";
             this.tsNonExistKm.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-            this.tsNonExistKm.Size = new System.Drawing.Size(1225, 31);
+            this.tsNonExistKm.Size = new System.Drawing.Size(1134, 31);
             this.tsNonExistKm.TabIndex = 10;
             this.tsNonExistKm.Text = "toolStrip3";
             // 
@@ -6287,7 +6287,7 @@
             this.pcNonExistKm.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pcNonExistKm.MtoType = 18;
             this.pcNonExistKm.Name = "pcNonExistKm";
-            this.pcNonExistKm.Size = new System.Drawing.Size(1225, 135);
+            this.pcNonExistKm.Size = new System.Drawing.Size(1134, 135);
             this.pcNonExistKm.TabIndex = 9;
             this.pcNonExistKm.PeriodSelectionChanged += new System.EventHandler(this.pcNonExistKm_PeriodSelectionChanged);
             // 
@@ -6301,7 +6301,7 @@
             this.mtbLongRails.HorizontalScrollbarSize = 10;
             this.mtbLongRails.Location = new System.Drawing.Point(4, 124);
             this.mtbLongRails.Name = "mtbLongRails";
-            this.mtbLongRails.Size = new System.Drawing.Size(1225, 499);
+            this.mtbLongRails.Size = new System.Drawing.Size(1134, 467);
             this.mtbLongRails.TabIndex = 19;
             this.mtbLongRails.Text = "Стык скрепления";
             this.mtbLongRails.VerticalScrollbarBarColor = true;
@@ -6362,7 +6362,7 @@
             this.mgLongRails.RowHeadersWidth = 51;
             this.mgLongRails.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.mgLongRails.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.mgLongRails.Size = new System.Drawing.Size(1225, 333);
+            this.mgLongRails.Size = new System.Drawing.Size(1134, 301);
             this.mgLongRails.Style = MetroFramework.MetroColorStyle.Teal;
             this.mgLongRails.TabIndex = 17;
             // 
@@ -6422,7 +6422,7 @@
             this.toolStrip14.Location = new System.Drawing.Point(0, 135);
             this.toolStrip14.Name = "toolStrip14";
             this.toolStrip14.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-            this.toolStrip14.Size = new System.Drawing.Size(1225, 31);
+            this.toolStrip14.Size = new System.Drawing.Size(1134, 31);
             this.toolStrip14.TabIndex = 16;
             this.toolStrip14.Text = "railsSections";
             // 
@@ -6474,7 +6474,7 @@
             this.pcLongRailsPeriod.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pcLongRailsPeriod.MtoType = 16;
             this.pcLongRailsPeriod.Name = "pcLongRailsPeriod";
-            this.pcLongRailsPeriod.Size = new System.Drawing.Size(1225, 135);
+            this.pcLongRailsPeriod.Size = new System.Drawing.Size(1134, 135);
             this.pcLongRailsPeriod.TabIndex = 15;
             this.pcLongRailsPeriod.PeriodSelectionChanged += new System.EventHandler(this.pcLongRailsPeriod_PeriodSelectionChanged);
             // 
@@ -6488,7 +6488,7 @@
             this.mtpRailsSections.HorizontalScrollbarSize = 10;
             this.mtpRailsSections.Location = new System.Drawing.Point(4, 124);
             this.mtpRailsSections.Name = "mtpRailsSections";
-            this.mtpRailsSections.Size = new System.Drawing.Size(1225, 499);
+            this.mtpRailsSections.Size = new System.Drawing.Size(1134, 467);
             this.mtpRailsSections.TabIndex = 18;
             this.mtpRailsSections.Text = "Тип рельсов";
             this.mtpRailsSections.VerticalScrollbarBarColor = true;
@@ -6549,7 +6549,7 @@
             this.mgRailsSections.RowHeadersWidth = 51;
             this.mgRailsSections.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.mgRailsSections.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.mgRailsSections.Size = new System.Drawing.Size(1225, 333);
+            this.mgRailsSections.Size = new System.Drawing.Size(1134, 301);
             this.mgRailsSections.Style = MetroFramework.MetroColorStyle.Teal;
             this.mgRailsSections.TabIndex = 17;
             // 
@@ -6609,7 +6609,7 @@
             this.toolStrip1.Location = new System.Drawing.Point(0, 135);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-            this.toolStrip1.Size = new System.Drawing.Size(1225, 31);
+            this.toolStrip1.Size = new System.Drawing.Size(1134, 31);
             this.toolStrip1.TabIndex = 16;
             this.toolStrip1.Text = "railsSections";
             // 
@@ -6661,7 +6661,7 @@
             this.pcRailsSectionsPeriod.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pcRailsSectionsPeriod.MtoType = 17;
             this.pcRailsSectionsPeriod.Name = "pcRailsSectionsPeriod";
-            this.pcRailsSectionsPeriod.Size = new System.Drawing.Size(1225, 135);
+            this.pcRailsSectionsPeriod.Size = new System.Drawing.Size(1134, 135);
             this.pcRailsSectionsPeriod.TabIndex = 15;
             this.pcRailsSectionsPeriod.PeriodSelectionChanged += new System.EventHandler(this.pcRailsSectionsPeriod_PeriodSelectionChanged);
             // 
@@ -6675,7 +6675,7 @@
             this.mtpCrosstie.HorizontalScrollbarSize = 10;
             this.mtpCrosstie.Location = new System.Drawing.Point(4, 124);
             this.mtpCrosstie.Name = "mtpCrosstie";
-            this.mtpCrosstie.Size = new System.Drawing.Size(1225, 499);
+            this.mtpCrosstie.Size = new System.Drawing.Size(1134, 467);
             this.mtpCrosstie.TabIndex = 9;
             this.mtpCrosstie.Text = "Шпалы ж.б.";
             this.mtpCrosstie.VerticalScrollbarBarColor = true;
@@ -6736,7 +6736,7 @@
             this.msCrossties.RowHeadersWidth = 51;
             this.msCrossties.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.msCrossties.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.msCrossties.Size = new System.Drawing.Size(1225, 333);
+            this.msCrossties.Size = new System.Drawing.Size(1134, 301);
             this.msCrossties.Style = MetroFramework.MetroColorStyle.Teal;
             this.msCrossties.TabIndex = 8;
             // 
@@ -6796,7 +6796,7 @@
             this.tsCrossTie.Location = new System.Drawing.Point(0, 135);
             this.tsCrossTie.Name = "tsCrossTie";
             this.tsCrossTie.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-            this.tsCrossTie.Size = new System.Drawing.Size(1225, 31);
+            this.tsCrossTie.Size = new System.Drawing.Size(1134, 31);
             this.tsCrossTie.TabIndex = 7;
             this.tsCrossTie.Text = "toolStrip3";
             // 
@@ -6848,7 +6848,7 @@
             this.pcCrosstiePeriod.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pcCrosstiePeriod.MtoType = 1;
             this.pcCrosstiePeriod.Name = "pcCrosstiePeriod";
-            this.pcCrosstiePeriod.Size = new System.Drawing.Size(1225, 135);
+            this.pcCrosstiePeriod.Size = new System.Drawing.Size(1134, 135);
             this.pcCrosstiePeriod.TabIndex = 6;
             this.pcCrosstiePeriod.PeriodSelectionChanged += new System.EventHandler(this.pcCrosstiePeriod_PeriodSelectionChanged);
             // 
@@ -6862,7 +6862,7 @@
             this.mtpNonStandart.HorizontalScrollbarSize = 10;
             this.mtpNonStandart.Location = new System.Drawing.Point(4, 124);
             this.mtpNonStandart.Name = "mtpNonStandart";
-            this.mtpNonStandart.Size = new System.Drawing.Size(1225, 499);
+            this.mtpNonStandart.Size = new System.Drawing.Size(1134, 467);
             this.mtpNonStandart.TabIndex = 8;
             this.mtpNonStandart.Text = "Нестандартные километры";
             this.mtpNonStandart.VerticalScrollbarBarColor = true;
@@ -6920,7 +6920,7 @@
             this.mgNonstandartKm.RowHeadersWidth = 51;
             this.mgNonstandartKm.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.mgNonstandartKm.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.mgNonstandartKm.Size = new System.Drawing.Size(1225, 333);
+            this.mgNonstandartKm.Size = new System.Drawing.Size(1134, 301);
             this.mgNonstandartKm.Style = MetroFramework.MetroColorStyle.Teal;
             this.mgNonstandartKm.TabIndex = 11;
             // 
@@ -6956,7 +6956,7 @@
             this.tsNonstandartKm.Location = new System.Drawing.Point(0, 135);
             this.tsNonstandartKm.Name = "tsNonstandartKm";
             this.tsNonstandartKm.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-            this.tsNonstandartKm.Size = new System.Drawing.Size(1225, 31);
+            this.tsNonstandartKm.Size = new System.Drawing.Size(1134, 31);
             this.tsNonstandartKm.TabIndex = 10;
             this.tsNonstandartKm.Text = "toolStrip3";
             // 
@@ -7008,7 +7008,7 @@
             this.pcNonstandartKmPeriod.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pcNonstandartKmPeriod.MtoType = 2;
             this.pcNonstandartKmPeriod.Name = "pcNonstandartKmPeriod";
-            this.pcNonstandartKmPeriod.Size = new System.Drawing.Size(1225, 135);
+            this.pcNonstandartKmPeriod.Size = new System.Drawing.Size(1134, 135);
             this.pcNonstandartKmPeriod.TabIndex = 9;
             this.pcNonstandartKmPeriod.PeriodSelectionChanged += new System.EventHandler(this.pcNonstandartKm_PeriodSelectionChanged);
             // 
@@ -7022,7 +7022,7 @@
             this.mtpTrackClass.HorizontalScrollbarSize = 10;
             this.mtpTrackClass.Location = new System.Drawing.Point(4, 124);
             this.mtpTrackClass.Name = "mtpTrackClass";
-            this.mtpTrackClass.Size = new System.Drawing.Size(1225, 499);
+            this.mtpTrackClass.Size = new System.Drawing.Size(1134, 467);
             this.mtpTrackClass.TabIndex = 7;
             this.mtpTrackClass.Text = "Класс пути";
             this.mtpTrackClass.VerticalScrollbarBarColor = true;
@@ -7083,7 +7083,7 @@
             this.mgTrackClass.RowHeadersWidth = 51;
             this.mgTrackClass.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.mgTrackClass.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.mgTrackClass.Size = new System.Drawing.Size(1225, 333);
+            this.mgTrackClass.Size = new System.Drawing.Size(1134, 301);
             this.mgTrackClass.Style = MetroFramework.MetroColorStyle.Teal;
             this.mgTrackClass.TabIndex = 14;
             // 
@@ -7143,7 +7143,7 @@
             this.tsTrackClass.Location = new System.Drawing.Point(0, 135);
             this.tsTrackClass.Name = "tsTrackClass";
             this.tsTrackClass.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-            this.tsTrackClass.Size = new System.Drawing.Size(1225, 31);
+            this.tsTrackClass.Size = new System.Drawing.Size(1134, 31);
             this.tsTrackClass.TabIndex = 13;
             this.tsTrackClass.Text = "toolStrip3";
             // 
@@ -7195,7 +7195,7 @@
             this.pcTrackClassPeriod.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pcTrackClassPeriod.MtoType = 3;
             this.pcTrackClassPeriod.Name = "pcTrackClassPeriod";
-            this.pcTrackClassPeriod.Size = new System.Drawing.Size(1225, 135);
+            this.pcTrackClassPeriod.Size = new System.Drawing.Size(1134, 135);
             this.pcTrackClassPeriod.TabIndex = 12;
             this.pcTrackClassPeriod.PeriodSelectionChanged += new System.EventHandler(this.pcTrackClass_PeriodSelectionChanged);
             // 
@@ -7209,7 +7209,7 @@
             this.mtpBraces.HorizontalScrollbarSize = 10;
             this.mtpBraces.Location = new System.Drawing.Point(4, 124);
             this.mtpBraces.Name = "mtpBraces";
-            this.mtpBraces.Size = new System.Drawing.Size(1225, 499);
+            this.mtpBraces.Size = new System.Drawing.Size(1134, 467);
             this.mtpBraces.TabIndex = 11;
             this.mtpBraces.Text = "Тип скреплений";
             this.mtpBraces.VerticalScrollbarBarColor = true;
@@ -7270,7 +7270,7 @@
             this.mgRailsBraces.RowHeadersWidth = 51;
             this.mgRailsBraces.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.mgRailsBraces.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.mgRailsBraces.Size = new System.Drawing.Size(1225, 333);
+            this.mgRailsBraces.Size = new System.Drawing.Size(1134, 301);
             this.mgRailsBraces.Style = MetroFramework.MetroColorStyle.Teal;
             this.mgRailsBraces.TabIndex = 17;
             // 
@@ -7330,7 +7330,7 @@
             this.toolStrip2.Location = new System.Drawing.Point(0, 135);
             this.toolStrip2.Name = "toolStrip2";
             this.toolStrip2.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-            this.toolStrip2.Size = new System.Drawing.Size(1225, 31);
+            this.toolStrip2.Size = new System.Drawing.Size(1134, 31);
             this.toolStrip2.TabIndex = 16;
             this.toolStrip2.Text = "toolStrip3";
             // 
@@ -7382,7 +7382,7 @@
             this.pcRailsBracesPeriod.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pcRailsBracesPeriod.MtoType = 4;
             this.pcRailsBracesPeriod.Name = "pcRailsBracesPeriod";
-            this.pcRailsBracesPeriod.Size = new System.Drawing.Size(1225, 135);
+            this.pcRailsBracesPeriod.Size = new System.Drawing.Size(1134, 135);
             this.pcRailsBracesPeriod.TabIndex = 15;
             this.pcRailsBracesPeriod.PeriodSelectionChanged += new System.EventHandler(this.pcRailsBracesPeriod_PeriodSelectionChanged);
             // 
@@ -7396,7 +7396,7 @@
             this.mtpTrackWidth.HorizontalScrollbarSize = 10;
             this.mtpTrackWidth.Location = new System.Drawing.Point(4, 124);
             this.mtpTrackWidth.Name = "mtpTrackWidth";
-            this.mtpTrackWidth.Size = new System.Drawing.Size(1225, 499);
+            this.mtpTrackWidth.Size = new System.Drawing.Size(1134, 467);
             this.mtpTrackWidth.TabIndex = 4;
             this.mtpTrackWidth.Text = "Ширина колеи";
             this.mtpTrackWidth.VerticalScrollbarBarColor = true;
@@ -7457,7 +7457,7 @@
             this.mgNormaWidth.RowHeadersWidth = 51;
             this.mgNormaWidth.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.mgNormaWidth.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.mgNormaWidth.Size = new System.Drawing.Size(1225, 333);
+            this.mgNormaWidth.Size = new System.Drawing.Size(1134, 301);
             this.mgNormaWidth.Style = MetroFramework.MetroColorStyle.Teal;
             this.mgNormaWidth.TabIndex = 20;
             // 
@@ -7517,7 +7517,7 @@
             this.toolStrip3.Location = new System.Drawing.Point(0, 135);
             this.toolStrip3.Name = "toolStrip3";
             this.toolStrip3.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-            this.toolStrip3.Size = new System.Drawing.Size(1225, 31);
+            this.toolStrip3.Size = new System.Drawing.Size(1134, 31);
             this.toolStrip3.TabIndex = 19;
             this.toolStrip3.Text = "toolStrip3";
             // 
@@ -7569,7 +7569,7 @@
             this.pcNormaPeriod.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pcNormaPeriod.MtoType = 5;
             this.pcNormaPeriod.Name = "pcNormaPeriod";
-            this.pcNormaPeriod.Size = new System.Drawing.Size(1225, 135);
+            this.pcNormaPeriod.Size = new System.Drawing.Size(1134, 135);
             this.pcNormaPeriod.TabIndex = 18;
             this.pcNormaPeriod.PeriodSelectionChanged += new System.EventHandler(this.pcNormaPeriod_PeriodSelectionChanged);
             // 
@@ -7583,7 +7583,7 @@
             this.mtpRestrictions.HorizontalScrollbarSize = 10;
             this.mtpRestrictions.Location = new System.Drawing.Point(4, 124);
             this.mtpRestrictions.Name = "mtpRestrictions";
-            this.mtpRestrictions.Size = new System.Drawing.Size(1225, 499);
+            this.mtpRestrictions.Size = new System.Drawing.Size(1134, 467);
             this.mtpRestrictions.TabIndex = 3;
             this.mtpRestrictions.Text = "Действующие предупреждения";
             this.mtpRestrictions.VerticalScrollbarBarColor = true;
@@ -7647,7 +7647,7 @@
             this.mgTempSpeed.RowHeadersWidth = 51;
             this.mgTempSpeed.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.mgTempSpeed.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.mgTempSpeed.Size = new System.Drawing.Size(1225, 333);
+            this.mgTempSpeed.Size = new System.Drawing.Size(1134, 301);
             this.mgTempSpeed.Style = MetroFramework.MetroColorStyle.Teal;
             this.mgTempSpeed.TabIndex = 26;
             // 
@@ -7711,7 +7711,6 @@
             // 
             this.dataGridViewTextBoxColumn19.DataPropertyName = "Empty_Freight";
             this.dataGridViewTextBoxColumn19.HeaderText = "СТРИЖ";
-            //this.dataGridViewTextBoxColumn19.HeaderText = "Грузовая порожняя";
             this.dataGridViewTextBoxColumn19.MinimumWidth = 6;
             this.dataGridViewTextBoxColumn19.Name = "dataGridViewTextBoxColumn19";
             this.dataGridViewTextBoxColumn19.Width = 125;
@@ -7732,7 +7731,7 @@
             this.toolStrip5.Location = new System.Drawing.Point(0, 135);
             this.toolStrip5.Name = "toolStrip5";
             this.toolStrip5.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-            this.toolStrip5.Size = new System.Drawing.Size(1225, 31);
+            this.toolStrip5.Size = new System.Drawing.Size(1134, 31);
             this.toolStrip5.TabIndex = 25;
             this.toolStrip5.Text = "toolStrip5";
             // 
@@ -7784,7 +7783,7 @@
             this.pcTempSpeedPeriod.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pcTempSpeedPeriod.MtoType = 7;
             this.pcTempSpeedPeriod.Name = "pcTempSpeedPeriod";
-            this.pcTempSpeedPeriod.Size = new System.Drawing.Size(1225, 135);
+            this.pcTempSpeedPeriod.Size = new System.Drawing.Size(1134, 135);
             this.pcTempSpeedPeriod.TabIndex = 24;
             this.pcTempSpeedPeriod.PeriodSelectionChanged += new System.EventHandler(this.pcTempSpeedPeriod_SelectionChanged);
             // 
@@ -7798,7 +7797,7 @@
             this.mtpElevations.HorizontalScrollbarSize = 10;
             this.mtpElevations.Location = new System.Drawing.Point(4, 124);
             this.mtpElevations.Name = "mtpElevations";
-            this.mtpElevations.Size = new System.Drawing.Size(1225, 499);
+            this.mtpElevations.Size = new System.Drawing.Size(1134, 467);
             this.mtpElevations.TabIndex = 5;
             this.mtpElevations.Text = "Возвышение 6 мм прямой";
             this.mtpElevations.VerticalScrollbarBarColor = true;
@@ -7859,7 +7858,7 @@
             this.mgElevation.RowHeadersWidth = 51;
             this.mgElevation.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.mgElevation.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.mgElevation.Size = new System.Drawing.Size(1225, 333);
+            this.mgElevation.Size = new System.Drawing.Size(1134, 301);
             this.mgElevation.Style = MetroFramework.MetroColorStyle.Teal;
             this.mgElevation.TabIndex = 29;
             // 
@@ -7919,7 +7918,7 @@
             this.toolStrip6.Location = new System.Drawing.Point(0, 135);
             this.toolStrip6.Name = "toolStrip6";
             this.toolStrip6.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-            this.toolStrip6.Size = new System.Drawing.Size(1225, 31);
+            this.toolStrip6.Size = new System.Drawing.Size(1134, 31);
             this.toolStrip6.TabIndex = 28;
             this.toolStrip6.Text = "toolStrip6";
             // 
@@ -7971,7 +7970,7 @@
             this.pcElevationPeriod.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pcElevationPeriod.MtoType = 8;
             this.pcElevationPeriod.Name = "pcElevationPeriod";
-            this.pcElevationPeriod.Size = new System.Drawing.Size(1225, 135);
+            this.pcElevationPeriod.Size = new System.Drawing.Size(1134, 135);
             this.pcElevationPeriod.TabIndex = 27;
             this.pcElevationPeriod.PeriodSelectionChanged += new System.EventHandler(this.pcElevationPeriod_PeriodSelectionChanged);
             // 
@@ -7985,7 +7984,7 @@
             this.mtpSpeeds.HorizontalScrollbarSize = 10;
             this.mtpSpeeds.Location = new System.Drawing.Point(4, 124);
             this.mtpSpeeds.Name = "mtpSpeeds";
-            this.mtpSpeeds.Size = new System.Drawing.Size(1225, 499);
+            this.mtpSpeeds.Size = new System.Drawing.Size(1134, 467);
             this.mtpSpeeds.TabIndex = 13;
             this.mtpSpeeds.Text = "Скорости по приказу";
             this.mtpSpeeds.VerticalScrollbarBarColor = true;
@@ -8019,8 +8018,7 @@
             this.Lastochka,
             this.Empty_Freight,
             this.Column2,
-            this.Freight
-            });
+            this.Freight});
             this.mgSpeed.Cursor = System.Windows.Forms.Cursors.Default;
             this.mgSpeed.DataSource = this.speedBindingSource;
             dataGridViewCellStyle98.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
@@ -8051,7 +8049,7 @@
             this.mgSpeed.RowHeadersWidth = 51;
             this.mgSpeed.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.mgSpeed.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.mgSpeed.Size = new System.Drawing.Size(1225, 333);
+            this.mgSpeed.Size = new System.Drawing.Size(1134, 301);
             this.mgSpeed.Style = MetroFramework.MetroColorStyle.Teal;
             this.mgSpeed.TabIndex = 23;
             // 
@@ -8102,16 +8100,14 @@
             this.Lastochka.MinimumWidth = 6;
             this.Lastochka.Name = "Lastochka";
             this.Lastochka.Width = 125;
-            //
+            // 
             // Empty_Freight
             // 
             this.Empty_Freight.DataPropertyName = "Empty_Freight";
             this.Empty_Freight.HeaderText = "СТРИЖ";
-            //this.Empty_Freight.HeaderText = "Грузовая порожняя";
             this.Empty_Freight.MinimumWidth = 6;
             this.Empty_Freight.Name = "Empty_Freight";
             this.Empty_Freight.Width = 125;
-            // 
             // 
             // Column2
             // 
@@ -8129,7 +8125,6 @@
             this.Freight.Name = "Freight";
             this.Freight.Width = 125;
             // 
-            
             // speedBindingSource
             // 
             this.speedBindingSource.DataSource = typeof(ALARm.Core.Speed);
@@ -8146,7 +8141,7 @@
             this.toolStrip4.Location = new System.Drawing.Point(0, 135);
             this.toolStrip4.Name = "toolStrip4";
             this.toolStrip4.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-            this.toolStrip4.Size = new System.Drawing.Size(1225, 31);
+            this.toolStrip4.Size = new System.Drawing.Size(1134, 31);
             this.toolStrip4.TabIndex = 22;
             this.toolStrip4.Text = "toolStrip4";
             // 
@@ -8198,7 +8193,7 @@
             this.pcSpeedPeriod.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pcSpeedPeriod.MtoType = 6;
             this.pcSpeedPeriod.Name = "pcSpeedPeriod";
-            this.pcSpeedPeriod.Size = new System.Drawing.Size(1225, 135);
+            this.pcSpeedPeriod.Size = new System.Drawing.Size(1134, 135);
             this.pcSpeedPeriod.TabIndex = 21;
             this.pcSpeedPeriod.PeriodSelectionChanged += new System.EventHandler(this.pcSpeedPeriod_PeriodSelectionChanged);
             // 
@@ -8212,7 +8207,7 @@
             this.mtpArtificialConstructions.HorizontalScrollbarSize = 10;
             this.mtpArtificialConstructions.Location = new System.Drawing.Point(4, 124);
             this.mtpArtificialConstructions.Name = "mtpArtificialConstructions";
-            this.mtpArtificialConstructions.Size = new System.Drawing.Size(1225, 499);
+            this.mtpArtificialConstructions.Size = new System.Drawing.Size(1134, 467);
             this.mtpArtificialConstructions.TabIndex = 14;
             this.mtpArtificialConstructions.Text = "Искусственные сооружения";
             this.mtpArtificialConstructions.VerticalScrollbarBarColor = true;
@@ -8272,7 +8267,7 @@
             this.mgArtificialConstruction.RowHeadersWidth = 51;
             this.mgArtificialConstruction.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.mgArtificialConstruction.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.mgArtificialConstruction.Size = new System.Drawing.Size(1225, 333);
+            this.mgArtificialConstruction.Size = new System.Drawing.Size(1134, 301);
             this.mgArtificialConstruction.Style = MetroFramework.MetroColorStyle.Teal;
             this.mgArtificialConstruction.TabIndex = 20;
             // 
@@ -8324,7 +8319,7 @@
             this.toolStrip12.Location = new System.Drawing.Point(0, 135);
             this.toolStrip12.Name = "toolStrip12";
             this.toolStrip12.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-            this.toolStrip12.Size = new System.Drawing.Size(1225, 31);
+            this.toolStrip12.Size = new System.Drawing.Size(1134, 31);
             this.toolStrip12.TabIndex = 19;
             this.toolStrip12.Text = "toolStrip3";
             // 
@@ -8376,7 +8371,7 @@
             this.pcArtificialConstructionPeriod.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pcArtificialConstructionPeriod.MtoType = 14;
             this.pcArtificialConstructionPeriod.Name = "pcArtificialConstructionPeriod";
-            this.pcArtificialConstructionPeriod.Size = new System.Drawing.Size(1225, 135);
+            this.pcArtificialConstructionPeriod.Size = new System.Drawing.Size(1134, 135);
             this.pcArtificialConstructionPeriod.TabIndex = 18;
             this.pcArtificialConstructionPeriod.PeriodSelectionChanged += new System.EventHandler(this.pcArtificialConstructionPeriod_PeriodSelectionChanged);
             // 
@@ -8390,7 +8385,7 @@
             this.mtpSwitch.HorizontalScrollbarSize = 10;
             this.mtpSwitch.Location = new System.Drawing.Point(4, 124);
             this.mtpSwitch.Name = "mtpSwitch";
-            this.mtpSwitch.Size = new System.Drawing.Size(1225, 499);
+            this.mtpSwitch.Size = new System.Drawing.Size(1134, 467);
             this.mtpSwitch.TabIndex = 15;
             this.mtpSwitch.Text = "Стрелочные переводы";
             this.mtpSwitch.VerticalScrollbarBarColor = true;
@@ -8454,7 +8449,7 @@
             this.mgSwitch.RowHeadersWidth = 51;
             this.mgSwitch.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.mgSwitch.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.mgSwitch.Size = new System.Drawing.Size(1225, 333);
+            this.mgSwitch.Size = new System.Drawing.Size(1134, 301);
             this.mgSwitch.Style = MetroFramework.MetroColorStyle.Teal;
             this.mgSwitch.TabIndex = 23;
             // 
@@ -8538,7 +8533,7 @@
             this.toolStrip13.Location = new System.Drawing.Point(0, 135);
             this.toolStrip13.Name = "toolStrip13";
             this.toolStrip13.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-            this.toolStrip13.Size = new System.Drawing.Size(1225, 31);
+            this.toolStrip13.Size = new System.Drawing.Size(1134, 31);
             this.toolStrip13.TabIndex = 22;
             this.toolStrip13.Text = "toolStrip3";
             // 
@@ -8590,7 +8585,7 @@
             this.pcSwitchPeriod.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pcSwitchPeriod.MtoType = 15;
             this.pcSwitchPeriod.Name = "pcSwitchPeriod";
-            this.pcSwitchPeriod.Size = new System.Drawing.Size(1225, 135);
+            this.pcSwitchPeriod.Size = new System.Drawing.Size(1134, 135);
             this.pcSwitchPeriod.TabIndex = 21;
             this.pcSwitchPeriod.PeriodSelectionChanged += new System.EventHandler(this.pcSwitchPeriod_PeriodSelectionChanged);
             // 
@@ -8604,7 +8599,7 @@
             this.mtpStraighteningThread.HorizontalScrollbarSize = 10;
             this.mtpStraighteningThread.Location = new System.Drawing.Point(4, 124);
             this.mtpStraighteningThread.Name = "mtpStraighteningThread";
-            this.mtpStraighteningThread.Size = new System.Drawing.Size(1225, 499);
+            this.mtpStraighteningThread.Size = new System.Drawing.Size(1134, 467);
             this.mtpStraighteningThread.TabIndex = 17;
             this.mtpStraighteningThread.Text = "Рихтовочная нить";
             this.mtpStraighteningThread.VerticalScrollbarBarColor = true;
@@ -8665,7 +8660,7 @@
             this.mgStraighteningThread.RowHeadersWidth = 51;
             this.mgStraighteningThread.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.mgStraighteningThread.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.mgStraighteningThread.Size = new System.Drawing.Size(1225, 333);
+            this.mgStraighteningThread.Size = new System.Drawing.Size(1134, 301);
             this.mgStraighteningThread.Style = MetroFramework.MetroColorStyle.Teal;
             this.mgStraighteningThread.TabIndex = 20;
             // 
@@ -8725,7 +8720,7 @@
             this.toolStrip11.Location = new System.Drawing.Point(0, 135);
             this.toolStrip11.Name = "toolStrip11";
             this.toolStrip11.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
-            this.toolStrip11.Size = new System.Drawing.Size(1225, 31);
+            this.toolStrip11.Size = new System.Drawing.Size(1134, 31);
             this.toolStrip11.TabIndex = 19;
             this.toolStrip11.Text = "toolStrip3";
             // 
@@ -8777,7 +8772,7 @@
             this.pcStraighteningThreadPeriod.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pcStraighteningThreadPeriod.MtoType = 13;
             this.pcStraighteningThreadPeriod.Name = "pcStraighteningThreadPeriod";
-            this.pcStraighteningThreadPeriod.Size = new System.Drawing.Size(1225, 135);
+            this.pcStraighteningThreadPeriod.Size = new System.Drawing.Size(1134, 135);
             this.pcStraighteningThreadPeriod.TabIndex = 18;
             this.pcStraighteningThreadPeriod.PeriodSelectionChanged += new System.EventHandler(this.pcStraighteningThreadPeriod_PeriodSelectionChanged);
             // 

@@ -4341,7 +4341,9 @@ namespace ALARm.DataAccess
                             longwavesleft,
                             longwavesright,
 	                        iz_45_l,
-	                        iz_45_r
+	                        iz_45_r,
+                            x_big_l,
+                            x_big_r
                         FROM
 	                        PUBLIC.profiledata_{trip_id}
                         WHERE

@@ -574,6 +574,7 @@ namespace ALARm_Report.Forms
             try
             {
                 htReport.Save(Path.GetTempPath() + "/report.html");
+                htReport.Save($@"G:\form\2.Характеристики положения пути в плане и профиле\1.Ведомость характеристик устройства кривых участков пути(ФП-3.1).html");
             }
             catch
             {
@@ -582,6 +583,7 @@ namespace ALARm_Report.Forms
             finally
             {
                 System.Diagnostics.Process.Start(Path.GetTempPath() + "/report.html");
+                
             }
         }
     }

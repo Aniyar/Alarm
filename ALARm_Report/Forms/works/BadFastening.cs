@@ -118,6 +118,7 @@ namespace ALARm_Report.Forms
             {
                 //htReport.Save(@"\\DESKTOP-EMAFC5J\sntfi\BadFastening.html");
                 htReport.Save(Path.GetTempPath() + "/BadFastening.html");
+                htReport.Save($@"G:\form\4.Выходные формы Видеоконтроля ВСП\1.Ведомость негодных скреплений.html");
             }
             catch
             {

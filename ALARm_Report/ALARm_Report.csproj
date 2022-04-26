@@ -735,7 +735,9 @@
     <Content Include="xls\PU32%28F.SRED%29.xslt" />
     <Content Include="xls\PU32%28F.NEUD%29.xslt" />
     <Content Include="xls\DeviationsRailHeadWear.xslt" />
-    <Content Include="xls\DeviationsToDangerous.xslt" />
+    <Content Include="xls\DeviationsToDangerous.xslt">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="xls\Deviation3and4.xslt" />
     <Content Include="xls\A4Duplicate.xslt" />
     <Content Include="xls\CurveCard.xslt">

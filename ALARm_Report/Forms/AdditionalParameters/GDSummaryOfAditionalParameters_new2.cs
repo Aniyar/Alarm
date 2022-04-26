@@ -650,7 +650,8 @@ namespace ALARm_Report.Forms
             try
             {
                 htReport.Save(Path.GetTempPath() + "/report.html");
-
+                htReport.Save($@"G:\form\G:\form\1.Основные и дополнительные параметры геометрии рельсовой колеи (ГРК)\3.Графическая диаграмма доп.параметров с результатами оценки отступлений.html");
+                
             }
             catch
             {
