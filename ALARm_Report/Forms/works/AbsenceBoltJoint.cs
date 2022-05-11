@@ -118,6 +118,7 @@ namespace ALARm_Report.Forms
             }
             try
             {
+                htReport.Save($@"G:\form\4.Выходные формы Видеоконтроля ВСП\23.Ведомость отсутствующих болтовых соединений .html");
                 //htReport.Save(@"\\DESKTOP-EMAFC5J\sntfi\report_AbsenceBoltJoint.html");
                 htReport.Save(Path.GetTempPath() + "/report_AbsenceBoltJoint.html");
             }

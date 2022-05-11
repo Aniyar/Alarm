@@ -367,6 +367,7 @@ namespace ALARm_Report.Forms
             }
             try
             {
+                htReport.Save($@"G:\form\6.Выходные формы Основные параметры\30.Сводная таблица выявленных отступлений (ФП-1.4).html");
                 htReport.Save(Path.GetTempPath() + "/report.html");
             }
             catch

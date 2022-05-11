@@ -69,12 +69,12 @@ namespace GapService
                 _logger.LogInformation($"Queue [{QueueName}] is waiting for messages.");
 
 
-                //////Выбор километров по проезду-----------------
+                //////Р’С‹Р±РѕСЂ РєРёР»РѕРјРµС‚СЂРѕРІ РїРѕ РїСЂРѕРµР·РґСѓ-----------------
                 //var filterForm = new FilterForm();
                 //var filters = new List<Filter>();
 
-                //filters.Add(new FloatFilter() { Name = "Начало (км)", Value = lkm.Min() });
-                //filters.Add(new FloatFilter() { Name = "Конец (км)", Value = lkm.Max() });
+                //filters.Add(new FloatFilter() { Name = "РќР°С‡Р°Р»Рѕ (РєРј)", Value = lkm.Min() });
+                //filters.Add(new FloatFilter() { Name = "РљРѕРЅРµС† (РєРј)", Value = lkm.Max() });
 
                 //filterForm.SetDataSource(filters);
                 //if (filterForm.ShowDialog() == DialogResult.Cancel)
@@ -102,9 +102,9 @@ namespace GapService
                     Kilometer km = kilometers.Where(km => km.Number == kmIndex).First();
                     
 
-                    // Очищает таблицы для сервисов
+                    // РћС‡РёС‰Р°РµС‚ С‚Р°Р±Р»РёС†С‹ РґР»СЏ СЃРµСЂРІРёСЃРѕРІ
                     //ClearServiceTables(TripId);
-                    // Читает файлы проезда и обновляет номер километра в таблице трип файлс
+                    // Р§РёС‚Р°РµС‚ С„Р°Р№Р»С‹ РїСЂРѕРµР·РґР° Рё РѕР±РЅРѕРІР»СЏРµС‚ РЅРѕРјРµСЂ РєРёР»РѕРјРµС‚СЂР° РІ С‚Р°Р±Р»РёС†Рµ С‚СЂРёРї С„Р°Р№Р»СЃ
                     //PutKilometers(TripId);
 
 
@@ -133,9 +133,9 @@ namespace GapService
                     //km.AddDataRange(outData, km);
                     //km.LoadTrackPasport(MainTrackStructureRepository, trip.Trip_date);
 
-                    ////Видеоконтроль
+                    ////Р’РёРґРµРѕРєРѕРЅС‚СЂРѕР»СЊ
                     //// todo distanse id
-                    //string p = GetGaps(trip, km, 53, queruString); //стыки
+                    //string p = GetGaps(trip, km, 53, queruString); //СЃС‚С‹РєРё
 
 
                     this.MainTrackStructureRepository = MainTrackStructureService.GetRepository();
@@ -157,11 +157,11 @@ namespace GapService
                             flag = Blazor2.GetBitmapAsync(koridorfile, kupefile);
                             Blazor2.CurrentFrameIndex++;
                         }
-                        Console.WriteLine("тест дата ОК");
+                        Console.WriteLine("С‚РµСЃС‚ РґР°С‚Р° РћРљ");
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine("тест дата ERROR! " + e.Message);
+                        Console.WriteLine("С‚РµСЃС‚ РґР°С‚Р° ERROR! " + e.Message);
                     }
 
 
@@ -184,11 +184,11 @@ namespace GapService
                         {
                             flag = Blazor.GetBitmapAsync(km.Number, TripId);
                         }
-                        Console.WriteLine("профайл дата ОК");
+                        Console.WriteLine("РїСЂРѕС„Р°Р№Р» РґР°С‚Р° РћРљ");
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine("профайл дата ERROR! " + e.Message);
+                        Console.WriteLine("РїСЂРѕС„Р°Р№Р» РґР°С‚Р° ERROR! " + e.Message);
                     }
 
                     var Blazor3 = new Blazor3(); //poverh shpal
@@ -201,56 +201,56 @@ namespace GapService
                         {
                             flag = Blazor3.GetBitmapAsync(koridorfile, kupefile);
                         }
-                        Console.WriteLine("Поверх шпал дата ОК");
+                        Console.WriteLine("РџРѕРІРµСЂС… С€РїР°Р» РґР°С‚Р° РћРљ");
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine("Поверх шпал ERROR! " + e.Message);
+                        Console.WriteLine("РџРѕРІРµСЂС… С€РїР°Р» ERROR! " + e.Message);
                     }
 
                     try
                     {
-                        GetTestData(km.Number, trip.Id); //волны и импульсы
-                        Console.WriteLine("волны ОК!");
+                        GetTestData(km.Number, trip.Id); //РІРѕР»РЅС‹ Рё РёРјРїСѓР»СЊСЃС‹
+                        Console.WriteLine("РІРѕР»РЅС‹ РћРљ!");
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine("волны ERROR! " + e.Message);
+                        Console.WriteLine("РІРѕР»РЅС‹ ERROR! " + e.Message);
                     }
 
                     try
                     {
-                        GetCrossAdditional(trip, km); //стыки
-                        Console.WriteLine("Поверхность рельса ОК!");
+                        GetCrossAdditional(trip, km); //СЃС‚С‹РєРё
+                        Console.WriteLine("РџРѕРІРµСЂС…РЅРѕСЃС‚СЊ СЂРµР»СЊСЃР° РћРљ!");
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine("Поверхность рельса ERROR! " + e.Message);
+                        Console.WriteLine("РџРѕРІРµСЂС…РЅРѕСЃС‚СЊ СЂРµР»СЊСЃР° ERROR! " + e.Message);
                     }
 
                     try
                     {
-                        GetBolt(trip, km); //стыки
-                        Console.WriteLine("болт ок!");
+                        GetBolt(trip, km); //СЃС‚С‹РєРё
+                        Console.WriteLine("Р±РѕР»С‚ РѕРє!");
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine("болт error! " + e.Message);
+                        Console.WriteLine("Р±РѕР»С‚ error! " + e.Message);
                     }
                     try
                     {
-                        GetBalast(trip, km); //баласт
-                        Console.WriteLine("Баласт ОК!");
+                        GetBalast(trip, km); //Р±Р°Р»Р°СЃС‚
+                        Console.WriteLine("Р‘Р°Р»Р°СЃС‚ РћРљ!");
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine("Баласт ERROR! " + e.Message);
+                        Console.WriteLine("Р‘Р°Р»Р°СЃС‚ ERROR! " + e.Message);
                     }
 
                     try
                     {
                         GetPerpen(trip, km);
-                        Console.WriteLine("Perpen ОК!");
+                        Console.WriteLine("Perpen РћРљ!");
                     }
                     catch (Exception e)
                     {
@@ -260,40 +260,40 @@ namespace GapService
                     try
                     {
                         GetSleepers(trip, km);
-                        Console.WriteLine("Шпалы ОК!");
+                        Console.WriteLine("РЁРїР°Р»С‹ РћРљ!");
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine("Шпалы ERROR! " + e.Message);
+                        Console.WriteLine("РЁРїР°Р»С‹ ERROR! " + e.Message);
                     }
 
                     try
                     {
-                        GetdeviationsinSleepers(trip, km); //Огр шпалы
-                        Console.WriteLine("Огр шпалы ОК!");
+                        GetdeviationsinSleepers(trip, km); //РћРіСЂ С€РїР°Р»С‹
+                        Console.WriteLine("РћРіСЂ С€РїР°Р»С‹ РћРљ!");
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine("Огр шпалы ERROR! " + e.Message);
+                        Console.WriteLine("РћРіСЂ С€РїР°Р»С‹ ERROR! " + e.Message);
                     }
 
                     try
                     {
-                        Getbadfasteners(trip, km); //Скрепление
-                        Console.WriteLine("Скрепление ОК!");
+                        Getbadfasteners(trip, km); //РЎРєСЂРµРїР»РµРЅРёРµ
+                        Console.WriteLine("РЎРєСЂРµРїР»РµРЅРёРµ РћРљ!");
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine("Скрепление ERROR! " + e.Message);
+                        Console.WriteLine("РЎРєСЂРµРїР»РµРЅРёРµ ERROR! " + e.Message);
                     }
                     try
                     {
-                        Getdeviationsinfastening(trip, km); //огр в скреп
-                        Console.WriteLine("Огр скор Скрепление ОК!");
+                        Getdeviationsinfastening(trip, km); //РѕРіСЂ РІ СЃРєСЂРµРї
+                        Console.WriteLine("РћРіСЂ СЃРєРѕСЂ РЎРєСЂРµРїР»РµРЅРёРµ РћРљ!");
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine("Огр скор Скрепление ERROR! " + e.Message);
+                        Console.WriteLine("РћРіСЂ СЃРєРѕСЂ РЎРєСЂРµРїР»РµРЅРёРµ ERROR! " + e.Message);
                     }
                     //}
                 };
@@ -311,7 +311,7 @@ namespace GapService
         }
 
         /// <summary>
-        /// Сервис по доппараметрам
+        /// РЎРµСЂРІРёСЃ РїРѕ РґРѕРїРїР°СЂР°РјРµС‚СЂР°Рј
         /// </summary>
         /// <param name="trip"></param>
         /// <param name="km"></param>
@@ -344,7 +344,7 @@ namespace GapService
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine("Не получилось прочитать файл ", file, e.Message);
+                        Console.WriteLine("РќРµ РїРѕР»СѓС‡РёР»РѕСЃСЊ РїСЂРѕС‡РёС‚Р°С‚СЊ С„Р°Р№Р» ", file, e.Message);
                     }
                 }
                 
@@ -381,7 +381,7 @@ namespace GapService
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("Ошибка записи в БД " + e.Message);
+                    Console.WriteLine("РћС€РёР±РєР° Р·Р°РїРёСЃРё РІ Р‘Р” " + e.Message);
                 }
             }
             
@@ -559,7 +559,7 @@ namespace GapService
                     }
 
 
-                    // Коэфиценты увеличены с 0.15 до 1.15
+                    // РљРѕСЌС„РёС†РµРЅС‚С‹ СѓРІРµР»РёС‡РµРЅС‹ СЃ 0.15 РґРѕ 1.15
                     var koef_long = 0.15;
                     var koef_medium = 0.15;
                     var koef_short = 0.15;
@@ -592,7 +592,7 @@ namespace GapService
 
 
                 }
-                //импульсы
+                //РёРјРїСѓР»СЊСЃС‹
                 for (int i = 0; i < bolshe0.Count; i++)
                 {
                     if (bolshe0[i].H < 0.8)
@@ -676,7 +676,7 @@ namespace GapService
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("Ошибка записи в БД " + e.Message);
+                    Console.WriteLine("РћС€РёР±РєР° Р·Р°РїРёСЃРё РІ Р‘Р” " + e.Message);
                 }
 
                 //IMPULS
@@ -703,7 +703,7 @@ namespace GapService
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("Ошибка записи в БД " + e.Message);
+                    Console.WriteLine("РћС€РёР±РєР° Р·Р°РїРёСЃРё РІ Р‘Р” " + e.Message);
                 }
 
 
@@ -737,7 +737,7 @@ namespace GapService
 
 
         /// <summary>
-        /// Сервис по стыкам
+        /// РЎРµСЂРІРёСЃ РїРѕ СЃС‚С‹РєР°Рј
         /// </summary>
         /// <param name="trip"></param>
         /// <param name="km"></param>
@@ -747,7 +747,7 @@ namespace GapService
             try
             {
                 var mainProcess = new MainParametersProcess { Trip_id = trip.Id };
-                //данные
+                //РґР°РЅРЅС‹Рµ
                 var DBcrossRailProfile = AdditionalParametersService.GetCrossRailProfileFromDBbyKm(km.Number, trip.Id);
                 if (DBcrossRailProfile == null) return "NULL CrossRailProfile";
 
@@ -765,7 +765,7 @@ namespace GapService
 
 
         /// <summary>
-        /// Сервис по стыкам
+        /// РЎРµСЂРІРёСЃ РїРѕ СЃС‚С‹РєР°Рј
         /// </summary>
         /// <param name="trip"></param>
         /// <param name="km"></param>
@@ -784,7 +784,7 @@ namespace GapService
                 RailFastener prev_fastener = null;
                 foreach (var fastener in digressions)
                 {
-                    //string amount = (int)finddeg.Typ == 1025 ? finddeg.Length.ToString() + " шп.ящиков" : finddeg.Length.ToString() + "%";
+                    //string amount = (int)finddeg.Typ == 1025 ? finddeg.Length.ToString() + " С€Рї.СЏС‰РёРєРѕРІ" : finddeg.Length.ToString() + "%";
                     //string meter = (int)finddeg.Typ == 1025 ? (finddeg.Meter).ToString() : "";
                     //string piket = (int)finddeg.Typ != 1026 ? (finddeg.Meter / 100 + 1).ToString() : "";
                     var sector = "";
@@ -798,16 +798,16 @@ namespace GapService
                         sector = sector == null ? "" : sector;
                         speed = MainTrackStructureService.GetMtoObjectsByCoord(trip.Trip_date, fastener.Km, MainTrackStructureConst.MtoSpeed, trip.Direction, trackName.ToString()) as List<Speed>;
                     }
-                    fastener.PdbSection = km.PdbSection.Count > 0 ? $"ПЧУ-{km.PdbSection[0].Pchu}/ПД-{km.PdbSection[0].Pd}/ПДБ-{km.PdbSection[0].Pdb}" : "ПЧУ-/ПД-/ПДБ-";
+                    fastener.PdbSection = km.PdbSection.Count > 0 ? $"РџР§РЈ-{km.PdbSection[0].Pchu}/РџР”-{km.PdbSection[0].Pd}/РџР”Р‘-{km.PdbSection[0].Pdb}" : "РџР§РЈ-/РџР”-/РџР”Р‘-";
                     fastener.Station = km.StationSection != null && km.StationSection.Count > 0 ?
-                                      "Станция: " + km.StationSection[0].Station : (km.Sector != null ? km.Sector.ToString() : "");
+                                      "РЎС‚Р°РЅС†РёСЏ: " + km.StationSection[0].Station : (km.Sector != null ? km.Sector.ToString() : "");
                     prev_fastener = fastener;
 
                     //   fastener.Fastening = GetName(fastener.Digressions[0].DigName);
                     //fastener.Station = sector;
                     //fastener.Fragment = sector;
                     fastener.Otst = fastener.Digressions[0].GetName();
-                    fastener.Threat_id = fastener.Threat == Threat.Left ? "левая" : "правая";
+                    fastener.Threat_id = fastener.Threat == Threat.Left ? "Р»РµРІР°СЏ" : "РїСЂР°РІР°СЏ";
                 }
 
                 AdditionalParametersService.Insert_deviationsinballast(mainProcess.Trip_id, -1, digressions);
@@ -827,7 +827,7 @@ namespace GapService
 
 
         /// <summary>
-        /// Сервис по стыкам
+        /// РЎРµСЂРІРёСЃ РїРѕ СЃС‚С‹РєР°Рј
         /// </summary>
         /// <param name="trip"></param>
         /// <param name="km"></param>
@@ -845,15 +845,15 @@ namespace GapService
 
                 var pass_speed = km.PdbSection.Count > 0 ? km.Speeds.First().Passenger : -1;
                 var fr_speed = km.PdbSection.Count > 0 ? km.Speeds.First().Freight : -1;
-                //var pdb = km.PdbSection.Count > 0 ? km.PdbSection[0].ToString() : " ПЧ-/ПЧУ-/ПД-/ПДБ-";
+                //var pdb = km.PdbSection.Count > 0 ? km.PdbSection[0].ToString() : " РџР§-/РџР§РЈ-/РџР”-/РџР”Р‘-";
                 //var sector = km.StationSection != null && km.StationSection.Count > 0 ?
-                //                "Станция: " + km.StationSection[0].Station : (km.Sector != null ? km.Sector.ToString() : "");
+                //                "РЎС‚Р°РЅС†РёСЏ: " + km.StationSection[0].Station : (km.Sector != null ? km.Sector.ToString() : "");
                 var temperature = MainTrackStructureService.GetTemp(trip.Id, km.Track_id, km.Number);
-                var temp = (temperature.Count != 0 ? temperature[0].Kupe.ToString() : " ") + "°";
+                var temp = (temperature.Count != 0 ? temperature[0].Kupe.ToString() : " ") + "В°";
 
                 foreach (var gap in gaps)
                 {
-                    var pdb = km.PdbSection.Count > 0 ? km.PdbSection[0].ToString() : " ПЧ-/ПЧУ-/ПД-/ПДБ-";
+                    var pdb = km.PdbSection.Count > 0 ? km.PdbSection[0].ToString() : " РџР§-/РџР§РЈ-/РџР”-/РџР”Р‘-";
 
                     var data = pdb.Split($"/").ToList();
                     if (data.Any())
@@ -865,7 +865,7 @@ namespace GapService
                                     km.StationSection.Where(o => gap.Km + gap.Meter / 10000.0 >= o.RealStartCoordinate && o.RealFinalCoordinate >= gap.Km + gap.Meter / 10000.0).ToList() :
                                     new List<StationSection> { };
 
-                    var sector1 = isStation.Any() ? "Станция: " + km.StationSection[0].Station : (km.Sector != null ? km.Sector.ToString() : "");
+                    var sector1 = isStation.Any() ? "РЎС‚Р°РЅС†РёСЏ: " + km.StationSection[0].Station : (km.Sector != null ? km.Sector.ToString() : "");
 
                     gap.Pdb_section = pdb;
                     gap.Fragment = sector1;
@@ -892,20 +892,20 @@ namespace GapService
                     //        double k = (double)gap.H / (double)r.First().H;
                     //        gap.Zazor = (int)(r.First().Zazor * k);
                     //        gap.GetDigressions436();
-                    //        if (gap.DigName.Name.Equals("З?"))
-                    //            gap.DigName.Name = "З?Л";
-                    //        if (gap.DigName.Name.Equals("З"))
-                    //            gap.DigName.Name = "ЗЛ";
+                    //        if (gap.DigName.Name.Equals("Р—?"))
+                    //            gap.DigName.Name = "Р—?Р›";
+                    //        if (gap.DigName.Name.Equals("Р—"))
+                    //            gap.DigName.Name = "Р—Р›";
                     //   // }
                     //    //if (r.First().Zazor == -1)
                     //    //{
                     //    //    double k = (double)r.First().H / (double)gap.H;
                     //    //    r.First().Zazor = (int)(gap.Zazor * k);
                     //    //    r.First().GetDigressions436();
-                    //    //    if (gap.DigName.Equals("З?"))
-                    //    //        gap.DigName.Name = "З?П";
-                    //    //    if (gap.DigName.Equals("З"))
-                    //    //        gap.DigName.Name = "ЗП";
+                    //    //    if (gap.DigName.Equals("Р—?"))
+                    //    //        gap.DigName.Name = "Р—?Рџ";
+                    //    //    if (gap.DigName.Equals("Р—"))
+                    //    //        gap.DigName.Name = "Р—Рџ";
                     //    //}
 
                     //}
@@ -917,10 +917,10 @@ namespace GapService
                     //    double k = (double)r.First().H / (double)gap.H;
                     //    r.First().Zazor = (int)(gap.Zazor * k);
                     //    r.First().GetDigressions436();
-                    //    if (gap.DigName.Name.Equals("З?"))
-                    //        gap.DigName.Name = "З?Л";
-                    //    if (gap.DigName.Name.Equals("З"))
-                    //        gap.DigName.Name = "ЗЛ";
+                    //    if (gap.DigName.Name.Equals("Р—?"))
+                    //        gap.DigName.Name = "Р—?Р›";
+                    //    if (gap.DigName.Name.Equals("Р—"))
+                    //        gap.DigName.Name = "Р—Р›";
 
 
                     //}
@@ -939,7 +939,7 @@ namespace GapService
 
 
         /// <summary>
-        /// Сервис Негодных  Скреплений  
+        /// РЎРµСЂРІРёСЃ РќРµРіРѕРґРЅС‹С…  РЎРєСЂРµРїР»РµРЅРёР№  
         /// </summary>
         /// <param name="trip"></param>
         /// <param name="km"></param>
@@ -955,7 +955,7 @@ namespace GapService
 
             foreach (var fastener in badFasteners)
             {
-                var pdb = km.PdbSection.Count > 0 ? km.PdbSection[0].ToString() : " ПЧ-/ПЧУ-/ПД-/ПДБ-";
+                var pdb = km.PdbSection.Count > 0 ? km.PdbSection[0].ToString() : " РџР§-/РџР§РЈ-/РџР”-/РџР”Р‘-";
 
                 var data = pdb.Split($"/").ToList();
                 if (data.Any())
@@ -964,23 +964,23 @@ namespace GapService
                 }
 
                 var sector1 = km.StationSection != null && km.StationSection.Count > 0 ?
-                                "Станция: " + km.StationSection[0].Station : (km.Sector != null ? km.Sector.ToString() : "");
+                                "РЎС‚Р°РЅС†РёСЏ: " + km.StationSection[0].Station : (km.Sector != null ? km.Sector.ToString() : "");
 
                 fastener.Pchu = pdb;
                 fastener.Station = sector1;
                 //fastener.Fastening =(string)GetName(fastener.Digressions[0].DigName);
-                //fastener.Fastening = km.RailsBrace.Any() ? km.RailsBrace.First().Name : "нет данных";
+                //fastener.Fastening = km.RailsBrace.Any() ? km.RailsBrace.First().Name : "РЅРµС‚ РґР°РЅРЅС‹С…";
                 fastener.Fastening = fastener.ToString();
 
                 fastener.Otst = fastener.Digressions[0].GetName();
-                fastener.Threat_id = fastener.Threat == Threat.Left ? "левая" : "правая";
+                fastener.Threat_id = fastener.Threat == Threat.Left ? "Р»РµРІР°СЏ" : "РїСЂР°РІР°СЏ";
             }
             AdditionalParametersService.Insert_badfastening(mainProcess.Trip_id, -1, badFasteners);
 
         }
 
         /// <summary>
-        /// Сервис огр скор Шпалы
+        /// РЎРµСЂРІРёСЃ РѕРіСЂ СЃРєРѕСЂ РЁРїР°Р»С‹
         /// </summary>
         /// <param name="trip"></param>
         /// <param name="km"></param>
@@ -1010,7 +1010,7 @@ namespace GapService
                 {
                     digList.Add(AbsSleepersList[i]);
                     digList[digList.Count - 1].Velich = countSl;
-                    digList[digList.Count - 1].Ots = "КНШ";
+                    digList[digList.Count - 1].Ots = "РљРќРЁ";
 
                     prevM = nextM;
                     countSl = 1;
@@ -1039,7 +1039,7 @@ namespace GapService
             {
                 var KM = item.Km;
 
-                //фильтр по выбранным км
+                //С„РёР»СЊС‚СЂ РїРѕ РІС‹Р±СЂР°РЅРЅС‹Рј РєРј
                 var curves2 = curves1.Where(
                     o => item.Km + item.Meter / 10000.0 >= o.RealStartCoordinate && o.RealFinalCoordinate >= item.Km + item.Meter / 10000.0).ToList();
 
@@ -1056,7 +1056,7 @@ namespace GapService
                 }
                 previousKm = KM;
 
-                var pdb = km.PdbSection.Count > 0 ? km.PdbSection[0].ToString() : " ПЧ-/ПЧУ-/ПД-/ПДБ-";
+                var pdb = km.PdbSection.Count > 0 ? km.PdbSection[0].ToString() : " РџР§-/РџР§РЈ-/РџР”-/РџР”Р‘-";
 
                 var data = pdb.Split($"/").ToList();
                 if (data.Any())
@@ -1068,7 +1068,7 @@ namespace GapService
                                 km.StationSection.Where(o => item.Km + item.Meter / 10000.0 >= o.RealStartCoordinate && o.RealFinalCoordinate >= item.Km + item.Meter / 10000.0).ToList() :
                                 new List<StationSection> { };
 
-                var sector1 = isStation.Any() ? "Станция: " + km.StationSection[0].Station : (km.Sector != null ? km.Sector.ToString() : "");
+                var sector1 = isStation.Any() ? "РЎС‚Р°РЅС†РёСЏ: " + km.StationSection[0].Station : (km.Sector != null ? km.Sector.ToString() : "");
 
                 if (item.Meter == 559)
                 {
@@ -1132,13 +1132,13 @@ namespace GapService
                 item.Vpz = km.Speeds.Count > 0 ? km.Speeds[0].Passenger.ToString() + "/" + km.Speeds[0].Freight.ToString() : "-/-";
                 item.Ots = item.Ots;
                 item.TrackClass = (trackclasses.Count > 0 ? trackclasses[0].Class_Id : -1).ToString();
-                item.Tripplan = curve != -1 ? "кривая R-" + curve.ToString() : "прямой";
+                item.Tripplan = curve != -1 ? "РєСЂРёРІР°СЏ R-" + curve.ToString() : "РїСЂСЏРјРѕР№";
 
-                //item.Fastening = skreplenie.Count > 0 ? skreplenie[0].Name : "Нет данных";
-                item.Fastening = km.RailsBrace.Any() ? km.RailsBrace.First().Name : "нет данных";
-                item.Norma = km.Gauge.Count > item.Meter - 1 ? km.Gauge[item.Meter].ToString("0") : "нет данных";
-                item.Kol = item.Velich + " шт";
-                item.RailType = rail_type.Count > 0 ? rail_type[0].Name : "Нет данных";
+                //item.Fastening = skreplenie.Count > 0 ? skreplenie[0].Name : "РќРµС‚ РґР°РЅРЅС‹С…";
+                item.Fastening = km.RailsBrace.Any() ? km.RailsBrace.First().Name : "РЅРµС‚ РґР°РЅРЅС‹С…";
+                item.Norma = km.Gauge.Count > item.Meter - 1 ? km.Gauge[item.Meter].ToString("0") : "РЅРµС‚ РґР°РЅРЅС‹С…";
+                item.Kol = item.Velich + " С€С‚";
+                item.RailType = rail_type.Count > 0 ? rail_type[0].Name : "РќРµС‚ РґР°РЅРЅС‹С…";
                 item.Vdop = ogr;
 
             }
@@ -1147,18 +1147,18 @@ namespace GapService
         }
 
         /// <summary>
-        /// Сервис Ведомость отсутствующих болтов
+        /// РЎРµСЂРІРёСЃ Р’РµРґРѕРјРѕСЃС‚СЊ РѕС‚СЃСѓС‚СЃС‚РІСѓСЋС‰РёС… Р±РѕР»С‚РѕРІ
         /// </summary>
-        /// <param name="trip">Данные поездки</param>
-        /// <param name="km">Километр</param>
-        /// <param name="DistId">ПЧ id</param>
+        /// <param name="trip">Р”Р°РЅРЅС‹Рµ РїРѕРµР·РґРєРё</param>
+        /// <param name="km">РљРёР»РѕРјРµС‚СЂ</param>
+        /// <param name="DistId">РџР§ id</param>
         public void GetBolt(Trips trip, Kilometer km)
         {
             km.LoadTrackPasport(MainTrackStructureRepository, trip.Trip_date);
             var mainProcess = new MainParametersProcess { Trip_id = trip.Id };
-            //левая сторона
+            //Р»РµРІР°СЏ СЃС‚РѕСЂРѕРЅР°
             var AbsBoltListLeft = RdStructureService.NoBolt(mainProcess, Threat.Left, km.Number);
-            //правая сторона
+            //РїСЂР°РІР°СЏ СЃС‚РѕСЂРѕРЅР°
             var AbsBoltListRight = RdStructureService.NoBolt(mainProcess, Threat.Right, km.Number);
             List<Digression> AbsBoltList = new List<Digression>(AbsBoltListLeft);
             AbsBoltList.AddRange(AbsBoltListRight);
@@ -1179,7 +1179,7 @@ namespace GapService
 
             foreach (var item in AbsBoltList)
             {
-                var pdb = km.PdbSection.Count > 0 ? km.PdbSection[0].ToString() : " ПЧ-/ПЧУ-/ПД-/ПДБ-";
+                var pdb = km.PdbSection.Count > 0 ? km.PdbSection[0].ToString() : " РџР§-/РџР§РЈ-/РџР”-/РџР”Р‘-";
 
                 var data = pdb.Split($"/").ToList();
                 if (data.Any())
@@ -1191,7 +1191,7 @@ namespace GapService
                                 km.StationSection.Where(o => item.Km + item.Meter / 10000.0 >= o.RealStartCoordinate && o.RealFinalCoordinate >= item.Km + item.Meter / 10000.0).ToList() :
                                 new List<StationSection> { };
 
-                var sector1 = isStation.Any() ? "Станция: " + km.StationSection[0].Station : (km.Sector != null ? km.Sector.ToString() : "");
+                var sector1 = isStation.Any() ? "РЎС‚Р°РЅС†РёСЏ: " + km.StationSection[0].Station : (km.Sector != null ? km.Sector.ToString() : "");
 
                 item.PCHU = pdb;
                 item.Station = sector1;
@@ -1207,14 +1207,14 @@ namespace GapService
             //var skreplenie = MainTrackStructureService.GetMtoObjectsByCoord(trip.Trip_date, km.Number,
             //    MainTrackStructureConst.MtoRailsBrace, trip.Direction, trackName.ToString()) as List<RailsBrace>;
             var skreplenie = MainTrackStructureService.GetMtoObjectsByCoord(trip.Trip_date, km.Number,
-              MainTrackStructureConst.MtoRailsBrace, "Петропавловск - Шу", trackName.ToString()) as List<RailsBrace>;
+              MainTrackStructureConst.MtoRailsBrace, "РџРµС‚СЂРѕРїР°РІР»РѕРІСЃРє - РЁСѓ", trackName.ToString()) as List<RailsBrace>;
             
             var ViolPerpen = RdStructureService.GetViolPerpen((int)trip.Id, new int[] { 7 }, km.Number);
 
             AdditionalParametersService.Insert_ViolPerpen(km, skreplenie, ViolPerpen);
         }
         /// <summary>
-        /// Сервис по деф шпалам
+        /// РЎРµСЂРІРёСЃ РїРѕ РґРµС„ С€РїР°Р»Р°Рј
         /// </summary>
         /// <param name="trip"></param>
         /// <param name="km"></param>
@@ -1262,12 +1262,12 @@ namespace GapService
                     if ((previousKm == -1) || (previousKm != digressions[i].Km))
                     {
                         //sector = MainTrackStructureService.GetSector(km.Track_id, digressions[i].Km, trip.Trip_date);
-                        //sector = sector == null ? "Нет данных" : sector;
+                        //sector = sector == null ? "РќРµС‚ РґР°РЅРЅС‹С…" : sector;
                         //pdbSection = MainTrackStructureService.GetMtoObjectsByCoord(trip.Trip_date, digressions[i].Km, MainTrackStructureConst.MtoPdbSection, trip.Direction, trackName.ToString()) as List<PdbSection>;
-                        skreplenie = MainTrackStructureService.GetMtoObjectsByCoord(trip.Trip_date, digressions[i].Km, MainTrackStructureConst.MtoRailsBrace, "Петропавловск - Шу", trackName.ToString()) as List<RailsBrace>;
+                        skreplenie = MainTrackStructureService.GetMtoObjectsByCoord(trip.Trip_date, digressions[i].Km, MainTrackStructureConst.MtoRailsBrace, "РџРµС‚СЂРѕРїР°РІР»РѕРІСЃРє - РЁСѓ", trackName.ToString()) as List<RailsBrace>;
                     }
 
-                    var pdb = km.PdbSection.Count > 0 ? km.PdbSection[0].ToString() : " ПЧ-/ПЧУ-/ПД-/ПДБ-";
+                    var pdb = km.PdbSection.Count > 0 ? km.PdbSection[0].ToString() : " РџР§-/РџР§РЈ-/РџР”-/РџР”Р‘-";
 
                     var data = pdb.Split($"/").ToList(); 
                     if (data.Any())
@@ -1276,7 +1276,7 @@ namespace GapService
                     }
 
                     var sector1 = km.StationSection != null && km.StationSection.Count > 0 ?
-                                    "Станция: " + km.StationSection[0].Station : (km.Sector != null ? km.Sector.ToString() : "");
+                                    "РЎС‚Р°РЅС†РёСЏ: " + km.StationSection[0].Station : (km.Sector != null ? km.Sector.ToString() : "");
 
                     previousKm = digressions[i].Km;
 
@@ -1286,71 +1286,71 @@ namespace GapService
                     switch (digressions[i].Oid)
                     {
                         case (int)VideoObjectType.Railbreak:
-                            otst = "продольная трещина";
-                            meropr = "замена при среднем ремонте ";
+                            otst = "РїСЂРѕРґРѕР»СЊРЅР°СЏ С‚СЂРµС‰РёРЅР°";
+                            meropr = "Р·Р°РјРµРЅР° РїСЂРё СЃСЂРµРґРЅРµРј СЂРµРјРѕРЅС‚Рµ ";
                             break;
                         case (int)VideoObjectType.Railbreak_Stone:
-                            otst = "продольная трещина";
-                            meropr = "замена при среднем ремонте";
+                            otst = "РїСЂРѕРґРѕР»СЊРЅР°СЏ С‚СЂРµС‰РёРЅР°";
+                            meropr = "Р·Р°РјРµРЅР° РїСЂРё СЃСЂРµРґРЅРµРј СЂРµРјРѕРЅС‚Рµ";
                             break;
                         case (int)VideoObjectType.Railbreak_vikol:
-                            otst = "выкол";
-                            meropr = "замена при текущем содержании";
+                            otst = "РІС‹РєРѕР»";
+                            meropr = "Р·Р°РјРµРЅР° РїСЂРё С‚РµРєСѓС‰РµРј СЃРѕРґРµСЂР¶Р°РЅРёРё";
                             break;
                         case (int)VideoObjectType.Railbreak_raskol:
-                            otst = "продольный раскол";
-                            meropr = "замена при среднем ремонте";
+                            otst = "РїСЂРѕРґРѕР»СЊРЅС‹Р№ СЂР°СЃРєРѕР»";
+                            meropr = "Р·Р°РјРµРЅР° РїСЂРё СЃСЂРµРґРЅРµРј СЂРµРјРѕРЅС‚Рµ";
                             break;
                         case (int)VideoObjectType.Railbreak_midsection:
-                            otst = "излом в средней части";
-                            meropr = "первоначальная замена при текущем содержании";
+                            otst = "РёР·Р»РѕРј РІ СЃСЂРµРґРЅРµР№ С‡Р°СЃС‚Рё";
+                            meropr = "РїРµСЂРІРѕРЅР°С‡Р°Р»СЊРЅР°СЏ Р·Р°РјРµРЅР° РїСЂРё С‚РµРєСѓС‰РµРј СЃРѕРґРµСЂР¶Р°РЅРёРё";
                             break;
                         case (int)VideoObjectType.Railbreak_Stone_vikol:
-                            otst = "выкол";
-                            meropr = "замена при текущем содержании";
+                            otst = "РІС‹РєРѕР»";
+                            meropr = "Р·Р°РјРµРЅР° РїСЂРё С‚РµРєСѓС‰РµРј СЃРѕРґРµСЂР¶Р°РЅРёРё";
                             break;
                         case (int)VideoObjectType.Railbreak_Stone_raskol:
                             if (i < digressions.Count - 2 && Math.Abs(digressions[i + 1].Meter - digressions[i].Meter) == 1)
                             {
-                                otst = "продольный раскол";
-                                meropr = "первоначальная замена при текущем содержании";
+                                otst = "РїСЂРѕРґРѕР»СЊРЅС‹Р№ СЂР°СЃРєРѕР»";
+                                meropr = "РїРµСЂРІРѕРЅР°С‡Р°Р»СЊРЅР°СЏ Р·Р°РјРµРЅР° РїСЂРё С‚РµРєСѓС‰РµРј СЃРѕРґРµСЂР¶Р°РЅРёРё";
                             }
                             else if (i > 0 && Math.Abs(digressions[i - 1].Meter - digressions[i].Meter) == 1)
                             {
-                                otst = "продольный раскол";
-                                meropr = "первоначальная замена при текущем содержании";
+                                otst = "РїСЂРѕРґРѕР»СЊРЅС‹Р№ СЂР°СЃРєРѕР»";
+                                meropr = "РїРµСЂРІРѕРЅР°С‡Р°Р»СЊРЅР°СЏ Р·Р°РјРµРЅР° РїСЂРё С‚РµРєСѓС‰РµРј СЃРѕРґРµСЂР¶Р°РЅРёРё";
                             }
                             else if (isgap)
                             {
-                                otst = "продольный раскол";
-                                meropr = "первоначальная замена при текущем содержании";
+                                otst = "РїСЂРѕРґРѕР»СЊРЅС‹Р№ СЂР°СЃРєРѕР»";
+                                meropr = "РїРµСЂРІРѕРЅР°С‡Р°Р»СЊРЅР°СЏ Р·Р°РјРµРЅР° РїСЂРё С‚РµРєСѓС‰РµРј СЃРѕРґРµСЂР¶Р°РЅРёРё";
                             }
                             else
                             {
-                                otst = "продольный раскол";
-                                meropr = "замена при среднем ремонте";
+                                otst = "РїСЂРѕРґРѕР»СЊРЅС‹Р№ СЂР°СЃРєРѕР»";
+                                meropr = "Р·Р°РјРµРЅР° РїСЂРё СЃСЂРµРґРЅРµРј СЂРµРјРѕРЅС‚Рµ";
                             }
                             break;
                         case (int)VideoObjectType.Railbreak_Stone_midsection:
                             if (i < digressions.Count - 2 && Math.Abs(digressions[i + 1].Meter - digressions[i].Meter) == 1)
                             {
-                                otst = "излом в средней части";
-                                meropr = "первоначальная замена при текущем содержании";
+                                otst = "РёР·Р»РѕРј РІ СЃСЂРµРґРЅРµР№ С‡Р°СЃС‚Рё";
+                                meropr = "РїРµСЂРІРѕРЅР°С‡Р°Р»СЊРЅР°СЏ Р·Р°РјРµРЅР° РїСЂРё С‚РµРєСѓС‰РµРј СЃРѕРґРµСЂР¶Р°РЅРёРё";
                             }
                             else if (i > 0 && Math.Abs(digressions[i - 1].Meter - digressions[i].Meter) == 1)
                             {
-                                otst = "излом в средней части";
-                                meropr = "первоначальная замена при текущем содержании";
+                                otst = "РёР·Р»РѕРј РІ СЃСЂРµРґРЅРµР№ С‡Р°СЃС‚Рё";
+                                meropr = "РїРµСЂРІРѕРЅР°С‡Р°Р»СЊРЅР°СЏ Р·Р°РјРµРЅР° РїСЂРё С‚РµРєСѓС‰РµРј СЃРѕРґРµСЂР¶Р°РЅРёРё";
                             }
                             else if (isgap)
                             {
-                                otst = "излом в средней части";
-                                meropr = "первоначальная замена при текущем содержании";
+                                otst = "РёР·Р»РѕРј РІ СЃСЂРµРґРЅРµР№ С‡Р°СЃС‚Рё";
+                                meropr = "РїРµСЂРІРѕРЅР°С‡Р°Р»СЊРЅР°СЏ Р·Р°РјРµРЅР° РїСЂРё С‚РµРєСѓС‰РµРј СЃРѕРґРµСЂР¶Р°РЅРёРё";
                             }
                             else
                             {
-                                otst = "излом в средней части";
-                                meropr = "замена при среднем ремонте";
+                                otst = "РёР·Р»РѕРј РІ СЃСЂРµРґРЅРµР№ С‡Р°СЃС‚Рё";
+                                meropr = "Р·Р°РјРµРЅР° РїСЂРё СЃСЂРµРґРЅРµРј СЂРµРјРѕРЅС‚Рµ";
                             }
                             break;
                     }
@@ -1359,8 +1359,8 @@ namespace GapService
                     digressions[i].Meropr = meropr;
                     digressions[i].Pchu = pdb;
                     digressions[i].Station = sector1;
-                    digressions[i].Fastening = skreplenie.Count > 0 ? skreplenie[0].Name : "Нет данных";
-                    digressions[i].Notice = isgap ? "стык" : "";
+                    digressions[i].Fastening = skreplenie.Count > 0 ? skreplenie[0].Name : "РќРµС‚ РґР°РЅРЅС‹С…";
+                    digressions[i].Notice = isgap ? "СЃС‚С‹Рє" : "";
                 }
 
                 AdditionalParametersService.Insert_defshpal(mainProcess.Trip_id, 1, digressions);
@@ -1372,7 +1372,7 @@ namespace GapService
             }
         }
         /// <summary>
-        /// Сервис по стыкам
+        /// РЎРµСЂРІРёСЃ РїРѕ СЃС‚С‹РєР°Рј
         /// </summary>
         /// <param name="trip"></param>
         /// <param name="km"></param>
@@ -1419,7 +1419,7 @@ namespace GapService
                             {
                                 digList.Add(getdeviationfastening[i]);
                                 digList[digList.Count - 1].Count = countSl;
-                                digList[digList.Count - 1].Ots = "КНС";
+                                digList[digList.Count - 1].Ots = "РљРќРЎ";
 
                                 prevM = nextM;
                                 countSl = 1;
@@ -1430,7 +1430,7 @@ namespace GapService
                     {
                         digList.Add(getdeviationfastening[i]);
                         digList[digList.Count - 1].Count = countSl;
-                        digList[digList.Count - 1].Ots = "КНС";
+                        digList[digList.Count - 1].Ots = "РљРќРЎ";
 
                         prevM = nextM;
                         countSl = 1;
@@ -1452,8 +1452,8 @@ namespace GapService
 
                     if ((prev_digression == null) || (prev_digression.Km != digression.Km))
                     {
-                        //tripplan = digression.Location == Location.OnCurveSection ? $"кривая R-{digression.CurveRadius}" : (digression.Location == Location.OnStrightSection ? "прямой" : "стрелочный перевод");
-                        //amount = digression.DigName == DigressionName.KNS ? $"{digression.Count} шт" : $"{digression.Length} %";
+                        //tripplan = digression.Location == Location.OnCurveSection ? $"РєСЂРёРІР°СЏ R-{digression.CurveRadius}" : (digression.Location == Location.OnStrightSection ? "РїСЂСЏРјРѕР№" : "СЃС‚СЂРµР»РѕС‡РЅС‹Р№ РїРµСЂРµРІРѕРґ");
+                        //amount = digression.DigName == DigressionName.KNS ? $"{digression.Count} С€С‚" : $"{digression.Length} %";
                         speed = MainTrackStructureService.GetMtoObjectsByCoord(trip.Trip_date, km.Number, MainTrackStructureConst.MtoSpeed, trip.Direction, trackName.ToString()) as List<Speed>;
                         //pdbSection = MainTrackStructureService.GetMtoObjectsByCoord(trip.Trip_date, km.Number, MainTrackStructureConst.MtoPdbSection, trip.Direction, trackName.ToString()) as List<PdbSection>;
                         //sector = MainTrackStructureService.GetSector(km.Track_id, km.Number, trip.Trip_date);
@@ -1508,7 +1508,7 @@ namespace GapService
                             ogr = "";
                             break;
                     }
-                    var pdb = km.PdbSection.Count > 0 ? km.PdbSection[0].ToString() : " ПЧ-/ПЧУ-/ПД-/ПДБ-";
+                    var pdb = km.PdbSection.Count > 0 ? km.PdbSection[0].ToString() : " РџР§-/РџР§РЈ-/РџР”-/РџР”Р‘-";
 
                     var data = pdb.Split($"/").ToList();
                     if (data.Any())
@@ -1517,23 +1517,23 @@ namespace GapService
                     }
 
                     var sector1 = km.StationSection != null && km.StationSection.Count > 0 ?
-                                    "Станция: " + km.StationSection[0].Station : (km.Sector != null ? km.Sector.ToString() : "");
+                                    "РЎС‚Р°РЅС†РёСЏ: " + km.StationSection[0].Station : (km.Sector != null ? km.Sector.ToString() : "");
                     digression.Pchu = pdb;
                     //digression.Norma = ( curveNorma == -1 ? 1520 : curveNorma).ToString();
-                    digression.Norma = km.Gauge.Count > digression.Mtr - 1 ? km.Gauge[digression.Mtr].ToString("0") : (curveNorma == -1 ? "нет данных" : curveNorma.ToString());
+                    digression.Norma = km.Gauge.Count > digression.Mtr - 1 ? km.Gauge[digression.Mtr].ToString("0") : (curveNorma == -1 ? "РЅРµС‚ РґР°РЅРЅС‹С…" : curveNorma.ToString());
 
-                    digression.Tripplan = curve != -1 ? "кривая R-" + curve.ToString() : "прямой";
+                    digression.Tripplan = curve != -1 ? "РєСЂРёРІР°СЏ R-" + curve.ToString() : "РїСЂСЏРјРѕР№";
                     digression.Station = sector1;
 
                     prev_fastener = digression;
 
                     //digression.Fastening = (string)GetName(digression.Digressions[0].DigName);
-                    digression.Fastening = km.RailsBrace.Any() ? km.RailsBrace.First().Name : "нет данных";
+                    digression.Fastening = km.RailsBrace.Any() ? km.RailsBrace.First().Name : "РЅРµС‚ РґР°РЅРЅС‹С…";
                     // fastener.Station = sector;
                     digression.Fragment = sector;
                     digression.Otst = digression.Digressions[0].GetName();
-                    digression.Threat_id = digression.Threat == Threat.Left ? "левая" : "правая";
-                    digression.Velich = digression.Count + " шт";
+                    digression.Threat_id = digression.Threat == Threat.Left ? "Р»РµРІР°СЏ" : "РїСЂР°РІР°СЏ";
+                    digression.Velich = digression.Count + " С€С‚";
                     digression.Vdop = ogr;
                     digression.Vpz = speed.Count > 0 ? speed[0].Passenger + "/" + speed[0].Freight : "";
                 }

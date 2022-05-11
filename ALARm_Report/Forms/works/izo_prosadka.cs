@@ -527,7 +527,7 @@ namespace ALARm_Report.Forms
             try
             {
                 htReport.Save(Path.GetTempPath() + "/report.html");
-                htReport.Save($@"G:\form\G:\form\1.Основные и дополнительные параметры геометрии рельсовой колеи (ГРК)\8.Ведомость просадок в зоне изолирующих стыков.html");
+                htReport.Save($@"G:\form\1.Основные и дополнительные параметры геометрии рельсовой колеи (ГРК)\8.Ведомость просадок в зоне изолирующих стыков.html");
             }
             catch
             {

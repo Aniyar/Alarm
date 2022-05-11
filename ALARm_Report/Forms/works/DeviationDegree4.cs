@@ -66,6 +66,7 @@ namespace ALARm_Report.Forms
                     DigressionTotal digressionTotal = new DigressionTotal();
                     XElement xeDirection = new XElement("directions");
                     XElement xeTracks = new XElement("tracks");
+            
 
                     int constrictionCount = 0; //Суж
                     int broadeningCount = 0; //Уш
@@ -74,14 +75,19 @@ namespace ALARm_Report.Forms
                     int drawdownCount = 0; //Пр - перекос
                     int straighteningCount = 0; //Р
                     int RNRCount = 0; //Рнр
+                    int RSTCount = 0;
 
                     foreach (var s3 in ListS3)
                     {
+                     
                         switch (s3.Ots)
                         {
                             case "Пр.п":
                             case "Пр.л":
                                 drawdownCount += s3.Kol;
+                                break;
+                            case "Рст":
+                                RSTCount += s3.Kol;
                                 break;
                             case "Суж":
                                 constrictionCount += s3.Kol;
@@ -130,7 +136,7 @@ namespace ALARm_Report.Forms
                                                     new XAttribute("limit_speed", (s3.Ovp.ToString() == "-1" ? "-" : s3.Ovp.ToString()) + "/" + 
                                                                                   (s3.Ogp.ToString() == "-1" ? "-" : s3.Ogp.ToString()) + "/" +
                                                                                   (s3.Ogp.ToString() == "-1" ? "-" : s3.Ogp.ToString())),
-                                                    new XAttribute("node", s3.Primech));
+                                                    new XAttribute("node", s3.Primech == "рн;рн;"?"рн": s3.Primech));
 
                                                 if (totals.Any(t => t.Name == s3.Ots))
                                                 {
@@ -164,7 +170,7 @@ namespace ALARm_Report.Forms
                                                     new XAttribute("limit_speed", (s3.Ovp.ToString() == "-1" ? "-" : s3.Ovp.ToString()) + "/" +
                                                                                   (s3.Ogp.ToString() == "-1" ? "-" : s3.Ogp.ToString()) + "/" +
                                                                                   (s3.Ogp.ToString() == "-1" ? "-" : s3.Ogp.ToString())),
-                                                    new XAttribute("node", s3.Primech));
+                                                    new XAttribute("node", s3.Primech == "рн;рн;" ? "рн" : s3.Primech));
 
                                                 if (totals.Any(t => t.Name == s3.Ots))
                                                 {
@@ -200,7 +206,7 @@ namespace ALARm_Report.Forms
                                                 new XAttribute("limit_speed", (s3.Ovp.ToString() == "-1" ? "-" : s3.Ovp.ToString()) + "/" +
                                                                               (s3.Ogp.ToString() == "-1" ? "-" : s3.Ogp.ToString()) + "/" +
                                                                               (s3.Ogp.ToString() == "-1" ? "-" : s3.Ogp.ToString())),
-                                                new XAttribute("node", s3.Primech));
+                                                new XAttribute("node", s3.Primech == "рн;рн;" ? "рн" : s3.Primech));
 
                                             if (totals.Any(t => t.Name == s3.Ots))
                                             {
@@ -237,7 +243,7 @@ namespace ALARm_Report.Forms
                                             new XAttribute("limit_speed",   (s3.Ovp.ToString() == "-1" ? "-" : s3.Ovp.ToString()) + "/" +
                                                                             (s3.Ogp.ToString() == "-1" ? "-" : s3.Ogp.ToString()) + "/" +
                                                                             (s3.Ogp.ToString() == "-1" ? "-" : s3.Ogp.ToString())),
-                                            new XAttribute("node", s3.Primech));
+                                            new XAttribute("node", s3.Primech == "рн;рн;" ? "рн" : s3.Primech));
 
                                         if (totals.Any(t => t.Name == s3.Ots))
                                         {
@@ -275,7 +281,7 @@ namespace ALARm_Report.Forms
                                         new XAttribute("limit_speed", (s3.Ovp.ToString() == "-1" ? "-" : s3.Ovp.ToString()) + "/" +
                                                                       (s3.Ogp.ToString() == "-1" ? "-" : s3.Ogp.ToString()) + "/" +
                                                                       (s3.Ogp.ToString() == "-1" ? "-" : s3.Ogp.ToString())),
-                                        new XAttribute("node", s3.Primech));
+                                        new XAttribute("node", s3.Primech == "рн;рн;" ? "рн" : s3.Primech));
 
                                     if (totals.Any(t => t.Name == s3.Ots))
                                     {
@@ -321,7 +327,7 @@ namespace ALARm_Report.Forms
                                     new XAttribute("limit_speed", (s3.Ovp.ToString() == "-1" ? "-" : s3.Ovp.ToString()) + "/" +
                                                                   (s3.Ogp.ToString() == "-1" ? "-" : s3.Ogp.ToString()) + "/" +
                                                                   (s3.Ogp.ToString() == "-1" ? "-" : s3.Ogp.ToString())),
-                                    new XAttribute("node", s3.Primech));
+                                    new XAttribute("node", s3.Primech == "рн;рн;" ? "рн" : s3.Primech));
 
                                 if (totals.Any(t => t.Name == s3.Ots))
                                 {
@@ -371,7 +377,7 @@ namespace ALARm_Report.Forms
                                 new XAttribute("limit_speed", (s3.Ovp.ToString() == "-1" ? "-" : s3.Ovp.ToString()) + "/" +
                                                                 (s3.Ogp.ToString() == "-1" ? "-" : s3.Ogp.ToString()) + "/" +
                                                                 (s3.Ogp.ToString() == "-1" ? "-" : s3.Ogp.ToString())),
-                                new XAttribute("node", s3.Primech));
+                                new XAttribute("node", s3.Primech == "рн;рн;" ? "рн" : s3.Primech));
 
                             if (totals.Any(t => t.Name == s3.Ots))
                             {
@@ -385,6 +391,8 @@ namespace ALARm_Report.Forms
                             }
 
                             xeTracks.Add(xeNote);
+
+                            
                         }
                     }
 
@@ -401,6 +409,7 @@ namespace ALARm_Report.Forms
                     {
                         tripElem.Add(new XElement("total", new XAttribute("totalinfo", "Пр - " + drawdownCount)));
                     }
+                   
                     if (constrictionCount > 0)
                     {
                         tripElem.Add(new XElement("total", new XAttribute("totalinfo", "Суж - " + constrictionCount)));
@@ -425,8 +434,13 @@ namespace ALARm_Report.Forms
                     {
                         tripElem.Add(new XElement("total", new XAttribute("totalinfo", "Рнр - " + RNRCount)));
                     }
+                    if (RSTCount > 0)
+                    {
+                        tripElem.Add(new XElement("total", new XAttribute("totalinfo", "Рст - " + RSTCount)));
+                    }
+                    
 
-                    tripElem.Add(new XAttribute("countDistance", drawdownCount + constrictionCount + broadeningCount + levelCount + skewnessCount + straighteningCount + RNRCount));
+                    tripElem.Add(new XAttribute("countDistance", drawdownCount + constrictionCount + broadeningCount + levelCount + skewnessCount + straighteningCount + RNRCount+ RSTCount));
 
                     xeDirection.Add(xeTracks);
                     tripElem.Add(xeDirection);
@@ -440,6 +454,7 @@ namespace ALARm_Report.Forms
             try
             {
                 htReport.Save(Path.GetTempPath() + "/report.html");
+                htReport.Save($@"G:\form\6.Выходные формы Основные параметры\Отступления 4-ой степени.html");
             }
             catch
             {

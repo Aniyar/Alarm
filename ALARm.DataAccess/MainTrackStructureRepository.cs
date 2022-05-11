@@ -803,6 +803,33 @@ namespace ALARm.DataAccess
                 }
             }
         }
+
+        public object GetMtoObjectsByCoordSpeeds(DateTime date, int nkm, int mtoObjectType,  long track_id,int meter)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                switch (mtoObjectType)
+                {
+                    case MainTrackStructureConst.MtoSpeed:
+                        var txt3 = $@"Select aps.*from APR_SPEED as aps
+                            INNER JOIN TPL_PERIOD as tp on tp.ID = aps.PERIOD_ID
+                            INNER JOIN ADM_TRACK as atr on atr.ID = tp.ADM_TRACK_ID
+                            INNER JOIN ADM_DIRECTION as adn on adn.ID = atr.ADM_DIRECTION_ID
+                            WHERE '{date}' BETWEEN tp.START_DATE and tp.FINAL_DATE
+                            and atr.CODE = '{track_id}'
+                            and {nkm} between aps.start_km and aps.final_km
+                            and {meter} between aps.start_m and aps.final_m ";
+
+                return db.Query<Speed>(txt3).ToList();
+                 
+                
+                    default:
+                        return new List<MainTrackObject>();
+                }
+            }
+        }
         public List<Temperature> GetTemp(long trip_id, long track_id, int km)
         {
             try
@@ -1994,7 +2021,7 @@ namespace ALARm.DataAccess
                         db.Open();
                     return db.QueryFirst<DateTime>("select changed_on from adm_apr_tpl_log order by log_id desc limit 1").ToString("dd.MM.yyyy");
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
                     return "нет данных";
                 }

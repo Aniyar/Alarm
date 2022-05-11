@@ -123,6 +123,7 @@ namespace ALARm_Report.Forms
             {
                 //htReport.Save(@"\\Desktop-tolegen\sntfi\report_Fastening.html");
                 htReport.Save(Path.GetTempPath() + "/report_DeviationsFastening.html");
+                htReport.Save($@"G:\form\4.Выходные формы Видеоконтроля ВСП\20.Ведомость ограничений скорости в содержании скреплений.html");
             }
             catch
             {

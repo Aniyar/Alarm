@@ -1769,9 +1769,9 @@ namespace ALARm.DataAccess
         {
             using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
             {
-                //Закоментил для работы с ПУ-32 КОМП нужны были все степени
-      //          if (db.State == ConnectionState.Closed)
-      //              db.Open();
+                //Закоментил для работы с ПУ - 32 КОМП нужны были все степени
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
       //          return db.Query<S3>(
       //              $@"select direction.code as Directcode, s3.*, trips.trip_date as TripDateTime from s3 
       //                  inner join adm_track as track on track.id = s3.track_id
@@ -1782,15 +1782,29 @@ namespace ALARm.DataAccess
 
                 if (db.State == ConnectionState.Closed)
                     db.Open();
-                
-                return db.Query<S3>(
+                if (digressionName != null)
+                {
+                    return db.Query<S3>(
                     $@"select direction.code as Directcode, s3.*, trips.trip_date as TripDateTime from s3 
                         inner join adm_track as track on track.id = s3.track_id
 						inner join adm_direction as direction on direction.id = track.adm_direction_id
                         inner join trips on s3.trip_id = trips.id 
-                        where trips.id = {trip_id}{digressionName?.Replace(digressionName, $" and s3.ots = '{digressionName}' ")}
+                        where trips.id = {trip_id} and s3.ots = '{digressionName}'
                         order by naprav, pd, put, km, meter", commandType: CommandType.Text).ToList();
+                }
+                else
+                {
+                    return db.Query<S3>(
+                    $@"select direction.code as Directcode, s3.*, trips.trip_date as TripDateTime from s3 
+                        inner join adm_track as track on track.id = s3.track_id
+						inner join adm_direction as direction on direction.id = track.adm_direction_id
+                        inner join trips on s3.trip_id = trips.id 
+                        where trips.id = {trip_id}
+                        order by naprav, pd, put, km, meter", commandType: CommandType.Text).ToList();
+                }
+                
             }
+            //{//digressionName?.Replace(digressionName, $" 
         }
 
         public object GetS3ForKm(Int64 trip_id, int km)
@@ -3551,7 +3565,7 @@ namespace ALARm.DataAccess
                         List<dynamic> res = db.Query($@"
                         select distinct rdkm.file_id, group_id from rd_rvo_kilometer rdkm
                         left join trip_files f on f.id = rdkm.file_id
-                        where km = {km} and trip_id = (select trip_id from trip_files where id = {fileID}) and processed = 1 and group_id = (select group_id from rd_rvo_kilometer where km = 147 and file_id = {fileID})
+                        where km = {km} and trip_id = (select trip_id from trip_files where id = {fileID}) and processed = 1 and group_id = (select group_id from rd_rvo_kilometer where km = {km} and file_id = {fileID})
                         ").ToList();
                     var result = new long[res.Count+1];
                     if (res.Count == 0)

@@ -99,8 +99,8 @@ namespace ALARm_Report.Forms
                         var lkm = kilometers.Select(o => o.Number).ToList();
 
                         var roadName = AdmStructureService.GetRoadName(parentId, AdmStructureConst.AdmDistance, true);
-                        filters.Add(new FloatFilter() { Name = "Начало (км)", Value = 145 });
-                        filters.Add(new FloatFilter() { Name = "Конец (км)", Value = 145 });
+                        filters.Add(new FloatFilter() { Name = "Начало (км)", Value = lkm.Min() });
+                        filters.Add(new FloatFilter() { Name = "Конец (км)", Value = lkm.Max() });
 
                         filterForm.SetDataSource(filters);
                         if (filterForm.ShowDialog() == DialogResult.Cancel)
@@ -476,8 +476,9 @@ namespace ALARm_Report.Forms
             }
             try
             {
+                htReport.Save($@"G:\form\1.Основные и дополнительные параметры геометрии рельсовой колеи (ГРК)\Графическая диаграмма  основных парамеров ГРК на участвке скоросного движения.html");
                 htReport.Save(Path.GetTempPath() + "/1report.html");
-                htReport.Save($@"G:\form\G:\form\1.Основные и дополнительные параметры геометрии рельсовой колеи (ГРК)\2.Графическая диаграмма  основных парамеров ГРК на участвке скоросного движения.html");
+                //htReport.Save($@"G:\form\G:\form\1.Основные и дополнительные параметры геометрии рельсовой колеи (ГРК)\2.Графическая диаграмма  основных парамеров ГРК на участвке скоросного движения.html");
                 var svg = htReport.Element("html").Element("body").Element("div").Element("div").Element("svg");
                 var svgDoc = SvgDocument.FromSvg<SvgDocument>(svg.ToString());
                 svgDoc.Width = 830 * 3;

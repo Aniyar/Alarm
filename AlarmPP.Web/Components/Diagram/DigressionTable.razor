@@ -89,6 +89,10 @@
             var closeToDangerGR = new List<string>() { DigressionName.gr.Name };
             foreach (var kilometer in Kilometers)
             {
+                if (kilometer.Number == 706)
+                {
+                    kilometer.Number = kilometer.Number;
+                }
                 if (kilometer.Digressions != null)
                 {
                     foreach (var digression in kilometer.Digressions)
@@ -100,20 +104,20 @@
 
                         if (AppData.ShowDigressions || AppData.ShowCloseToDangerous)
                         {
-                            
+
                             if ((digression.Degree == 4 || (digression.Degree == 3 && closeToDangerGR.Contains(digression.Comment)))  && (AppData.ShowDangerousDigressions) ||
                                    (digression.Degree == 3) && (AppData.Show3DegreeDigressions) ||
                                    (digression.Degree == 2) && (AppData.Show2DegreeDigressions) ||
                                    (digression.Degree == 1) && (AppData.Show1DegreeDigressions) ||
-                                   (closeToDangerGR.Contains(digression.Comment) && AppData.ShowCloseToDangerous))
+                                   (closeToDangerGR.Contains(digression.Comment) && AppData.ShowCloseToDangerous) ||
+                                   (closeToDanger.Contains(digression.DigName) && AppData.ShowCloseToDangerous))
                             {
                                 var color = digression.Degree == 4 ? "red" : digression.Degree == 3 ? "yellow" : digression.Degree == 2 ? "green" : "white";
+                              
 
-                                if (closeToDangerGR.Contains(digression.Comment) && AppData.ShowCloseToDangerous)
+                                if (closeToDangerGR.Contains(digression.Comment) && AppData.ShowCloseToDangerous || (closeToDanger.Contains(digression.DigName) && AppData.ShowCloseToDangerous))
                                 {
                                     color = "red";
-
-
                                 }
                                 if (!digression.gotprim)
                                 {
@@ -128,6 +132,7 @@
 
                                     }
                                     digression.gotprim = true;
+
                                 }
 
 
@@ -139,7 +144,7 @@
                                     <td style="border-right: 1px solid grey; text-align: left; width: 35px;">@digression.Km</td>
                                     <td style="border-right: 1px solid grey;  width:35px; text-align:left">@digression.Meter</td>
                                     <td style="border-right: 1px solid grey;  width:110px;">@(  digression.DigName != ""  ? digression.DigName : digression.Digression.Name )</td>
-                                    <td style="border-right: 1px solid grey;   width:90px; text-align:left">@digression.Degree</td>
+                                    <td style="border-right: 1px solid grey;   width:90px; text-align:left">@(digression.DigName =="?Анп"? "" :digression.Degree)</td>
                                     <td style="border-right: 1px solid grey; width: 125px;">@digression.Value</td>
                                     <td style="border-right: 1px solid grey; width: 125px;">@digression.Length</td>
 

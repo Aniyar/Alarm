@@ -442,7 +442,10 @@ namespace ALARm_Report.Forms
                             tripElem.Add(new XElement("total", new XAttribute("totalinfo", "Р - " + straighteningCount)));
                         }
 
-                        tracklElement.Add(new XAttribute("countDistance", drawdownCount +   levelCount + skewnessCount + straighteningCount));
+                        directionElement.Add(new XAttribute("countDistance", directionRecordCount));
+                        directionElement.Add(new XAttribute("distance", distance.Code));
+                        
+
 
 
                         report.Add(tripElem);
@@ -459,6 +462,7 @@ namespace ALARm_Report.Forms
             try
             {
                 htReport.Save(Path.GetTempPath() + "/report.html");
+                htReport.Save($@"G:\form\6.Выходные формы Основные параметры\Отступления 2 степени, близкие к 3.html");
             }
             catch
             {

@@ -258,16 +258,36 @@ namespace AlarmPP.Web.Components.Diagram
 
 
             AppData.ReloadKilometers();
+            ////Если ставлю все на  if (Helper.SendMessageFromRabbitMQ("localhost", AppData.Trip.Id, 1) == SocketState.Abortively)
+            ///Toaster.Add("mycomputer Не удалось запустить онлайн обработку видеопотока. Проверьте подключение к сети!!!", MatToastType.Warning, "ALARmDK");
+            //// то запускается на одном компьютере И паралельно поменять значения rwdet_project и ALARmSocketServer///Ищи по StartListening в ALARmSocketServer
 
-            if (Helper.SendMessageFromRabbitMQ("desktop", AppData.Trip.Id, 3) == SocketState.Abortively)
+
+            if (Helper.SendMessageFromRabbitMQ("localhost", AppData.Trip.Id, 3) == SocketState.Abortively)
                 Toaster.Add("localhost Не удалось запустить онлайн обработку видеопотока. Проверьте подключение к сети!!!", MatToastType.Warning, "ALARmDK");
             if (Helper.SendMessageFromRabbitMQ("mycomputer", AppData.Trip.Id, 1) == SocketState.Abortively)
                 Toaster.Add("mycomputer Не удалось запустить онлайн обработку видеопотока. Проверьте подключение к сети!!!", MatToastType.Warning, "ALARmDK");
 
             if (Helper.SendMessageFromSocket("localhost", 11000, $"start {AppData.Trip.Id} {3}") == SocketState.Abortively)
                 Toaster.Add("Не удалось запустить онлайн обработку видеопотока. Проверьте подключение к сети!!!", MatToastType.Warning, "ALARmDK");
+
+
             if (Helper.SendMessageFromSocket("mycomputer", 11000, $"start {AppData.Trip.Id} {1}") == SocketState.Abortively)
                 Toaster.Add("Не удалось запустить онлайн обработку видеопотока. Проверьте подключение к сети!!!", MatToastType.Warning, "ALARmDK");
+
+
+            //if (Helper.SendMessageFromRabbitMQ("localhost", AppData.Trip.Id, 3) == SocketState.Abortively)
+            //    Toaster.Add("localhost Не удалось запустить онлайн обработку видеопотока. Проверьте подключение к сети!!!", MatToastType.Warning, "ALARmDK");
+            //if (Helper.SendMessageFromRabbitMQ("localhost", AppData.Trip.Id, 1) == SocketState.Abortively)
+            //    Toaster.Add("mycomputer Не удалось запустить онлайн обработку видеопотока. Проверьте подключение к сети!!!", MatToastType.Warning, "ALARmDK");
+
+            //if (Helper.SendMessageFromSocket("localhost", 11000, $"start {AppData.Trip.Id} {3}") == SocketState.Abortively)
+            //    Toaster.Add("Не удалось запустить онлайн обработку видеопотока. Проверьте подключение к сети!!!", MatToastType.Warning, "ALARmDK");
+
+
+            //if (Helper.SendMessageFromSocket("localhost", 11000, $"start {AppData.Trip.Id} {1}") == SocketState.Abortively)
+            //    Toaster.Add("Не удалось запустить онлайн обработку видеопотока. Проверьте подключение к сети!!!", MatToastType.Warning, "ALARmDK");
+
             OnlineModeStarted.InvokeAsync(null);
         }
 
