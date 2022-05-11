@@ -94,7 +94,7 @@ namespace ALARm.Core
         Trips GetCurrentTrip();
         List<Fragment> GetTripFragments(long id);
         List<MainParametersProcess> GetProcess(ReportPeriod period, long distanceId, ProcessType processType);
-        List<RailFastener> GetBadRailFasteners(long tripId, bool orderBySide, string code, object trackName, int km = -1);
+        List<RailFastener> GetBadRailFasteners(long tripId, bool orderBySide, object trackName, int km = -1);
         List<Sleepers> GetSleeper(long trackId, int km, int meter, int start, int final, Threat threat);
         List<Sleepers> GetSleepers();
         SiteInfo GetSiteInfo(long trackId, int startKm, int finalKm);
@@ -104,8 +104,8 @@ namespace ALARm.Core
         object GetTripSections(long trackId, DateTime date, int type);
         object GetTripSections(long trackId, DateTime date, int start_km, int start_m, int final_km, int final_m, int type);
         List<Digression> GetAdditional(int km);
-      
-        
+        string GetTripFiles(int km, int tripid, string desc);
+
         List<Trips> GetTripsByRoad(Int64 road_id, ReportPeriod period, int trip_type);
         List<ReportPeriod> GetTripPeriodsByRoad(long road_id);
         List<OutData> GetNextOutDatas(int meter, int count, long trip_id);

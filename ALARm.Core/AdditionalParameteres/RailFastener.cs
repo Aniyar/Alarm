@@ -63,7 +63,7 @@ namespace ALARm.Core.AdditionalParameteres
             }
             
             //получаем список негодных скреплений
-            var badFasteners = rdStructureRepository.GetBadRailFasteners(videoProcess.Trip_id, true, pch, videoProcess.TrackName);
+            var badFasteners = rdStructureRepository.GetBadRailFasteners(videoProcess.Trip_id, true, videoProcess.TrackName);
 
             for (int i = 0; i < badFasteners.Count - 1; i++)
             {
