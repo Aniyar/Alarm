@@ -391,9 +391,7 @@ namespace ALARm_Report.Forms
 
                                     if (impulses.Any())
                                     {
-                                      
-                                            var Insert_additional_param_state = AdditionalParametersService.Insert_additional_param_state_longwawes(impulses);
-                                        
+                                        var Insert_additional_param_state = AdditionalParametersService.Insert_additional_param_state_longwawes(impulses);
                                     }    
                                     var picket = kilometer.Pickets.GetPicket(impulses[i].Meter);
                                     if (picket != null)
@@ -413,11 +411,11 @@ namespace ALARm_Report.Forms
                             List<Digression> addDigressions = shortRoughness.GetDigressions_new(kilometer.Number);
                             if (addDigressions.Any())
                             {
-                            if (addDigressions.Count != null && addDigressions.Count != 0)
+                            if (addDigressions != null && addDigressions.Count != 0)
                             {
                                 //var Insert_additional_param_state = AdditionalParametersService.Insert_additional_param_state(addDigressions);
                             }
-                                var Insert_additional_param_state = AdditionalParametersService.Insert_additional_param_state_aslan(addDigressions);
+                                var Insert_additional_param_state = AdditionalParametersService.Insert_additional_param_state_aslan(addDigressions, 242);
 
                             }
                             foreach (var dig in addDigressions)
@@ -564,11 +562,7 @@ namespace ALARm_Report.Forms
 
             var shortl = ShortData.Select(o => o.Diff_l / 8.0 < 1 / 8.0 ? 0 : o.Diff_l / 10.0).ToList();
             var shortr = ShortData.Select(o => o.Diff_r / 8.0 < 1 / 8.0 ? 0 : o.Diff_r / 10.0).ToList();
-              var flag =true;
-
-           
-
-
+            var flag =true;
             var short_meter = ShortData.Select(o => o.Meter).ToList();
             Meters.AddRange(ShortData.Select(o => o.Meter).ToList());
 
@@ -710,9 +704,9 @@ namespace ALARm_Report.Forms
 
 
                 // Коэфиценты увеличены с 0.15 до 1.15
-                var koef_long = 1.15;
-                var koef_medium = 1.15;
-                var koef_short = 1.15;
+                var koef_long = 0.15;
+                var koef_medium = 0.15;
+                var koef_short = 0.15;
 
                 LongWavesLeft.Add(l * koef_long);
                 MediumWavesLeft.Add(m * koef_medium);

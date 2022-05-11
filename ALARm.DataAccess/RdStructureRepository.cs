@@ -2687,7 +2687,7 @@ namespace ALARm.DataAccess
         /// </summary>
         /// <param name="tripId"></param>
         /// <returns></returns>
-        public List<RailFastener> GetBadRailFasteners(long tripId, bool orderBySide, string pch, object trackName, int km = -1)
+        public List<RailFastener> GetBadRailFasteners(long tripId, bool orderBySide, object trackName, int km = -1)
         {
             using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
             {
@@ -2759,7 +2759,6 @@ namespace ALARm.DataAccess
                                                {(int)VideoObjectType.KD65NB},
                                                {(int)VideoObjectType.KppNoPad}) 
 		                                AND trips.ID = {tripId} 
-		                                AND distance.code = '{pch}' 
                                         {(km == -1 ? "" : $"and km={km}")}
 		                                and h > 15 
 		                                AND w > 15 
@@ -3317,6 +3316,24 @@ namespace ALARm.DataAccess
                 db.Execute($"Delete from bedemost where trip_id = '{trip_id}'");
           
 
+            }
+        }
+        public string GetTripFiles(int km, int tripid, string desc)
+        {
+            try
+            {
+                using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+                {
+                    if (db.State == ConnectionState.Closed)
+                        db.Open();
+                    string cmd = $@"SELECT file_name FROM trip_files WHERE km_num = {km} AND trip_id = {tripid} AND description = '{desc}'";
+                    return (string)db.ExecuteScalar(cmd);
+                }
+            }
+            catch (Exception e)
+            {
+                System.Console.WriteLine("GetTripFiles:" + e.Message);
+                return "";
             }
         }
         public List<Trips> GetTrips(int count = 10)

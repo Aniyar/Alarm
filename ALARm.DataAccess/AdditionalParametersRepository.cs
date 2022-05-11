@@ -3311,6 +3311,27 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
         }
 
 
+        
+
+        public List<DataFlow> GetShortRough(long trip_id, int number)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                try
+                {
+                    var query = $@"SELECT * FROM testdata_{trip_id} where km = {number}  ORDER BY  meter  ";
+                    return db.Query<DataFlow>(query, commandType: CommandType.Text).ToList();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("GetCrossRailProfileFromTrip error: " + e.Message);
+                    return new List<DataFlow> { };
+                }
+            }
+        }
+
 
 
         public List<CrosProf> GetCrossRailProfileFromDBbyCurve(Curve curve, long trip_id)
@@ -3411,7 +3432,7 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
             return impulses;
         }
 
-        public List<Digression> Insert_additional_param_state_aslan(List<Digression> addDigressions)
+        public List<Digression> Insert_additional_param_state_aslan(List<Digression> addDigressions, long trip_id)
         {
             int index = 0;
             foreach (var adddig in addDigressions)
@@ -3440,9 +3461,10 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
                                                                 VALUE,
                                                                 COUNT,
                                                                 allowspeed,
-                                                                primech 
+                                                                primech, 
+                                                                trip_id
                                                                 )
-                                                 VALUES ({adddig.Km}, {adddig.Kmetr}, {adddig.Meter}, {3}, '{adddig.DigName}', {adddig.Direction_num}, '{adddig.FoundDate}', '{adddig.Threat}', '{adddig.R_threat}', {adddig.Length}, '{adddig.Location}', '{adddig.Norma}', '{adddig.R_DigName}', {adddig.Value}, {adddig.Count}, '{adddig.AllowSpeed}', '{adddig.Primech}')";
+                                                 VALUES ({adddig.Km}, {adddig.Kmetr}, {adddig.Meter}, {3}, '{adddig.DigName}', {adddig.Direction_num}, '{adddig.FoundDate}', '{adddig.Threat}', '{adddig.R_threat}', {adddig.Length}, '{adddig.Location}', '{adddig.Norma}', '{adddig.R_DigName}', {adddig.Value}, {adddig.Count}, '{adddig.AllowSpeed}', '{adddig.Primech}', {trip_id})";
                         db.Execute(txt);
                     }
                     index++;

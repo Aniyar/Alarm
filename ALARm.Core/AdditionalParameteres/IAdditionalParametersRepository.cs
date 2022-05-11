@@ -88,9 +88,9 @@ namespace ALARm.Core
         List<Digression> GetFullGapsByNN(long km, long trip_id);
 
         List<Digression> Insert_additional_param_state_longwawes(List<Digression> impulses);
-        List<Digression> Insert_additional_param_state_aslan(List<Digression> addDigressions);
+        List<Digression> Insert_additional_param_state_aslan(List<Digression> addDigressions, long trip_id);
 
         List<Digression> Insert_additional_param_state(List<Digression> addDigressions, int nkm);
-
+        List<DataFlow> GetShortRough(long trip_id, int number);
     }
 }

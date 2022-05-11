@@ -378,9 +378,9 @@ namespace ALARm.Services
         {
             return Container.Resolve<IRdStructureRepository>().GetProcess(period, distanceId, processType);
         }
-        public static List<RailFastener> GetBadRailFasteners(long tripId, bool orderBySide, string code, object trackName, int km = -1)
+        public static List<RailFastener> GetBadRailFasteners(long tripId, bool orderBySide, object trackName, int km = -1)
         {
-            return Container.Resolve<IRdStructureRepository>().GetBadRailFasteners(tripId, orderBySide, code, trackName, km);
+            return Container.Resolve<IRdStructureRepository>().GetBadRailFasteners(tripId, orderBySide, trackName, km);
         }
 
         public static List<Sleepers> GetSleeper(long trackId, int km, int meter, int start, int final, Threat threat)
@@ -426,9 +426,14 @@ namespace ALARm.Services
         {
             return Container.Resolve<IRdStructureRepository>().GetTripSections(trackId, date, start_km, start_m, final_km, final_m, type);
         }
-        public static List<Trips> GetTrips(int count = 20)
+        public static List<Trips> GetTrips( int count = 20)
         {
             return Container.Resolve<IRdStructureRepository>().GetTrips(count);
+        }
+
+        public static string GetTripFiles(int km, int tripid, string desc)
+        {
+            return Container.Resolve<IRdStructureRepository>().GetTripFiles(km, tripid, desc);
         }
         public static List<Trips> GetTripFromFileId(int fileId)
         {

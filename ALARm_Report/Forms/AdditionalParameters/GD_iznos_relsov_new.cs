@@ -300,7 +300,7 @@ namespace ALARm_Report.Forms
 
                             List<Digression> addDigressions = crossRailProfile.GetDigressions();
                             // заполняет таблицу с доп параметрами
-                            if (addDigressions.Count != null && addDigressions.Count != 0)
+                            if (addDigressions != null && addDigressions.Count != 0)
                             { 
                              var Insert_additional_param_state = AdditionalParametersService.Insert_additional_param_state(addDigressions, kilometer.Number);
                             }
