@@ -10,10 +10,12 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Accord" Version="3.8.2-alpha" />
-    <PackageReference Include="Accord.Imaging" Version="3.8.2-alpha" />
+    <PackageReference Include="Accord.Imaging" Version="3.8.0" />
     <PackageReference Include="MetroFramework" Version="1.2.0.3" />
     <PackageReference Include="RabbitMQ.Client" Version="6.2.2" />
+    <PackageReference Include="runtime.osx.10.10-x64.CoreCompat.System.Drawing" Version="6.0.5.128" />
     <PackageReference Include="Svg" Version="3.2.3" />
+    <PackageReference Include="System.Collections" Version="4.3.0" />
     <PackageReference Include="System.Drawing.Primitives" Version="4.3.0" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="5.0.0" />
     <PackageReference Include="WebSocketSharp-netstandard" Version="1.0.1" />

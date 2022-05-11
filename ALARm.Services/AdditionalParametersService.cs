@@ -306,13 +306,20 @@ namespace ALARm.Services
         {
             return Container.Resolve<IAdditionalParametersRepository>().Insert_additional_param_state_longwawes(impulses);
         }
-        public static List<Digression> Insert_additional_param_state_aslan(List<Digression> addDigressions)
+        public static List<Digression> Insert_additional_param_state_aslan(List<Digression> addDigressions, long trip_id)
         {
-            return Container.Resolve<IAdditionalParametersRepository>().Insert_additional_param_state_aslan(addDigressions);
+            return Container.Resolve<IAdditionalParametersRepository>().Insert_additional_param_state_aslan(addDigressions, trip_id);
         }
         public static List<Digression> Insert_additional_param_state(List<Digression> addDigressions,int nkm)
         {
             return Container.Resolve<IAdditionalParametersRepository>().Insert_additional_param_state(addDigressions,  nkm);
         }
+
+        public static List<DataFlow> GetShortRough(long trip_id, int number)
+        {
+            return Container.Resolve<IAdditionalParametersRepository>().GetShortRough(trip_id, number);
+        }
+
+
     }
 }

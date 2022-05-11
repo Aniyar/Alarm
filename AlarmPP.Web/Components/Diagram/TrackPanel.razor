@@ -543,6 +543,7 @@
             index += kilometer.GetLength();
 
             if (kilometer.AdditionalDigressions != null)
+            {
                 foreach (var digression in kilometer.AdditionalDigressions)
                 {
                     if (digression.DigName.Name.Contains("Ип") && (AppData.ShowIznosPriv) ||
@@ -561,7 +562,10 @@
                         <line transform="translate(@(GetXByAddDigName(digression.DigName.Name)), @y)" stroke="@((int)digression.Typ == 4 ? "red" : (int)digression.Typ == 3 ? "darkorange" : (int)digression.Typ == 2 ? "aqua" : "coral")" stroke-width="@((int)digression.Typ * 4)" stroke-dasharray="1 1" x1="0" x2="0" y1="@(index + (int)kilometer.Direction * (digression.Meter - (digression.Length / 2)))" y2="@(index + (int)kilometer.Direction * (digression.Meter + digression.Length / 2 + 1))"></line>
                     }
                 }
+            }
+
         }
+
 
     }
     }

@@ -357,7 +357,7 @@ namespace ALARm.Core
             }
             return matrix;
         }
-        public static SocketState SendMessageFromSocket(string ip, int port, string message)
+            public static SocketState SendMessageFromSocket(string ip, int port, string message)
         {
             try
             {

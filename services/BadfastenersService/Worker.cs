@@ -89,7 +89,7 @@ namespace BadfastenerstService
 
                     //Видеоконтроль
                     // todo distanse id
-                    string p = Getbadfasteners(trip, km, 53); //стыки
+                    string p = Getbadfasteners(trip, km); //стыки
 
                     _logger.LogInformation(" [x] Getbadfasteners {0} {1} {2}", fileId, kmIndex, p);
 
@@ -117,14 +117,14 @@ namespace BadfastenerstService
         /// <param name="km"></param>
         /// <param name="distId"></param>
         /// 
-        private string Getbadfasteners(Trips trip, Kilometer km, int distId)
+        private string Getbadfasteners(Trips trip, Kilometer km)
         {
             try
             {
                 var mainProcess = new MainParametersProcess { Trip_id = trip.Id };
-                var distance = AdmStructureService.GetUnit(AdmStructureConst.AdmDistance, distId) as AdmUnit;
+                //var distance = AdmStructureService.GetUnit(AdmStructureConst.AdmDistance, distId) as AdmUnit;
                 var trackName = AdmStructureService.GetTrackName(km.Track_id);
-                var badFasteners = RdStructureService.GetBadRailFasteners(trip.Id, false, distance.Code, trackName, km.Number);
+                var badFasteners = RdStructureService.GetBadRailFasteners(trip.Id, false, trackName, km.Number);
 
                 // if (badFasteners.Count == 0) continue;
 
