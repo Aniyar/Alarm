@@ -6216,8 +6216,7 @@ begin
                        isriht:= isriht;
         if   (( ProberkaNaStrelku(StartStr,  FinshStr  , 1)) and (FlagkrivPlus or FlagkrivMinus )   ) then
                isriht:=false;
-                 if  ( ProberkaNaStrelku(StartStr,  FinshStr  , 1) and( Side_Str = 0) )  then   isriht:=false;
-                 Side_Str := 10;
+
 
 
                       WRih[ns].isriht := isriht;

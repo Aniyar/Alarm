@@ -101,9 +101,10 @@ namespace AlarmPP.Web.Components.Diagram
                 //    }
                 //}
 
-                object[] paramss = new object[] {  AppData.Meter + outdatas.Count 
-                    //AppData.ProfileMeter + profileDatas.Count
-                };
+                object[] paramss = new object[] { AppData.Meter + outdatas.Count };
+
+                //AppData.ProfileMeter + profileDatas.Count
+
                 if (OnlineModeData.AutoScroll)
                     await JSRuntime.InvokeVoidAsync("ScrollMainSvg2", paramss);
 
@@ -135,11 +136,6 @@ namespace AlarmPP.Web.Components.Diagram
                         {
                             CurrKm = kilometer;
 
-                            //Console.WriteLine($"{kilometer.Number}km - {kilometer.Meter} m");
-                            //if (kilometer.Meter == 1027 && kilometer.Number ==712)
-                            //    Console.WriteLine(kilometer.Number);
-
-                            //Console.WriteLine(kilometer.Meter);
 
                             if (kilometer.Meter <= 0)
                             {
@@ -327,7 +323,16 @@ namespace AlarmPP.Web.Components.Diagram
                             
                             int currentMetre = kilometer.Direction == Direction.Direct ? (AppData.Meter - (length - kilometer.GetLength()) + kilometer.Start_m) : kilometer.Final_m - (AppData.Meter - (length - kilometer.GetLength()));
                             Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("en-US");
-                            kilometer.AddData(outdata, currentMetre, AppData.Koefs, profileDatas[profileIndex]);
+
+                            if (AppData.WorkMode == Services.WorkMode.Online)
+                            {
+                                kilometer.AddData(outdata, currentMetre, AppData.Koefs);
+                            }
+                            else
+                            {
+                                kilometer.AddData(outdata, currentMetre, AppData.Koefs, profileDatas[profileIndex]);
+                            }
+                                
 
                             kilometer.SideWearLeft_.Add(OnlineModeData.SideWearLeft);
                             kilometer.SideWearRight_.Add(OnlineModeData.SideWearRight);

@@ -506,10 +506,37 @@ namespace AlarmPP.Web.Services
                 foreach (var km in kms)
                 {
                     var coord = km.Final_m;
-                    if (km.Number == 711)
+                    if (km.Number == 702)
                     {
                         km.Number = km.Number;
                     }
+
+                    //if (km.Number == 703)
+                    //{
+                    //    km.Number = km.Number;
+                    //}
+                    //if (km.Number == 704)
+                    //{
+                    //    km.Number = km.Number;
+                    //}
+                    //if (km.Number == 705)
+                    //{
+                    //    km.Number = km.Number;
+                    //}
+                    if (km.Number == 706)
+                    {
+                        km.Number = km.Number;
+                    }
+                    if (km.Number == 707)
+                    {
+                        km.Number = km.Number;
+                    }
+                    if (km.Number == 708)
+                    {
+                        km.Number = km.Number;
+                    }
+
+
                     km.Direction = fragment.Direction;
                     bool found = false;
                     bool numberFound = false;
@@ -605,7 +632,7 @@ namespace AlarmPP.Web.Services
                     }
                     else if (numberFound && WorkMode == WorkMode.Postprocessing)
                     {
-                        if (km.Number == 711)
+                        if (km.Number == 708)
                         {
                             km.Number = km.Number;
                         }

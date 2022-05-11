@@ -211,12 +211,24 @@ namespace ALARm.Core
                     kilometer.GaugeCorrection.Add(GaugeCorrection[i]);
                     kilometer.Corrections.Add(Corrections[i]);
 
-                    kilometer.ShortWavesLeft.Add(ShortWavesLeft[i]);
-                    kilometer.ShortWavesRight.Add(ShortWavesRight[i]);
-                    kilometer.MediumWavesLeft.Add(MediumWavesLeft[i]);
-                    kilometer.MediumWavesRight.Add(MediumWavesRight[i]);
-                    kilometer.LongWavesLeft.Add(LongWavesLeft[i]);
-                    kilometer.LongWavesRight.Add(LongWavesRight[i]);
+                    if (ShortWavesLeft != null && ShortwavesLeft.Count() >= i)
+                    {
+                        kilometer.ShortWavesLeft.Add(ShortWavesLeft[i]);
+                        kilometer.ShortWavesRight.Add(ShortWavesRight[i]);
+                        kilometer.MediumWavesLeft.Add(MediumWavesLeft[i]);
+                        kilometer.MediumWavesRight.Add(MediumWavesRight[i]);
+                        kilometer.LongWavesLeft.Add(LongWavesLeft[i]);
+                        kilometer.LongWavesRight.Add(LongWavesRight[i]);
+                    }
+                    else
+                    {
+                        kilometer.ShortWavesLeft.Add(0);
+                        kilometer.ShortWavesRight.Add(0);
+                        kilometer.MediumWavesLeft.Add(0);
+                        kilometer.MediumWavesRight.Add(0);
+                        kilometer.LongWavesLeft.Add(0);
+                        kilometer.LongWavesRight.Add(0);
+                    }
 
 
                     kilometer.SignalLevel += (-1 * Level[i]).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString() + " ";
@@ -450,6 +462,15 @@ namespace ALARm.Core
                 LongWavesLeft.Add(profdata.Longwavesleft);
                 LongWavesRight.Add(profdata.Longwavesright);
             }
+            else
+            {
+                ShortWavesRight.Add(0);
+                ShortWavesLeft.Add(0);
+                MediumWavesLeft.Add(0);
+                MediumWavesRight.Add(0);
+                LongWavesLeft.Add(0);
+                LongWavesRight.Add(0);
+            }
 
             _Kupe.Add(outdata.y101_kupe);
             _Koridor.Add(outdata.y102_koridor);
@@ -517,6 +538,15 @@ namespace ALARm.Core
                     MediumWavesRight.Add(profdatas[profindex].Mediumwavesright);
                     LongWavesLeft.Add(profdatas[profindex].Longwavesleft);
                     LongWavesRight.Add(profdatas[profindex].Longwavesright);
+                }
+                else
+                {
+                    ShortWavesRight.Add(0);
+                    ShortWavesLeft.Add(0);
+                    MediumWavesLeft.Add(0);
+                    MediumWavesRight.Add(0);
+                    LongWavesLeft.Add(0);
+                    LongWavesRight.Add(0);
                 }
 
                 km._Kupe.Add(outdata.y101_kupe);
