@@ -12,9 +12,7 @@ function ScrollMainSvg(y) {
     document.getElementById("dgmainscroll").scroll(document.getElementById("dgmainscroll").scrollLeft, y);
 }
 function ScrollMainSvg2(y) {
-    document.getElementById("dgmainscroll").scroll(document.getElementById("dgmainscroll").scrollLeft, y - document.getElementById("dgmainscroll").clientHeight+25);
-    
-    
+    document.getElementById("dgmainscroll").scroll(document.getElementById("dgmainscroll").scrollLeft, y - document.getElementById("dgmainscroll").clientHeight+25);    
 }
 
 

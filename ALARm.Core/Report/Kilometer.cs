@@ -448,7 +448,16 @@ namespace ALARm.Core
                 LongWavesLeft.Add(profdata.Longwavesleft);
                 LongWavesRight.Add(profdata.Longwavesright);
             }
+            else
+            {
+                ShortWavesRight.Add(0);
+                ShortWavesLeft.Add(0);
+                MediumWavesLeft.Add(0);
+                MediumWavesRight.Add(0);
+                LongWavesLeft.Add(0);
+                LongWavesRight.Add(0);
 
+            }
             _Kupe.Add(outdata.y101_kupe);
             _Koridor.Add(outdata.y102_koridor);
             SpeedSeries += $"{outdata.speed * 0.5:0.00},{Meter} ";
@@ -844,6 +853,10 @@ namespace ALARm.Core
             IsoJoints = mainTrackStructureRepository.GetMtoObjectsByCoord(Passage_time, Number, MainTrackStructureConst.MtoProfileObject, Direction_name, Track_name) as List<ProfileObject>;
             RailsBrace = mainTrackStructureRepository.GetMtoObjectsByCoord(Passage_time, Number, MainTrackStructureConst.MtoRailsBrace, Direction_name, Track_name) as List<RailsBrace>;
         }
+        public void LoadPasportKmMeterPRUSpeeds(IMainTrackStructureRepository mainTrackStructureRepository, DateTime trip_date, int km,int Meter )
+        {
+            Speeds = mainTrackStructureRepository.GetMtoObjectsByCoordSpeeds(trip_date, Number, MainTrackStructureConst.MtoSpeed,  Track_id, Meter) as List<Speed>;
+        }
 
         public void LoadTrackPasport(IMainTrackStructureRepository mainTrackStructureRepository, DateTime trip_date)
         {
@@ -931,9 +944,16 @@ namespace ALARm.Core
             {
                 foreach (var sw in Switches)
                 {
-                    if ((sw.Km == Number ) && (sw.Final_Km == Number ) && (sw.Start_Km == Number))
-                        Digressions.Add(new DigressionMark() { Meter = sw.Meter, Alert = $"{sw.Meter} Стрелка № {sw.Num} {(sw.Dir_Id == SwitchDirection.Direct ? "ПШ" : "ПРШ")} {(sw.Side_Id == Side.Left ? "Лев." : "Прав.")} {sw.Mark}" });
+                    //if ((sw.Km == Number ) && (sw.Final_Km == Number ) && (sw.Start_Km == Number))
+                    //    Digressions.Add(new DigressionMark() { Meter = sw.Meter, Alert = $"{sw.Meter} Стрелка № {sw.Num} {(sw.Dir_Id == SwitchDirection.Direct ? "ПШ" : "ПРШ")} {(sw.Side_Id == Side.Left ? "Лев." : "Прав.")} {sw.Mark}" });
 
+                    if ((sw.Km == Number) && (sw.Final_Km == Number) && (sw.Start_Km == Number))
+                        Digressions.Add(new DigressionMark()
+                        {
+                            Meter = sw.Meter,
+                            Alert = $"{sw.Meter} Стрелка № {sw.Num} {(sw.Dir_Id == SwitchDirection.Direct ? "ПШ" : "ПРШ")}" +
+                            $" {(sw.Side_Id == Side.Left ? "Лев." : (sw.Side_Id == Side.Right) ? "Прав." : "?") } {sw.Mark}"
+                        });
                 }
 
                 foreach (var curve in Curves)

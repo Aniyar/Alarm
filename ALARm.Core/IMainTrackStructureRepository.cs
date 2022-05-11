@@ -29,6 +29,7 @@ namespace ALARm.Core
         bool SetAcceptRepairProject(Int64 trackId);
         object GetMtoObjectsByCoord(DateTime date, int nkm, int mtoObjectType, string directionCode, string trackNumber);
         object GetMtoObjectsByCoord(DateTime date, int nkm, int mtoObjectType, long track_id, int meter = -1);
+        object GetMtoObjectsByCoordSpeeds(DateTime date, int nkm, int mtoObjectType, long track_id, int meter );
         List<DistSection> GetDistSectionByDistId(long distId);
         CoordinateGNSS GetCoordByLen(int start_km, int start_m, int length, long track_Id, DateTime date);
         string GetModificationDate();

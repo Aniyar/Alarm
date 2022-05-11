@@ -1486,7 +1486,7 @@ namespace ALARm_Report.Forms
             try
             {
                 htReport.Save(Path.GetTempPath() + "/report.html");
-                htReport.Save($@"G:\form\2.Характеристики положения пути в плане и профиле\13   .Карточка многорадиусной кривой(ФП-3.3).html");
+                htReport.Save($@"G:\form\2.Характеристики положения пути в плане и профиле\13.Карточка многорадиусной кривой(ФП-3.3).html");
             }
             catch
             {

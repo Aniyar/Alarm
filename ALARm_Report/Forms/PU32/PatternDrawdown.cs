@@ -446,6 +446,7 @@ namespace ALARm_Report.Forms
             try
             {
                 htReport.Save(Path.GetTempPath() + "/report.html");
+                htReport.Save($@"g:\form\5.Графические диаграммы ГД\ГД-ЦНИИ-2 Шаблон, Просадка.html");
             }
             catch
             {

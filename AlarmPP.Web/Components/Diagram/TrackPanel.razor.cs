@@ -29,7 +29,7 @@ namespace AlarmPP.Web.Components.Diagram
         private int Width { get; set; } = 4000;
         double ScrollLeft = 0;
         double ScrollTop = 0;
-      
+
         private DigressionTable digressionTable;
         private bool StopDialog { get; set; } = false;
         private bool loading = false;
@@ -37,7 +37,7 @@ namespace AlarmPP.Web.Components.Diagram
 
         private Kilometer CurrKm { get; set; } = null;
         public bool MousePressed { get; set; } = false;
-      
+
         public async Task OnMouseMove(MouseEventArgs args)
         {
             if (args.Buttons == 1)
@@ -65,21 +65,21 @@ namespace AlarmPP.Web.Components.Diagram
                 MousePressed = false;
             }
         }
-        
+
 
         private async Task OnTimedEventAsync()
         {
             Random rnd = new Random();
-          
+
             AppData.Processing = !AppData.Processing;
             OutData prevData = null;
-          
+
             while (!AppData.Processing)
             {
                 //AppData.CurrentProfileLeft();
                 //AppData.CurrentFrameIndex++;
 
-                var outdatas     = RdStructureRepository.GetNextOutDatas(AppData.Meter, 100, AppData.Trip.Id);
+                var outdatas = RdStructureRepository.GetNextOutDatas(AppData.Meter, 100, AppData.Trip.Id);
                 var profileDatas = RdStructureRepository.GetNextProfileDatas(AppData.ProfileMeter, 100, AppData.Trip.Id);
 
 
@@ -100,17 +100,27 @@ namespace AlarmPP.Web.Components.Diagram
 
                 //    }
                 //}
-
+                ///смотри тут
+                ///
                 object[] paramss = new object[] {  AppData.Meter + outdatas.Count 
-                    //AppData.ProfileMeter + profileDatas.Count
+                   ///AppData.ProfileMeter + profileDatas.Count
                 };
-                if (OnlineModeData.AutoScroll)
-                    await JSRuntime.InvokeVoidAsync("ScrollMainSvg2", paramss);
+                try
+                {
+                    //if (OnlineModeData.AutoScroll)
+                    //    await JSRuntime.InvokeVoidAsync("ScrollMainSvg2", paramss);
+
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("it is:" + e.Message);
+                }
+              
 
                 var profileIndex = 0;
                 foreach (var outdata in outdatas)
                 {
-                   
+
                     var crashed = false;
                     if (prevData != null)
                     {
@@ -167,7 +177,7 @@ namespace AlarmPP.Web.Components.Diagram
                                     if (prevIndex > 0)
                                     {
                                         n = AppData.Kilometers[prevIndex - 1].LevelAvg.Count > prevN ? prevN : AppData.Kilometers[prevIndex - 1].LevelAvg.Count;
-                                        
+
                                         prevLevelAvgPart = AppData.Kilometers[prevIndex - 1].LevelAvg.GetRange(AppData.Kilometers[prevIndex - 1].LevelAvg.Count - n, n);
                                         prevStrightAvgPart = AppData.Kilometers[prevIndex - 1].StrightAvg.GetRange(AppData.Kilometers[prevIndex - 1].StrightAvg.Count - n, n);
 
@@ -188,7 +198,13 @@ namespace AlarmPP.Web.Components.Diagram
                                             try
                                             {
                                                 mainParameters.diagramName = "Оригинал";
-                                                mainParameters.Process(template, AppData.Kilometers[prevIndex], AppData.Trip, OnlineModeData.AutoPrint);
+                                                //Kilometer prevKm = prevIndex - 1 >= 0 ? AppData.Kilometers[prevIndex - 1] : null;
+                                                //Kilometer next = prevIndex + 1 < AppData.Kilometers.Count ? AppData.Kilometers[prevIndex + 1] : null;
+
+                                                Kilometer prevKm = null;
+                                                Kilometer next = null;
+                                                mainParameters.Process(template, AppData.Kilometers[prevIndex], AppData.Trip, OnlineModeData.AutoPrint, prevKm, next);
+
                                                 //RdStructureRepository.SendEkasuiData(AppData.Trip, AppData.Kilometers[prevIndex].Number);
 
                                                 AppData.Kilometers[prevIndex].Digressions = RdStructureRepository.GetDigressionMarks(AppData.Trip.Id, AppData.Kilometers[prevIndex].Number, AppData.Kilometers[prevIndex].Track_id, new int[] { 3, 4 });
@@ -220,7 +236,7 @@ namespace AlarmPP.Web.Components.Diagram
                                             }
                                         }
                                     }
-                                      catch (Exception e)
+                                    catch (Exception e)
                                     {
 
                                         Console.WriteLine("WRITE ERROR " + e.Message);
@@ -259,7 +275,7 @@ namespace AlarmPP.Web.Components.Diagram
                                         else
                                         if (kmforchange != kilometer)
                                         {
-                                           
+
                                             if (kilometer.RealMeterInOnline < 500)
                                             {
                                                 if (kmforchange.Direction == Direction.Direct)
@@ -318,16 +334,25 @@ namespace AlarmPP.Web.Components.Diagram
                             //System.Console.WriteLine($"{AppData.Meter}-{OnlineModeData.GlobalMeter}");
                             OnlineModeData.GlobalMeter = outdata._meters;
 
-                            
+
                             int currentMetre = kilometer.Direction == Direction.Direct ? (AppData.Meter - (length - kilometer.GetLength()) + kilometer.Start_m) : kilometer.Final_m - (AppData.Meter - (length - kilometer.GetLength()));
                             Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("en-US");
-                            kilometer.AddData(outdata, currentMetre, AppData.Koefs, profileDatas[profileIndex]);
 
+
+                            if (AppData.WorkMode == Services.WorkMode.Online)
+                            {
+                                kilometer.AddData(outdata, currentMetre, AppData.Koefs);
+                            }
+                            else
+                            {
+                                kilometer.AddData(outdata, currentMetre, AppData.Koefs, profileDatas[profileIndex]);
+                            }
+                       
                             kilometer.SideWearLeft_.Add(OnlineModeData.SideWearLeft);
                             kilometer.SideWearRight_.Add(OnlineModeData.SideWearRight);
 
                             AppData.Meter += 1;
-                          
+
                             OnlineModeData.CurrentFrameIndex = AppData.Meter;
                             //OnlineModeData.GetBitmapAsync();
 
@@ -339,23 +364,23 @@ namespace AlarmPP.Web.Components.Diagram
                             //kilometer.SideWearRight += (OnlineModeData.SideWearRight * kilometer.WearKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
                             //kilometer.HeadWear45Left += (OnlineModeData.Wear45Left * kilometer.WearKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
                             //kilometer.HeadWear45Right += (OnlineModeData.Wear45Right * kilometer.WearKoef).ToString().Replace(",", ".") + "," + kilometer.Meter.ToString().Replace(",", ".") + " ";
-                            
+
                             break;
                         }
                     }
                     profileIndex++;
-                
+
                 }
-                if (AppData.Meter % 1 == 0 )
+
+                if (AppData.Meter % 1 == 0)
                 {
                     await Task.Delay(AppData.Speed);
                     StateHasChanged();
-
                 }
             }
-            
+
         }
-   
+
 
 
         public async Task OnScroll()
@@ -442,7 +467,7 @@ namespace AlarmPP.Web.Components.Diagram
             if (digname.Contains("Ип.п"))
                 return AppData.GivenWearRightPosition + 40;
             return 0;
-            
+
         }
 
         public void Refresh()
@@ -527,7 +552,8 @@ namespace AlarmPP.Web.Components.Diagram
 
                     nextLevelAvgPart = AppData.Kilometers[prevIndex + 1].LevelAvg.GetRange(0, n);
                     nextStrightAvgPart = AppData.Kilometers[prevIndex + 1].StrightAvg.GetRange(0, n);
-                } else
+                }
+                else
                 {
                     nextLevelAvgPart = new List<double>();
                     nextStrightAvgPart = new List<double>();
@@ -542,7 +568,11 @@ namespace AlarmPP.Web.Components.Diagram
                     try
                     {
                         mainParameters.diagramName = "Оригинал";
-                        mainParameters.Process(template, AppData.Kilometers[prevIndex], AppData.Trip, OnlineModeData.AutoPrint);
+                        Kilometer prevKm = prevIndex - 1 >= 0 ? AppData.Kilometers[prevIndex - 1] : null;
+                        Kilometer next = prevIndex + 1 < AppData.Kilometers.Count ? AppData.Kilometers[prevIndex + 1] : null;
+
+
+                        mainParameters.Process(template, AppData.Kilometers[prevIndex], AppData.Trip, OnlineModeData.AutoPrint, prevKm, next);
                         //if (AppData.EmailCount < 3)
                         //{
                         //    RdStructureRepository.SendEkasuiData(AppData.Trip, AppData.Kilometers[prevIndex].Number);
@@ -607,7 +637,9 @@ namespace AlarmPP.Web.Components.Diagram
                 var mainParameters = new ALARm.Core.Report.MainParameters(RdStructureRepository, MainTrackStructureRepository, AdmStructureRepository);
                 var template = RdStructureRepository.GetReportTemplate("MainParametersOnline");
                 mainParameters.diagramName = "Дубликат";
-                mainParameters.Process(template, AppData.Kilometers[prevIndex], AppData.Trip, true);
+                Kilometer prevKm = prevIndex - 1 >= 0 ? AppData.Kilometers[prevIndex - 1] : null;
+                Kilometer next = prevIndex + 1 < AppData.Kilometers.Count ? AppData.Kilometers[prevIndex + 1] : null;
+                mainParameters.Process(template, AppData.Kilometers[prevIndex], AppData.Trip, true, prevKm, next);
             }
             await JSRuntime.InvokeVoidAsync("loader", false);
         }

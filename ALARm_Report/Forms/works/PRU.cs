@@ -53,9 +53,10 @@ namespace ALARm_Report.Forms
                 }
 
                 XElement report = new XElement("report");
-                foreach (var track_id in admTracksId)
-                {
+                
                     foreach (var tripProces in tripProcess)
+                    {
+                    foreach (var track_id in admTracksId)
                     {
                         var trackName = AdmStructureService.GetTrackName(track_id);
                         var trip = RdStructureService.GetTrip(tripProces.Id);
@@ -88,7 +89,7 @@ namespace ALARm_Report.Forms
                             new XAttribute("direction", tripProces.Direction),
                             new XAttribute("directioncode", tripProces.DirectionCode),
                             new XAttribute("check", tripProces.GetProcessTypeName),
-                            //new XAttribute("track", kilometers[0].Track_name),
+                            new XAttribute("track", trackName),
                             new XAttribute("road", road),
                             new XAttribute("distance", distance.Code),
                             new XAttribute("periodDate", period.Period),
@@ -98,19 +99,26 @@ namespace ALARm_Report.Forms
                         XElement xeTracks = new XElement("tracks");
 
                         var ListS3 = RdStructureService.GetS3(kilometers.First().Trip.Id, "ПрУ") as List<S3>; //пру
+                      
                         if (ListS3.Any())
                         {
                             foreach (var km in kilometers)
                             {
-                                var PRUbyKm = ListS3.Where(o => o.Ots == "ПрУ").ToList();
-                                //&& o.Km == km.Number
+                                var PRUbyKm = ListS3.Where(o => o.Ots == "ПрУ" && o.Km == km.Number && o.Put == trackName.ToString()).ToList();
+                                
+                                if (!PRUbyKm.Any())
+                                    continue;
+                                PRUbyKm = PRUbyKm.Where(o => o.Put == km.Track_name).ToList();
+
+
                                 km.LoadTrackPasport(MainTrackStructureRepository, trip.Trip_date);
-
-
+                              
                                 foreach (var s3 in PRUbyKm)
                                 {
+                                    //km.LoadPasportKmMeterPRUSpeeds(MainTrackStructureRepository, trip.Trip_date, km.Number, s3.Meter);
+                                  
                                     XElement xeNote = new XElement("note",
-
+                                
                                         new XAttribute("km", s3.Km),
                                         new XAttribute("m", s3.Meter),
                                         new XAttribute("Otkl", s3.Otkl),
@@ -125,8 +133,6 @@ namespace ALARm_Report.Forms
                             xeDirection.Add(xeTracks);
                             tripElem.Add(xeDirection);
                         }
-                            
-                            
                         else
                         {
 

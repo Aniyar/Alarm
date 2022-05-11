@@ -96,6 +96,7 @@ namespace ALARm.Core.AdditionalParameteres
         public string EditReason { get; set; }
         public string Editor { get; set; }
         //
+        public string Primech { get; set; }
         public string Pdb_section { get; set; }
         public string Fragment { get; set; }
         public string Vdop { get; set; }

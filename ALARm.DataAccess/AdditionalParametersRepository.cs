@@ -1074,15 +1074,18 @@ namespace ALARm.DataAccess
 		                                            vpz AS fullSpeed,
 		                                            zazor_r AS r_zazor,
 		                                            zazor_l AS zazor,
-		                                            otst,
-		                                            LEAD ( otst, 1 ) OVER ( ORDER BY ID ) next_otst
+		                                            otst_l,
+		                                            otst_r,
+		                                            LEAD ( otst_l, 1 ) OVER ( ORDER BY ID ) next_otst
 	                                            FROM
 		                                            report_gaps 
 	                                            ORDER BY
 		                                            koord
 	                                            ) AS DATA 
                                             WHERE
-                                            otst = 'СЗ' ", commandType: CommandType.Text).ToList();
+                                            	otst_l = 'СЗ'
+	                                            OR
+	                                            otst_r = 'СЗ' ", commandType: CommandType.Text).ToList();
                   
                         //СЗ//З?
                 }
@@ -1904,11 +1907,11 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
 	                            PUBLIC.profiledata_{trip_id}
                             WHERE
 	                            km = {nkm}
-	                            AND id > {index} 
-                          
-                            ORDER BY
-	                            id 
-                            Limit {count}
+	                          --  AND id > {index} 
+                         -- 
+                          -- ORDER BY
+	                        --    id 
+                           -- Limit {count}
                 ", commandType: CommandType.Text).ToList();
                 }
                 catch (Exception e)
@@ -1996,7 +1999,9 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
 	                            longwavesleft,
 	                            longwavesright,
 	                            iz_45_l,
-	                            iz_45_r
+	                            iz_45_r,
+                                 x_big_l ,
+                                 x_big_r ,
                                 imp_left,
                                 imp_right,
                                 implen_left,
@@ -3197,7 +3202,7 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
                     var txt = $@"SELECT
 	                                * , m meter
                                 FROM
-	                                report_addparam 
+	                                s3_additional 
                                 WHERE
 	                                trip_id = {trip_id}";
 

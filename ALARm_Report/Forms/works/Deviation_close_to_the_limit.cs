@@ -138,8 +138,13 @@ namespace ALARm_Report.Forms
                         foreach (var km in kilometers)
                         {
 
-                            var PRUbyKmMAIN = ListS3.Where(o => o.Ovp != -1 && o.Ovp != 0 && o.Ogp != -1 && o.Ogp != 0 && o.Km == km.Number).ToList();
-                            var PRUbyKmADD = AddParam.Where(o => o.Ovp != -1 && o.Ovp != 0 && o.Ogp != 1 && o.Ogp != 0 && o.Km == km.Number).ToList();
+                            var closeToDanger = new List<string>() { DigressionName.RampNear.Name, DigressionName.IzoGapNear.Name, DigressionName.SpeedUpNear.Name, DigressionName.PatternRetractionNear.Name,
+                                DigressionName.LevelReverse.Name, DigressionName.Level150.Name, DigressionName.Level75.Name, DigressionName.GapSimbol.Name };
+                            //var PRUbyKmMAIN = ListS3.Where(o => (o.Ovp != -1 && o.Ovp != 0 && o.Ogp != -1 && o.Ogp != 0 && o.Km == km.Number)).ToList();
+                            //var PRUbyKmADD = AddParam.Where(o => (o.Ovp != -1 && o.Ovp != 0 && o.Ogp != 1 && o.Ogp != 0 && o.Km == km.Number)).ToList();
+
+                            var PRUbyKmMAIN = ListS3.Where(o => o.Km == km.Number && closeToDanger.Contains(o.Ots)).ToList();
+                            var PRUbyKmADD = AddParam.Where(o =>  o.Km == km.Number && closeToDanger.Contains(o.Ots)).ToList();
 
 
                             //PRUbyKmMAIN.AddRange(PRUbyKmADD);
@@ -161,6 +166,9 @@ namespace ALARm_Report.Forms
                                         drawdownCount += s3.Kol;
                                         break;
                                     case "Анп":
+                                        anpCount += s3.Kol;
+                                        break;
+                                    case "?Анп":
                                         anpCount += s3.Kol;
                                         break;
                                     case "Суж":
@@ -338,11 +346,11 @@ namespace ALARm_Report.Forms
             try
             {
                 htReport.Save(Path.GetTempPath() + "/report.html");
-                htReport.Save($@"G:\form\G:\form\1.Основные и дополнительные параметры геометрии рельсовой колеи (ГРК)\7.Ведомость «Отступления близкие к предельным».html");
+                //htReport.Save($@"G:\form\G:\form\1.Основные и дополнительные параметры геометрии рельсовой колеи (ГРК)\Ведомость «Отступления близкие к предельным».pdf");
             }
-            catch
+            catch(Exception e)
             {
-                MessageBox.Show("Ошибка сохранения файлы");
+                MessageBox.Show("Ошибка сохранения файлы" +e);
             }
             finally
             {

@@ -104,7 +104,7 @@ namespace ALARm_Report.Forms
                                     new XAttribute("nit", gap.R_zazor > gap.Zazor ? "правая" : "левая"),
                                     new XAttribute("T", gap.Temp),
                                     new XAttribute("Vdop", gap.Vdop),
-                                    new XAttribute("Primech", "")//ToDo
+                                    new XAttribute("Primech","" )//ToDo
                                 );
                                 iter++;
                                 Direct.Add(Notes);
@@ -127,7 +127,7 @@ namespace ALARm_Report.Forms
                                     new XAttribute("T", gap.Temp),//ToDo
                                     new XAttribute("Zabeg", gap.Zabeg == -1 ? "" : gap.Zabeg.ToString()),
                                     new XAttribute("Vdop", gap.Vdop),
-                                    new XAttribute("Otst", gap.Otst),
+                                    new XAttribute("Otst", gap.Otst_l  ),
                                     new XAttribute("Primech", ""),//ToDo
 
 
@@ -170,6 +170,7 @@ namespace ALARm_Report.Forms
             }
             finally
             {
+                htReport.Save($@"G:\form\4.Выходные формы Видеоконтроля ВСП\21.Ведомость состояния стыковых зазоров.html");
                 if (template.ID == 50)
                 {
                     //System.Diagnostics.Process.Start(@"http://Desktop-tolegen:5500/ogr_gapreport.html");

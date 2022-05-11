@@ -145,6 +145,7 @@ namespace ALARm_Report.Forms
             }
             try
             {
+                htReport.Save($@"G:\form\4.Выходные формы Видеоконтроля ВСП\22.Два и более слепых стыковых зазоров подряд .html");
                 htReport.Save(Path.GetTempPath() + "/report.html");
             }
             catch

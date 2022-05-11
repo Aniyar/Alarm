@@ -143,8 +143,10 @@ namespace ALARm_Report.Forms
 
                                     $"  {(pdbSection.Count > 0 ? pdbSection[0].ToString() : "ПЧ-/ПЧУ-/ПД-/ПДБ-")}" +
 
-                                    $" Уст: " + " " + (kilometer.Speeds.Count > 0 ? $"{kilometer.Speeds.First().Passenger}/{kilometer.Speeds.First().Freight}" : "-/-") +
-                                    $"  Скор:{(int)kilometer.Speed.Average()}"),
+                                    $" Уст: " + " " + (speed.Count > 0 ? $"{speed.First().Passenger}/{speed.First().Freight}" : "-/-") +
+                                    $"  Скор:"),
+                                  //$" Уст: " + " " + (speed.Count > 0 ? $"{speed.First().Passenger}/{speed.First().Freight}" : "-/-") +
+                                  //  $"  Скор:{(int)kilometer.Speed.Average()}"),
 
                                 new XAttribute("right-title",
                                     copyright + ": " + "ПО " + softVersion + "  " +
@@ -239,89 +241,89 @@ namespace ALARm_Report.Forms
                             var crossRailProfile = AdditionalParametersService.GetCrossRailProfileFromDBParse(DBcrossRailProfile);
 
                             ////сколь сред
-                            //var width = 150;
+                            var width = 150;
 
-                            //List<float> RollAver_TreadTiltLeft = new List<float>();
-                            //List<double> RollAver_TreadTiltRight = new List<double>();
-                            //List<double> RollAver_DownhillLeft = new List<double>();
-                            //List<double> RollAver_DownhillRight = new List<double>();
+                            List<float> RollAver_TreadTiltLeft = new List<float>();
+                            List<double> RollAver_TreadTiltRight = new List<double>();
+                            List<double> RollAver_DownhillLeft = new List<double>();
+                            List<double> RollAver_DownhillRight = new List<double>();
 
-                            //List<float> TreadTiltLeft = new List<float>();
-                            //List<double> TreadTiltRight = new List<double>();
-                            //List<double> DownhillLeft = new List<double>();
-                            //List<double> DownhillRight = new List<double>();
+                            List<float> TreadTiltLeft = new List<float>();
+                            List<double> TreadTiltRight = new List<double>();
+                            List<double> DownhillLeft = new List<double>();
+                            List<double> DownhillRight = new List<double>();
 
-                            //for (int i = 0; i < crossRailProfile.Meters.Count(); i++)
-                            //{
-                            //    if (RollAver_TreadTiltLeft.Count >= width)
-                            //    {
-                            //        RollAver_TreadTiltLeft.Add(crossRailProfile.TreadTiltLeft[i]);
-                            //        RollAver_TreadTiltRight.Add(crossRailProfile.TreadTiltRight[i]);
-                            //        RollAver_DownhillLeft.Add(crossRailProfile.DownhillLeft[i]);
-                            //        RollAver_DownhillRight.Add(crossRailProfile.DownhillRight[i]);
+                            for (int i = 0; i < crossRailProfile.Meters.Count(); i++)
+                            {
+                                if (RollAver_TreadTiltLeft.Count >= width)
+                                {
+                                    RollAver_TreadTiltLeft.Add(crossRailProfile.TreadTiltLeft[i]);
+                                    RollAver_TreadTiltRight.Add(crossRailProfile.TreadTiltRight[i]);
+                                    RollAver_DownhillLeft.Add(crossRailProfile.DownhillLeft[i]);
+                                    RollAver_DownhillRight.Add(crossRailProfile.DownhillRight[i]);
 
-                            //        var ratl = RollAver_TreadTiltLeft.Skip(RollAver_TreadTiltLeft.Count() - width).Take(width).Average();
-                            //        var ratr = RollAver_TreadTiltRight.Skip(RollAver_TreadTiltRight.Count() - width).Take(width).Average();
-                            //        var radl = RollAver_DownhillLeft.Skip(RollAver_DownhillLeft.Count() - width).Take(width).Average();
-                            //        var radr = RollAver_DownhillRight.Skip(RollAver_DownhillRight.Count() - width).Take(width).Average();
+                                    var ratl = RollAver_TreadTiltLeft.Skip(RollAver_TreadTiltLeft.Count() - width).Take(width).Average();
+                                    var ratr = RollAver_TreadTiltRight.Skip(RollAver_TreadTiltRight.Count() - width).Take(width).Average();
+                                    var radl = RollAver_DownhillLeft.Skip(RollAver_DownhillLeft.Count() - width).Take(width).Average();
+                                    var radr = RollAver_DownhillRight.Skip(RollAver_DownhillRight.Count() - width).Take(width).Average();
 
-                            //        TreadTiltLeft.Add(ratl);
-                            //        TreadTiltRight.Add(ratr);
-                            //        DownhillLeft.Add(radl);
-                            //        DownhillRight.Add(radr);
-                            //    }
-                            //    else
-                            //    {
-                            //        RollAver_TreadTiltLeft.Add(crossRailProfile.TreadTiltLeft[i]);
-                            //        RollAver_TreadTiltRight.Add(crossRailProfile.TreadTiltRight[i]);
-                            //        RollAver_DownhillLeft.Add(crossRailProfile.DownhillLeft[i]);
-                            //        RollAver_DownhillRight.Add(crossRailProfile.DownhillRight[i]);
+                                    TreadTiltLeft.Add(ratl);
+                                    TreadTiltRight.Add(ratr);
+                                    DownhillLeft.Add(radl);
+                                    DownhillRight.Add(radr);
+                                }
+                                else
+                                {
+                                    RollAver_TreadTiltLeft.Add(crossRailProfile.TreadTiltLeft[i]);
+                                    RollAver_TreadTiltRight.Add(crossRailProfile.TreadTiltRight[i]);
+                                    RollAver_DownhillLeft.Add(crossRailProfile.DownhillLeft[i]);
+                                    RollAver_DownhillRight.Add(crossRailProfile.DownhillRight[i]);
 
-                            //        TreadTiltLeft.Add(crossRailProfile.TreadTiltLeft[i]);
-                            //        TreadTiltRight.Add(crossRailProfile.TreadTiltRight[i]);
-                            //        DownhillLeft.Add(crossRailProfile.DownhillLeft[i]);
-                            //        DownhillRight.Add(crossRailProfile.DownhillRight[i]);
-                            //    }
-                            //}
+                                    TreadTiltLeft.Add(crossRailProfile.TreadTiltLeft[i]);
+                                    TreadTiltRight.Add(crossRailProfile.TreadTiltRight[i]);
+                                    DownhillLeft.Add(crossRailProfile.DownhillLeft[i]);
+                                    DownhillRight.Add(crossRailProfile.DownhillRight[i]);
+                                }
+                            }
 
-                            ////экспонента
-                            ////var crossRailProfile = new CrossRailProfile { };
-                            //var ExponentCoef = -350;
+                            //экспонента
+                            //var crossRailProfile = new CrossRailProfile { };
+                            var ExponentCoef = -350;
 
-                            //List<float> TreadTiltLeftExp = new List<float>();
-                            //List<float> TreadTiltRightExp = new List<float>();
-                            //List<float> DownhillLeftExp = new List<float>();
-                            //List<float> DownhillRightExp = new List<float>();
+                            List<float> TreadTiltLeftExp = new List<float>();
+                            List<float> TreadTiltRightExp = new List<float>();
+                            List<float> DownhillLeftExp = new List<float>();
+                            List<float> DownhillRightExp = new List<float>();
 
 
-                            //for (int i = 0; i < TreadTiltLeft.Count; i++)
-                            //{
-                            //    var etl = Math.Exp(ExponentCoef * Math.Abs(crossRailProfile.TreadTiltLeft[i] - TreadTiltLeft[i]));
-                            //    var ktl = TreadTiltLeft[i] + (crossRailProfile.TreadTiltLeft[i] - TreadTiltLeft[i]) * etl;
-                            //    TreadTiltLeftExp.Add((float)ktl);
+                            for (int i = 0; i < TreadTiltLeft.Count; i++)
+                            {
+                                var etl = Math.Exp(ExponentCoef * Math.Abs(crossRailProfile.TreadTiltLeft[i] - TreadTiltLeft[i]));
+                                var ktl = TreadTiltLeft[i] + (crossRailProfile.TreadTiltLeft[i] - TreadTiltLeft[i]) * etl;
+                                TreadTiltLeftExp.Add((float)ktl);
 
-                            //    var etr = Math.Exp(ExponentCoef * Math.Abs(crossRailProfile.TreadTiltRight[i] - TreadTiltRight[i]));
-                            //    var ktr = TreadTiltRight[i] + (crossRailProfile.TreadTiltRight[i] - TreadTiltRight[i]) * etr;
-                            //    TreadTiltRightExp.Add((float)ktr);
+                                var etr = Math.Exp(ExponentCoef * Math.Abs(crossRailProfile.TreadTiltRight[i] - TreadTiltRight[i]));
+                                var ktr = TreadTiltRight[i] + (crossRailProfile.TreadTiltRight[i] - TreadTiltRight[i]) * etr;
+                                TreadTiltRightExp.Add((float)ktr);
 
-                            //    var edl = Math.Exp(ExponentCoef * Math.Abs(crossRailProfile.DownhillLeft[i] - DownhillLeft[i]));
-                            //    var kdl = DownhillLeft[i] + (crossRailProfile.DownhillLeft[i] - DownhillLeft[i]) * edl;
-                            //    DownhillLeftExp.Add((float)kdl);
+                                var edl = Math.Exp(ExponentCoef * Math.Abs(crossRailProfile.DownhillLeft[i] - DownhillLeft[i]));
+                                var kdl = DownhillLeft[i] + (crossRailProfile.DownhillLeft[i] - DownhillLeft[i]) * edl;
+                                DownhillLeftExp.Add((float)kdl);
 
-                            //    var edr = Math.Exp(ExponentCoef * Math.Abs(crossRailProfile.DownhillRight[i] - DownhillRight[i]));
-                            //    var kdr = DownhillRight[i] + (crossRailProfile.DownhillRight[i] - DownhillRight[i]) * edr;
-                            //    DownhillRightExp.Add((float)kdr);
-                            //}
+                                var edr = Math.Exp(ExponentCoef * Math.Abs(crossRailProfile.DownhillRight[i] - DownhillRight[i]));
+                                var kdr = DownhillRight[i] + (crossRailProfile.DownhillRight[i] - DownhillRight[i]) * edr;
+                                DownhillRightExp.Add((float)kdr);
+                            }
 
-                            //crossRailProfile.TreadTiltLeft.Clear();
-                            //crossRailProfile.TreadTiltRight.Clear();
-                            //crossRailProfile.DownhillLeft.Clear();
-                            //crossRailProfile.DownhillRight.Clear();
+                            crossRailProfile.TreadTiltLeft.Clear();
+                            crossRailProfile.TreadTiltRight.Clear();
+                            crossRailProfile.DownhillLeft.Clear();
+                            crossRailProfile.DownhillRight.Clear();
 
-                            //crossRailProfile.TreadTiltLeft.AddRange(TreadTiltLeftExp);
-                            //crossRailProfile.TreadTiltRight.AddRange(TreadTiltRightExp);
-                            //crossRailProfile.DownhillLeft.AddRange(DownhillLeftExp);
-                            //crossRailProfile.DownhillRight.AddRange(DownhillRightExp);
+                            crossRailProfile.TreadTiltLeft.AddRange(TreadTiltLeftExp);
+                            crossRailProfile.TreadTiltRight.AddRange(TreadTiltRightExp);
+                            crossRailProfile.DownhillLeft.AddRange(DownhillLeftExp);
+                            crossRailProfile.DownhillRight.AddRange(DownhillRightExp);
 
                             List<string> polylines = GetCrossRailProfileLines(crossRailProfile, tripProcess.Direction);
                             var linesElem = new XElement("lines");

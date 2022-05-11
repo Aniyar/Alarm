@@ -119,44 +119,44 @@ namespace GapService
 
                     km.LoadTrackPasport(MainTrackStructureRepository, trip.Trip_date);
 
-                    //try
-                    //{
-                    //    GetGaps(trip, km, DistId); //стыки
-                    //    Console.WriteLine("Стык ОК!");
-                    //}
-                    //catch (Exception e)
-                    //{
-                    //    Console.WriteLine("Стык ERROR! " + e.Message);
-                    //}
+                    try
+                    {
+                        GetGaps(trip, km, DistId); //стыки
+                        Console.WriteLine("Стык ОК!");
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Стык ERROR! " + e.Message);
+                    }
 
-                    //try
-                    //{
-                    //    GetBolt(trip, km, DistId); //стыки
-                    //    Console.WriteLine("болт ок!");
-                    //}
-                    //catch (Exception e)
-                    //{
-                    //    Console.WriteLine("болт error! " + e.Message);
-                    //}
-                    //try
-                    //{
-                    //    GetBalast(trip, km, DistId); //баласт
-                    //    Console.WriteLine("Баласт ОК!");
-                    //}
-                    //catch (Exception e)
-                    //{
-                    //    Console.WriteLine("Баласт ERROR! " + e.Message);
-                    //}
+                    try
+                    {
+                        GetBolt(trip, km, DistId); //стыки
+                        Console.WriteLine("болт ок!");
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("болт error! " + e.Message);
+                    }
+                    try
+                    {
+                        GetBalast(trip, km, DistId); //баласт
+                        Console.WriteLine("Баласт ОК!");
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Баласт ERROR! " + e.Message);
+                    }
 
-                    //try
-                    //{
-                    //    GetPerpen(trip, km, DistId);
-                    //    Console.WriteLine("Perpen ОК!");
-                    //}
-                    //catch (Exception e)
-                    //{
-                    //    Console.WriteLine("Perpen ERROR! " + e.Message);
-                    //}
+                    try
+                    {
+                        GetPerpen(trip, km, DistId);
+                        Console.WriteLine("Perpen ОК!");
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Perpen ERROR! " + e.Message);
+                    }
 
                     try
                     {
@@ -178,24 +178,24 @@ namespace GapService
                         Console.WriteLine("Огр шпалы ERROR! " + e.Message);
                     }
 
-                    //try
-                    //{
-                    //    Getbadfasteners(trip, km, DistId); //Скрепление
-                    //    Console.WriteLine("Скрепление ОК!");
-                    //}
-                    //catch (Exception e)
-                    //{
-                    //    Console.WriteLine("Скрепление ERROR! " + e.Message);
-                    //}
-                    //try
-                    //{
-                    //    Getdeviationsinfastening(trip, km, DistId); //огр в скреп
-                    //    Console.WriteLine("Огр скор Скрепление ОК!");
-                    //}
-                    //catch (Exception e)
-                    //{
-                    //    Console.WriteLine("Огр скор Скрепление ERROR! " + e.Message);
-                    //}
+                    try
+                    {
+                        Getbadfasteners(trip, km, DistId); //Скрепление
+                        Console.WriteLine("Скрепление ОК!");
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Скрепление ERROR! " + e.Message);
+                    }
+                    try
+                    {
+                        Getdeviationsinfastening(trip, km, DistId); //огр в скреп
+                        Console.WriteLine("Огр скор Скрепление ОК!");
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Огр скор Скрепление ERROR! " + e.Message);
+                    }
                 };
                 _channel.BasicConsume(queue: QueueName,
                                       autoAck: true,

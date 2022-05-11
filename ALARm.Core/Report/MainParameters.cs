@@ -37,7 +37,7 @@ namespace ALARm.Core.Report
             this.MainTrackStructureRepository = mainTrackStructureRepository;
             this.AdmStructureRepository = admStructureRepository;
         }
-        public void Process(ReportTemplate template, Kilometer kilometer, Trips trip, bool autoprint)
+        public void Process(ReportTemplate template, Kilometer kilometer, Trips trip, bool autoprint, Kilometer previous, Kilometer next)
         {
             XDocument htReport = new XDocument();
             var svgLength = 0;
@@ -51,17 +51,34 @@ namespace ALARm.Core.Report
 
                 var direction = AdmStructureRepository.GetDirectionByTrack(kilometer.Track_id);
 
+
                 //ПРУ
                 var PasSpeed = kilometer.Speeds.Any() ? kilometer.Speeds.First().Passenger : -1;
                 var pru_dig_list = new List<DigressionMark> { };
                 var Curve_nature_value = new List<DigressionMark>();
-                
-                foreach (var bpd_curve in kilometer.Curves)
+                int prevIndex = kilometer.Number + 1;
+                //var rezulat = new List<> ;
+                //var rezulat_next = new List<> ;
+                //ezulat_next=
+                var result = new List<Curve>();
+
+                //if (previous != null)
+                // result.AddRange(previous.Curve.s);
+
+                result.AddRange(kilometer.Curves);
+                if (next != null)
+                {
+                    // result.AddRange(next.Curves);
+                    // var intersect = kilometer.Curves.Intersect(next.Curves);
+                    //result.AddRange(intersect);
+                }
+
+                foreach (var bpd_curve in result)
                 {
                     List<RDCurve> rdcs = RdStructureRepository.GetRDCurves(bpd_curve.Id, trip.Id);
                     //var LevelPoins = rdcs.Where(o => o.Point_level > 0).ToList();
                     //var StrPoins = rdcs.Where(o => o.Point_str > 0).ToList();
-
+                    var nn = kilometer.Number;
                     var curve_center_ind = rdcs.Count / 2;
                     var rightCurve = new List<RDCurve>();
                     var leftCurve = new List<RDCurve>();
@@ -101,6 +118,7 @@ namespace ALARm.Core.Report
                     for (int fi = 0; fi < strData.Count - 4; fi++)
                     {
                         var temp = Math.Abs(strData[fi + 4].Trapez_str - strData[fi].Trapez_str);
+
                         strData[fi].FiList = temp;
                     }
                     //накты вершиналарды табу
@@ -109,7 +127,7 @@ namespace ALARm.Core.Report
                     var krug = new List<RDCurve>();
 
                     var flagPerehod = true;
-                    var flagKrug = false;
+                    var flagKrug = true;
 
                     for (int versh = 3; versh < strData.Count - 4; versh++)
                     {
@@ -121,7 +139,7 @@ namespace ALARm.Core.Report
                         {
                             if (perehod.Any())
                             {
-                                vershList.Add(perehod);
+                                //vershList.Add(perehod);
                                 perehod = new List<RDCurve>();
                                 krug = new List<RDCurve>();
 
@@ -217,9 +235,9 @@ namespace ALARm.Core.Report
                     var vershListLVL = new List<List<RDCurve>>();
                     var perehodLVL = new List<RDCurve>();
                     var krugLVL = new List<RDCurve>();
-
+                    var vershListLVLKRg = new List<List<RDCurve>>();
                     var flagPerehodLVL = true;
-                    var flagKrugLVL = false;
+                    var flagKrugLVL = true;
 
                     for (int versh = 3; versh < LvlData.Count - 4; versh++)
                     {
@@ -231,7 +249,7 @@ namespace ALARm.Core.Report
                         {
                             if (perehodLVL.Any())
                             {
-                                vershListLVL.Add(perehodLVL);
+                                // vershListLVL.Add(perehodLVL);
                                 perehodLVL = new List<RDCurve>();
                                 krugLVL = new List<RDCurve>();
 
@@ -240,14 +258,16 @@ namespace ALARm.Core.Report
                             }
                         }
 
-                        if (LvlData[versh].FiList2 < 0.1 && flagKrugLVL)
+                        //if (LvlData[versh].FiList2 < 0.1 && flagKrugLVL)//
+                        if (LvlData[versh].FiList2 < 0.1 && flagKrugLVL)//
                         {
                             krugLVL.Add(LvlData[versh]);
                         }
                         else
                         {
-                            if (krugLVL.Any())
+                            if (krugLVL.Any() && krugLVL.Count > 20)
                             {
+                                vershListLVLKRg.Add(krugLVL);
                                 vershListLVL.Add(krugLVL);
                                 perehodLVL = new List<RDCurve>();
                                 krugLVL = new List<RDCurve>();
@@ -259,34 +279,42 @@ namespace ALARm.Core.Report
                     }
                     if (perehodLVL.Any())
                     {
-                        vershListLVL.Add(perehodLVL);
+                        // vershListLVL.Add(perehodLVL);
                     }
-
+                    if (krugLVL.Any())
+                    {
+                        vershListLVL.Add(krugLVL);
+                    }
                     var LevelPoins = new List<RDCurve>();
 
                     foreach (var item in vershListLVL)
                     {
                         LevelPoins.Add(item.First());
                     }
-                    LevelPoins.Add(LvlData.Last());                   
+                    LevelPoins.Add(LvlData.Last());
 
 
                     int lvl = -1, str = -1, lenPerKrivlv = -1;
                     int lenPru = -1;
 
-                    var vershinyLVL = vershListLVL.Where(o => Math.Abs(o.First().FiList2) < 0.1).ToList();
-
+                    //var vershinyLVL = vershListLVL.Where(o => Math.Abs(o.First().FiList2) < 1).ToList();
+                    //var vershinyLVL = vershListLVL.Where(o => Math.Abs(o.First().FiList2) < 1).ToList();
+                    // var vershinyLVL = vershListLVL.Where(o =>o.Add(Math.Abs((int)0.FiList2()))< 1).ToList();
                     var minH = new List<RDCurve>();
                     var minOb = 9000.0;
 
                     var maxAnp = new List<RDCurve>();
                     var max = -1.0;
 
-                    foreach (var item in vershinyLVL)
+                    //  foreach (var item in vershinyLVL)
+                    var xx = 0;
+                    foreach (var item in vershListLVL)
                     {
                         var r = item.Select(o => o.Trapez_str).Average();
                         var h = item.Select(o => o.Trapez_level).Average();
-
+                        var avgmeterbyItem = item.Select(o => o.M).Average();
+                        xx = xx + 1;
+                        // var metr= item.Select(o => o.Trapez_level).;
                         if (Math.Abs(h) < minOb)
                         {
                             minOb = Math.Abs(h);
@@ -301,18 +329,24 @@ namespace ALARm.Core.Report
                             maxAnp = item;
                         }
 
-                        
+
+                        if (kilometer.Number == 715)
+                        {
+                            h = item.Select(o => o.Trapez_level).Average();
+                            avgmeterbyItem = item.Select(o => o.M).Average();
+                        }
 
                         if (kilometer.Number != rdcs[curve_center_ind].Km)
                             continue;
 
-                        if (Math.Abs(h) < 6)
+                        if (Math.Abs(h) < 4)
                             continue;
 
                         pru_dig_list.Add(new DigressionMark()
                         {
                             Km = item.First().Km,
-                            Meter = item[item.Count / 2].M,
+                            Meter = (int)avgmeterbyItem,
+
                             Alert = $"кривая факт. R:{ (17860 / Math.Abs(r)):0} H:{ Math.Abs(h):0}"
                         });
 
@@ -323,8 +357,10 @@ namespace ALARm.Core.Report
                         //------------------------------------------------------------------------------------------
                         if (kilometer.Number == rdcs[curve_center_ind].Km)
                         {
-                            var realCurveCenter = item[item.Count / 2].Km.ToDoubleCoordinate(item[item.Count / 2].M);
-                            var pmeter = item[item.Count / 2].M;
+                            var realCurveCenter = item[item.Count / 2].Km.ToDoubleCoordinate((int)avgmeterbyItem);
+                            //var realCurveCenter = item[item.Count / 2].Km.ToDoubleCoordinate(item[item.Count / 2].M);
+                            // var pmeter = item[item.Count / 2].M;
+                            var pmeter = (int)avgmeterbyItem;
                             pmeter = kilometer.LevelAvgTrapezoid.Count - 1 < pmeter ? kilometer.LevelAvgTrapezoid.Count - 1 : pmeter;
 
                             var passportLvlData = bpd_curve.Elevations.Where(o => realCurveCenter.Between(o.RealStartCoordinate, o.RealFinalCoordinate)).ToList();
@@ -364,10 +400,10 @@ namespace ALARm.Core.Report
                                     pru_dig_list.Add(new DigressionMark
                                     {
                                         Km = kilometer.Number,
-                                        Meter = item[item.Count / 2].M,
+                                        Meter = (int)avgmeterbyItem,
                                         Value = diff, //высота
                                         Length = item.Count, // длина круговой
-                                        Count = ball, 
+                                        Count = ball,
                                         DigName = DigressionName.Pru.Name,
                                         Pch = kilometer.PdbSection[0].Distance,
                                         DirectionName = direction.Name,
@@ -434,15 +470,37 @@ namespace ALARm.Core.Report
                                 str_circular.Add(StrPoins[strIndex]);
                             }
                         }
+                        if (kilometer.Number == 715)
+                        {
+                            // var x = 0;
+
+                        }
+                        //  {
+                        if (Math.Abs(Math.Abs(StrPoins[StrPoins.Count - 1].Trapez_str) - Math.Abs(StrPoins[StrPoins.Count - 2].Trapez_str)) / Math.Abs(StrPoins[StrPoins.Count - 1].X - StrPoins[StrPoins.Count - 2].X) < 0.05)
+                        {
+                            str_circular.Add(StrPoins[StrPoins.Count - 1]);
+                        }
+                        /// }
+                        //  else
+                        //  {
+                        // if (Math.Abs(Math.Abs(StrPoins[StrPoins.Count - 1].Trapez_str) - Math.Abs(StrPoins[StrPoins.Count - 2].Trapez_str)) / Math.Abs(StrPoins[StrPoins.Count - 1].X - StrPoins[StrPoins.Count - 2].X) < 0.05)
+                        //   Нужно разобраться
+                        // {
+                        //continue;
+                        // }
+                        //  }
+
+
 
                         if (Math.Abs(Math.Abs(StrPoins[StrPoins.Count - 1].Trapez_str) - Math.Abs(StrPoins[StrPoins.Count - 2].Trapez_str)) / Math.Abs(StrPoins[StrPoins.Count - 1].X - StrPoins[StrPoins.Count - 2].X) < 0.05)
                         {
                             str_circular.Add(StrPoins[StrPoins.Count - 1]);
                         }
+
                         //Поиск круговой кривой уровень
                         var lvl_circular = new List<RDCurve> { };
 
-                        for (int lvlIndex = 1; lvlIndex < LevelPoins.Count - 1; lvlIndex ++)
+                        for (int lvlIndex = 1; lvlIndex < LevelPoins.Count - 1; lvlIndex++)
                         {
                             if (Math.Abs(LevelPoins[lvlIndex].X - LevelPoins[lvlIndex - 1].X) < 6)
                                 continue;
@@ -490,7 +548,7 @@ namespace ALARm.Core.Report
                             {
                                 //начальный до 1 переходной
                                 var circ1Ind = StrPoins.IndexOf(str_circular[cirrInd]);
-                                for (int iii = circ1Ind - 1; iii >= 0; iii --)
+                                for (int iii = circ1Ind - 1; iii >= 0; iii--)
                                 {
                                     if (Math.Abs(StrPoins[iii].Trapez_str) < 3)
                                     {
@@ -649,9 +707,9 @@ namespace ALARm.Core.Report
                         //lvl = lvl_mid;
                         str = rad_mid;
                     }
-                    catch
+                    catch (Exception e)
                     {
-                        Console.WriteLine("Ошибка при расчете натурной кривой");
+                        Console.WriteLine("Ошибка при расчете натурной кривой" + e);
                     }
 
                     var curve_center = (bpd_curve.Start_Km * 1000 + bpd_curve.Start_M) + ((bpd_curve.Final_Km * 1000 + bpd_curve.Final_M) - (bpd_curve.Start_Km * 1000 + bpd_curve.Start_M)) / 2;
@@ -923,7 +981,7 @@ namespace ALARm.Core.Report
                 int fourStepOgrCoun = 0, otherfourStepOgrCoun = 0;
 
                 var trackclasses = (List<TrackClass>)MainTrackStructureRepository.GetMtoObjectsByCoord(trip.Trip_date, kilometer.Number, MainTrackStructureConst.MtoTrackClass, kilometer.Track_id);
-        
+
                 svgLength = kilometer.GetLength() < 1000 ? 1000 : kilometer.GetLength();
                 var xp = (-kilometer.Start_m - svgLength - 50) + (svgLength + 105) - 52;
 
@@ -957,25 +1015,25 @@ namespace ALARm.Core.Report
                     RightSideChart(trip.Trip_date, kilometer, kilometer.Track_id, new float[] { 151f, 146f, 152.5f, 155f }),
 
                     new XElement("xgrid",
-                        new XElement("x", MMToPixelChartString(LevelPosition - LevelStep), 
-                        new XAttribute("dasharray", "0.5,2"), 
+                        new XElement("x", MMToPixelChartString(LevelPosition - LevelStep),
+                        new XAttribute("dasharray", "0.5,2"),
                         new XAttribute("stroke", "grey"),
-                        new XAttribute("label", "  –30"), 
+                        new XAttribute("label", "  –30"),
                         new XAttribute("y", MMToPixelChartString(LevelPosition - LevelStep - 0.5f)),
                         new XAttribute("x", xp + 15)),
 
-                        new XElement("x", MMToPixelChartString(LevelPosition), 
+                        new XElement("x", MMToPixelChartString(LevelPosition),
                         new XAttribute("dasharray", "3,3"),
                         new XAttribute("stroke", "black"),
-                        new XAttribute("label", "      0"), 
-                        new XAttribute("y", MMToPixelChartString(LevelPosition - 0.5f)), 
+                        new XAttribute("label", "      0"),
+                        new XAttribute("y", MMToPixelChartString(LevelPosition - 0.5f)),
                         new XAttribute("x", xp + 15)),
 
                         new XElement("x", MMToPixelChartString(LevelPosition + LevelStep),
-                        new XAttribute("dasharray", "0.5,2"), 
-                        new XAttribute("stroke", "grey"), 
+                        new XAttribute("dasharray", "0.5,2"),
+                        new XAttribute("stroke", "grey"),
                         new XAttribute("label", "    30"),
-                        new XAttribute("y", MMToPixelChartString(LevelPosition + LevelStep - 0.5f)), 
+                        new XAttribute("y", MMToPixelChartString(LevelPosition + LevelStep - 0.5f)),
                         new XAttribute("x", xp + 15)),
 
                         new XElement("x", MMToPixelChartString(StraighRighttPosition - StrightStep),
@@ -1026,8 +1084,8 @@ namespace ALARm.Core.Report
 
                         new XElement("x", MMToPixelChartString(GaugePosition - 8 * GaugeKoef),
                         new XAttribute("dasharray", "0.5,2"),
-                        new XAttribute("stroke", "grey"), 
-                        new XAttribute("label", "1512"), 
+                        new XAttribute("stroke", "grey"),
+                        new XAttribute("label", "1512"),
                         new XAttribute("y", MMToPixelChartString(GaugePosition - 8 * GaugeKoef - 0.5f)),
 
                         new XAttribute("x", xp + 15)),
@@ -1038,19 +1096,19 @@ namespace ALARm.Core.Report
                         new XElement("x", MMToPixelChartString(GaugePosition),
                         new XAttribute("dasharray", "3,3"),
                         new XAttribute("stroke", "black"),
-                        new XAttribute("label", "1520"), 
-                        new XAttribute("y", MMToPixelChartString(GaugePosition - 0.5f)), 
+                        new XAttribute("label", "1520"),
+                        new XAttribute("y", MMToPixelChartString(GaugePosition - 0.5f)),
                         new XAttribute("x", xp + 15)),
 
-                        new XElement("x", MMToPixelChartString(GaugePosition + 8 * GaugeKoef), 
-                        new XAttribute("dasharray", "0.5,2"), 
-                        new XAttribute("stroke", "grey"), 
+                        new XElement("x", MMToPixelChartString(GaugePosition + 8 * GaugeKoef),
+                        new XAttribute("dasharray", "0.5,2"),
+                        new XAttribute("stroke", "grey"),
                         new XAttribute("label", "1528"),
                         new XAttribute("y", MMToPixelChartString(GaugePosition + 8 * GaugeKoef - 0.5f)),
                         new XAttribute("x", xp + 15)),
 
-                        new XElement("x", MMToPixelChartString(GaugePosition + 16 * GaugeKoef), 
-                        new XAttribute("dasharray", "0.5,2"), 
+                        new XElement("x", MMToPixelChartString(GaugePosition + 16 * GaugeKoef),
+                        new XAttribute("dasharray", "0.5,2"),
                         new XAttribute("stroke", "grey"),
                         new XAttribute("label", "1536"),
                         new XAttribute("y", MMToPixelChartString(GaugePosition + 16 * GaugeKoef - 0.5f)),
@@ -1059,59 +1117,59 @@ namespace ALARm.Core.Report
                         new XElement("x", MMToPixelChartString(GaugePosition + 22 * GaugeKoef),
                         new XAttribute("dasharray", "0.5,2"),
                         new XAttribute("stroke", "grey"),
-                        new XAttribute("label", "1542"), 
-                        new XAttribute("y", MMToPixelChartString(GaugePosition + 22 * GaugeKoef - 0.5f)), 
+                        new XAttribute("label", "1542"),
+                        new XAttribute("y", MMToPixelChartString(GaugePosition + 22 * GaugeKoef - 0.5f)),
                         new XAttribute("x", xp + 15)),
 
                         new XElement("x", MMToPixelChartString(GaugePosition + 26 * GaugeKoef),
-                        new XAttribute("dasharray", "0.5,2"), 
+                        new XAttribute("dasharray", "0.5,2"),
                         new XAttribute("stroke", "grey")),
 
-                        new XElement("x", MMToPixelChartString(GaugePosition + 28 * GaugeKoef), 
+                        new XElement("x", MMToPixelChartString(GaugePosition + 28 * GaugeKoef),
                         new XAttribute("dasharray", "0.5,2"),
-                        new XAttribute("stroke", "grey"), 
-                        new XAttribute("label", "1548"), 
+                        new XAttribute("stroke", "grey"),
+                        new XAttribute("label", "1548"),
                         new XAttribute("y", MMToPixelChartString(GaugePosition + 28 * GaugeKoef - 0.5f)),
                         new XAttribute("x", xp + 15)),
 
                         new XElement("x", MMToPixelChartString(ProsRightPosition - 10 * ProsKoef),
-                        new XAttribute("dasharray", "0.5,2"), 
+                        new XAttribute("dasharray", "0.5,2"),
                         new XAttribute("stroke", "grey"),
-                        new XAttribute("label", "  –10"), 
+                        new XAttribute("label", "  –10"),
                         new XAttribute("y", MMToPixelChartString(ProsRightPosition - 10 * ProsKoef - 0.5f)),
                         new XAttribute("x", xp + 15)),
 
                         new XElement("x", MMToPixelChartString(ProsRightPosition),
                         new XAttribute("dasharray", "3,3"),
-                        new XAttribute("stroke", "black"), 
+                        new XAttribute("stroke", "black"),
                         new XAttribute("label", "      0"),
-                        new XAttribute("y", MMToPixelChartString(ProsRightPosition - 0.5f)), 
+                        new XAttribute("y", MMToPixelChartString(ProsRightPosition - 0.5f)),
                         new XAttribute("x", xp + 15)),
 
-                        new XElement("x", MMToPixelChartString(ProsRightPosition + 10 * ProsKoef), 
-                        new XAttribute("dasharray", "0.5,2"), 
-                        new XAttribute("stroke", "grey"), 
-                        new XAttribute("label", "    10"), 
+                        new XElement("x", MMToPixelChartString(ProsRightPosition + 10 * ProsKoef),
+                        new XAttribute("dasharray", "0.5,2"),
+                        new XAttribute("stroke", "grey"),
+                        new XAttribute("label", "    10"),
                         new XAttribute("y", MMToPixelChartString(ProsRightPosition + 10 * ProsKoef - 0.5f)),
                         new XAttribute("x", xp + 15)),
 
                         new XElement("x", MMToPixelChartString(ProsLeftPosition - 10 * ProsKoef),
                         new XAttribute("dasharray", "0.5,2"),
-                        new XAttribute("stroke", "grey"), 
+                        new XAttribute("stroke", "grey"),
                         new XAttribute("label", "  –10"),
                         new XAttribute("y", MMToPixelChartString(ProsLeftPosition - 10 * ProsKoef - 0.5f)),
                         new XAttribute("x", xp + 15)),
 
-                        new XElement("x", MMToPixelChartString(ProsLeftPosition), 
+                        new XElement("x", MMToPixelChartString(ProsLeftPosition),
                         new XAttribute("dasharray", "3,3"),
                         new XAttribute("stroke", "black"),
-                        new XAttribute("label", "      0"), 
+                        new XAttribute("label", "      0"),
                         new XAttribute("y", MMToPixelChartString(ProsLeftPosition - 0.5f)),
                         new XAttribute("x", xp + 15)),
-                        new XElement("x", MMToPixelChartString(ProsLeftPosition + 10 * ProsKoef), 
+                        new XElement("x", MMToPixelChartString(ProsLeftPosition + 10 * ProsKoef),
 
                         new XAttribute("dasharray", "0.5,2"),
-                        new XAttribute("stroke", "grey"), 
+                        new XAttribute("stroke", "grey"),
                         new XAttribute("label", "    10"),
                         new XAttribute("y", MMToPixelChartString(ProsLeftPosition + 10 * ProsKoef - 0.5f)),
                         new XAttribute("x", xp + 15))
@@ -1138,13 +1196,13 @@ namespace ALARm.Core.Report
                         //трапеция рихт
                         var drh = kilometer.StrightAvgTrapezoid[index] + (kilometer.StrightRight[index] - kilometer.StrightAvgTrapezoid[index]);
                         straighteningRight += MMToPixelChartString(drh * StrightKoef + StraighRighttPosition) + "," + metre + " ";
-                                                
+
                         var drh1 = kilometer.StrightAvgTrapezoid[index] + (kilometer.StrightLeft[index] - kilometer.StrightAvgTrapezoid[index]);
-                        straighteningLeft += MMToPixelChartString(drh1 * StrightKoef + StrightLeftPosition  ) + "," + metre + " ";
-                        
+                        straighteningLeft += MMToPixelChartString(drh1 * StrightKoef + StrightLeftPosition) + "," + metre + " ";
 
 
-                        level += MMToPixelChartString(kilometer.Level[index] * LevelKoef  + LevelPosition) + "," + metre + " ";
+
+                        level += MMToPixelChartString(kilometer.Level[index] * LevelKoef + LevelPosition) + "," + metre + " ";
                         averageLevel += MMToPixelChartString(kilometer.LevelAvgTrapezoid[index] * LevelKoef + LevelPosition) + "," + metre + " ";
                         zeroLevel += MMToPixelChartString(kilometer.flvl0[index] * LevelKoef + LevelPosition) + "," + metre + " ";
 
@@ -1242,7 +1300,7 @@ namespace ALARm.Core.Report
                 var svg = htReport.Element("html").Element("body").Element("div").Element("div").Element("svg");
                 var svgDoc = SvgDocument.FromSvg<SvgDocument>(svg.ToString());
                 svgDoc.Width = 800 * 3;
-                svgDoc.Height = (svgLength + 105) * 3;
+                svgDoc.Height = (svgLength + 95) * 3;
 
                 if (autoprint)
                 {
