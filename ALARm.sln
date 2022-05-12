@@ -49,6 +49,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RailCrossSectionService", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnlinePhotoBoltsService", "ALARm.Services\OnlinePhotoBoltsService\OnlinePhotoBoltsService.csproj", "{5273964C-5BCE-4D12-A862-9456F7531CA1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProfilPoverhService", "services\ProfilPoverhService\ProfilPoverhService.csproj", "{DC0BE2EC-9582-4403-B966-7A40573C8673}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		ALARm.projitems*{333ae31a-6197-422b-9f9c-6a6a0814af90}*SharedItemsImports = 13
@@ -126,6 +128,10 @@ Global
 		{5273964C-5BCE-4D12-A862-9456F7531CA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5273964C-5BCE-4D12-A862-9456F7531CA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5273964C-5BCE-4D12-A862-9456F7531CA1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC0BE2EC-9582-4403-B966-7A40573C8673}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC0BE2EC-9582-4403-B966-7A40573C8673}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC0BE2EC-9582-4403-B966-7A40573C8673}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC0BE2EC-9582-4403-B966-7A40573C8673}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -137,9 +143,10 @@ Global
 		{D0F291A8-7330-48FC-A409-D54BC1A9E6A9} = {E37316E4-1978-41E6-9EDD-6F5FFA6572A8}
 		{72202074-8627-4E4B-A8E5-8561208D2D6B} = {E37316E4-1978-41E6-9EDD-6F5FFA6572A8}
 		{5273964C-5BCE-4D12-A862-9456F7531CA1} = {E37316E4-1978-41E6-9EDD-6F5FFA6572A8}
+		{DC0BE2EC-9582-4403-B966-7A40573C8673} = {E37316E4-1978-41E6-9EDD-6F5FFA6572A8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {D0ED8846-31BA-4919-B919-96969F0347CF}
 		VisualSVNWorkingCopyRoot = .
+		SolutionGuid = {D0ED8846-31BA-4919-B919-96969F0347CF}
 	EndGlobalSection
 EndGlobal
