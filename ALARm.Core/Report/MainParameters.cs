@@ -709,7 +709,7 @@ namespace ALARm.Core.Report
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine("Ошибка при расчете натурной кривой" + e);
+                        Console.WriteLine("Ошибка при расчете натурной кривой" + e.Message);
                     }
 
                     var curve_center = (bpd_curve.Start_Km * 1000 + bpd_curve.Start_M) + ((bpd_curve.Final_Km * 1000 + bpd_curve.Final_M) - (bpd_curve.Start_Km * 1000 + bpd_curve.Start_M)) / 2;

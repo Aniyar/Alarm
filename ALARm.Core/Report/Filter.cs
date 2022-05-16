@@ -11,6 +11,7 @@ namespace ALARm.Core.Report
         public object Value { get; set; }
     
     }
+
     public enum PU32Type
     {
         ByDistance = 0, ByDirection = 1, Comparative = 2
@@ -20,6 +21,13 @@ namespace ALARm.Core.Report
         public  float Value { get; set; }
         public string Name { get; set; }
         object Filter.Value { get => this.Value; set=> this.Value = float.Parse(((string)value).Replace(".", ",")); }
+    }
+
+    public class INTFilter : Filter
+    {
+        public int Value { get; set; }
+        public string Name { get; set; }
+        object Filter.Value { get => this.Value; set => this.Value = int.Parse(((string)value)); }
     }
 
     public class DoubleFilter : Filter
