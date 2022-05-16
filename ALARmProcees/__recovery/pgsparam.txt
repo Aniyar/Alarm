@@ -1,8 +1,0 @@
-DriverID=PG
-User_Name=postgres
-Database=Aniyar_COpy
-Password=alhafizu
-Server=DESKTOP-EMAFC5J
-Port=5432
-ExtendedMetadata=True
-CharacterSet=UTF8

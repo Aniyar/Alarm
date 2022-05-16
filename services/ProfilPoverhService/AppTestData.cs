@@ -164,7 +164,7 @@ namespace ProfilPoverhService
                     {
                         Console.WriteLine($"{Kilometer} - {Meter}");
                     }
-                    
+
 
 
                     var result = ConvertMatrix(Array.ConvertAll(by, Convert.ToInt32), height, width);
@@ -456,9 +456,8 @@ namespace ProfilPoverhService
         {
             var trip_id = 242;
 
-            var cs = "Host=DESKTOP-EMAFC5J;Username=postgres;Password=alhafizu;Database=railway_copy";
 
-            var con = new NpgsqlConnection(cs);
+            var con = new NpgsqlConnection(Helper.ConnectionString());
             con.Open();
 
             var cmd = new NpgsqlCommand();
@@ -494,9 +493,8 @@ namespace ProfilPoverhService
         {
             var trip_id = 242;
 
-            var cs = "Host=DESKTOP-EMAFC5J;Username=postgres;Password=alhafizu;Database=railway";
 
-            var con = new NpgsqlConnection(cs);
+            var con = new NpgsqlConnection(Helper.ConnectionString());
             con.Open();
 
             var cmd = new NpgsqlCommand();
@@ -594,7 +592,7 @@ namespace ProfilPoverhService
             ShortWavesLeft.Reverse();
             ShortWavesRight.Reverse();
 
-            var connection = new Npgsql.NpgsqlConnection("Host=DESKTOP-EMAFC5J;Username=postgres;Password=alhafizu;Database=railway");
+            var connection = new Npgsql.NpgsqlConnection(Helper.ConnectionString());
             var ShortData = connection.Query<DataFlow>($@"SELECT * FROM testdata_242 where km = {km}  ").ToList();
 
             // var shortl = ShortData.Select(o => o.Diff_l / 8.0 < 1 / 8.0 ? 0 : o.Diff_l / 8.0).ToList();
@@ -979,8 +977,7 @@ namespace ProfilPoverhService
             var trip_id = "242";
             threat_id = threat_id == "Left" ? "1" : "2";
 
-            var cs = "Host=DESKTOP-EMAFC5J;Username=postgres;Password=alhafizu;Database=railway";
-            var con = new NpgsqlConnection(cs);
+            var con = new NpgsqlConnection(Helper.ConnectionString());
             con.Open();
 
             var cmd = new NpgsqlCommand();
@@ -1024,7 +1021,7 @@ namespace ProfilPoverhService
             con.Close();
         }
 
-     
+
     }
 
     //public enum Rails { r75 = 192, r65 = 180, r50 = 152, r43 = 140 }

@@ -49,7 +49,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RailCrossSectionService", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnlinePhotoBoltsService", "ALARm.Services\OnlinePhotoBoltsService\OnlinePhotoBoltsService.csproj", "{5273964C-5BCE-4D12-A862-9456F7531CA1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProfilPoverhService", "services\ProfilPoverhService\ProfilPoverhService.csproj", "{DC0BE2EC-9582-4403-B966-7A40573C8673}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProfilPoverhService", "services\ProfilPoverhService\ProfilPoverhService.csproj", "{DC0BE2EC-9582-4403-B966-7A40573C8673}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WavesService", "services\WavesService\WavesService.csproj", "{F7EC5465-5624-4A81-A69C-3083841BD204}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProfileCalibrService", "services\ProfileCalibrService\ProfileCalibrService.csproj", "{576D2BB8-A6F6-4353-BECF-F15F7DEF6713}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -132,6 +136,14 @@ Global
 		{DC0BE2EC-9582-4403-B966-7A40573C8673}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DC0BE2EC-9582-4403-B966-7A40573C8673}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DC0BE2EC-9582-4403-B966-7A40573C8673}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7EC5465-5624-4A81-A69C-3083841BD204}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7EC5465-5624-4A81-A69C-3083841BD204}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7EC5465-5624-4A81-A69C-3083841BD204}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7EC5465-5624-4A81-A69C-3083841BD204}.Release|Any CPU.Build.0 = Release|Any CPU
+		{576D2BB8-A6F6-4353-BECF-F15F7DEF6713}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{576D2BB8-A6F6-4353-BECF-F15F7DEF6713}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{576D2BB8-A6F6-4353-BECF-F15F7DEF6713}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{576D2BB8-A6F6-4353-BECF-F15F7DEF6713}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -144,6 +156,8 @@ Global
 		{72202074-8627-4E4B-A8E5-8561208D2D6B} = {E37316E4-1978-41E6-9EDD-6F5FFA6572A8}
 		{5273964C-5BCE-4D12-A862-9456F7531CA1} = {E37316E4-1978-41E6-9EDD-6F5FFA6572A8}
 		{DC0BE2EC-9582-4403-B966-7A40573C8673} = {E37316E4-1978-41E6-9EDD-6F5FFA6572A8}
+		{F7EC5465-5624-4A81-A69C-3083841BD204} = {E37316E4-1978-41E6-9EDD-6F5FFA6572A8}
+		{576D2BB8-A6F6-4353-BECF-F15F7DEF6713} = {E37316E4-1978-41E6-9EDD-6F5FFA6572A8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		VisualSVNWorkingCopyRoot = .

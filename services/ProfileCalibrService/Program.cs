@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ProfilPoverhService
+namespace ProfileCalibrService
 {
     public class Program
     {
@@ -28,6 +28,5 @@ namespace ProfilPoverhService
                     services.Configure<RabbitMQConfiguration>(configuration.GetSection(nameof(RabbitMQConfiguration)));
                     services.AddHostedService<Worker>();
                 });
-        
     }
 }

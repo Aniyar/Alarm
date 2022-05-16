@@ -117,6 +117,7 @@ namespace ALARm.Core
                 return SocketState.Abortively;
             }
         }
+
         public static SocketState SendMessageToRabbitMQExchange(IConnection connection, string exchange, String message)
         {
             try

@@ -107,13 +107,13 @@ namespace AlarmPP.Web.Components.Diagram
                 };
                 try
                 {
-                    //if (OnlineModeData.AutoScroll)
-                    //    await JSRuntime.InvokeVoidAsync("ScrollMainSvg2", paramss);
+                    if (OnlineModeData.AutoScroll)
+                        await JSRuntime.InvokeVoidAsync("ScrollMainSvg2", paramss);
 
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("it is:" + e.Message);
+                    Console.WriteLine("autoscroll error" + e.Message);
                 }
               
 

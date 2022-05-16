@@ -21,7 +21,7 @@ using Dapper;
 using System.IO;
 //using ALARm_Report.controls;
 
-namespace GapService
+namespace ProfileCalibrService
 {
     public class Worker : BackgroundService
     {
