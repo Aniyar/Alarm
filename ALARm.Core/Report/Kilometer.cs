@@ -964,11 +964,15 @@ namespace ALARm.Core
                         {
                             var h = 0;
                             var temp = curve.Elevations.Where(o => item.FirstTransitionEnd.Between(o.RealStartCoordinate, o.RealFinalCoordinate)).ToList();
-
+                            if (Number >700)
+                            {
+                                Meter = item.Start_M + item.Transition_1;
+                            }
                             if (temp.Any())
                             {
                                 h = (int)temp.First().Lvl;
                             }
+                          
                             if (Number == Math.Round(trip.Travel_Direction == Direction.Reverse ? item.FirstTransitionEnd : item.SecondTransitionStart))
                             {
                                 Digressions.Add(
@@ -984,6 +988,11 @@ namespace ALARm.Core
                     {
                         foreach (var item in curve.Elevations)
                         {
+                            if (Number > 700)
+                            {
+                                Meter = item.Start_M + item.Transition_1;
+                            }
+
                             var Radius = 0;
                             var Width = 0;
                             var Wear = 0;
@@ -996,15 +1005,44 @@ namespace ALARm.Core
                                 Width = (int)temp.First().Width;
                                 Wear = (int)temp.First().Wear;
                             }
-
-                            if (Number == Math.Round(trip.Travel_Direction == Direction.Reverse ? item.FirstTransitionEnd : item.SecondTransitionStart))
+                         
+                                if (   Number == Math.Round(trip.Travel_Direction == Direction.Reverse ? item.FirstTransitionEnd : item.SecondTransitionStart) )
                             {
-                                Digressions.Add(
-                                new DigressionMark()
+
+                                if (item.Start_M < item.Final_M) {
+                                    Digressions.Add(
+                                    new DigressionMark()
+                                    {
+
+                                        Meter = item.Start_M + item.Transition_1,
+                                        Alert = $"{item.Start_M + item.Transition_1} R:{Radius} h:{item.Lvl} Ш:{Width} И:{Wear}"
+
+
+
+                                    });
+
+                                }
+                               if (item.Start_M > item.Final_M  )
+                             
+
                                 {
-                                    Meter = item.Start_M + item.Transition_1 ,
-                                    Alert = $"{item.Start_M + item.Transition_1} R:{Radius} h:{item.Lvl} Ш:{Width} И:{Wear}"
-                                });
+
+                                    Digressions.Add(
+                                   new DigressionMark()
+                                   {
+
+                                       Meter =  item.Transition_1,
+                                       Alert = $"{ item.Transition_1} R:{Radius} h:{item.Lvl} Ш:{Width} И:{Wear}"
+
+
+
+                                   });
+
+
+                                }
+
+
+
                             }
                         }
                     }

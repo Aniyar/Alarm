@@ -536,19 +536,34 @@ namespace ALARm.Core.Report
                 //var style = "fill: none; stroke: blue; vector - effect:non - scaling - stroke; stroke - linejoin:round; stroke - width:0.5; marker - end - url(#marker-arrow)";
                 if (sw.Side_Id != Side.NotDefined)
                 {
+                    //   result.Add(new XElement("switch",
+                    //new XAttribute("start", -(ostryak > end ? ostryak : end)),
+                    //new XAttribute("linex1", (sw.Side_Id == Side.Right && sw.Side_Id != Side.NotDefined ? 300 : 415) + 110),
+                    //new XAttribute("height", Math.Abs(ostryak - end)),
+                    //new XAttribute("xs", sw.Side_Id == Side.Right && sw.Side_Id != Side.NotDefined ? 300 : 415),
+                    //new XAttribute("end", -(ostryak < end ? ostryak : end)),
+                    //new XAttribute("points", leftPSH),
+                    //new XAttribute("center", center),
+                    //new XAttribute("num", sw.Num),
+                    //new XAttribute("y", -760),
+                    //new XAttribute("x", -(end - 1)),
+                    //new XAttribute("txtX", -(end + txtX))
+                    //));
+
                     result.Add(new XElement("switch",
-                 new XAttribute("start", -(ostryak > end ? ostryak : end)),
-                 new XAttribute("linex1", (sw.Side_Id == Side.Right && sw.Side_Id != Side.NotDefined ? 300 : 415) + 110),
-                 new XAttribute("height", Math.Abs(ostryak - end)),
-                 new XAttribute("xs", sw.Side_Id == Side.Right && sw.Side_Id != Side.NotDefined ? 300 : 415),
-                 new XAttribute("end", -(ostryak < end ? ostryak : end)),
-                 new XAttribute("points", leftPSH),
-                 new XAttribute("center", center),
-                 new XAttribute("num", sw.Num),
-                 new XAttribute("y", -760),
-                 new XAttribute("x", -(end - 1)),
-                 new XAttribute("txtX", -(end + txtX))
-                 ));
+             new XAttribute("start", -(ostryak > end ? ostryak : end)),
+             new XAttribute("linex1", (sw.Side_Id == Side.Right ? 300 : 415) + 110),
+             new XAttribute("height", Math.Abs(ostryak - end)),
+             new XAttribute("xs", sw.Side_Id == Side.Right ? 300 : 415),
+             new XAttribute("end", -(ostryak < end ? ostryak : end)),
+             new XAttribute("points", points),
+             new XAttribute("center", center),
+             new XAttribute("num", sw.Num),
+             new XAttribute("y", -760),
+             new XAttribute("x", -(end - 1)),
+             new XAttribute("txtX", -(end + txtX))
+             ));
+
                 }
                 if (sw.Side_Id == Side.NotDefined)
                 {

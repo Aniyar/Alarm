@@ -414,7 +414,7 @@ namespace GapService
         {
             //if (900 < Meter) continue;
 
-            var trip_id = 242;
+            var trip_id = 240;
 
             var con = new NpgsqlConnection(ALARm.DataAccess.Helper.ConnectionString());
             con.Open();
