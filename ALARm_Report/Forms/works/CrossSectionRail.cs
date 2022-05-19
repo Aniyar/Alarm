@@ -380,7 +380,7 @@ namespace ALARm_Report.Forms
         public double ExponentCoef = -1;
 
         public int width = 150;
-        public string cs = "Host=DESKTOP-EMAFC5J;Username=postgres;Password=alhafizu;Database=Aniyar_COpy";
+        public string cs = ALARm.DataAccess.Helper.ConnectionString();
         //public string cs = "Host=localhost;Username=postgres;Password=alhafizu;Database=railway";
         public NpgsqlConnection conn { get; set; }
 

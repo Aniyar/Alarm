@@ -250,7 +250,7 @@ namespace ProfileCalibrService
             {
                 try
                 {
-                    while (Kilometer != kmnum)
+                    while (Kilometer != kmnum && FoundKm == false)
                     {
                         CurrentFrameIndex++;
                         long pos = CurrentFrameIndex * ((long)in_koridor_size) + 8;
@@ -286,6 +286,7 @@ namespace ProfileCalibrService
                     Array.Reverse(buff);
                     Meter = BitConverter.ToInt32(buff);
                     Picket = Meter / 100 + 1;
+
 
                     //Console.WriteLine($"---Профиль лев: КМ {Kilometer} М {Meter} U32EncoderCounter_1 { U32EncoderCounter_1 }");
 

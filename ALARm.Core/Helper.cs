@@ -20,6 +20,9 @@ namespace ALARm.Core
         /// <summary>
         /// Пороговые величины поперечного непогашенного ускорения и ψ
         /// </summary>
+        /// 
+
+
         public static ThresholdsAcceleration GetAnp(VagonType vagonType, int curveRadius = -1)
         {
             ThresholdsAcceleration temp = new ThresholdsAcceleration { };

@@ -21,7 +21,7 @@ using Dapper;
 using System.IO;
 //using ALARm_Report.controls;
 
-namespace ProfilPoverhService
+namespace TestDataService
 {
     public class Worker : BackgroundService
     {
@@ -77,28 +77,27 @@ namespace ProfilPoverhService
                     var message = Encoding.UTF8.GetString(body);
                     message = message.Replace("\\", "\\\\");
                     _logger.LogInformation(" [x] Received {0}", message);
-
                     JObject json = JObject.Parse(message);
                     var kmIndex = (int)json["Km"];
                     var kmId = (int)json["FileId"];
                     //var path = json["Path"];
-
+                    _logger.LogInformation(Helper.ConnectionString());
                     Trips trip = RdStructureService.GetTripFromFileId(kmId)[0];
+                    _logger.LogInformation("got trips");
                     int TripId = (int)trip.Id;
                     var kilometers = RdStructureService.GetKilometersByTrip(trip);
+                    _logger.LogInformation("got kms");
                     Kilometer km = kilometers.Where(km => km.Number == kmIndex).First();
 
 
 
                     this.MainTrackStructureRepository = MainTrackStructureService.GetRepository();
-
-
                     var outData = (List<OutData>)RdStructureService.GetNextOutDatas(km.Start_Index - 1, km.GetLength() - 1, TripId);
                     km.AddDataRange(outData, km);
-
                     km.LoadTrackPasport(MainTrackStructureRepository, trip.Trip_date);
 
                     var Blazor2 = new Blazor_TestData();
+                    _logger.LogInformation("got blazor");
                     try
                     {
                         bool flag = true;
@@ -109,11 +108,11 @@ namespace ProfilPoverhService
                             flag = Blazor2.GetBitmapAsync(koridorfile, kupefile);
                             Blazor2.CurrentFrameIndex++;
                         }
-                        Console.WriteLine("тест дата ОК");
+                        _logger.LogInformation("тест дата ОК");
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine("тест дата ERROR! " + e.Message);
+                        _logger.LogInformation("тест дата ERROR! " + e.Message);
                     }
 
                 };
@@ -142,5 +141,15 @@ namespace ProfilPoverhService
             _connection.Close();
             _logger.LogInformation("RabbitMQ connection is closed.");
         }
+
+    }
+    public class RabbitMQConfiguration
+    {
+        public string Host { get; set; }
+        public string Username { get; set; }
+        public string Password { get; set; }
+        public string Queue { get; set; }
+        public int Port { get; set; }
+
     }
 }
