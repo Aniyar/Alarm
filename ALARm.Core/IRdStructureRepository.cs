@@ -27,6 +27,7 @@ namespace ALARm.Core
         void InsertEscort(Escort escort, long trip_id);
         RdClasses GetRdClasses(int class_i);
         List<Kilometer> GetKilometersByTrip(Trips trip);
+       
         List<VideoObjectCount> GetRdObjectCount(Int64 trip_files_id);
         List<VideoObjectCount> GetRdObjectCount(List<Int64> fileIDs);
         object GetAdmDirection(List<Int64> directionIDs);

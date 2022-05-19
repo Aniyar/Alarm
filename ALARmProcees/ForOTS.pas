@@ -3067,6 +3067,7 @@ var
   flagxx, ftemp, fkrv: boolean;
   pm: integer;
   start_coord, final_coord, currentCoord: real;
+  prom:integer;
 begin
   // result := false; exit;
   ftemp := false;
@@ -3079,6 +3080,8 @@ begin
     begin
       start_coord := GetCoordByLen(UStr[j].nkm, UStr[j].nmtr, -pm*0, GlbTrackId,
         GlbTripDate);
+
+
     //  final_coord := GetCoordByLen(UStr[j].kkm, UStr[j].kmtr, pm, GlbTrackId,
       //  GlbTripDate);
            final_coord := start_coord + pm*UStr[j].posh/10000;
@@ -3087,6 +3090,8 @@ begin
       begin
         ftemp := true;
         flagxx := false;
+                  prom :=UStr[j].bix;
+            Gl_Switches_Side:= prom;
         Break;
       end;
 
@@ -3107,6 +3112,8 @@ begin
           ((start_coord >= currentCoord) and (currentCoord >= final_coord)) then
         begin
           ftemp := true;
+                prom :=UStr[j].bix;
+            Gl_Switches_Side:= prom;
           Break;
         end;
       end;

@@ -557,6 +557,7 @@ namespace ALARm_Report.Forms
                 Dl.Add (0.0);
             }
                 var connection = new Npgsql.NpgsqlConnection(ALARm.DataAccess.Helper.ConnectionString());
+
             var ShortData = connection.Query<DataFlow>($@"SELECT * FROM testdata_242 where km = {number}  ORDER BY  meter  ").ToList();
 
             var shortl = ShortData.Select(o => o.Diff_l / 8.0 < 1 / 8.0 ? 0 : o.Diff_l / 10.0).ToList();
@@ -843,6 +844,7 @@ namespace ALARm_Report.Forms
             var trip_id = "242";
             
             var con = new NpgsqlConnection(ALARm.DataAccess.Helper.ConnectionString());
+
             con.Open();
 
             var cmd = new NpgsqlCommand();
@@ -884,6 +886,7 @@ namespace ALARm_Report.Forms
             var trip_id = 242;
 
             var con = new NpgsqlConnection(ALARm.DataAccess.Helper.ConnectionString());
+
             con.Open();
 
             var cmd = new NpgsqlCommand();

@@ -18,7 +18,6 @@ namespace ALARm_Report.controls
             InitializeComponent();
         }
 
-     
 
         public void SetDataSource(List<Filter> filter)
         {

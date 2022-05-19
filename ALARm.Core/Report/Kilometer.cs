@@ -956,64 +956,112 @@ namespace ALARm.Core
                         });
                 }
 
-                foreach (var curve in Curves)
-                {
-                    if(curve.Straightenings.Count > curve.Elevations.Count)
-                    {
-                        foreach (var item in curve.Straightenings)
-                        {
-                            var h = 0;
-                            var temp = curve.Elevations.Where(o => item.FirstTransitionEnd.Between(o.RealStartCoordinate, o.RealFinalCoordinate)).ToList();
+                //foreach (var curve in Curves)
+                //{
+                //    if(curve.Straightenings.Count > curve.Elevations.Count)
+                //    {
+                //        foreach (var item in curve.Straightenings)
+                //        {
+                //            var h = 0;
+                //            var temp = curve.Elevations.Where(o => item.FirstTransitionEnd.Between(o.RealStartCoordinate, o.RealFinalCoordinate)).ToList();
+                //            if (Number >700)
+                //            {
+                //                Meter = item.Start_M + item.Transition_1;
+                //            }
+                //            if (temp.Any())
+                //            {
+                //                h = (int)temp.First().Lvl;
+                //            }
+                          
+                //            if (Number == Math.Round(trip.Travel_Direction == Direction.Reverse ? item.FirstTransitionEnd : item.SecondTransitionStart))
+                //            {
+                //                Digressions.Add(
+                //                new DigressionMark()
+                //                {
+                //                    Meter = item.Start_M + item.Transition_1 ,
+                //                    Alert = $"{item.Start_M + item.Transition_1} R:{item.Radius} h:{h} Ш:{item.Width} И:{item.Wear}"
+                //                });
+                //            }
+                //        }                        
+                //    }
+                //    else
+                //    {
+                //        foreach (var item in curve.Elevations)
+                //        {
+                //            if (Number < 718)
+                //            {
+                //                Meter = item.Start_M + item.Transition_1;
+                //            }
 
-                            if (temp.Any())
-                            {
-                                h = (int)temp.First().Lvl;
-                            }
-                            if (Number == Math.Round(trip.Travel_Direction == Direction.Reverse ? item.FirstTransitionEnd : item.SecondTransitionStart))
-                            {
-                                Digressions.Add(
-                                new DigressionMark()
-                                {
-                                    Meter = item.Start_M + item.Transition_1 ,
-                                    Alert = $"{item.Start_M + item.Transition_1} R:{item.Radius} h:{h} Ш:{item.Width} И:{item.Wear}"
-                                });
-                            }
-                        }                        
-                    }
-                    else
-                    {
-                        foreach (var item in curve.Elevations)
-                        {
-                            var Radius = 0;
-                            var Width = 0;
-                            var Wear = 0;
+                //            var Radius = 0;
+                //            var Width = 0;
+                //            var Wear = 0;
 
-                            var temp = curve.Straightenings.Where(o => item.FirstTransitionEnd.Between(o.RealStartCoordinate, o.RealFinalCoordinate)).ToList();
+                //            var temp = curve.Straightenings.Where(o => item.FirstTransitionEnd.Between(o.RealStartCoordinate, o.RealFinalCoordinate)).ToList();
 
-                            if (temp.Any())
-                            {
-                                Radius = (int)temp.First().Radius;
-                                Width = (int)temp.First().Width;
-                                Wear = (int)temp.First().Wear;
-                            }
+                //            if (temp.Any())
+                //            {
+                //                Radius = (int)temp.First().Radius;
+                //                Width = (int)temp.First().Width;
+                //                Wear = (int)temp.First().Wear;
+                //            }
+                         
+                //               // if (   Number == Math.Round(trip.Travel_Direction == Direction.Reverse ? item.FirstTransitionEnd : item.SecondTransitionStart) )
+                //                if (Number == Math.Round( item.FirstTransitionEnd ))
+                //                {
 
-                            if (Number == Math.Round(trip.Travel_Direction == Direction.Reverse ? item.FirstTransitionEnd : item.SecondTransitionStart))
-                            {
-                                Digressions.Add(
-                                new DigressionMark()
-                                {
-                                    Meter = item.Start_M + item.Transition_1 ,
-                                    Alert = $"{item.Start_M + item.Transition_1} R:{Radius} h:{item.Lvl} Ш:{Width} И:{Wear}"
-                                });
-                            }
-                        }
-                    }
+                //                if (item.Start_M < item.Final_M )
+                //                {
+                //                    Digressions.Add(
+                //                    new DigressionMark()
+                //                    {
 
-                    //if (curve.Start_Km == Number)
-                    //{
-                    //    Digressions.Add(new DigressionMark() { Meter = curve.Start_M, Alert = $"{curve.Start_M} R:{curve.Straightenings[0].Radius} h:{curve.Elevations[0].Lvl} Ш:{curve.Straightenings[0].Width} И:{curve.Straightenings[0].Wear}" });
-                    //}
-                }
+                //                        Meter = item.Start_M + item.Transition_1,
+                //                        Alert = $"{item.Start_M + item.Transition_1} R:{Radius} h:{item.Lvl} Ш:{Width} И:{Wear}"
+
+
+
+                //                    });
+
+                //                }
+                               
+
+                //                if (item.Start_M > item.Final_M  )
+                             
+
+                //                {
+                //                    Digressions.Add(
+                //                   new DigressionMark()
+                //                   {
+                //                       Meter = item.Start_M +10,
+                //                       Alert = $"{item.Start_M+ item.Transition_1} R:{Radius} h:{item.Lvl} Ш:{Width} И:{Wear}"
+                //                         });
+                //                }
+
+                             
+                //            }
+
+                //            //if ( (Number != item.Lvl_final_km)  && Number== item.Lvl_start_km)
+
+
+                //            //{
+                //            //    Digressions.Add(
+                //            //   new DigressionMark()
+                //            //   {
+                //            //       Meter = item.Transition_1,
+                //            //       Alert = $"{ item.Transition_1} R:{Radius} h:{item.Lvl} Ш:{Width} И:{Wear}"
+                //            //   });
+                //            //}
+
+
+                //        }
+                //    }
+
+                //    //if (curve.Start_Km == Number)
+                //    //{
+                //    //    Digressions.Add(new DigressionMark() { Meter = curve.Start_M, Alert = $"{curve.Start_M} R:{curve.Straightenings[0].Radius} h:{curve.Elevations[0].Lvl} Ш:{curve.Straightenings[0].Width} И:{curve.Straightenings[0].Wear}" });
+                //    //}
+                //}
 
                 Digressions.AddRange((
                        from vpicket in VPickets

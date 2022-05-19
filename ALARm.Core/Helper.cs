@@ -374,7 +374,7 @@ namespace ALARm.Core
                 IPHostEntry ipHost = Dns.GetHostEntry(ip);
                 IPAddress ipAddr = ipHost.AddressList[0];
                 IPEndPoint ipEndPoint = new IPEndPoint(ipAddr, port);
-
+                
                 Socket sender = new Socket(ipAddr.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
                 // Соединяем сокет с удаленной точкой
@@ -402,8 +402,9 @@ namespace ALARm.Core
 
 
             }
-            catch
+            catch (Exception e)
             {
+                Console.WriteLine(e);
                 return SocketState.Abortively;
             }
         }
