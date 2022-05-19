@@ -2839,15 +2839,42 @@ namespace ALARm.DataAccess
                             //Записать натурную кривую
                             var query = $@"
                                 INSERT INTO s3(km, meter, trip_id, ots, primech, track_id, isadditional, typ )
-	                            VALUES ('{kilometer.Number}', '{item.Meter}', '{kilometer.Trip.Id}', '{item.Alert}', 'Натурная кривая', '{kilometer.Track_id}', 0,2 )";
+	                            VALUES ('{kilometer.Number}', '{item.Meter}', '{kilometer.Trip.Id}', '{item.Alert}', 'Натурная кривая', '{kilometer.Track_id}', 0,2)";
                             db.Execute(query);
                         }
+
                     }
                 }
             }
             catch(Exception e)
             {
                 Console.WriteLine("Error Pru_write " + e.Message);
+            }
+        }
+
+        public void Bpd_write(long track_id, Kilometer kilometer, List<DigressionMark> curve_bpd_list)
+        {
+            try
+            {
+                using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+                {
+                    if (db.State == ConnectionState.Closed)
+                        db.Open();
+                    foreach (var item in curve_bpd_list)
+                    {
+                        
+                            //Записать Паспортная  кривую
+                            var query = $@"
+                                INSERT INTO s3(km, meter, trip_id, ots, primech, track_id, isadditional, typ )
+	                            VALUES ('{kilometer.Number}', '{item.Meter}', '{kilometer.Trip.Id}', '{item.Alert}', 'Паспортная кривая', '{kilometer.Track_id}', 0,2 )";
+                           db.Execute(query);
+                        
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error Bpd_write " + e.Message);
             }
         }
 

@@ -688,7 +688,7 @@ procedure SabLog(NamePnt: string);
 
                     GlbTempTipRemontKm: string = '';
                     GlbTempTipRemontPiket: string = '';
-
+                                  Gl_Switches_Side: integer = 10;
                     I_ListV: integer = 0;
                     gRemInd: integer = 0;
 
