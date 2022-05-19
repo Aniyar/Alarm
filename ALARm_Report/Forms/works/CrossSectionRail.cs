@@ -116,12 +116,14 @@ namespace ALARm_Report.Forms
                             new XAttribute("xelem1", Blazor_prov_data.Xtest1.ToString("0.00").Replace(",", ".")),
                             new XAttribute("xelem2", Blazor_prov_data.Xtest2.ToString("0.00").Replace(",", ".")),
                             new XAttribute("xelem3", Blazor_prov_data.Xtest3.ToString("0.00").Replace(",", ".")),
+
                             new XAttribute("xelem3_pu_l", Blazor_prov_data.pu_l.First().ToString("0.00")),
                             new XAttribute("xelem3_npk_l", Blazor_prov_data.npk_l.First().ToString("0.00")),
                             new XAttribute("xelem3_bok_iz_l", Blazor_prov_data.bok_l.First().ToString("0.00")),
                             new XAttribute("xelem3_pu_r", Blazor_prov_data.pu_r.First().ToString("0.00")),
                             new XAttribute("xelem3_npk_r", Blazor_prov_data.npk_r.First().ToString("0.00")),
                             new XAttribute("xelem3_bok_iz_r", Blazor_prov_data.bok_r.First().ToString("0.00")),
+
                             new XAttribute("xelem4", Blazor_prov_data.Xtest4.ToString("0.00").Replace(",", ".")),
                             new XAttribute("x_big", Blazor_prov_data.Xtest5.ToString("0.00").Replace(",", ".")),
                             new XAttribute("xrad1", Blazor_prov_data.Xrad.ToString("0.00").Replace(",", ".")),
@@ -380,7 +382,7 @@ namespace ALARm_Report.Forms
         public double ExponentCoef = -1;
 
         public int width = 150;
-        public string cs = "Host=DESKTOP-EMAFC5J;Username=postgres;Password=alhafizu;Database=Aniyar_COpy";
+        public string cs = "Host=DESKTOP-EMAFC5J;Username=postgres;Password=alhafizu;Database=PAPA_COPY";
         //public string cs = "Host=localhost;Username=postgres;Password=alhafizu;Database=railway";
         public NpgsqlConnection conn { get; set; }
 

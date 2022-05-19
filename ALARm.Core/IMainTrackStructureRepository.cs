@@ -47,6 +47,8 @@ namespace ALARm.Core
         List<float> GetGaugesByCurve(List<MainParametersProcess> tripProcesses, Curve curve, string track);
         List<Curve> GetCurveByTripIdToDate(MainParametersProcess tripProcess);
         void Pru_write(long track_id, Kilometer kilometer, List<DigressionMark> pru_dig_list);
+
+        void Bpd_write(long track_id, Kilometer kilometer, List<DigressionMark> curve_bpd_list);
         List<Gaps> GetIzoGaps(object trackNumber, long direction_id);
         List<Speed> GetSpeeds(DateTime tripDate, string directionName, string trackNumber);
     }
