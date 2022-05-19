@@ -125,6 +125,14 @@ namespace ALARm_Report.Forms
 
                             foreach (var s3 in ListS3)
                             {
+                            if (s3.Ots == "Рнр")
+                            {
+                                continue;
+                            }
+                            if (s3.Ots == "Рнрст")
+                            {
+                                continue;
+                            }
                                 switch (s3.Ots)
                                 {
                                     case "Пр.п":
@@ -148,12 +156,12 @@ namespace ALARm_Report.Forms
                                     case "П":
                                         skewnessCount += s3.Kol;
                                         break;
-                                    case "Р":
-                                        straighteningCount += s3.Kol;
-                                        break;
-                                    case "Рст":
-                                        RSTCount += s3.Kol;
-                                        break;
+                                    //case "Р":
+                                    //    straighteningCount += s3.Kol;
+                                    //    break;
+                                    //case "Рст":
+                                    //    RSTCount += s3.Kol;
+                                    //    break;
                                 }
 
                                 if (s3.Naprav.Equals(lastDirection))

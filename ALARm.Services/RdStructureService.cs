@@ -37,6 +37,8 @@ namespace ALARm.Services
         {
             return Container.Resolve<IRdStructureRepository>().GetKilometersByTrip(trip);
         }
+       
+
 
         public static List<VideoObject> GetRdObject()
         {

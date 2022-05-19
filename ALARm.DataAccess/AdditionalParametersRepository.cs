@@ -2049,6 +2049,33 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
 
             }
         }
+        public List<CrosProf> GetGaugeFromDBkmmter(int nkm, int meter,long trip_id)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                try
+                {
+                    return db.Query<CrosProf>($@"
+                            SELECT DISTINCT
+	                            *
+                            FROM
+	                            PUBLIC.outdata_{trip_id}
+                            WHERE
+	                            km = {nkm} AND
+                                meter = {meter}
+                            ORDER BY
+	                            meter desc", commandType: CommandType.Text).ToList();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("GetGaugeFromDB error: " + e.Message);
+                    return null;
+                }
+
+            }
+        }
         public List<CrosProf> GetCrossRailProfileFromDB(Curve curve, long trip_id)
         {
             using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
