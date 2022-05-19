@@ -896,13 +896,13 @@ namespace ALARm.Core.Report
                                                      new XAttribute("top", -meter),
                                                      new XAttribute("x", 1),
                                                     new XAttribute("Meter", note.Meter),
-                                                     new XAttribute("note", note.Note()),
+                                                     new XAttribute("note", note.Alert),
                                                      new XAttribute("fw", note.FontStyle())));
 
                         usedTops.Add(meter);
                         continue;
                     }
-                    if (note.Note().Contains("кривая факт."))
+                    if (note.Note().Contains("H"))
                     {
                         //digElements.Add(new XElement("rect",
                         //                            new XAttribute("top", -meter - 9),
@@ -913,13 +913,31 @@ namespace ALARm.Core.Report
                                                      new XAttribute("top", -meter),
                                                      new XAttribute("x", 1),
                                                     new XAttribute("Meter", note.Meter),
-                                                     new XAttribute("note", note.Note()),
+                                                     new XAttribute("note", note.Alert),
                                                      new XAttribute("fw", note.FontStyle())));
 
                         usedTops.Add(meter);
                         //  usedTops.Add(meter);
                         continue;
                     }
+                    //if (note.Note().Contains("Паспортная кривая"))
+                    //{
+                    //    digElements.Add(new XElement("rect",
+                    //                             new XAttribute("top", -meter - 9),
+                    //                             new XAttribute("Meter", note.Meter),
+                    //                             new XAttribute("x", 0)));
+
+                    //    digElements.Add(new XElement("R",
+                    //                                 new XAttribute("top", -meter),
+                    //                                 new XAttribute("x", 1),
+                    //                                new XAttribute("Meter", note.Meter),
+                    //                                 new XAttribute("note", note.Note()),
+                    //                                 new XAttribute("fw", note.FontStyle())));
+
+                    //    usedTops.Add(meter);
+                    //    //  usedTops.Add(meter);
+                    //    continue;
+                    //}
 
                     if (note.Note().Contains("КУ:"))
                     {

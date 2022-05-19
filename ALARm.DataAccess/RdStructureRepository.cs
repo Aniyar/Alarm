@@ -2603,7 +2603,7 @@ namespace ALARm.DataAccess
                 SELECT trip.*, direction.name as direction_name FROM trips as trip 
                 INNER JOIN adm_direction as direction on direction.id = trip.direction_id
                 WHERE
-                  trip.id = 242
+                  trip.id = 240
                   --current = true 
                   order by id desc limit 1";
                 
@@ -3943,11 +3943,12 @@ namespace ALARm.DataAccess
 	 
                 min(id) as id, track_id as trackid, trip_id as tripId, km, meter, typ as degree, len length, otkl as value, kol as count, ots as digname, ots as digression, ovp as passengerspeedlimit, ogp as freightspeedlimit, 
                 uv as passengerspeedallow, uvg as freightspeedallow, is2to3, isequalto3, isequalto4, onswitch, islong, primech as comment,
-	            CASE
+                CASE
                 WHEN primech='Натурная кривая' THEN ots
+                WHEN primech='Паспортная кривая' THEN ots
                 ELSE ''
-                END 
-                AS alert
+                END AS alert
+
                 from s3 where trip_id = {trip_id} and track_id = {track_id} and km = {km}   and 
 	            typ > 1
                 GROUP BY track_id, trip_id, km, meter, typ, len, otkl, kol, ots, ovp, ogp, uv, uvg, is2to3, isequalto3, isequalto4, onswitch, islong, comment
@@ -3955,6 +3956,9 @@ namespace ALARm.DataAccess
 	                meter").ToList();
             }
         }
+
+    
+
         //хочу вставить новую переменную для изменения примечания после коретировки
         //,newbedomost
         /// <summary>

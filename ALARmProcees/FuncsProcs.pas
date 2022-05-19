@@ -6212,13 +6212,16 @@ begin
 
              StartStr:=  round((L0v+Lmv)/2-Ln) ;
              FinshStr   :=  round((L0v+Lmv)/2+Ln) ;
+
+             StartStr:=  round((L0v+Lmv)/2-Ln/2) ;
+             FinshStr   :=  round((L0v+Lmv)/2+Ln/2) ;
                   WRih[ns].onswitch := ProberkaNaStrelku(StartStr,  FinshStr  , 1);
                        isriht:= isriht;
         if   (( ProberkaNaStrelku(StartStr,  FinshStr  , 1)) and (FlagkrivPlus or FlagkrivMinus )   ) then
                isriht:=false;
 
-
-
+            if   (  Gl_Switches_Side =0) then  isriht :=false;
+                         Gl_Switches_Side:=10;
                       WRih[ns].isriht := isriht;
 
               if not(isriht) and (not(WRih[ns].prim.Contains('рн;'))) then

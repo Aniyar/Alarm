@@ -189,5 +189,9 @@ namespace ALARm.Services
         {
              Container.Resolve<IMainTrackStructureRepository>().Pru_write(track_id, kilometer, pru_dig_list);
         }
+        public static void Bpd_write(long track_id, Kilometer kilometer, List<DigressionMark> curve_bpd_list)
+        {
+            Container.Resolve<IMainTrackStructureRepository>().Bpd_write(track_id, kilometer, curve_bpd_list);
+        }
     }
 }

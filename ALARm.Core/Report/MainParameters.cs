@@ -55,6 +55,8 @@ namespace ALARm.Core.Report
                 //ПРУ
                 var PasSpeed = kilometer.Speeds.Any() ? kilometer.Speeds.First().Passenger : -1;
                 var pru_dig_list = new List<DigressionMark> { };
+                var curve_bpd_list = new List<DigressionMark> { };
+                  
                 var Curve_nature_value = new List<DigressionMark>();
                 int prevIndex = kilometer.Number + 1;
                 //var rezulat = new List<> ;
@@ -350,6 +352,17 @@ namespace ALARm.Core.Report
                             Alert = $"кривая факт. R:{ (17860 / Math.Abs(r)):0} H:{ Math.Abs(h):0}"
                         });
 
+                        if (item.First().Km == 717)
+                        {
+                            item.First().Km = item.First().Km;
+                        }
+                        curve_bpd_list.Add(new DigressionMark()
+                        {
+                            Km = item.First().Km,
+                            Meter = (int)avgmeterbyItem-30,
+                            Alert = $" {(int)avgmeterbyItem - 30} R:{bpd_curve.Radius} h:{bpd_curve.Elevations[0].Lvl} Ш:{bpd_curve.Straightenings[0].Width} И:{bpd_curve.Straightenings[0].Wear} "
+                        });
+                      
                         lvl = (int)h;
 
                         //------------------------------------------------------------------------------------------
@@ -891,6 +904,8 @@ namespace ALARm.Core.Report
                 if (pru_dig_list.Any())
                     MainTrackStructureRepository.Pru_write(kilometer.Track_id, kilometer, pru_dig_list);
 
+                if (curve_bpd_list.Any())
+                    MainTrackStructureRepository.Bpd_write(kilometer.Track_id, kilometer, curve_bpd_list);
                 // добавление ПрУ и натурные значения кривой
                 kilometer.Digressions = Curve_nature_value;
 
@@ -1353,6 +1368,7 @@ namespace ALARm.Core.Report
                 //ПРУ
                 var PasSpeed = kilometer.Speeds.Any() ? kilometer.Speeds.First().Passenger : -1;
                 var pru_dig_list = new List<DigressionMark> { };
+                var curve_bpd_list = new List<DigressionMark> { };
                 var Curve_nature_value = new List<DigressionMark>();
 
                 foreach (var bpd_curve in kilometer.Curves)
@@ -1513,12 +1529,23 @@ namespace ALARm.Core.Report
                                 Alert = $"{first_pmeter} Крив. факт R:{ str } h:{ lvl }"
                             });
                         }
+
                     }
+                    curve_bpd_list.Add(new DigressionMark()
+                    {
+                        Km = -999,
+                        Meter = first_pmeter,
+
+                        Alert = $"{first_pmeter - 30}  Паспорт R:{ str} h:{lvl}"
+                    });
+
                 }
 
                 if (pru_dig_list.Any())
                     MainTrackStructureRepository.Pru_write(kilometer.Track_id, kilometer, pru_dig_list);
 
+                if (curve_bpd_list.Any())
+                    MainTrackStructureRepository.Bpd_write(kilometer.Track_id, kilometer, curve_bpd_list);
                 // добавление ПрУ и натурные значения кривой
                 kilometer.Digressions = Curve_nature_value;
 
