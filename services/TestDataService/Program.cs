@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace GapService
+namespace TestDataService
 {
     public class Program
     {
@@ -23,11 +23,11 @@ namespace GapService
                 .UseSerilog()
                 .ConfigureServices((hostContext, services) =>
                 {
-
                     IConfiguration configuration = hostContext.Configuration;
                     Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(hostContext.Configuration).CreateLogger();
                     services.Configure<RabbitMQConfiguration>(configuration.GetSection(nameof(RabbitMQConfiguration)));
                     services.AddHostedService<Worker>();
                 });
+
     }
 }

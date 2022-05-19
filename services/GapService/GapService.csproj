@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+	  <!--<RuntimeIdentifier>win10-x64</RuntimeIdentifier>-->
     <UserSecretsId>dotnet-GapService-0A43A40B-506B-49A4-AEDD-D27DCC88FE50</UserSecretsId>
     <ApplicationIcon />
     <OutputType>Exe</OutputType>

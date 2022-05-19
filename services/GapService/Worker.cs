@@ -51,7 +51,21 @@ namespace GapService
 
         public override Task StartAsync(CancellationToken cancellationToken)
         {
-            try 
+            //_logger.LogInformation(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json"));
+            //try
+            //{
+
+            //    var blazor = new Blazor_ProfileData();
+            //    blazor.conn = new NpgsqlConnection(Helper.ConnectionString());
+            //    blazor.conn.Open();
+            //    _logger.LogInformation("база ашылды");
+            //}
+            //catch (Exception e)
+            //{
+            //    _logger.LogInformation("baseconnect:" + e.Message);
+            //}
+
+            try
             {
                 _logger.LogInformation($"Connection try [{tryCount++}].");
                 _connection = _connectionFactory.CreateConnection();
@@ -67,8 +81,8 @@ namespace GapService
                                    routingKey: "");
                 _channel.BasicQos(0, 1, false);
                 _logger.LogInformation($"Queue [{QueueName}] is waiting for messages.");
-
-
+                var Blazor = new Blazor_ProfileData();
+               
                 //////Выбор километров по проезду-----------------
                 //var filterForm = new FilterForm();
                 //var filters = new List<Filter>();
@@ -103,7 +117,7 @@ namespace GapService
 
 
                     // Очищает таблицы для сервисов
-                    ClearServiceTables(TripId);
+                    //ClearServiceTables(TripId);
                     //Читает файлы проезда и обновляет номер километра в таблице трип файлс
                     //PutKilometers(TripId);
 
@@ -164,10 +178,17 @@ namespace GapService
                     //    Console.WriteLine("тест дата ERROR! " + e.Message);
                     //}
 
-
+                    _logger.LogInformation("");
                     var Blazor = new Blazor_ProfileData();
                     Blazor.conn = new NpgsqlConnection(Helper.ConnectionString());
-                    Blazor.conn.Open();
+                    try
+                    {
+                        Blazor.conn.Open();
+                        _logger.LogInformation("база ашылды");
+                    } catch(Exception e)
+                    {
+                        _logger.LogInformation(e.Message);
+                    }
                     Blazor.in_koridor = new BinaryReader(File.Open(Blazor.Vnutr__profil__koridor, FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
                     var data = Blazor.in_koridor.ReadBytes(8);
                     Blazor.in_koridor_count = BitConverter.ToSingle(data, 0);
@@ -185,11 +206,11 @@ namespace GapService
                         {
                             flag = Blazor.GetBitmapAsync(km.Number, TripId);
                         }
-                        Console.WriteLine("профайл дата ОК");
+                        _logger.LogInformation("профайл дата ОК");
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine("профайл дата ERROR! " + e.Message);
+                        _logger.LogInformation("профайл дата ERROR! " + e.Message);
                     }
 
                     //var Blazor3 = new Blazor3(); //poverh shpal

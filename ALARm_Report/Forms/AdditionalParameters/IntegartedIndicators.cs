@@ -15,6 +15,7 @@ using System.Xml.Xsl;
 using ALARm_Report.controls;
 using System.Reflection;
 using Dapper;
+using ALARm.DataAccess;
 
 namespace ALARm_Report.Forms
 {
@@ -294,7 +295,7 @@ namespace ALARm_Report.Forms
 
         private ShortRoughness GetProfileData(double start, double final, long tripId)
         {
-            var connection = new Npgsql.NpgsqlConnection("Host=DESKTOP-EMAFC5J;Username=postgres;Password=alhafizu;Database=");
+            var connection = new Npgsql.NpgsqlConnection(ALARm.DataAccess.Helper.ConnectionString());
             var query = $@" SELECT * FROM testdata_{tripId}
                             WHERE
 	                            km + meter / 10000.0 BETWEEN {Math.Min(start, final).ToString().Replace(",", ".")} 

@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using System.IO;
 
-namespace GapService
+namespace TestDataService
 {
     public static class Helper
     {

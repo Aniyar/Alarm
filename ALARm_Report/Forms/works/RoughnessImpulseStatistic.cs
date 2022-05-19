@@ -223,7 +223,7 @@ namespace ALARm_Report.Forms
 
         private void GetTestData(int number)
         {
-            var connection = new Npgsql.NpgsqlConnection("Host=DESKTOP-EMAFC5J;Username=postgres;Password=alhafizu;Database=railway");
+            var connection = new Npgsql.NpgsqlConnection(ALARm.DataAccess.Helper.ConnectionString());
             var ShortData = connection.Query<DataFlow>($@"SELECT * FROM testdata_242 where km = {number} limit 5000").ToList();
 
             var shortl = ShortData.Select(o => o.Diff_l / 8.0 < 1 / 8.0 ? 0 : o.Diff_l / 8.0).ToList();

@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Linq;
+using ALARm.DataAccess;
 using System.Xml.Xsl;
 
 namespace ALARm_Report.Forms
@@ -219,8 +220,8 @@ namespace ALARm_Report.Forms
                                 new XAttribute("right-title",
                                     copyright + ": " + "ПО " + softVersion + "  " +
                                     systemName + ":" + trip.Car + "(" + trip.Chief.Trim() + ") (БПД от " + MainTrackStructureRepository.GetModificationDate() + ") <" + (kilometer.PdbSection.Count > 0 ? kilometer.PdbSection[0].RoadAbbr : "НЕИЗВ") + ">" + "<" + kilometer.Passage_time.ToString("dd.MM.yyyy  HH:mm") + ">" +
-                                    "<" + Helper.GetShortFormInNormalString(Helper.GetResourceName(trip.Travel_Direction.ToString())) + ">" +
-                                    "<" + Helper.GetShortFormInNormalString(Helper.GetResourceName(trip.Car_Position.ToString())) + ">" +
+                                    "<" + ALARm.Core.Helper.GetShortFormInNormalString(ALARm.Core.Helper.GetResourceName(trip.Travel_Direction.ToString())) + ">" +
+                                    "<" + ALARm.Core.Helper.GetShortFormInNormalString(ALARm.Core.Helper.GetResourceName(trip.Car_Position.ToString())) + ">" +
                                     "<" + trip.Trip_date.Month + "-" + trip.Trip_date.Year
                                      +
                                             " " + (trip.Trip_Type == TripType.Control ? "контр." : trip.Trip_Type == TripType.Work ? "раб." : "доп.") +
@@ -520,9 +521,7 @@ namespace ALARm_Report.Forms
         private void ClearShortDataDB(long trip)
         {
 			var trip_id = trip;
-            var cs = "Host=DESKTOP-EMAFC5J;Username=postgres;Password=alhafizu;Database=railway";
-
-            var con = new NpgsqlConnection(cs);
+            var con = new NpgsqlConnection(ALARm.DataAccess.Helper.ConnectionString());
             con.Open();
 
             var cmd = new NpgsqlCommand();
@@ -557,7 +556,8 @@ namespace ALARm_Report.Forms
                 Dr.Add(0.0);
                 Dl.Add (0.0);
             }
-                var connection = new Npgsql.NpgsqlConnection("Host=DESKTOP-EMAFC5J;Username=postgres;Password=alhafizu;Database=PAPA_COPY");
+                var connection = new Npgsql.NpgsqlConnection(ALARm.DataAccess.Helper.ConnectionString());
+
             var ShortData = connection.Query<DataFlow>($@"SELECT * FROM testdata_242 where km = {number}  ORDER BY  meter  ").ToList();
 
             var shortl = ShortData.Select(o => o.Diff_l / 8.0 < 1 / 8.0 ? 0 : o.Diff_l / 10.0).ToList();
@@ -843,8 +843,8 @@ namespace ALARm_Report.Forms
         {
             var trip_id = "242";
             
-            var cs = "Host=DESKTOP-EMAFC5J;Username=postgres;Password=alhafizu;Database=PAPA_COPY";
-            var con = new NpgsqlConnection(cs);
+            var con = new NpgsqlConnection(ALARm.DataAccess.Helper.ConnectionString());
+
             con.Open();
 
             var cmd = new NpgsqlCommand();
@@ -885,9 +885,8 @@ namespace ALARm_Report.Forms
         {
             var trip_id = 242;
 
-            var cs = "Host=DESKTOP-EMAFC5J;Username=postgres;Password=alhafizu;Database=PAPA_COPY";
+            var con = new NpgsqlConnection(ALARm.DataAccess.Helper.ConnectionString());
 
-            var con = new NpgsqlConnection(cs);
             con.Open();
 
             var cmd = new NpgsqlCommand();
