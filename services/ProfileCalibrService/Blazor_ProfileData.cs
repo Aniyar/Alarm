@@ -1,225 +1,27 @@
-﻿using Accord.Math;
-using ALARm.Core;
-using ALARm.Core.AdditionalParameteres;
-using ALARm.Core.Report;
-using ALARm.Services;
-using ALARm_Report.controls;
-using MetroFramework.Controls;
-using Npgsql;
+﻿using Accord.Imaging.Converters;
+using Accord.Math;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Xml;
-using System.Xml.Linq;
-using System.Xml.Xsl;
-using Side = ALARm.Core.AdditionalParameteres.Side;
+using Npgsql;
+using Microsoft.Extensions.Hosting;
+using ALARm.Core;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using RabbitMQ.Client;
 
-namespace ALARm_Report.Forms
+namespace ProfileCalibrService
 {
-    public class CrossSectionRail : Report
-    {
-        public override void Process(Int64 distanceId, ReportTemplate template, ReportPeriod period, MetroProgressBar progressBar)
-        {
-            XDocument htReport = new XDocument();
-          
-            using (XmlWriter writer = htReport.CreateWriter())
-            {
-                //Сделать выбор периода
-                List<long> admTracksId = new List<long>();
-                using (var choiceForm = new ChoiseForm(0))
-                {
-                    choiceForm.SetTripsDataSource(distanceId, period);
-                    choiceForm.ShowDialog();
-                    if (choiceForm.dialogResult == DialogResult.Cancel)
-                        return;
-                    admTracksId = choiceForm.admTracksIDs;
-                }
-
-                XDocument xdReport = new XDocument();
-                XElement report = new XElement("report");
-
-                var distance = AdmStructureService.GetUnit(AdmStructureConst.AdmDistance, distanceId) as AdmUnit;
-                var road = AdmStructureService.GetRoadName(distance.Id, AdmStructureConst.AdmDistance, true);
-
-                var mainProcesses = RdStructureService.GetMainParametersProcess(period, distance.Code);
-                if (mainProcesses.Count == 0)
-                {
-                    MessageBox.Show(Properties.Resources.paramDataMissing);
-                    return;
-                }
-
-                //var distance = AdmStructureService.GetUnit(AdmStructureConst.AdmDistance, distanceId) as AdmUnit;
-
-                foreach (var process in mainProcesses)
-                {
-                    foreach(var track_id in admTracksId)
-                    {
-                        //var rd_curves_wear_great_13 = (RdStructureService.GetRdTables(process, 9) as List<RDCurve>).Where(r => r.Wear >= 13.0).ToList();
-                        var trackName = AdmStructureService.GetTrackName(track_id);
-                        var trip = RdStructureService.GetTrip(process.Id);
-                        var kms = RdStructureService.GetKilometersByTrip(trip);
-                        kms = kms.Where(o => o.Track_id == track_id).ToList();
-                        if (kms.Count() == 0) continue;
-
-                        var lkm = kms.Select(o => o.Number).ToList();
-                        if (lkm.Count() == 0) continue;
-                        var lm = kms.Select(o => o.Number).ToList();
-                        if (lkm.Count() == 0) continue;
-
-                        if (kms == null || kms.Count == 0)
-                            continue;
-
-                        var filterForm = new FilterForm();
-                        var filters = new List<Filter>();
-
-                        filters.Add(new FloatFilter() { Name = " (км)", Value = lkm.Min() });
-                        filters.Add(new FloatFilter() { Name = "(метер)", Value = lm.Min() });
-                        //if (rd_curves_wear_great_13.Count < 1)
-                        //    continue;
-                        filterForm.SetDataSource(filters);
-                        if (filterForm.ShowDialog() == DialogResult.Cancel)
-                            return;
-                        var Blazor_prov_data = new AppData();
-                        
-                        Blazor_prov_data.conn = new NpgsqlConnection(Blazor_prov_data.cs);
-                        Blazor_prov_data.conn.Open();
-                        Blazor_prov_data.in_koridor = new BinaryReader(File.Open(Blazor_prov_data.Vnutr__profil__koridor, FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
-                        var data = Blazor_prov_data.in_koridor.ReadBytes(8);
-                        Blazor_prov_data.in_koridor_count = BitConverter.ToSingle(data, 0);
-                        Blazor_prov_data.in_koridor_size = BitConverter.ToSingle(data, 4);
-
-                        Blazor_prov_data.in_kupe = new BinaryReader(File.Open(Blazor_prov_data.Vnutr__profil__kupe, FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
-                        data = Blazor_prov_data.in_kupe.ReadBytes(8);
-                        Blazor_prov_data.in_kupe_count = BitConverter.ToSingle(data, 0);
-                        Blazor_prov_data.in_kupe_size = BitConverter.ToSingle(data, 4);
-                        Blazor_prov_data.GetBitmapAsync(700,800);
-
-                        XElement xePages = new XElement("pages",
-
-                            new XAttribute("version", $"{DateTime.Now} v{Assembly.GetExecutingAssembly().GetName().Version.ToString()}"),
-                            new XAttribute("car", process.Car),
-                            new XAttribute("chief", process.Chief),
-                            new XAttribute("ps", process.Car),
-                            new XAttribute("check", process.GetProcessTypeName),
-                            new XAttribute("period", period.Period),
-                          
-                            new XAttribute("pointsleft", Blazor_prov_data.PointsLeft.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("pointsright", Blazor_prov_data.PointsRight.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("railspoints", " 61.9, 400, 25, 84.5623876, 35.6, 180, 71.25, 33.28728189, 17.31756333, 375.0000105"),
-                            //X_lef
-                            new XAttribute("xelem1", Blazor_prov_data.Xtest1.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("xelem2", Blazor_prov_data.Xtest2.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("xelem3", Blazor_prov_data.Xtest3.ToString("0.00").Replace(",", ".")),
-
-                            new XAttribute("xelem3_pu_l", Blazor_prov_data.pu_l.First().ToString("0.00")),
-                            new XAttribute("xelem3_npk_l", Blazor_prov_data.npk_l.First().ToString("0.00")),
-                            new XAttribute("xelem3_bok_iz_l", Blazor_prov_data.bok_l.First().ToString("0.00")),
-                            new XAttribute("xelem3_pu_r", Blazor_prov_data.pu_r.First().ToString("0.00")),
-                            new XAttribute("xelem3_npk_r", Blazor_prov_data.npk_r.First().ToString("0.00")),
-                            new XAttribute("xelem3_bok_iz_r", Blazor_prov_data.bok_r.First().ToString("0.00")),
-
-                            new XAttribute("xelem4", Blazor_prov_data.Xtest4.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("x_big", Blazor_prov_data.Xtest5.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("xrad1", Blazor_prov_data.Xrad.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("bottom_x1", Blazor_prov_data.Bottom_x1.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("bottom_x2", Blazor_prov_data.Bottom_x1.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("x_per2_l", Blazor_prov_data.Perpen_x2_l.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("radX_l", Blazor_prov_data.RadX_l.ToString("0.00").Replace(",", ".")),
-                            ////
-                            new XAttribute("yelem1", Blazor_prov_data.Ytest1.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("yelem2", Blazor_prov_data.Ytest2.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("yelem3", Blazor_prov_data.Ytest3.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("yelem4", Blazor_prov_data.Ytest4.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("y_big", Blazor_prov_data.Ytest_big.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("yrad1", Blazor_prov_data.Ytest5.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("bottom_y1", Blazor_prov_data.Bottom_y1.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("bottom_y2", Blazor_prov_data.Bottom_y2.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("y_per2_l", Blazor_prov_data.Perpen_y2_l.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("radY_l", Blazor_prov_data.RadY_l.ToString("0.00").Replace(",", ".")),
-                            ////x_right
-                            new XAttribute("xelem1_r", Blazor_prov_data.Xtest1_r.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("xelem2_r", Blazor_prov_data.Xtest2_r.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("xelem3_r", Blazor_prov_data.Xtest3_r.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("xelem4_r", Blazor_prov_data.Xtest4_r.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("x_big_r", Blazor_prov_data.X_big_r.First().ToString("0.00").Replace(",", ".")),
-                            new XAttribute("xrad1_r", Blazor_prov_data.Xtest5_r.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("bottom_x1_r", Blazor_prov_data.Bottom_x2_r.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("bottom_x2_r", Blazor_prov_data.Bottom_x1_r.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("x_per2_l_r", Blazor_prov_data.Perpen_x1_r.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("radX_l_r", Blazor_prov_data.RadX_r.ToString("0.00").Replace(",", ".")),
-                            ////
-                            new XAttribute("yelem1_r", Blazor_prov_data.Ytest1_r.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("yelem2_r", Blazor_prov_data.Ytest2_r.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("yelem3_r", Blazor_prov_data.Ytest3_r.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("yelem4_r", Blazor_prov_data.Ytest4_r.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("y_big_r", Blazor_prov_data.Ytest_big_r.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("yrad1_r", Blazor_prov_data.Ytest5_r.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("bottom_y1_r", Blazor_prov_data.Bottom_y1_r.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("bottom_y2_r", Blazor_prov_data.Bottom_y2_r.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("y_per2_l_r", Blazor_prov_data.Perpen_y1_r.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("radY_l_r", Blazor_prov_data.RadY_r.ToString("0.00").Replace(",", ".")),
-
-
-                            new XAttribute("distance", distance.Code),
-                            new XAttribute("direction", process.DirectionName + " (" + process.DirectionCode + ")"),
-                            new XAttribute("track", trackName));
-
-                        for(int i = 0; i < Blazor_prov_data.PointsLeft.Length - 1; i = i + 2)
-                         {
-                            if (!Double.IsNaN(Blazor_prov_data.PointsLeft[i]) && !Double.IsNaN(Blazor_prov_data.PointsLeft[i + 1]))
-                            {
-                                XElement PointsLeft = new XElement("pointsLeft",
-                                new XAttribute("cx", Blazor_prov_data.PointsLeft[i].ToString().Replace(",", ".")),
-                                new XAttribute("cy", Blazor_prov_data.PointsLeft[i + 1].ToString().Replace(",", ".")));
-                                xePages.Add(PointsLeft);
-                            }
-                            
-                        }
-                        for (int j = 0; j < Blazor_prov_data.PointsRight.Length - 1; j = j + 2)
-                        {
-                            if (!Double.IsNaN(Blazor_prov_data.PointsRight[j]) && !Double.IsNaN(Blazor_prov_data.PointsLeft[j + 1]))
-                            {
-                                XElement PointsRight = new XElement("pointsRight",
-                                 new XAttribute("cx_r", Blazor_prov_data.PointsRight[j].ToString().Replace(",", ".")),
-                                 new XAttribute("cy_r", Blazor_prov_data.PointsRight[j + 1].ToString().Replace(",", ".")));
-                                xePages.Add(PointsRight);
-                            }
-                        }
-
-                        report.Add(xePages);
-                    }
-                }
-
-                xdReport.Add(report);
-
-                XslCompiledTransform transform = new XslCompiledTransform();
-                transform.Load(XmlReader.Create(new StringReader(template.Xsl)));
-                transform.Transform(xdReport.CreateReader(), writer);
-            }
-            try
-            {
-                htReport.Save(Path.GetTempPath() + "/report_CrossSectionRail.html");
-            }
-            catch
-            {
-                MessageBox.Show("Ошибка сохранения файлы");
-            }
-            finally
-            {
-                System.Diagnostics.Process.Start(Path.GetTempPath() + "/report_CrossSectionRail.html");
-            }
-        }
-    }
-    public class AppData
+    public class Blazor_ProfileData
     {
         //public int CurrentFrameIndex { get; set; } = 5475;
         public int CurrentFrameIndex { get; set; } = 0;
+        public int LocalFrameIndex { get; set; } = 0;
         public int Speed { get; set; } = 100;
         public bool Processing = true;
         public int Kilometer { get; set; } = -1;
@@ -228,7 +30,6 @@ namespace ALARm_Report.Forms
         public string DataLeft { get; set; }
         public string DataRight { get; set; }
         public double[] PointsLeft { get; set; }
-        public double[] Railpoint { get; set; }
         public double Xtest_big { get; set; }
         public double Ytest_big { get; set; }
         public double Xtest_big_r { get; set; }
@@ -382,7 +183,6 @@ namespace ALARm_Report.Forms
         public double ExponentCoef = -1;
 
         public int width = 150;
-        public string cs = "Host=DESKTOP-EMAFC5J;Username=postgres;Password=alhafizu;Database=PAPA_COPY";
         //public string cs = "Host=localhost;Username=postgres;Password=alhafizu;Database=railway";
         public NpgsqlConnection conn { get; set; }
 
@@ -441,45 +241,51 @@ namespace ALARm_Report.Forms
             return radian * 180.0 / Math.PI;
         }
         public Bitmap CurrentFrame { get; set; }
+        public bool FoundRight { get; private set; }
+        public bool FoundKm { get; private set; } = false;
 
-        public void CurrentProfileLeft(string filePath, int kmnum, int metr)
+        public bool CurrentProfileLeft(string filePath, int kmnum)
         {
             BinaryReader reader = in_koridor;
             {
                 try
                 {
-                    while (!(Kilometer == kmnum && Meter == metr))
+                    while (Kilometer != kmnum)
                     {
                         CurrentFrameIndex++;
                         long pos = CurrentFrameIndex * ((long)in_koridor_size) + 8;
                         reader.BaseStream.Seek(pos, SeekOrigin.Begin);
                         reader.ReadBytes(32);
-                        var buff = reader.ReadBytes(4);
-                        Array.Reverse(buff);
-                        Kilometer = BitConverter.ToInt32(buff, 0);
-                        buff = reader.ReadBytes(4);
-                        Array.Reverse(buff);
-                        Meter = BitConverter.ToInt32(buff, 0);
+                        var data = reader.ReadBytes(4);
+                        Array.Reverse(data);
+                        Kilometer = BitConverter.ToInt32(data);
                     }
-                    
-                    //long ll = CurrentFrameIndex * ((long)in_koridor_size) + 8;
-                    //reader.BaseStream.Seek(ll, SeekOrigin.Begin);
-                    //var data = reader.ReadBytes(4);
-                    //Array.Reverse(data);
-                    //var U32EncoderCounter_1 = BitConverter.ToUInt32(data, 0);
-                    //var Speed = reader.ReadInt32();
-                    //var TimeStamp = reader.ReadDouble();
-                    //var U32EncoderCounter_3 = reader.ReadInt32();
-                    //var U32CadrCouter = reader.ReadInt32();
-                    //var camtime = reader.ReadUInt64();
-                    //data = reader.ReadBytes(4);
-                    //Array.Reverse(data);
-                    //Kilometer = BitConverter.ToInt32(data);
-                    //data = reader.ReadBytes(4);
-                    //Array.Reverse(data);
-                    //Meter = BitConverter.ToInt32(data);
-                    Picket = Meter / 100 + 1;
+                    if (Kilometer == kmnum && FoundKm == false)
+                    {
+                        FoundKm = true;
+                    }
+                    if (Kilometer != kmnum && FoundKm == true)
+                    {
+                        return false;
+                    }
 
+                    long ll = CurrentFrameIndex * ((long)in_koridor_size) + 8;
+                    reader.BaseStream.Seek(ll, SeekOrigin.Begin);
+                    var buff = reader.ReadBytes(4);
+                    Array.Reverse(buff);
+                    var U32EncoderCounter_1 = BitConverter.ToUInt32(buff);
+                    var Speed = reader.ReadInt32();
+                    var TimeStamp = reader.ReadDouble();
+                    var U32EncoderCounter_3 = reader.ReadInt32();
+                    var U32CadrCouter = reader.ReadInt32();
+                    var camtime = reader.ReadUInt64();
+                    buff = reader.ReadBytes(4);
+                    Array.Reverse(buff);
+                    Kilometer = BitConverter.ToInt32(buff);
+                    buff = reader.ReadBytes(4);
+                    Array.Reverse(buff);
+                    Meter = BitConverter.ToInt32(buff);
+                    Picket = Meter / 100 + 1;
 
                     //Console.WriteLine($"---Профиль лев: КМ {Kilometer} М {Meter} U32EncoderCounter_1 { U32EncoderCounter_1 }");
 
@@ -512,25 +318,36 @@ namespace ALARm_Report.Forms
 
                     PointsLeft = vector.ToArray();
                     ViewBoxLeft = viewBox;
-                    
+
                     Kms.Add(Kilometer);
                     Meters.Add(Meter);
+                    return true;
                 }
                 catch (Exception e)
                 {
                     System.Console.WriteLine(e.Message);
                     PointsLeft = Array.Empty<double>();
                     ViewBoxLeft = "0 0 0 0";
+                    return true;
                 }
             }
         }
 
-        public void CurrentProfileRight(string filePath)
+        public bool CurrentProfileRight(string filePath, int kmnum)
         {
             BinaryReader reader = in_kupe;
             {
                 try
                 {
+                    if (Kilometer == kmnum && FoundRight == false)
+                    {
+                        FoundRight = true;
+                    }
+                    if (Kilometer == kmnum && FoundRight == true)
+                    {
+                        return false;
+                    }
+
                     long ll = CurrentFrameIndex * (long)in_kupe_size + 8;
                     reader.BaseStream.Seek(ll, SeekOrigin.Begin);
                     var encoderCounter = reader.ReadUInt64();
@@ -568,12 +385,14 @@ namespace ALARm_Report.Forms
 
                     PointsRight = vector.ToArray();
                     ViewBoxRight = viewBox;
+                    return true;
                 }
                 catch (Exception e)
                 {
                     System.Console.WriteLine(e.Message);
                     PointsRight = Array.Empty<double>();
                     ViewBoxRight = "0 0 0 0";
+                    return false;
                 }
             }
         }
@@ -590,7 +409,7 @@ namespace ALARm_Report.Forms
         public List<int> OKm = new List<int>();
         public List<int> OMeter = new List<int>();
 
-        public async Task GetBitmapAsync(int number, int meter)
+        public bool GetBitmapAsync(int km, int trip_id)
         {
             GC.Collect();
             try
@@ -690,39 +509,12 @@ namespace ALARm_Report.Forms
                         side_id_R = "0";
                         period_r = true;
                     }
-                    //запрашиваем объекты с базы координаты болтов
-                    //try
-                    //{
-                    //    if (QueryData == false)
-                    //    {
-                    //        if (conn.State == System.Data.ConnectionState.Closed)
-                    //            conn.Open();
-                    //        var cmd = new NpgsqlCommand();
-                    //        cmd.Connection = conn;
-                    //        cmd.CommandText = $@"
-                    //                        SELECT km, mtr FROM rd_video_objects_{trip_id_L}
-                    //                        where oid in (0,1,2,5,6,7,8)
-                    //                        group by km, mtr
-                    //                        order by km, mtr";
-                    //        NpgsqlDataReader rdr = cmd.ExecuteReader();
-                    //        if (rdr.FieldCount > 0)
-                    //        {
-                    //            while (rdr.Read())
-                    //            {
-                    //                OKm.Add(rdr.GetInt32(0));
-                    //                OMeter.Add(rdr.GetInt32(1));
-                    //            }
-                    //            QueryData = true;
-                    //        }
-                    //        conn.Close();
-                    //    }
-                    //}
-                    //catch
-                    //{
-                    //}
 
-                    CurrentProfileLeft(Vnutr__profil__koridor, number, meter);
-                    CurrentProfileRight(Vnutr__profil__kupe);
+                    if (!CurrentProfileLeft(Vnutr__profil__koridor, km))
+                    {
+                        return false;
+                    }
+                    CurrentProfileRight(Vnutr__profil__kupe, km);
 
                     var Pkt = (Meter - 1) / 100 + 1;
 
@@ -742,17 +534,187 @@ namespace ALARm_Report.Forms
                     var x_big_l = new List<double> { };
                     var x_big_r = new List<double> { };
 
+                    if (Pkt != startP && startP != -1)
+                    {
+                        if (conn.State == System.Data.ConnectionState.Closed)
+                            conn.Open();
 
-                    
-                  
+                        var cmd = new NpgsqlCommand();
+                        cmd.Connection = conn;
+
+                        if (ctbl == false)
+                        {
+                            cmd.CommandText = $@"CREATE TABLE IF NOT EXISTS profiledata_{ trip_id } (
+	                                            ID serial,
+	                                            km SMALLINT,
+	                                            meter SMALLINT,
+	                                            pu_l REAL,
+	                                            pu_r REAL,
+	                                            vert_l REAL,
+	                                            vert_r REAL,
+	                                            bok_l REAL,
+	                                            bok_r REAL,
+	                                            npk_l REAL,
+	                                            npk_r REAL,
+	                                            ShortWavesLeft REAL,
+	                                            ShortWavesRight REAL,
+	                                            MediumWavesLeft REAL,
+	                                            MediumWavesRight REAL,
+	                                            LongWavesLeft REAL,
+	                                            LongWavesRight REAL,
+	                                            iz_45_l REAL,
+                                                iz_45_r REAL,
+                                                imp_left REAL,
+                                                imp_right REAL,
+                                                implen_left REAL,
+                                                implen_right REAL,
+                                                impthreat_left REAL,
+                                                impthreat_right REAL,
+                                                x_big_l REAL,
+                                                x_big_r REAL
+                                               
+                                               )";
+                            cmd.ExecuteNonQuery();
+
+                            ctbl = true;
+                        }
+                        var write = true;
+                        if (write)
+                        {
+                            try
+                            {
+                                for (int i = 0; i < Meters.Count(); i++)
+                                {
+                                    if (startMeter == Meters[i])
+                                    {
+                                        try
+                                        {
+                                            pu_l_m.Add(i < pu_l.Count() ? pu_l[i] : 1.0 / 20.0);
+                                            pu_r_m.Add(i < pu_r.Count() ? pu_r[i] : 1.0 / 20.0);
+                                            vert_l_m.Add(i < vert_l.Count() ? vert_l[i] : 0.0);
+                                            vert_r_m.Add(i < vert_r.Count() ? vert_r[i] : 0.0);
+                                            bok_l_m.Add(i < bok_l.Count() ? bok_l[i] : 0.0);
+                                            bok_r_m.Add(i < bok_r.Count() ? bok_r[i] : 0.0);
+                                            npk_l_m.Add(i < npk_l.Count() ? npk_l[i] : 3.0 / 40.0);
+                                            npk_r_m.Add(i < npk_r.Count() ? npk_r[i] : 3.0 / 40.0);
+                                            iz45_l_m.Add(i < iz45_l.Count() ? iz45_l[i] : 0.0);
+                                            iz45_r_m.Add(i < iz45_r.Count() ? iz45_r[i] : 0.0);
+                                            x_big_l.Add(i < X_big_l.Count() ? X_big_l[i] : 0.0);
+                                            x_big_r.Add(i < X_big_r.Count() ? X_big_r[i] : 0.0);
+
+                                        }
+                                        catch (Exception)
+                                        {
+
+                                            throw;
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        try
+                                        {
+                                            if (startMeter != -1)
+                                            {
+                                                Console.WriteLine(Meters[i] + " " + pu_l_m.Count);
+
+                                                var qrStr = $@"INSERT INTO profiledata_{ trip_id }
+                                                (km, meter, pu_l, pu_r, vert_l, vert_r, bok_l, bok_r, 
+                                                npk_l, npk_r,
+                                                --ShortWavesLeft, ShortWavesRight, MediumWavesLeft, MediumWavesRight, LongWavesLeft, LongWavesRight,
+                                                 iz_45_l, iz_45_r,x_big_l, x_big_r
+                                                ) VALUES(" +
+                                                Kms[i].ToString() + "," +
+                                                Meters[i].ToString() + "," +
+
+                                                (pu_l_m.Any() ? pu_l_m.Average() : 1.0 / 20.0).ToString("0.00000").Replace(",", ".") + "," + //пу
+                                                (pu_r_m.Any() ? pu_r_m.Average() : 1.0 / 20.0).ToString("0.00000").Replace(",", ".") + "," +
+
+                                                (vert_l_m.Any() ? vert_l_m.Average() : 0.0).ToString("0.00000").Replace(",", ".") + "," + //Верт из
+                                                (vert_r_m.Any() ? vert_r_m.Average() : 0.0).ToString("0.00000").Replace(",", ".") + "," +
+
+                                                (bok_l_m.Any() ? bok_l_m.Average() : 0.0).ToString("0.00000").Replace(",", ".") + "," + //Бок из
+                                                (bok_r_m.Any() ? bok_r_m.Average() : 0.0).ToString("0.00000").Replace(",", ".") + "," +
+
+                                                (npk_l_m.Any() ? npk_l_m.Average() : 3.0 / 40.0).ToString("0.00000").Replace(",", ".") + "," + //нпк
+                                                (npk_r_m.Any() ? npk_r_m.Average() : 3.0 / 40.0).ToString("0.00000").Replace(",", ".") + "," +
+
+                                                (iz45_l_m.Any() ? iz45_l_m.Average() : 0.0).ToString("0.0000").Replace(",", ".") + "," + //И45
+                                                (iz45_r_m.Any() ? iz45_r_m.Average() : 0.0).ToString("0.0000").Replace(",", ".") + "," +
+
+                                                (x_big_l.Any() ? x_big_l.Average() : 0.0).ToString("0.0000").Replace(",", ".") + "," + //И45
+                                                (x_big_r.Any() ? x_big_r.Average() : 0.0).ToString("0.0000").Replace(",", ".")
+                                                + ")";
+
+                                                cmd.CommandText = qrStr;
+
+                                                cmd.ExecuteNonQuery();
+
+                                                pu_l_m.Clear();
+                                                pu_r_m.Clear();
+                                                vert_l_m.Clear();
+                                                vert_r_m.Clear();
+                                                bok_l_m.Clear();
+                                                bok_r_m.Clear();
+                                                npk_l_m.Clear();
+                                                npk_r_m.Clear();
+                                                iz45_l_m.Clear();
+                                                iz45_r_m.Clear();
+                                                x_big_l.Clear();
+                                                x_big_r.Clear();
+
+                                            }
+                                            startMeter = Meters[i];
+                                        }
+                                        catch (Exception)
+                                        {
+                                            throw;
+                                        }
+                                    }
+                                }
+
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine("Ошибка записи в БД " + e.Message);
+                                pu_l_m.Clear();
+                                pu_r_m.Clear();
+                                vert_l_m.Clear();
+                                vert_r_m.Clear();
+                                bok_l_m.Clear();
+                                bok_r_m.Clear();
+                                npk_l_m.Clear();
+                                npk_r_m.Clear();
+                                iz45_l_m.Clear();
+                                iz45_r_m.Clear();
+
+                                x_big_l.Clear();
+                                x_big_r.Clear();
+                            }
+                        }
+                        pu_l.Clear(); pu_r.Clear(); vert_l.Clear(); vert_r.Clear();
+                        bok_l.Clear(); bok_r.Clear(); npk_l.Clear(); npk_r.Clear();
+                        iz45_l.Clear(); iz45_r.Clear();
+                        SWavesLeft.Clear(); SWavesRight.Clear(); MWavesLeft.Clear(); MWavesRight.Clear(); LWavesLeft.Clear(); LWavesRight.Clear();
+                        X_big_l.Clear(); X_big_r.Clear();
+                        Kms.Clear();
+                        Meters.Clear();
+
+                        startP = Pkt;
+                    }
+                    //var m2i = new MatrixToImage();
+                    //Bitmap frame;
+                    //m2i.Convert(result, out frame);
                 }
                 CurrentFrame = FrameImgLeft;
+                return true;
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
                 //CurrentFrameIndex = -1;
                 Processing = false;
+                return false;
             }
         }
         /// <summary>
@@ -850,7 +812,7 @@ namespace ALARm_Report.Forms
                         //Console.WriteLine($" Max {xOut} {xIn} Gap_len:" + (xOut - xIn));
                         if (Math.Abs(xOut - xIn) <= 20)
                         {
-                            
+                            SendPoverhDataDB(sidePoverh, km, meter, Math.Abs(xOut - xIn), -1, -1, CurrentFrameIndex, encoderCounter_1);
                             xIn = -1;
                         }
                         else
@@ -864,7 +826,7 @@ namespace ALARm_Report.Forms
                                     PromCount++;
                                 }
                             }
-                            
+                            SendPoverhDataDB(sidePoverh, km, meter, PromCount, -1, -1, CurrentFrameIndex, encoderCounter_1);
                         }
                     }
                     if (flagIn == true)
@@ -899,7 +861,7 @@ namespace ALARm_Report.Forms
                         //Console.WriteLine($" Min {xOutmin} {xInmin} Gap_len:" + (xOutmin - xInmin));
                         if (Math.Abs(xOutmin - xInmin) <= 20)
                         {
-                            
+                            SendPoverhDataDB(sidePoverh, km, meter, Math.Abs(xOutmin - xInmin), -1, -1, CurrentFrameIndex, encoderCounter_1);
                             xIn = -1;
                         }
                         else
@@ -913,7 +875,7 @@ namespace ALARm_Report.Forms
                                     PromCount++;
                                 }
                             }
-                            
+                            SendPoverhDataDB(sidePoverh, km, meter, PromCount, -1, -1, CurrentFrameIndex, encoderCounter_1);
                         }
                     }
                     if (flagIn == true)
@@ -944,7 +906,47 @@ namespace ALARm_Report.Forms
             return sb.ToString();
         }
 
-       
+        private void SendPoverhDataDB(string sidePoverh, int km, int m, int gap_len, int gap_stupenka, long track_id, long frame_num, long encod_count)
+        {
+            var trip_id = sidePoverh == "Left" ? trip_id_L : trip_id_R;
+            var file_id = sidePoverh == "Left" ? file_id_L : file_id_R;
+            if (conn.State == System.Data.ConnectionState.Closed)
+                conn.Open();
+
+
+            var cmd = new NpgsqlCommand();
+            cmd.Connection = conn;
+
+            try
+            {
+                cmd.CommandText = "CREATE TABLE IF NOT EXISTS surfacegap" + @" (id serial, km smallint, meter smallint, length smallint, step smallint, 
+                                                                                                        trip_id smallint,   
+                                                                                                        track_id smallint, 
+                                                                                                        file_id bigint, 
+                                                                                                        frame_num bigint,
+                                                                                                        encod_count bigint)";
+                cmd.ExecuteNonQuery();
+
+                var qrStr = "INSERT INTO surfacegap" + @" (km, meter, length, step, trip_id, track_id, file_id, frame_num, encod_count) VALUES(" +
+                                                                                                        km.ToString() + "," +
+                                                                                                        m.ToString() + "," +
+                                                                                                        gap_len.ToString() + "," +
+                                                                                                        gap_stupenka.ToString() + "," +
+                                                                                                        trip_id.ToString() + "," +
+                                                                                                        track_id.ToString() + "," +
+                                                                                                        file_id.ToString() + "," +
+                                                                                                        frame_num.ToString() + "," +
+                                                                                                        encod_count.ToString() + ")";
+                cmd.CommandText = qrStr;
+                cmd.ExecuteNonQuery();
+                conn.Close();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Ошибка записи в БД " + e.Message);
+            }
+
+        }
 
         public string VectorToPoints(float[] vector)
         {
@@ -1017,7 +1019,6 @@ namespace ALARm_Report.Forms
                 default:
                     return;
             }
-           
 
             double maxY = arrY.Max();
             arrY = arrY.Select(a => a * (-1) + maxY).ToList();
@@ -1025,12 +1026,12 @@ namespace ALARm_Report.Forms
             List<double> sideX = new List<double>(), sideY = new List<double>(), headX = new List<double>(), headY = new List<double>();
             try
             {
-                TryReadProfile(ref sideX, ref sideY, ref headX, ref headY, arrX.ToArray(), arrY.ToArray(), calcParam.HeadCoef, calcParam.BottomSideCoef, calcParam.TopSideCoef);
+                TryReadProfile(ref sideX, ref sideY, ref headX, ref headY, arrX.ToArray(), arrY.ToArray(), calcParam.HeadCoef, calcParam.BottomSideCoef, calcParam.TopSideCoef); //раотает жб
             }
-            catch (Exception)
+            catch (Exception e )
             {
-
-                throw;
+                Console.WriteLine("Ошибка " + e.Message);
+                //throw;
             }
 
             double[] arrSideX = sideX.ToArray();
@@ -1128,8 +1129,7 @@ namespace ALARm_Report.Forms
             List<double> sideX2 = new List<double>(), sideY2 = new List<double>();
             var side_count = arrSideY.Length / 3;
 
-            if (side == side)
-            {
+            
                 var level_side_count = side_count / 3;
 
                 try
@@ -1148,10 +1148,10 @@ namespace ALARm_Report.Forms
                         }
                     }
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-
-                    throw;
+                    Console.WriteLine("Исключение " + e.Message);
+                    //throw e;
                 }
 
                 //шейка 2 нукте лев
@@ -1177,10 +1177,10 @@ namespace ALARm_Report.Forms
                         X_big_l.Add(Xtest1);
 
                     }
-                    catch (Exception)
+                    catch (Exception e )
                     {
-
-                        throw;
+                        Console.WriteLine("Исключение " + e.Message);
+                        //throw e;
                     }
                 }
                 //шейка 2 нукте прав
@@ -1203,13 +1203,13 @@ namespace ALARm_Report.Forms
                         X_big_r.Add(Xtest1_r);
 
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
-
-                        throw;
+                        Console.WriteLine("Исключение " + e.Message);
+                        //throw e;
                     }
-                }
             }
+            
             //----головка---------------------------------------------------------
             List<double> headX1 = new List<double>(), headY1 = new List<double>();
             List<double> headX2 = new List<double>(), headY2 = new List<double>();
@@ -1272,10 +1272,10 @@ namespace ALARm_Report.Forms
                     //Xtest4 = vremX2.Average(); //r
                     //Ytest4 = vremY2.Average() * (-1) + Math.Max(arrHeadY.Max(), arrSideY.Max());
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-
-                    throw;
+                    Console.WriteLine("Исключение " + e.Message);
+                    //throw e;
                 }
             }
             if (side == Side.Right)
@@ -1291,7 +1291,7 @@ namespace ALARm_Report.Forms
                             headX1.Add(arrHeadX[i]);
                             headY1.Add(arrHeadY[i]);
                         }
-                        if (i >= head_count * 2 + level_head_count * 2)
+                        if (i > head_count * 2 + level_head_count * 2)
                         {
                             headX2.Add(arrHeadX[i]);
                             headY2.Add(arrHeadY[i]);
@@ -1311,14 +1311,20 @@ namespace ALARm_Report.Forms
                     //g
                     for (int i = headY1.IndexOf(headY1.Min()); i < headY1.IndexOf(headY1.Min()) + 7; i++)
                     {
-                        vremX1.Add(headX1[i]);
-                        vremY1.Add(headY1[i]);
+                        if (i < headX1.Count)
+                        {
+                            vremX1.Add(headX1[i]);
+                            vremY1.Add(headY1[i]);
+                        }
                     }
                     //r
                     for (int i = headY2.IndexOf(headY2.Min()); i < headY2.IndexOf(headY2.Min()) + 7; i++)
                     {
-                        vremX2.Add(headX2[i]);
-                        vremY2.Add(headY2[i]);
+                        if (i < headX2.Count)
+                        {
+                            vremX2.Add(headX2[i]);
+                            vremY2.Add(headY2[i]);
+                        }
                     }
 
                     //тобедегы 2 нукте
@@ -1327,10 +1333,10 @@ namespace ALARm_Report.Forms
                     Xtest4_r = vremX1.Average() * (-1) + Math.Max(arrHeadX.Max(), arrSideX.Max());
                     Ytest4_r = vremY1.Average() * (-1) + Math.Max(arrHeadY.Max(), arrSideY.Max());
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-
-                    throw;
+                    Console.WriteLine("Исключение " + e.Message);
+                    //throw e;
                 }
             }
 
@@ -1343,10 +1349,10 @@ namespace ALARm_Report.Forms
                 {
                     GetCenterCoords(ref xrb, ref yrb, Xtest1, Ytest1, Xtest2, Ytest2, calcParam.Radius);
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-
-                    throw;
+                    Console.WriteLine("Исключение " + e.Message);
+                    //throw e;
                 }
             }
             if (side == Side.Right)
@@ -1355,10 +1361,10 @@ namespace ALARm_Report.Forms
                 {
                     GetCenterCoords(ref xrb, ref yrb, Xtest1_r, Ytest1_r, Xtest2_r, Ytest2_r, calcParam.Radius);
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-
-                    throw;
+                    Console.WriteLine("Исключение " + e.Message);
+                    //throw e;
                 }
             }
             if (side == Side.Left)
@@ -1396,10 +1402,10 @@ namespace ALARm_Report.Forms
                 //    }
                 //}
             }
-            catch (Exception)
+            catch (Exception e)
             {
-
-                throw;
+                Console.WriteLine("Исключение " + e.Message);
+                //throw e;
             }
 
             //боковой из----->>>>>>>>>>>
@@ -1415,22 +1421,23 @@ namespace ALARm_Report.Forms
                 var golovka_y2_index = arrHeadY[arrHeadY.IndexOf(headY1.Min())];
 
                 var prog = golovka_y2_index - 13;
-
-                for (int i = 0; i <= arrHeadY.Count(); i++)
+                var x = 0.0;
+                for (int i = 0; i < arrHeadY.Count(); i++)
                 {
                     try
                     {
-                        if (prog >= arrHeadY[i])
+                        if (x < arrHeadX[i]) { x = arrHeadX[i]; }
+                        if (prog >= arrHeadY[i] && arrHeadX[i] >= x)
                         {
                             down13x = arrHeadX[i];
                             down13y = arrHeadY[i];
                             break;
                         }
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
-
-                        throw;
+                        Console.WriteLine("Исключение " + e.Message);
+                        //throw e;
                     }
                 }
                 Xtest5 = down13x;
@@ -1462,27 +1469,28 @@ namespace ALARm_Report.Forms
                 var golovka_y2_index = arrHeadY[arrHeadY.IndexOf(headY1.Min())];
 
                 var prog = golovka_y2_index - 13;
-
-                for (int i = 0; i <= arrHeadY.Count(); i++)
+                var xr = 1110.0;
+                for (int i = 0; i < arrHeadY.Count(); i++)
                 {
                     try
                     {
-                        if (prog <= arrHeadY[i])
+                        if (xr < arrHeadX[i]) { xr = arrHeadX[i]; }
+                        if (prog <= arrHeadY[i] && arrHeadX[i] <= xr)
                         {
                             down13x = arrHeadX[i];
                             down13y = arrHeadY[i];
                             break;
                         }
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
-
-                        throw;
+                        Console.WriteLine("Исключение " + e.Message);
+                        //throw e;
                     }
                 }
                 Xtest5_r = down13x * (-1) + Math.Max(arrHeadX.Max(), arrSideX.Max());
                 Ytest5_r = down13y * (-1) + Math.Max(arrHeadY.Max(), arrSideY.Max());
-                bok_elem = arrHeadX.Max() - down13x - 0.0;
+                bok_elem = arrHeadX.Max() - down13x;
 
 
                 List<double> RolAver = new List<double>();
@@ -1548,10 +1556,10 @@ namespace ALARm_Report.Forms
                             Bottom_y1 = vremY1.Average() * (-1) + Math.Max(arrHeadY.Max(), arrSideY.Max());
                         }
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
-
-                        throw;
+                        Console.WriteLine("Исключение " + e.Message);
+                        //throw e;
                     }
 
 
@@ -1582,10 +1590,10 @@ namespace ALARm_Report.Forms
 
                         }
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
-
-                        throw;
+                        Console.WriteLine("Исключение " + e.Message);
+                        //throw e;
                     }
 
                 }
@@ -1617,10 +1625,10 @@ namespace ALARm_Report.Forms
                         DList.Add(Dr1);
                     }
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-
-                    throw;
+                    Console.WriteLine("Исключение " + e.Message);
+                    //throw e;
                 }
 
 
@@ -1681,10 +1689,10 @@ namespace ALARm_Report.Forms
                             break;
                     }
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-
-                    throw;
+                    Console.WriteLine("Исключение " + e.Message);
+                    //throw e;
                 }
 
 
@@ -1731,12 +1739,15 @@ namespace ALARm_Report.Forms
                     Perpen_y2_l = arrHeadY.Skip(arrHeadY.IndexOf(Yminus20) - 20).Take(20).Average() * (-1) + Math.Max(arrHeadY.Max(), arrSideY.Max());
 
                     Dmin = Math.Abs(Perpen_y2_l - RadY_l) - 130 - 2.5;
+
+                    Dmin = Math.Abs(Perpen_y2_l - RadY_l);//RadY_l 	
+                    Dmin = Math.Min(Math.Abs(Dmin - 132.8), Math.Abs(Dmin - 142.8));
                     Dmin = /*Math.Abs((double)(A1 / B1)+0.2) > 0.05  ||*/ /*golovka_x2_l < 20 ||*/ Bottom_y2 < Bottom_y1 || (Bottom_x2 - Bottom_x1) < 8 ? (razn_arr.Count() > 0 ? aver : 0.0) : Dmin;
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-
-                    throw;
+                    Console.WriteLine("Исключение " + e.Message);
+                    //throw e;
                 }
 
                 if (razn_arr.Count() >= width)
@@ -1784,8 +1795,8 @@ namespace ALARm_Report.Forms
                     LS.Add(fi);
 
                     var RolAver = LS.Average();
-                    var e = Math.Exp(ExponentCoef * 10 * Math.Abs(fi - 1 / 20.0));
-                    var e1 = Math.Exp(ExponentCoef * 10 * Math.Abs(RolAver - 1 / 20.0));
+                    var e = Math.Exp(ExponentCoef * 50 * Math.Abs(fi - 1 / 20.0));
+                    var e1 = Math.Exp(ExponentCoef * 50 * Math.Abs(RolAver - 1 / 20.0));
                     RolAver = 1.0 / 20.0 + (RolAver - 1 / 20.0) * e1;
                     fi = 1.0 / 20.0 + 0.005 + (fi - 1 / 20.0) * e;
                 }
@@ -1910,8 +1921,8 @@ namespace ALARm_Report.Forms
                         LS.Add(fi);
 
                         var RolAver = LS.Average();
-                        var e = Math.Exp(ExponentCoef * 10 * Math.Abs(fi - 1 / 20.0));
-                        var e1 = Math.Exp(ExponentCoef * 10 * Math.Abs(RolAver - 1 / 20.0));
+                        var e = Math.Exp(ExponentCoef * 50 * Math.Abs(fi - 1 / 20.0));
+                        var e1 = Math.Exp(ExponentCoef * 50 * Math.Abs(RolAver - 1 / 20.0));
 
                         fi = 1 / 20.0 + (fi - 1 / 20.0) * e - 0.006;
                     }
@@ -2011,13 +2022,16 @@ namespace ALARm_Report.Forms
                 var PointAvgX = CenterPoinArrX.Count != 0 ? CenterPoinArrX.Skip(CenterPoinArrX.Count() - 5).Take(5).Average() * (-1) + Math.Max(arrHeadX.Max(), arrSideX.Max()) : 0;
                 var PointAvgY = CenterPoinArrY.Count != 0 ? CenterPoinArrY.Skip(CenterPoinArrY.Count() - 5).Take(5).Average() * (-1) + Math.Max(arrHeadY.Max(), arrSideY.Max()) : 0;
 
-                Dmin = (PointAvgY - (Ytest4_r + (arrHeadY[DList.IndexOf(DList.Max())] * (-1) + Math.Max(arrHeadY.Max(), arrSideY.Max()))) / 2) - 134.4;
+                //Dmin = (PointAvgY - (Ytest4_r + (arrHeadY[DList.IndexOf(DList.Max())] * (-1) + Math.Max(arrHeadY.Max(), arrSideY.Max()))) / 2) - 134.4;
 
                 RadX_r = PointAvgX;
                 RadY_r = PointAvgY;
 
                 Perpen_x1_r = arrHeadX[DList.IndexOf(DList.Max())] * (-1) + Math.Max(arrHeadX.Max(), arrSideX.Max());
                 Perpen_y1_r = arrHeadY[DList.IndexOf(DList.Max())] * (-1) + Math.Max(arrHeadY.Max(), arrSideY.Max());
+
+                Dmin = Math.Abs(Perpen_y2_l - RadY_l);//RadY_l 	
+                Dmin = Math.Min(Math.Abs(Dmin - 132.8), Math.Abs(Dmin - 142.8));
 
                 Dmin = /*golovXmax < Bottom_x1_r*/ /*|| Perpen_x1_r > 60*/  Bottom_y2_r < Bottom_y1_r /*|| (Bottom_x1_r - Bottom_x2_r) < 15*/ ? razn_arr_r.Count() > 0 ? aver : 0 : Dmin;
                 //Dmin = Dmin < 0 ? razn_arr_r.Count() > 0 ? aver : 0 : Dmin;
@@ -2062,10 +2076,10 @@ namespace ALARm_Report.Forms
                 vbY = vector.Where((y, i) => i % 2 != 0).Max() - vector.Where((y, i) => i % 2 != 0).Min() + 20.0;
                 viewBox = vbMinX.ToString().Replace(",", ".") + " " + vbMinY.ToString().Replace(",", ".") + " " + vbX.ToString().Replace(",", ".") + " " + vbY.ToString().Replace(",", ".");
             }
-            catch (Exception)
+            catch (Exception e)
             {
-
-                throw;
+                Console.WriteLine("Исключение " + e.Message);
+                //throw e;
             }
 
             if (xrb < 0 && yrb < 0)
@@ -2233,36 +2247,69 @@ namespace ALARm_Report.Forms
                 {
                     my[i - 1] = tempArrY.Skip((i - 1) * 25 + x0).Take(25).Max();
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-
+                    Console.WriteLine("Ошибка " + e.Message);
                     throw;
                 }
             }
 
             topY = my.Min();
 
-            for (int i = 0; i < Math.Min(arrX.Length, arrY.Length); i++)
+            var dxHd = 0.0;
+            var dyHd = 0.0;
+            var dxSd = 0.0;
+            var dySd = 0.0;
+            for (int i = 1; i < Math.Min(arrX.Length, arrY.Length); i++)
             {
                 try
                 {
                     if (arrY[i] >= topY - coefHead && arrY[i] <= topY + 20)
                     {
-                        arrHeadX.Add(arrX[i]);
-                        arrHeadY.Add(arrY[i]);
+                        dxHd = dxHd + Math.Sign(arrX[i] - arrX[i - 1]);
+                        dyHd = dyHd + Math.Sign(arrY[i] - arrY[i - 1]);
                     }
                     if (arrY[i] >= topY - coefSideTop && arrY[i] <= topY - coefSideBot)
                     {
-                        arrSideX.Add(arrX[i]);
-                        arrSideY.Add(arrY[i]);
+                        dxSd = dxSd + Math.Sign(arrX[i] - arrX[i - 1]);
+                        dySd = dySd + Math.Sign(arrY[i] - arrY[i - 1]);
                     }
                 }
                 catch (Exception)
                 {
-
                     throw;
                 }
 
+            }
+            int j1 = 0;
+            int j2 = 0;
+            for (int i = 1; i < Math.Min(arrX.Length, arrY.Length); i++)
+            {
+                try
+                {
+                    var H = false;
+                    //if (Math.Abs(arrX[i] - arrX[i - 1])> 2) continue;	
+                    if (arrY[i] >= topY - coefHead && arrY[i] <= topY + 20)//	
+                    {
+
+                        arrHeadX.Add(arrX[i]);
+                        arrHeadY.Add(arrY[i]);
+                        j1 = j1 + 1;
+                    }
+                    var S = false;
+                    // ( Math.Abs(arrY[i] - arrY[i - 1]) >2) continue;	
+                    if (arrY[i] >= topY - coefSideTop && arrY[i] <= topY - coefSideBot)//&&S	
+                    {
+                        arrSideX.Add(arrX[i]);
+                        arrSideY.Add(arrY[i]);
+                        j2 = j2 + 1;
+
+                    }
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
             }
         }
 
@@ -3387,9 +3434,32 @@ namespace ALARm_Report.Forms
             SSS = 1 / Math.Tan(DegreeToRadian(angle));
         }
     }
-
-
+    public enum Rails { r75 = 192, r65 = 180, r50 = 152, r43 = 140 }
+    public enum Side { Left = -1, Right = 1 }
+    public class ProfileCalcParameter
+    {
+        public double DownParam { get; set; } = -1;
+        public double Radius { get; set; } = -1;
+        public double LittleRadius { get; set; } = -1;
+        public double AngleG { get; set; } = -1;
+        public double HeadCoef { get; set; } = 0;
+        public double TopSideCoef { get; set; } = 0;
+        public double BottomSideCoef { get; set; } = 0;
+        public double DistBigRad { get; set; } = 0;
+        public double DistLitRad { get; set; } = 0;
+        public double DistParam { get; set; } = 0;
+        public ProfileCalcParameter(double downParam, double radius, double l_radius, double angle_g, double coefHead, double coefSideBot, double coefSideTop, double dist_big_rad, double dist_lit_rad, double dist_param)
+        {
+            DownParam = downParam;
+            Radius = radius;
+            LittleRadius = l_radius;
+            AngleG = angle_g;
+            HeadCoef = coefHead;
+            TopSideCoef = coefSideTop;
+            BottomSideCoef = coefSideBot;
+            DistLitRad = dist_lit_rad;
+            DistBigRad = dist_big_rad;
+            DistParam = dist_param;
+        }
+    }
 }
-
-
-
