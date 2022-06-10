@@ -357,6 +357,76 @@ namespace ALARm.Core.Report
                             Alert = $"кривая факт. R:{ (17860 / Math.Abs(r)):0} H:{ Math.Abs(h):0}"
                         });
 
+
+                        if (item.First().Km == 717)
+                        {
+                            item.First().Km = item.First().Km;
+                        }
+
+
+                        if ( !curve_bpd_list.Any())
+                        {
+                            curve_bpd_list.Add(new DigressionMark()
+                            {
+                               
+                                Km = item.First().Km,
+                                lvl = (int)bpd_curve.Elevations[0].Lvl,
+                                Radius = bpd_curve.Radius,
+                                Meter = (int)avgmeterbyItem - 30,
+                                Alert = $" {(int)avgmeterbyItem - 30} R:{bpd_curve.Radius} h:{bpd_curve.Elevations[0].Lvl} Ш:{bpd_curve.Straightenings[0].Width} И:{bpd_curve.Straightenings[0].Wear} "
+                            });
+                        }
+                      
+                            bool pr1 = false;
+                            bool pr2 = false;
+                            int prMeter = 0;
+                            int prlvl = 0;
+                            int prrad = 0;
+
+                       // curve_bpd_list.[curve_bpd_list.Count-1]
+                      var   prr1 = false;
+                        var prr2 = false;
+                        if (curve_bpd_list[curve_bpd_list.Count - 1].Meter != (int)avgmeterbyItem - 30) prr1 = true;
+                        if (curve_bpd_list[0].Meter != (int)avgmeterbyItem - 30) prr2 = true;
+                        //  (curve_bpd_list[0].lvl != (int)bpd_curve.Elevations[0].Lvl)||
+                        if (  ((prr1&&prr2))  && curve_bpd_list.Any())
+                            {
+                                curve_bpd_list.Add(new DigressionMark()
+                                {
+                                    lvl = (int)bpd_curve.Elevations[0].Lvl,
+                                    Km = item.First().Km,
+                                    Radius = bpd_curve.Radius,
+                                    Meter = (int)avgmeterbyItem - 30,
+                                    Alert = $" {(int)avgmeterbyItem - 30} R:{bpd_curve.Radius} h:{bpd_curve.Elevations[0].Lvl} Ш:{bpd_curve.Straightenings[0].Width} И:{bpd_curve.Straightenings[0].Wear} "
+                                });
+                            }
+
+
+                        if (kilometer.Number == 714 && avgmeterbyItem>600)
+                        {
+                            prMeter = curve_bpd_list[0].Meter;
+                            prlvl = curve_bpd_list[0].lvl;
+                            prrad = (int)curve_bpd_list[0].Radius;
+
+                            pr2 = pr2;
+                            pr1 = pr1;
+                           var Meter0 = (int)avgmeterbyItem - 30;
+                        }
+
+                        if (kilometer.Number == 714 && avgmeterbyItem <300)
+                        {
+                            pr2 = pr2;
+                            pr1 = pr1;
+                            
+                            
+                            
+                            var Meter0 = (int)avgmeterbyItem - 30;
+                            prMeter = curve_bpd_list[0].Meter;
+                            prlvl = curve_bpd_list[0].lvl;
+                            prrad = (int)curve_bpd_list[0].Radius;
+
+                        }
+
                         lvl = (int)h;
 
                         //------------------------------------------------------------------------------------------
@@ -1459,6 +1529,22 @@ namespace ALARm.Core.Report
                             });
                         }
                     }
+
+                    //if (!curve_bpd_list.Any())
+                    {
+                        curve_bpd_list.Add(new DigressionMark()
+                        {
+                            Km = -999,
+                            Meter = first_pmeter,
+
+                            Alert = $"{first_pmeter - 30}  Паспорт R:{ str} h:{lvl}"
+                        });
+                    }
+
+               
+                    //if (curve_bpd_list.Any())
+                  // curve_bpd_list.Select()
+
                 }
 
                 if (pru_dig_list.Any())
