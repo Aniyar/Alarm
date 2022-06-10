@@ -3769,6 +3769,7 @@ namespace ALARm.DataAccess
 
                             (SELECT DISTINCT
 	                            trip_id AS process_id,
+                                track_id,
 	                            radius,
 	                            LEVEL,
 	                            gauge,

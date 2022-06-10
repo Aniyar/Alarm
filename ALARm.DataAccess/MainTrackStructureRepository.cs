@@ -621,6 +621,10 @@ namespace ALARm.DataAccess
         {
             using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
             {
+                if (nkm == 715)
+                {
+                    //check
+                }
                 if (db.State == ConnectionState.Closed)
                     db.Open();
                 switch (mtoObjectType)

@@ -55,8 +55,6 @@ namespace ALARm.Core.Report
                 //ПРУ
                 var PasSpeed = kilometer.Speeds.Any() ? kilometer.Speeds.First().Passenger : -1;
                 var pru_dig_list = new List<DigressionMark> { };
-                var curve_bpd_list = new List<DigressionMark> { };
-                  
                 var Curve_nature_value = new List<DigressionMark>();
                 int prevIndex = kilometer.Number + 1;
                 //var rezulat = new List<> ;
@@ -179,8 +177,8 @@ namespace ALARm.Core.Report
                         StrPoins.Add(item.First());
                     }
                     if (strData.Any())
-                    { 
-                        StrPoins.Add(strData.Last()); 
+                    {
+                        StrPoins.Add(strData.Last());
                     }
 
 
@@ -300,7 +298,7 @@ namespace ALARm.Core.Report
                     {
                         LevelPoins.Add(LvlData.Last());
                     }
-                    
+
 
 
                     int lvl = -1, str = -1, lenPerKrivlv = -1;
@@ -359,17 +357,6 @@ namespace ALARm.Core.Report
                             Alert = $"кривая факт. R:{ (17860 / Math.Abs(r)):0} H:{ Math.Abs(h):0}"
                         });
 
-                        if (item.First().Km == 717)
-                        {
-                            item.First().Km = item.First().Km;
-                        }
-                        curve_bpd_list.Add(new DigressionMark()
-                        {
-                            Km = item.First().Km,
-                            Meter = (int)avgmeterbyItem-30,
-                            Alert = $" {(int)avgmeterbyItem - 30} R:{bpd_curve.Radius} h:{bpd_curve.Elevations[0].Lvl} Ш:{bpd_curve.Straightenings[0].Width} И:{bpd_curve.Straightenings[0].Wear} "
-                        });
-                      
                         lvl = (int)h;
 
                         //------------------------------------------------------------------------------------------
@@ -707,14 +694,13 @@ namespace ALARm.Core.Report
 
                             var lvl_min = rdcsData.GetMinLevel(temp_data_lvl);
 
-
-                        //lvl = lvl_mid;
-                        str = rad_mid;
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("Ошибка при расчете натурной кривой" + e.Message);
-
+                            //lvl = lvl_mid;
+                            str = rad_mid;
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine("Ошибка при расчете натурной кривой" + e);
+                        }
                     }
 
                     var curve_center = (bpd_curve.Start_Km * 1000 + bpd_curve.Start_M) + ((bpd_curve.Final_Km * 1000 + bpd_curve.Final_M) - (bpd_curve.Start_Km * 1000 + bpd_curve.Start_M)) / 2;
@@ -841,15 +827,13 @@ namespace ALARm.Core.Report
                         {
                             ball = 50;
                             razn = diff - 25;
-                        }                       
+                        }
                     }
                 }
 
                 if (pru_dig_list.Any())
                     MainTrackStructureRepository.Pru_write(kilometer.Track_id, kilometer, pru_dig_list);
 
-                if (curve_bpd_list.Any())
-                    MainTrackStructureRepository.Bpd_write(kilometer.Track_id, kilometer, curve_bpd_list);
                 // добавление ПрУ и натурные значения кривой
                 kilometer.Digressions = Curve_nature_value;
 
@@ -1148,6 +1132,9 @@ namespace ALARm.Core.Report
                         //пасспорт рихт
                         zeroStraightening += MMToPixelChartString(kilometer.fZeroStright[index] * StrightKoef + StraighRighttPosition) + "," + metre + " ";
                         zeroStraighteningLeft += MMToPixelChartString(kilometer.fZeroStright[index] * StrightKoef + StrightLeftPosition) + "," + metre + " ";
+                        //Паспорт уровень
+                        zeroLevel += MMToPixelChartString(kilometer.flvl0[index] * LevelKoef + LevelPosition) + "," + metre + " ";
+
                         //ср линия рихт
                         averageStraighteningRight += MMToPixelChartString(kilometer.StrightAvgTrapezoid[index] * StrightKoef + StraighRighttPosition) + "," + metre + " ";
                         averageStraighteningLeft += MMToPixelChartString(kilometer.StrightAvgTrapezoid[index] * StrightKoef + StrightLeftPosition) + "," + metre + " ";
@@ -1163,8 +1150,7 @@ namespace ALARm.Core.Report
 
                         level += MMToPixelChartString(kilometer.Level[index] * LevelKoef + LevelPosition) + "," + metre + " ";
                         averageLevel += MMToPixelChartString(kilometer.LevelAvgTrapezoid[index] * LevelKoef + LevelPosition) + "," + metre + " ";
-                        zeroLevel += MMToPixelChartString(kilometer.flvl0[index] * LevelKoef + LevelPosition) + "," + metre + " ";
-
+                       
                         avglevel += MMToPixelChartString(kilometer.LevelAvg[index] * LevelKoef + LevelPosition) + "," + metre + " ";
                     }
                     catch (Exception e)
@@ -1293,10 +1279,10 @@ namespace ALARm.Core.Report
         }
 
         private void pd_print(object sender, PrintPageEventArgs e)
-{    
-  Graphics gr = e.Graphics;
-  gr.DrawString("Sales", new Font(FontFamily.GenericMonospace, 12, FontStyle.Bold), new SolidBrush(Color.Black), new Point(40, 40));
-}
+        {
+            Graphics gr = e.Graphics;
+            gr.DrawString("Sales", new Font(FontFamily.GenericMonospace, 12, FontStyle.Bold), new SolidBrush(Color.Black), new Point(40, 40));
+        }
         public void ProcessRegion(ReportTemplate template, Kilometer kilometer, Trips trip, bool autoprint, int currentKmMeter)
         {
             XDocument htReport = new XDocument();
@@ -1312,7 +1298,6 @@ namespace ALARm.Core.Report
                 //ПРУ
                 var PasSpeed = kilometer.Speeds.Any() ? kilometer.Speeds.First().Passenger : -1;
                 var pru_dig_list = new List<DigressionMark> { };
-                var curve_bpd_list = new List<DigressionMark> { };
                 var Curve_nature_value = new List<DigressionMark>();
 
                 foreach (var bpd_curve in kilometer.Curves)
@@ -1473,23 +1458,12 @@ namespace ALARm.Core.Report
                                 Alert = $"{first_pmeter} Крив. факт R:{ str } h:{ lvl }"
                             });
                         }
-
                     }
-                    curve_bpd_list.Add(new DigressionMark()
-                    {
-                        Km = -999,
-                        Meter = first_pmeter,
-
-                        Alert = $"{first_pmeter - 30}  Паспорт R:{ str} h:{lvl}"
-                    });
-
                 }
 
                 if (pru_dig_list.Any())
                     MainTrackStructureRepository.Pru_write(kilometer.Track_id, kilometer, pru_dig_list);
 
-                if (curve_bpd_list.Any())
-                    MainTrackStructureRepository.Bpd_write(kilometer.Track_id, kilometer, curve_bpd_list);
                 // добавление ПрУ и натурные значения кривой
                 kilometer.Digressions = Curve_nature_value;
 
@@ -1646,7 +1620,7 @@ namespace ALARm.Core.Report
                         var drh = kilometer.StrightAvgTrapezoid[index] + (kilometer.StrightRight[index] - kilometer.StrightAvgTrapezoid[index]);
                         straighteningRight += MMToPixelChartString(drh * StrightKoef + StraighRighttPosition) + "," + metre + " ";
 
-                        zeroStraighteningLeft += MMToPixelChartString(Math.Abs(kilometer.fZeroStright[index]) * Math.Sign(kilometer.StrightRight[index]) * StrightKoef  + StrightLeftPosition) + "," + metre + " ";
+                        zeroStraighteningLeft += MMToPixelChartString(Math.Abs(kilometer.fZeroStright[index]) * Math.Sign(kilometer.StrightRight[index]) * StrightKoef + StrightLeftPosition) + "," + metre + " ";
 
 
                         averageStraighteningLeft += MMToPixelChartString(kilometer.StrightAvgTrapezoid[index] * StrightKoef + StrightLeftPosition) + "," + metre + " ";
@@ -1654,9 +1628,9 @@ namespace ALARm.Core.Report
                         straighteningLeft += MMToPixelChartString(drh * StrightKoef + StrightLeftPosition) + "," + metre + " ";
 
 
-                        level += MMToPixelChartString(kilometer.Level[index] * LevelKoef  + LevelPosition) + "," + metre + " ";
-                        averageLevel += MMToPixelChartString(kilometer.LevelAvgTrapezoid[index] * LevelKoef  + LevelPosition) + "," + metre + " ";
-                        zeroLevel += MMToPixelChartString(Math.Abs(kilometer.flvl0[index]) * Math.Sign(kilometer.StrightRight[index]) * LevelKoef  + LevelPosition) + "," + metre + " ";
+                        level += MMToPixelChartString(kilometer.Level[index] * LevelKoef + LevelPosition) + "," + metre + " ";
+                        averageLevel += MMToPixelChartString(kilometer.LevelAvgTrapezoid[index] * LevelKoef + LevelPosition) + "," + metre + " ";
+                        zeroLevel += MMToPixelChartString(Math.Abs(kilometer.flvl0[index]) * Math.Sign(kilometer.StrightRight[index]) * LevelKoef + LevelPosition) + "," + metre + " ";
                     }
                     catch (Exception e)
                     {

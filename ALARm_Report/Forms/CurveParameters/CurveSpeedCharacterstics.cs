@@ -46,19 +46,36 @@ namespace ALARm_Report.Forms
                                     new XAttribute("date_statement", DateTime.Now.Date.ToShortDateString()),
                                     new XAttribute("distance", ((AdmUnit)AdmStructureService.GetUnit(AdmStructureConst.AdmDistance, parentId)).Code),
                                     new XAttribute("source", "база данных"),
-                                    new XAttribute("file_travel", "база данных"));
+                                    new XAttribute("file_travel", "база данных")
+                                    
+                                    );
 
                 foreach (var tripProcess in trips)
                 {
+
+                    XElement tripElem = new XElement("trip",
+                          new XAttribute("direction", tripProcess.DirectionName),
+                          new XAttribute("chief", tripProcess.Chief),
+                          new XAttribute("ps", tripProcess.Car),
+                          new XAttribute("way", roadName),
+                          new XAttribute("distance", ((AdmUnit)AdmStructureService.GetUnit(AdmStructureConst.AdmDistance, parentId)).Code),
+                          new XAttribute("check", RdStructureService.GetTrip(tripProcess.Id).GetProcessTypeName),
+                          new XAttribute("periodDate", current.Period)
+                          );
+                    bool curvesintrip = false;
                     foreach (var track_id in admTracksId)
                     {
+                        XElement trackElem = new XElement("track",
+                         new XAttribute("direction", tripProcess.DirectionName),
+                         new XAttribute("chief", tripProcess.Chief),
+                         new XAttribute("check", tripProcess.GetProcessTypeName), //ToDo
+                         new XAttribute("ps", tripProcess.Car),
+                         new XAttribute("track", AdmStructureService.GetTrackName(track_id)));
 
                         var trackName = AdmStructureService.GetTrackName(track_id);
                         var trip = RdStructureService.GetTrip(tripProcess.Id);
                         var kilometers = RdStructureService.GetKilometersByTrip(trip);
                         if (!kilometers.Any()) continue;
-
-                      
 
                         kilometers = kilometers.Where(o => o.Track_id == track_id).ToList();
                         if (kilometers.Count == 0) continue;
@@ -68,27 +85,14 @@ namespace ALARm_Report.Forms
                         if (lkm.Count() == 0) continue;
 
 
-                 
-
                         
-
-                        XElement tripElem = new XElement("trip",
-                          new XAttribute("direction", tripProcess.DirectionName),
-                          new XAttribute("chief", tripProcess.Chief),
-                          new XAttribute("ps", tripProcess.Car),
-                          new XAttribute("track", trackName));
 
                         string[] subs = tripProcess.DirectionName.Split('(');
 
                         List<Curve> curves = RdStructureService.GetCurvesInTrip(tripProcess.Id) as List<Curve>;
 
-                        ////Выбор километров по проезду-----------------
                         var filterForm = new FilterForm();
                         var filters = new List<Filter>();
-
-                   
-                        //filters.Add(new FloatFilter() { Name = "Начало (км)", Value = lkm.Min() });
-                        //filters.Add(new FloatFilter() { Name = "Конец (км)", Value = lkm.Max() });
 
                         filters.Add(new FloatFilter() { Name = "Начало (км)", Value = lkm.Min() });
                         filters.Add(new FloatFilter() { Name = "Конец (км)", Value = lkm.Max() });
@@ -106,23 +110,219 @@ namespace ALARm_Report.Forms
                             List<Speed> speeds = MainTrackStructureService.GetMtoObjectsByCoord(tripProcess.Date_Vrem, curve.Start_Km, MainTrackStructureConst.MtoSpeed, subs.Any() ? subs.First() : "", trackName.ToString()) as List<Speed>;
                             List<RDCurve> rdcs = RdStructureService.GetRDCurves(curve.Id, trip.Id);
 
-                            var LevelPoins = rdcs.Where(o => o.Point_level > 0).ToList();
-                            var StrPoins = rdcs.Where(o => o.Point_str > 0).ToList();
+                            if (rdcs.First().Track_Id != track_id)
+                            {
+                                continue;
+                            }
 
-                            //if (LevelPoins.Count > 4)
-                            //{
-                            //    if (LevelPoins[0].Level < 15.0 && LevelPoins[1].Level < 15.0)
-                            //    {
-                            //        LevelPoins.RemoveAt(0);
-                            //        StrPoins.RemoveAt(0);
-                            //    }
-                            //    else if (LevelPoins[3].Level < 15.0 && LevelPoins[4].Level < 15.0)
-                            //    {
-                            //        LevelPoins.RemoveAt(4);
-                            //        if (StrPoins.Count > 4)
-                            //            StrPoins.RemoveAt(4);
-                            //    }
-                            //}
+                            curvesintrip = true;
+                            //var LevelPoins = rdcs.Where(o => o.Point_level > 0).ToList();
+                            //var StrPoins = rdcs.Where(o => o.Point_str > 0).ToList();
+
+                            var curve_center_ind = rdcs.Count / 2;
+                            var rightCurve = new List<RDCurve>();
+                            var leftCurve = new List<RDCurve>();
+                            //басын аяғын тауып алу Рихтовка
+                            for (int cInd = curve_center_ind; cInd < rdcs.Count; cInd++)
+                            {
+                                rightCurve.Add(rdcs[cInd]);
+                                if (Math.Abs(rdcs[cInd].Trapez_str) < 0.1)
+                                    break;
+                            }
+                            for (int cInd = curve_center_ind; cInd > 0; cInd--)
+                            {
+                                leftCurve.Add(rdcs[cInd]);
+                                if (Math.Abs(rdcs[cInd].Trapez_str) < 0.1)
+                                    break;
+                            }
+
+                            var strData = rdcs.Where(o => leftCurve.Last().X <= o.X && o.X <= rightCurve.Last().X).ToList();
+
+                            //кривойдан баска жерлерды тазалау
+                            for (int clearInd = 0; clearInd < rdcs.Count; clearInd++)
+                            {
+                                if (rdcs[clearInd].X < leftCurve.Last().X)
+                                {
+                                    rdcs[clearInd].Trapez_str = 0;
+                                    rdcs[clearInd].Avg_str = 0;
+                                }
+                                if (rdcs[clearInd].X > rightCurve.Last().X)
+                                {
+                                    rdcs[clearInd].Trapez_str = 0;
+                                    rdcs[clearInd].Avg_str = 0;
+                                }
+                            }
+
+                            // трапециядан туынды алу
+                            for (int fi = 0; fi < strData.Count - 4; fi++)
+                            {
+                                var temp = Math.Abs(strData[fi + 4].Trapez_str - strData[fi].Trapez_str);
+                                strData[fi].FiList = temp;
+                            }
+                            //накты вершиналарды табу
+                            var vershList = new List<List<RDCurve>>();
+                            var perehod = new List<RDCurve>();
+                            var krug = new List<RDCurve>();
+
+                            var flagPerehod = true;
+                            var flagKrug = false;
+
+                            for (int versh = 3; versh < strData.Count - 4; versh++)
+                            {
+                                if (strData[versh].FiList > 0.01 && flagPerehod)
+                                {
+                                    perehod.Add(strData[versh]);
+                                }
+                                else if (strData[versh].FiList < 0.01)
+                                {
+                                    if (perehod.Any())
+                                    {
+                                        vershList.Add(perehod);
+                                        perehod = new List<RDCurve>();
+                                        krug = new List<RDCurve>();
+
+                                        flagPerehod = false;
+                                        flagKrug = true;
+                                    }
+                                }
+
+                                if (strData[versh].FiList < 0.01 && flagKrug)
+                                {
+                                    krug.Add(strData[versh]);
+                                }
+                                else if (strData[versh].FiList > 0.1)
+                                {
+                                    if (krug.Any())
+                                    {
+                                        vershList.Add(krug);
+                                        perehod = new List<RDCurve>();
+                                        krug = new List<RDCurve>();
+
+                                        flagPerehod = true;
+                                        flagKrug = false;
+                                    }
+                                }
+                            }
+                            if (perehod.Any())
+                            {
+                                vershList.Add(perehod);
+                            }
+
+                            var StrPoins = new List<RDCurve>();
+
+                            foreach (var item in vershList)
+                            {
+                                StrPoins.Add(item.First());
+                            }
+                            StrPoins.Add(strData.Last());
+
+
+                            curve_center_ind = rdcs.Count / 2;
+                            var rightCurveLvl = new List<RDCurve>();
+                            var leftCurveLvl = new List<RDCurve>();
+                            //басын аяғын тауып алу Уровень
+                            for (int cInd = curve_center_ind; cInd < rdcs.Count; cInd++)
+                            {
+                                rightCurveLvl.Add(rdcs[cInd]);
+                                if (Math.Abs(rdcs[cInd].Trapez_level) < 0.1)
+                                    break;
+                            }
+                            for (int cInd = curve_center_ind; cInd > 0; cInd--)
+                            {
+                                leftCurveLvl.Add(rdcs[cInd]);
+                                if (Math.Abs(rdcs[cInd].Trapez_level) < 0.1)
+                                    break;
+                            }
+                            var LvlData = rdcs.Where(o => leftCurveLvl.Last().X <= o.X && o.X <= rightCurveLvl.Last().X).ToList();
+                            //кривойдан баска жерлерды тазалау
+                            for (int clearInd = 0; clearInd < rdcs.Count; clearInd++)
+                            {
+                                if (rdcs[clearInd].X < leftCurveLvl.Last().X)
+                                {
+                                    rdcs[clearInd].Trapez_level = 0;
+                                    rdcs[clearInd].Avg_level = 0;
+                                    rdcs[clearInd].Level = 0;
+
+                                    rdcs[clearInd].PassBoost_anp = 0;
+                                    rdcs[clearInd].PassBoost = 0;
+                                    rdcs[clearInd].FreightBoost_anp = 0;
+                                    rdcs[clearInd].FreightBoost = 0;
+                                }
+                                if (rdcs[clearInd].X > rightCurveLvl.Last().X)
+                                {
+                                    rdcs[clearInd].Trapez_level = 0;
+                                    rdcs[clearInd].Avg_level = 0;
+                                    rdcs[clearInd].Level = 0;
+
+                                    rdcs[clearInd].PassBoost = 0;
+                                    rdcs[clearInd].PassBoost_anp = 0;
+                                    rdcs[clearInd].FreightBoost = 0;
+                                    rdcs[clearInd].FreightBoost_anp = 0;
+                                }
+                            }
+
+                            // трапециядан туынды алу
+                            for (int fi = 0; fi < LvlData.Count - 4; fi++)
+                            {
+                                var temp = Math.Abs(LvlData[fi + 4].Trapez_level - LvlData[fi].Trapez_level);
+                                LvlData[fi].FiList2 = temp;
+                            }
+                            //накты вершиналарды табу
+                            var vershListLVL = new List<List<RDCurve>>();
+                            var perehodLVL = new List<RDCurve>();
+                            var krugLVL = new List<RDCurve>();
+
+                            var flagPerehodLVL = true;
+                            var flagKrugLVL = false;
+
+                            for (int versh = 3; versh < LvlData.Count - 4; versh++)
+                            {
+                                if (LvlData[versh].FiList2 > 0.1 && flagPerehodLVL)
+                                {
+                                    perehodLVL.Add(LvlData[versh]);
+                                }
+                                else
+                                {
+                                    if (perehodLVL.Any())
+                                    {
+                                        vershListLVL.Add(perehodLVL);
+                                        perehodLVL = new List<RDCurve>();
+                                        krugLVL = new List<RDCurve>();
+
+                                        flagPerehodLVL = false;
+                                        flagKrugLVL = true;
+                                    }
+                                }
+
+                                if (LvlData[versh].FiList2 < 0.1 && flagKrugLVL)
+                                {
+                                    krugLVL.Add(LvlData[versh]);
+                                }
+                                else
+                                {
+                                    if (krugLVL.Any())
+                                    {
+                                        vershListLVL.Add(krugLVL);
+                                        perehodLVL = new List<RDCurve>();
+                                        krugLVL = new List<RDCurve>();
+
+                                        flagPerehodLVL = true;
+                                        flagKrugLVL = false;
+                                    }
+                                }
+                            }
+                            if (perehodLVL.Any())
+                            {
+                                vershListLVL.Add(perehodLVL);
+                            }
+
+                            var LevelPoins = new List<RDCurve>();
+
+                            foreach (var item in vershListLVL)
+                            {
+                                LevelPoins.Add(item.First());
+                            }
+                            LevelPoins.Add(LvlData.Last());
 
                             if (LevelPoins.Count() < 4)
                                 continue;
@@ -200,6 +400,51 @@ namespace ALARm_Report.Forms
                                 }
                             }
 
+
+                            //Поиск круговой кивой рихтовки
+                            var str_circular = new List<RDCurve> { };
+
+                            for (int strIndex = 1; strIndex < StrPoins.Count - 1; strIndex++)
+                            {
+                                if (Math.Abs(StrPoins[strIndex].X - StrPoins[strIndex - 1].X) < 5)
+                                    continue;
+
+                                var firstDiffX = Math.Abs(Math.Abs(StrPoins[strIndex].Trapez_str) - Math.Abs(StrPoins[strIndex - 1].Trapez_str)) / Math.Abs(StrPoins[strIndex].X - StrPoins[strIndex - 1].X);
+                                var secondDiffX = Math.Abs(Math.Abs(StrPoins[strIndex].Trapez_str) - Math.Abs(StrPoins[strIndex + 1].Trapez_str)) / Math.Abs(StrPoins[strIndex].X - StrPoins[strIndex + 1].X);
+
+                                if (5.0 * firstDiffX < secondDiffX || 5.0 * secondDiffX < firstDiffX)
+                                {
+                                    str_circular.Add(StrPoins[strIndex]);
+                                }
+                            }
+
+                            if (Math.Abs(Math.Abs(StrPoins[StrPoins.Count - 1].Trapez_str) - Math.Abs(StrPoins[StrPoins.Count - 2].Trapez_str)) / Math.Abs(StrPoins[StrPoins.Count - 1].X - StrPoins[StrPoins.Count - 2].X) < 0.05)
+                            {
+                                str_circular.Add(StrPoins[StrPoins.Count - 1]);
+                            }
+
+                            //Поиск круговой кивой уровень
+                            var lvl_circular = new List<RDCurve> { };
+
+                            for (int lvlIndex = 1; lvlIndex < LevelPoins.Count - 1; lvlIndex++)
+                            {
+                                if (Math.Abs(LevelPoins[lvlIndex].X - LevelPoins[lvlIndex - 1].X) < 6)
+                                    continue;
+
+                                var firstDiffX = Math.Abs(Math.Abs(LevelPoins[lvlIndex].Trapez_level) - Math.Abs(LevelPoins[lvlIndex - 1].Trapez_level)) / Math.Abs(LevelPoins[lvlIndex].X - LevelPoins[lvlIndex - 1].X);
+                                var secondDiffX = Math.Abs(Math.Abs(LevelPoins[lvlIndex].Trapez_level) - Math.Abs(LevelPoins[lvlIndex + 1].Trapez_level)) / Math.Abs(LevelPoins[lvlIndex].X - LevelPoins[lvlIndex + 1].X);
+
+                                if (5.0 * firstDiffX < secondDiffX || 5.0 * secondDiffX < firstDiffX)
+                                {
+                                    lvl_circular.Add(LevelPoins[lvlIndex]);
+
+                                }
+                            }
+                            if (Math.Abs(Math.Abs(LevelPoins[LevelPoins.Count - 1].Trapez_level) - Math.Abs(LevelPoins[LevelPoins.Count - 2].Trapez_level)) / Math.Abs(LevelPoins[LevelPoins.Count - 1].X - LevelPoins[LevelPoins.Count - 2].X) < 0.05)
+                            {
+                                lvl_circular.Add(LevelPoins[LevelPoins.Count - 1]);
+                            }
+
                             XElement xeCurve = new XElement("curve",
                                 new XAttribute("check", trip.GetProcessTypeName),
                                 new XAttribute("Period", current.Period),
@@ -215,54 +460,40 @@ namespace ALARm_Report.Forms
                                 new XAttribute("ID_DB", curve.Side_id),
                                 new XAttribute("PC", trip.Car));
 
-                            int lvl = -1, str = -1, lenPerKrivlv = -1;
+                            int lvl = -1;
+                            int lenPru = -1;
+
+                            var vershinyLVL = vershList.Where(o => Math.Abs(o.First().FiList2) < 0.1).ToList();
+
+                            var minH = new List<RDCurve>();
+                            var minOb = 3000.0;
+                            foreach (var item in vershinyLVL)
+                            {
+                                var h = item.Select(o => o.Trapez_level).Average();
+
+                                if (Math.Abs(h) < minOb)
+                                {
+                                    minOb = Math.Abs(h);
+                                    minH = item;
+                                }
+                            }
+
+                            lenPru = minH.Count;
+                            lvl = (int)minOb;
+
+                            var maxAnp = new List<RDCurve>();
+                            var max = -1.0;
+                            var circularList = vershList.Where(o => Math.Abs(o.First().FiList) < 0.1).ToList();
+
+
+
+                            int len = rdcsData.X3IndexPlan - rdcsData.X0IndexPlan;
+                            int len2 = rdcsData.X2IndexPlan - rdcsData.X1IndexPlan;
+                            int gaugeStandard = curve.Straightenings.Max(s => s.Width);
+                            curve.Radius = Convert.ToInt32(curve.Straightenings.Max(s => s.Radius));
 
                             try
                             {
-                                //Поиск круговой кивой рихтовки
-                                var str_circular = new List<RDCurve> { };
-
-                                for (int strIndex = 1; strIndex < StrPoins.Count - 1; strIndex++)
-                                {
-                                    if (Math.Abs(StrPoins[strIndex].X - StrPoins[strIndex - 1].X) < 13)
-                                        continue;
-
-                                    var firstDiffX = Math.Abs(Math.Abs(StrPoins[strIndex].Trapez_str) - Math.Abs(StrPoins[strIndex - 1].Trapez_str)) / Math.Abs(StrPoins[strIndex].X - StrPoins[strIndex - 1].X);
-                                    var secondDiffX = Math.Abs(Math.Abs(StrPoins[strIndex].Trapez_str) - Math.Abs(StrPoins[strIndex + 1].Trapez_str)) / Math.Abs(StrPoins[strIndex].X - StrPoins[strIndex + 1].X);
-
-                                    if (5.0 * firstDiffX < secondDiffX || 5.0 * secondDiffX < firstDiffX)
-                                    {
-                                        str_circular.Add(StrPoins[strIndex]);
-                                    }
-                                }
-
-                                if (Math.Abs(Math.Abs(StrPoins[StrPoins.Count - 1].Trapez_str) - Math.Abs(StrPoins[StrPoins.Count - 2].Trapez_str)) / Math.Abs(StrPoins[StrPoins.Count - 1].X - StrPoins[StrPoins.Count - 2].X) < 0.05)
-                                {
-                                    str_circular.Add(StrPoins[StrPoins.Count - 1]);
-                                }
-                                //Поиск круговой кивой уровень
-                                var lvl_circular = new List<RDCurve> { };
-
-                                for (int lvlIndex = 1; lvlIndex < LevelPoins.Count - 1; lvlIndex++)
-                                {
-                                    if (Math.Abs(LevelPoins[lvlIndex].X - LevelPoins[lvlIndex - 1].X) < 6)
-                                        continue;
-
-                                    var firstDiffX = Math.Abs(Math.Abs(LevelPoins[lvlIndex].Trapez_level) - Math.Abs(LevelPoins[lvlIndex - 1].Trapez_level)) / Math.Abs(LevelPoins[lvlIndex].X - LevelPoins[lvlIndex - 1].X);
-                                    var secondDiffX = Math.Abs(Math.Abs(LevelPoins[lvlIndex].Trapez_level) - Math.Abs(LevelPoins[lvlIndex + 1].Trapez_level)) / Math.Abs(LevelPoins[lvlIndex].X - LevelPoins[lvlIndex + 1].X);
-
-                                    if (5.0 * firstDiffX < secondDiffX || 5.0 * secondDiffX < firstDiffX)
-                                    {
-                                        lvl_circular.Add(LevelPoins[lvlIndex]);
-                                    }
-                                }
-                                if (Math.Abs(Math.Abs(LevelPoins[LevelPoins.Count - 1].Trapez_level) - Math.Abs(LevelPoins[LevelPoins.Count - 2].Trapez_level)) / Math.Abs(LevelPoins[LevelPoins.Count - 1].X - LevelPoins[LevelPoins.Count - 2].X) < 0.05)
-                                {
-                                    lvl_circular.Add(LevelPoins[LevelPoins.Count - 1]);
-                                }
-
-
-
                                 //нижние 2 точки трапеции
                                 var start_km = StrPoins.First().Km;
                                 var start_m = StrPoins.First().M;
@@ -390,7 +621,7 @@ namespace ALARm_Report.Forms
                                 var lenKriv = Math.Abs((int)lenKriv10000 % 1000);
 
                                 var lenPerKriv10000lv = ((start_lvl_kmc + start_lvl_mc / 10000.0) - (final_lvl_kmc + final_lvl_mc / 10000.0)) * 10000;
-                                lenPerKrivlv = Math.Abs((int)lenPerKriv10000lv % 1000);
+                                var lenPerKrivlv = Math.Abs((int)lenPerKriv10000lv % 1000);
 
                                 var lenKriv10000lv = ((start_lvl_km + start_lvl_m / 10000.0) - (final_lvl_km + final_lvl_m / 10000.0)) * 10000;
                                 var lenKrivlv = Math.Abs((int)lenKriv10000lv % 1000);
@@ -403,6 +634,8 @@ namespace ALARm_Report.Forms
                                 var razn1 = (int)(((start_km + start_m / 10000.0) - (start_lvl_km + start_lvl_m / 10000.0)) * 10000) % 1000; // start
                                 var razn2 = (int)(((final_km + final_m / 10000.0) - (final_lvl_km + final_lvl_m / 10000.0)) * 10000) % 1000; // final
                                 var razn3 = lenKriv - lenKrivlv; // общая длина нижних
+
+
 
 
                                 var razn1c = (int)(((start_kmc + start_mc / 10000.0) - (start_lvl_kmc + start_lvl_mc / 10000.0)) * 10000) % 1000; // start
@@ -422,21 +655,22 @@ namespace ALARm_Report.Forms
                                 var temp_data_lvl = rdcs.Where(o => (start_lvl_kmc + start_lvl_mc / 10000.0) <= (o.Km + o.M / 10000.0) && (o.Km + o.M / 10000.0) <= (final_lvl_kmc + final_lvl_mc / 10000.0)).ToList();
 
                                 //Переходные (для макс сред)
-                                var transitional_lvl_data = rdcs.GetRange(40, Math.Abs((int)tap_len1_lvl));
-                                var transitional_str_data = rdcs.GetRange(40, Math.Abs((int)tap_len1));
+                                var transitional_lvl_data = rdcs.Where(o => ((o.Km + o.M / 10000.0) <= (start_lvl_kmc + start_lvl_mc / 10000.0) && (o.Km + o.M / 10000.0) >= (start_lvl_kmc + start_lvl_mc / 10000.0) - Math.Abs(tap_len1_lvl) / 10000.0)).ToList();
+                                var transitional_str_data = rdcs.Where(o => ((o.Km + o.M / 10000.0) <= (start_kmc + start_mc / 10000.0) && (o.Km + o.M / 10000.0) >= (start_kmc + start_mc / 10000.0) - Math.Abs(tap_len1) / 10000.0)).ToList();
 
-                                var transitional_lvl_data2 = rdcs.GetRange((int)Math.Abs(tap_len1_lvl) + 40 + Math.Abs(lenPerKrivlv), Math.Abs((int)tap_len2_lvl));
-                                var transitional_str_data2 = rdcs.GetRange((int)Math.Abs(tap_len1) + 40 + Math.Abs(lenPerKriv), Math.Abs((int)tap_len2));
-
+                                var transitional_lvl_data2 = rdcs.Where(o => ((o.Km + o.M / 10000.0) >= (final_kmc + final_mc / 10000.0)) && (o.Km + o.M / 10000.0) <= (final_kmc + final_mc / 10000.0 + Math.Abs(tap_len2_lvl) / 10000.0)).ToList();
+                                var transitional_str_data2 = rdcs.Where(o => ((o.Km + o.M / 10000.0) >= (final_lvl_kmc + final_lvl_mc / 10000.0)) && (o.Km + o.M / 10000.0) <= (final_lvl_kmc + final_lvl_mc / 10000.0 + Math.Abs(tap_len2) / 10000.0)).ToList();
 
                                 //план/ср 1 пер
                                 var rad_mid = rdcsData.GetAvgPlan(temp_data_str);
-                                var temp1 = (8865.0 / rad_mid) * 4;
-                                var perAvg1 = temp1 / Math.Abs(tap_len1);
+                                //var temp1 = (8865.0 / rad_mid) * 4;
+                                //var perAvg1 = temp1 / Math.Abs(tap_len1);
+                                var perAvg1 = rad_mid / Math.Abs(tap_len1);
                                 //план/макс 1пер
                                 var rad_max = rdcsData.GetMaxPlan(temp_data_str);
-                                var temp = (8865.0 / rad_max) * 4;
-                                var perMax = temp / Math.Abs(tap_len1);
+                                //var temp = (8865.0 / rad_max) * 4;
+                                //var perMax = temp / Math.Abs(tap_len1);
+                                var perMax = rad_max / Math.Abs(tap_len1);
 
                                 var rad_min = rdcsData.GetMinPlan(temp_data_str);
 
@@ -448,9 +682,6 @@ namespace ALARm_Report.Forms
                                 var perMaxlvl = lvl_max / Math.Abs(tap_len1_lvl);
 
                                 var lvl_min = rdcsData.GetMinLevel(temp_data_lvl);
-
-                                lvl = lvl_mid;
-                                str = rad_mid;
 
 
                                 var AnpPassMax = (Math.Pow(passSpeed.First(), 2) / (13.0 * rad_mid)) - (0.0061 * lvl_mid);
@@ -481,47 +712,61 @@ namespace ALARm_Report.Forms
                                     new XAttribute("max_lvl", rdcsData.GetMaxLevel(temp_data_lvl)),
                                     new XAttribute("mid_lvl", rdcsData.GetAvgLevel(temp_data_lvl)));
 
+                                var passmax = rdcsData.GetPassSpeed();
+                                int len_rs; //len retraction slope
+                                if (passmax > 140)
+                                    len_rs = 40;
+                                else if (passmax <= 140 && passmax >= 60)
+                                    len_rs = 30;
+                                else
+                                    len_rs = 20;
+
                                 XElement transition = new XElement("transition",
-                                    new XAttribute("max1", rdcsData.GetPlanLeftMaxRetractionSlope(transitional_str_data).ToString("f2", System.Globalization.CultureInfo.InvariantCulture)),
-                                    new XAttribute("mid1", rdcsData.GetPlanLeftAvgRetractionSlope(transitional_str_data).ToString("f2", System.Globalization.CultureInfo.InvariantCulture)),
-                                    new XAttribute("len1", Math.Abs(tap_len1)),
+                                    new XAttribute("max1", rdcsData.GetPlanMaxRetractionSlope(transitional_str_data, len_rs).ToString("0.00")),
+                                new XAttribute("mid1", rdcsData.GetPlanAvgRetractionSlope(transitional_str_data, tap_len1).ToString("0.00")),
+                                new XAttribute("len1", Math.Abs(tap_len1)),
 
-                                    new XAttribute("max1_lvl", rdcsData.GetLevelLeftMaxRetractionSlope(transitional_lvl_data).ToString("f2", System.Globalization.CultureInfo.InvariantCulture)),
-                                    new XAttribute("mid1_lvl", rdcsData.GetLevelLeftAvgRetractionSlope(transitional_lvl_data).ToString("f2", System.Globalization.CultureInfo.InvariantCulture)),
-                                    new XAttribute("len1_lvl", Math.Abs(tap_len1_lvl)),
+                                new XAttribute("max1_lvl", rdcsData.GetLvlMaxRetractionSlope(transitional_lvl_data, len_rs).ToString("0.00")),
+                                new XAttribute("mid1_lvl", perAvglvl.ToString("0.00")),
+                                new XAttribute("len1_lvl", Math.Abs(tap_len1_lvl)),
 
-                                    new XAttribute("max2", (rdcsData.GetPlanRightMaxRetractionSlope(transitional_str_data2)).ToString("f2", System.Globalization.CultureInfo.InvariantCulture)),
-                                    new XAttribute("mid2", (rdcsData.GetPlanRightAvgRetractionSlope(transitional_str_data2)).ToString("f2", System.Globalization.CultureInfo.InvariantCulture)),
-                                    new XAttribute("len2", Math.Abs(tap_len2)),
+                                new XAttribute("max2", transitional_str_data2.Any() ? rdcsData.GetPlanMaxRetractionSlope(transitional_str_data2, len_rs).ToString("0.00") : "0"),
+                                new XAttribute("mid2", transitional_str_data2.Any() ? rdcsData.GetPlanAvgRetractionSlope(transitional_str_data2, tap_len2).ToString("0.00") : "0"),
+                                new XAttribute("len2", Math.Abs(tap_len2)),
 
-                                    new XAttribute("max2_lvl", rdcsData.GetLevelRightMaxRetractionSlope(transitional_lvl_data2).ToString("f2", System.Globalization.CultureInfo.InvariantCulture)),
-                                    new XAttribute("mid2_lvl", rdcsData.GetLevelRightAvgRetractionSlope(transitional_lvl_data2).ToString("f2", System.Globalization.CultureInfo.InvariantCulture)),
-                                    new XAttribute("len2_lvl", Math.Abs(tap_len2_lvl)));
+                                new XAttribute("max2_lvl", rdcsData.GetLvlMaxRetractionSlope(transitional_lvl_data2, len_rs).ToString("0.00")),
+                                new XAttribute("mid2_lvl", (lvl_mid / Math.Abs(tap_len2_lvl)).ToString("0.00")),
+                                new XAttribute("len2_lvl", Math.Abs(tap_len2_lvl)));
 
-
+                             
 
                                 //Аг пасс
                                 var AgPass = new List<double> { };
-                                var Vsap = speeds.Any() ? speeds.First().Sapsan : 80;
-                                var Vlas = speeds.Any() ? speeds.First().Lastochka : 80;
-                                for (int s = 0; s < rdcs.Count; s++)
+                                var Vsap = speeds.Any() ?Math.Max( speeds.First().Sapsan , speeds.Last().Sapsan): 80;
+                                var Vlas = speeds.Any() ? Math.Max(speeds.First().Lastochka, speeds.Last().Lastochka) : 80;
+                                var Vstr = speeds.Any() ? Math.Max(speeds.First().Empty_Freight, speeds.Last().Empty_Freight) : 80; //стриж
+
+                                for (int s = 5; s < rdcs.Count-5; s++)
                                 {
                                     var Hi_anp = Math.Abs(rdcs[s].Trapez_level);
                                     var R_i_anp = 17860 / (Math.Abs(rdcs[s].Trapez_str) + 0.00000001);
                                     rdcs[s].SapsanBoost_anp = (float)((Vsap * Vsap) / (13.0 * R_i_anp) - 0.0061 * Hi_anp);
                                     rdcs[s].LastochkaBoost_anp = (float)((Vlas * Vlas) / (13.0 * R_i_anp) - 0.0061 * Hi_anp);
+                                    rdcs[s].FreightBoost_anp = (float)((Vstr * Vstr) / (13.0 * R_i_anp) - 0.0061 * Hi_anp);
 
                                     var Hi = Math.Abs(rdcs[s].Avg_level);
                                     var R_i = 17860 / (Math.Abs(rdcs[s].Avg_str) + 0.00000001);
                                     rdcs[s].SapsanBoost = (float)((Vsap * Vsap) / (13.0 * R_i) - 0.0061 * Hi);
                                     rdcs[s].LastochkaBoost = (float)((Vlas * Vlas) / (13.0 * R_i) - 0.0061 * Hi);
+                                    rdcs[s].FreightBoost = (float)((Vstr * Vstr) / (13.0 * R_i) - 0.0061 * Hi);
                                 }
-
                                 var AnpSapsanMax = rdcs.Select(o => o.SapsanBoost_anp).Max();
                                 var AnpLastochkaMax = rdcs.Select(o => o.LastochkaBoost_anp).Max();
+                                var AnpStrizhMax = rdcs.Select(o => o.FreightBoost_anp).Max();
 
                                 var AgSapsanMax = rdcs.Select(o => o.SapsanBoost).Max();
                                 var AgLastochkaMax = rdcs.Select(o => o.LastochkaBoost).Max();
+                                var AgStrizhMax = rdcs.Select(o => o.FreightBoost).Max();
 
                                 //Пси мах
                                 var FiListSapsan = new List<double> { };
@@ -529,6 +774,9 @@ namespace ALARm_Report.Forms
 
                                 var FiListLastochka = new List<double> { };
                                 var FiListMeterLastochka = new List<int> { };
+
+                                var FiListStrizh = new List<double> { };
+                                var FiListMeterStrizh = new List<int> { };
 
                                 var l = 20;
                                 if (speeds.Any())
@@ -555,21 +803,31 @@ namespace ALARm_Report.Forms
                                     var fi2 = (Math.Abs(rdcs[ii + l].LastochkaBoost - rdcs[ii].LastochkaBoost) * speeds.First().Lastochka) / (3.6 * l);
                                     FiListLastochka.Add(fi2);
                                     FiListMeterLastochka.Add(rdcs[ii].M);
+
+                                    var fi3 = (Math.Abs(rdcs[ii + l].FreightBoost - rdcs[ii].FreightBoost) * speeds.First().Empty_Freight) / (3.6 * l);
+                                    FiListStrizh.Add(fi2);
+                                    FiListMeterStrizh.Add(rdcs[ii].M);
                                 }
 
                                 var FiMaxSapsan = FiListSapsan.Max();
                                 var FiMaxLastochka = FiListLastochka.Max();
+                                var FiMaxStrizh= FiListStrizh.Max();
 
                                 int[] sapsan = new int[] { 0, 0, 0 };
                                 int[] lastochka = new int[] { 0, 0, 0 };
+                                int[] strizh = new int[] { 0, 0, 0 };
 
                                 sapsan[0] = rdcsData.GetKRSpeedPass(rdcs);
                                 sapsan[1] = rdcsData.GetPRSpeed(rdcs)[0];
-                                sapsan[2] = rdcsData.GetIZSpeed(rdcs.Select(o => o.SapsanBoost).ToArray(), Vsap);
+                                sapsan[2] = rdcsData.GetIZSpeed(FiListSapsan.ToArray(), Vsap);
 
                                 lastochka[0] = rdcsData.GetKRSpeedFreig(rdcs);
                                 lastochka[1] = rdcsData.GetPRSpeed(rdcs)[0];
-                                lastochka[2] = rdcsData.GetIZSpeed(rdcs.Select(o => o.LastochkaBoost).ToArray(), Vlas);
+                                lastochka[2] = rdcsData.GetIZSpeed(FiListLastochka.ToArray(), Vlas);
+
+                                strizh[0] = rdcsData.GetKRSpeedFreig(rdcs);
+                                strizh[1] = rdcsData.GetPRSpeed(rdcs)[0];
+                                strizh[2] = rdcsData.GetIZSpeed(FiListStrizh.ToArray(), Vstr);
 
                                 XElement speed = new XElement("speed",
                                     new XAttribute("AnpAvg", AnpSapsanMax.ToString("0.00").Replace(",", ".")),
@@ -590,22 +848,21 @@ namespace ALARm_Report.Forms
                                     new XAttribute("Viz2", lastochka[2].ToString()),
                                     new XAttribute("Vdp2", RoundNumToFive(lastochka.Min()) >= speeds.First().Lastochka ? "-" : RoundNumToFive(lastochka.Min()).ToString()),
 
-                                    new XAttribute("AnpAvg3", "-"),
-                                    new XAttribute("AgMax3", "-"),
-                                    new XAttribute("Psi3", "-"),
-                                    new XAttribute("Vpz3", "-"),
-                                    new XAttribute("Vkr3", "-"),
-                                    new XAttribute("Vpr3", "-"),
-                                    new XAttribute("Viz3", "-"),
-                                    new XAttribute("Vdp3", "-"));
+                                    new XAttribute("AnpAvg3", AnpStrizhMax.ToString("0.00").Replace(",", ".")),
+                                    new XAttribute("AgMax3", AgStrizhMax.ToString("0.00").Replace(",", ".")),
+                                    new XAttribute("Psi3", FiMaxStrizh.ToString("0.00").Replace(",", ".")),
+                                    new XAttribute("Vpz3", speeds.Any() ? speeds.First().Empty_Freight : -1),
+                                    new XAttribute("Vkr3", strizh[0].ToString()),
+                                    new XAttribute("Vpr3", strizh[1].ToString()),
+                                    new XAttribute("Viz3", strizh[2].ToString()),
+                                    new XAttribute("Vdp3", RoundNumToFive(strizh.Min()) >= speeds.First().Empty_Freight ? "-" : RoundNumToFive(strizh.Min()).ToString()));
 
                                 xeCurve.Add(paramCurve);
                                 xeCurve.Add(paramCircleCurve);
                                 xeCurve.Add(transition);
                                 xeCurve.Add(speed);
-
-                                report.Add(xeCurve);
-                                report.Add(tripElem);
+                                trackElem.Add(xeCurve);
+                                
                                 i++;
 
                             }
@@ -614,8 +871,16 @@ namespace ALARm_Report.Forms
                                 Console.WriteLine("Ошибка при расчете натурной кривой");
                             }
 
-
                         }
+                        if (curvesintrip)
+                        {
+                          tripElem.Add(trackElem);
+                        }
+                        
+                    }
+                    if (curvesintrip)
+                    {
+                        report.Add(tripElem);
                     }
                 }
                 xdReport.Add(report);

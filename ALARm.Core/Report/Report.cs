@@ -30,7 +30,7 @@ namespace ALARm.Core.Report
         public double CurveAngle(float r, int length)
         {
             //return (Math.Atan(y / length) * 180) / Math.PI;
-            var angle = Math.Asin(length / (2.0 * r)) * (180.0 / Math.PI) * 2.0;
+            var angle = (length /  r) * (180.0 / Math.PI);
             return angle;
         }
 
