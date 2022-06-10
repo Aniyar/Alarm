@@ -44,7 +44,7 @@ namespace ALARm_Report.Forms
                 var road = AdmStructureService.GetRoadName(distance.Id, AdmStructureConst.AdmDistance, true);
                 distance.Name = distance.Name.Replace("ПЧ-", "");
 
-                var tripProcesses = RdStructureService.GetTripsOnDistance(parentId, period);
+                var tripProcesses = RdStructureService.GetMainParametersProcess(period, distance.Name);
                 if (tripProcesses.Count == 0)
                 {
                     MessageBox.Show(Properties.Resources.paramDataMissing);
@@ -54,10 +54,43 @@ namespace ALARm_Report.Forms
                 XElement report = new XElement("report");
                 foreach (var tripProcess in tripProcesses)
                 {
+
+                    List<Digression> notes = RdStructureService.GetDigressions(tripProcess.Trip_id, distance.Code, new int[] { 2 });
+                    var curvesAdmUnits = AdmStructureService.GetCurvesAdmUnits(curves[0].Id) as List<CurvesAdmUnits>;
+
+                    CurvesAdmUnits curvesAdmUnit = curvesAdmUnits.Any() ? curvesAdmUnits[0] : null;
+
+                    XElement tripElem = new XElement("trip",
+                       new XAttribute("version", $"{DateTime.Now} v{Assembly.GetExecutingAssembly().GetName().Version.ToString()}"),
+                       new XAttribute("direction", curvesAdmUnit.Direction),
+                       new XAttribute("check", tripProcess.GetProcessTypeName),
+                       new XAttribute("track", curvesAdmUnit.Track),
+                       new XAttribute("road", road),
+                       new XAttribute("distance", distance.Code),
+                       new XAttribute("periodDate", period.Period),
+                       new XAttribute("chief", tripProcess.Chief),
+                       new XAttribute("ps", tripProcess.Car));
+
+                    var ItogADD = 0;
+                    var ItogMain = 0;
+
+                    int constrictionCount = 0; //Суж
+                    int broadeningCount = 0; //Уш
+                    int levelCount = 0; //У
+                    int skewnessCount = 0; //П - просадка
+                    int drawdownCount = 0; //Пр - перекос
+                    int straighteningCount = 0; //Р
+                    int straighteningRNRCount = 0; //Рнр
+                    int slopeCount = 0;//Укл
+                    int PMCount = 0;//П м
+                    int IBLCount = 0;//Иб.л
+                    int outstandingaccelerationcount = 0;//анп
+                    int outstandingaccelerationcountoutstandingaccelerationcount = 0;//?Анп
+                    int gapCount = 0;//зазор
+
+
                     foreach (var track_id in admTracksId)
                     {
-
-
                         var trackName = AdmStructureService.GetTrackName(track_id);
                         var trip = RdStructureService.GetTrip(tripProcess.Id);
                         var kilometers = RdStructureService.GetKilometersByTrip(trip);
@@ -71,9 +104,9 @@ namespace ALARm_Report.Forms
                         var lkm = kilometers.Select(o => o.Number).Distinct().ToList();
 
                         if (lkm.Count() == 0) continue;
-                      
 
-                      
+
+
                         ////Выбор километров по проезду-----------------
                         var filterForm = new FilterForm();
                         var filters = new List<Filter>();
@@ -92,28 +125,8 @@ namespace ALARm_Report.Forms
                         kilometers = kilometers.Where(Km => ((float)(float)filters[0].Value <= Km.Number && Km.Number <= (float)(float)filters[1].Value)).ToList();
                         //kilometers = (trip.Travel_Direction == Direction.Reverse ? kilometers.OrderBy(o => o.Number) : kilometers.OrderByDescending(o => o.Number)).ToList();
                         //--------------------------------------------
-                        int constrictionCount = 0; //Суж
-                        int broadeningCount = 0; //Уш
-                        int levelCount = 0; //У
-                        int skewnessCount = 0; //П - просадка
-                        int drawdownCount = 0; //Пр - перекос
-                        int straighteningCount = 0; //Р
-                        int slopeCount = 0;//Укл
-                        int PMCount = 0;//П м
-                        int IBLCount = 0;//Иб.л
-                        int outstandingaccelerationcount = 0;//анп
-                        int outstandingaccelerationcountoutstandingaccelerationcount = 0;//?Анп
-                        int gapCount = 0;//зазор
-                        XElement tripElem = new XElement("trip",
-                            new XAttribute("version", $"{DateTime.Now} v{Assembly.GetExecutingAssembly().GetName().Version.ToString()}"),
-                            new XAttribute("direction", kilometers[0].Direction_name),
-                            new XAttribute("check", trip.GetProcessTypeName),
-                            new XAttribute("track", kilometers[0].Track_name),
-                            new XAttribute("road", road),
-                            new XAttribute("distance", distance.Code),
-                            new XAttribute("periodDate", period.Period),
-                            new XAttribute("chief", trip.Chief),
-                            new XAttribute("ps", trip.Car));
+
+                   
 
                         List<Gap> check_gap_state = AdditionalParametersService.Check_gap_state(kilometers.First().Trip.Id, template.ID); //стыки
                                                                                                                                           // запрос ОСнов параметров с бд
@@ -131,20 +144,16 @@ namespace ALARm_Report.Forms
                             MessageBox.Show("Не удалось сформировать отчет, так как возникала ошибка во время загрузки данных по доп параметрам");
                             return;
                         }
-
+                        List<DigressionTotal> totals = new List<DigressionTotal>();
+                        DigressionTotal digressionTotal = new DigressionTotal();
                         XElement xeDirection = new XElement("directions");
                         XElement xeTracks = new XElement("tracks");
+                        XElement xeTrackscount = new XElement("trackscount");
 
-                        var ItogADD = 0;
-                        var ItogMain = 0;
-
-
+                        
                         foreach (var km in kilometers)
                         {
-                            if (km.Number == 708)
-                            {
-                                km.Number = km.Number;
-                            }
+
                             km.Digressions = RdStructureService.GetDigressionMarks(km.Trip.Id, km.Track_id, km.Number);
                             var kmTotal = new Total();
                             var add_dig_str = "";
@@ -243,53 +252,8 @@ namespace ALARm_Report.Forms
                                 });
                             }
 
-                            //foreach (var digression in km.Digressions)
-                            //{
-                            //    if (digression.Digression == DigressionName.SideWearLeft || digression.Digression == DigressionName.SideWearRight)
-                            //    {
-                            //        var noteCoord = km.Number.ToDoubleCoordinate(digression.Meter);
-                            //        var isCurve = km.Curves.Where(o => o.RealStartCoordinate <= noteCoord && o.RealFinalCoordinate >= noteCoord).ToList();
-                            //        if (isCurve.Any())
-                            //        {
-                            //            if (prevCurve_id != (int)isCurve.First().Id)
-                            //            {
-                            //                kmTotal.AddParamPointSum += 50;
-                            //                kmTotal.Additional++;
-                            //            }
-                            //            prevCurve_id = (int)isCurve.First().Id;
-                            //        }
-                            //        add_dig_str += $"V={digression.PassengerSpeedLimit}/{digression.FreightSpeedLimit} пк{digression.Meter / 100 + 1} {digression.DigName} {digression.Value:0.0}/{digression.Length}; ";
-                            //    }
 
-                            //    //Пру кривая баллы
-                            //    if (digression.Digression == DigressionName.Pru)
-                            //    {
-                            //        kmTotal.Curves++;
-
-                            //        Curve_dig_str += $"пк{digression.Meter / 100 + 1} {digression.DigName} {digression.Value}/{digression.Length}; ";
-                            //    }
-                            //    //ПСИ АНП Укл Аг кривая 
-                            //    if (digression.Digression == DigressionName.Psi ||
-                            //        digression.Digression == DigressionName.SpeedUp ||
-                            //        digression.Digression == DigressionName.Ramp)
-                            //    {
-                            //        kmTotal.Curves++;
-                            //    }
-                            //    //зазоры
-                            //    if (digression.Digression.Name == "З")
-                            //    {
-                            //        PassengerSpeedLimit += $"{digression.PassengerSpeedLimit} ";
-
-                            //        add_dig_str += $"{digression.PassengerSpeedLimit}/{digression.FreightSpeedLimit} пк{digression.Meter / 100 + 1} {digression.DigName} {digression.Value}; ";
-                            //        add_dig_str += $"{digression.PassengerSpeedLimit}/{digression.FreightSpeedLimit} пк{digression.Meter / 100 + 1} {digression.DigName} {digression.Value}; ";
-                            //        add_dig_str += $"{digression.PassengerSpeedLimit}/{digression.FreightSpeedLimit} пк{digression.Meter / 100 + 1} {digression.DigName} {digression.Value}; ";
-                            //    }
-                            //}
-                            //|| (o.Ots == "Уш" && o.Typ == 4)
                             var PRUbyKmMAIN = ListS3.Where(o => (o.Ovp != -1 && o.Ogp != -1 || (o.Primech == "гр")) && o.Km == km.Number).ToList();
-
-                           // PRUbyKmMAIN = PRUbyKmMAIN.Where(o => (o.Ovp != 0 && o.Ogp != 0  || (o.Ovp == 0 && o.Ogp == 0 && o.Ots == "Уш" && o.Typ == 4)) && o.Km == km.Number ).ToList();
-
                             PRUbyKmMAIN = PRUbyKmMAIN.Where(o => (o.Ovp != 0 && o.Ogp != 0 || (o.Ovp == 0 && o.Ogp == 0 && o.Typ == 4)) && o.Km == km.Number).ToList();
 
                             var PRUbyKmADD = Pu32_gap.Where(o => o.Otst == "З" && o.Km == km.Number).ToList();
@@ -298,7 +262,7 @@ namespace ALARm_Report.Forms
 
                             foreach (var s3 in PRUbyKmMAIN)
                             {
-                              
+
                                 if (s3.Put == null) continue;
                                 if (s3.Primech.Contains("Натурная кривая")) continue;
                                 switch (s3.Ots)
@@ -337,6 +301,10 @@ namespace ALARm_Report.Forms
                                     case "Иб.л":
                                         IBLCount += 1;
                                         break;
+                                    case "Рнр":
+                                        straighteningRNRCount += 1;
+                                        break;
+
                                 }
                                 if (s3.Ots == "Анп")
                                 {
@@ -364,26 +332,48 @@ namespace ALARm_Report.Forms
                                         new XAttribute("vpz", (s3.Uv.ToString() == "-1" ? "-" : s3.Uv.ToString()) + "/" + (s3.Uvg.ToString() == "-1" ? "-" : s3.Uvg.ToString())),
                                         new XAttribute("vogr", (s3.Ovp.ToString() == "-1" ? "-" : s3.Ovp.ToString()) + "/" + (s3.Ogp.ToString() == "-1" ? "-" : s3.Ogp.ToString())),
                                         new XAttribute("Primech", s3.Primech.ToString() == "м;" ? "мост" : ""));
+                                    if (totals.Any(t => t.Name == s3.Ots))
+                                    {
+                                        totals.Where(t => t.Name == s3.Ots).First().Count += s3.Kol;
+                                    }
+                                    else
+                                    {
+                                        digressionTotal.Name = s3.Ots;
+                                        digressionTotal.Count += s3.Kol;
+                                        totals.Add(digressionTotal);
+                                    }
 
                                     xeTracks.Add(xeMain);
+
                                 }
                                 else
                                 {
-                                    
-                                       XElement xeMain = new XElement("main",
-                                        new XAttribute("track", s3.Put),
-                                        new XAttribute("km", km.Number),
-                                        new XAttribute("m", s3.Meter),
-                                        new XAttribute("Data", s3.TripDateTime.ToString("dd.MM.yyyy")),
-                                        new XAttribute("Ots", s3.Ots),
-                                        new XAttribute("Otkl", s3.Ots == "Аг"|| s3.Ots == "Анп" || s3.Ots == "Пси" || s3.Ots == "ОШК" || s3.Ots == "ОШП" || s3.Ots == "Укл" ? s3.Otkl.ToString("0.00")  : s3.Otkl.ToString()),
-                                        new XAttribute("len", s3.Len),
-                                        new XAttribute("Stepen", s3.Typ.ToString() == "5" ? "-" : s3.Typ.ToString()),
-                                        new XAttribute("vpz", (s3.Uv.ToString() == "-1" ? "-" : s3.Uv.ToString()) + "/" + (s3.Uvg.ToString() == "-1" ? "-" : s3.Uvg.ToString())),
-                                        new XAttribute("vogr", (s3.Ovp.ToString() == "-1" ? "-" : s3.Ovp.ToString()) + "/" + (s3.Ogp.ToString() == "-1" ? "-" : s3.Ogp.ToString())),
-                                        new XAttribute("Primech", s3.Primech == "м;" ? "мост" : s3.Primech=="гр" ? "гр" : ""));
+
+                                    XElement xeMain = new XElement("main",
+                                     new XAttribute("track", s3.Put),
+                                     new XAttribute("km", km.Number),
+                                     new XAttribute("m", s3.Meter),
+                                     new XAttribute("Data", s3.TripDateTime.ToString("dd.MM.yyyy")),
+                                     new XAttribute("Ots", s3.Ots),
+                                     new XAttribute("Otkl", s3.Ots == "Аг" || s3.Ots == "Анп" || s3.Ots == "Пси" || s3.Ots == "ОШК" || s3.Ots == "ОШП" || s3.Ots == "Укл" ? s3.Otkl.ToString("0.00") : s3.Otkl.ToString()),
+                                     new XAttribute("len", s3.Len),
+                                     new XAttribute("Stepen", s3.Typ.ToString() == "5" ? "-" : s3.Typ.ToString()),
+                                     new XAttribute("vpz", (s3.Uv.ToString() == "-1" ? "-" : s3.Uv.ToString()) + "/" + (s3.Uvg.ToString() == "-1" ? "-" : s3.Uvg.ToString())),
+                                     new XAttribute("vogr", (s3.Ovp.ToString() == "-1" ? "-" : s3.Ovp.ToString()) + "/" + (s3.Ogp.ToString() == "-1" ? "-" : s3.Ogp.ToString())),
+                                     new XAttribute("Primech", s3.Primech == "м;" ? "мост" : s3.Primech == "гр" ? "гр" : ""));
+                                    if (totals.Any(t => t.Name == s3.Ots))
+                                    {
+                                        totals.Where(t => t.Name == s3.Ots).First().Count += s3.Kol;
+                                    }
+                                    else
+                                    {
+                                        digressionTotal.Name = s3.Ots;
+                                        digressionTotal.Count += s3.Kol;
+                                        totals.Add(digressionTotal);
+                                    }
 
                                     xeTracks.Add(xeMain);
+
                                 }
                             }
                             ItogMain += PRUbyKmMAIN.Count;
@@ -418,71 +408,94 @@ namespace ALARm_Report.Forms
                                     new XAttribute("vpz", s3.Vpz),
                                     new XAttribute("vogr", s3.Vdop),
                                     new XAttribute("Primech", ""));
-
                                 xeTracks.Add(xeAdd);
+                                if (totals.Any(t => t.Name == s3.Otst))
+                                {
+                                    totals.Where(t => t.Name == s3.Otst).First().Count += s3.Kol;
+                                }
+                                else
+                                {
+                                    digressionTotal.Name = s3.Otst;
+                                    digressionTotal.Count += s3.Kol;
+                                    totals.Add(digressionTotal);
+                                }
+
+                              
+
                             }
 
                             ItogADD += PRUbyKmADD.Count();
                         }
 
-
-                        //В том числе:
-                        if (drawdownCount > 0)
-                        {
-                            tripElem.Add(new XElement("total", new XAttribute("totalinfo", "Пр - " + drawdownCount)));
-                        }
-                        if (outstandingaccelerationcount > 0)
-                        {
-                            tripElem.Add(new XElement("total", new XAttribute("totalinfo", "Анп - " + outstandingaccelerationcount)));
-                        }
-                        if (outstandingaccelerationcountoutstandingaccelerationcount > 0)
-                        {
-                            tripElem.Add(new XElement("total", new XAttribute("totalinfo", "?Анп - " + outstandingaccelerationcountoutstandingaccelerationcount)));
-                        }
-                        if (constrictionCount > 0)
-                        {
-                            tripElem.Add(new XElement("total", new XAttribute("totalinfo", "Суж - " + constrictionCount)));
-                        }
-                        if (broadeningCount > 0)
-                        {
-                            tripElem.Add(new XElement("total", new XAttribute("totalinfo", "Уш - " + broadeningCount)));
-                        }
-                        if (levelCount > 0)
-                        {
-                            tripElem.Add(new XElement("total", new XAttribute("totalinfo", "У - " + levelCount)));
-                        }
-                        if (skewnessCount > 0)
-                        {
-                            tripElem.Add(new XElement("total", new XAttribute("totalinfo", "П - " + skewnessCount)));
-                        }
-                        if (straighteningCount > 0)
-                        {
-                            tripElem.Add(new XElement("total", new XAttribute("totalinfo", "Р - " + straighteningCount)));
-                        }
-                        if (slopeCount > 0)
-                        {
-                            tripElem.Add(new XElement("total", new XAttribute("totalinfo", "Укл - " + slopeCount)));
-                        }
-                        if (PMCount > 0)
-                        {
-                            tripElem.Add(new XElement("total", new XAttribute("totalinfo", "П м - " + PMCount)));
-                        }
-                        if (IBLCount > 0)
-                        {
-                            tripElem.Add(new XElement("total", new XAttribute("totalinfo", "Иб.л - " + IBLCount)));
-                        }
-                        if (gapCount > 0)
-                        {
-                            tripElem.Add(new XElement("total", new XAttribute("totalinfo", "З - " + gapCount)));
-                        }
-                    ;
-                        xeTracks.Add(new XAttribute("countDistance", ItogMain + ItogADD));
+                        //xeTracks.Add(new XAttribute("countbyput", digressionTotal.Count));
+                        
                         xeTracks.Add(new XAttribute("track", trackName));
+                        xeTracks.Add(new XAttribute("direction", curvesAdmUnit.Direction));
+                        xeTracks.Add(new XAttribute("countbyput", digressionTotal.Count));
                         xeTracks.Add(new XAttribute("distance", distance.Code));
                         xeDirection.Add(xeTracks);
                         tripElem.Add(xeDirection);
-                        report.Add(tripElem);
                     }
+
+                    //В том числе:
+                    if (drawdownCount > 0)
+                    {
+                        tripElem.Add(new XElement("total", new XAttribute("totalinfo", "Пр - " + drawdownCount)));
+                    }
+                    if (outstandingaccelerationcount > 0)
+                    {
+                        tripElem.Add(new XElement("total", new XAttribute("totalinfo", "Анп - " + outstandingaccelerationcount)));
+                    }
+                    if (outstandingaccelerationcountoutstandingaccelerationcount > 0)
+                    {
+                        tripElem.Add(new XElement("total", new XAttribute("totalinfo", "?Анп - " + outstandingaccelerationcountoutstandingaccelerationcount)));
+                    }
+                    if (constrictionCount > 0)
+                    {
+                        tripElem.Add(new XElement("total", new XAttribute("totalinfo", "Суж - " + constrictionCount)));
+                    }
+                    if (broadeningCount > 0)
+                    {
+                        tripElem.Add(new XElement("total", new XAttribute("totalinfo", "Уш - " + broadeningCount)));
+                    }
+                    if (levelCount > 0)
+                    {
+                        tripElem.Add(new XElement("total", new XAttribute("totalinfo", "У - " + levelCount)));
+                    }
+                    if (skewnessCount > 0)
+                    {
+                        tripElem.Add(new XElement("total", new XAttribute("totalinfo", "П - " + skewnessCount)));
+                    }
+                    if (straighteningCount > 0)
+                    {
+                        tripElem.Add(new XElement("total", new XAttribute("totalinfo", "Р - " + straighteningCount)));
+                    }
+                    if (slopeCount > 0)
+                    {
+                        tripElem.Add(new XElement("total", new XAttribute("totalinfo", "Укл - " + slopeCount)));
+                    }
+                    if (PMCount > 0)
+                    {
+                        tripElem.Add(new XElement("total", new XAttribute("totalinfo", "П м - " + PMCount)));
+                    }
+                    if (IBLCount > 0)
+                    {
+                        tripElem.Add(new XElement("total", new XAttribute("totalinfo", "Иб.л - " + IBLCount)));
+                    }
+                    if (gapCount > 0)
+                    {
+                        tripElem.Add(new XElement("total", new XAttribute("totalinfo", "З - " + gapCount)));
+                    }
+                    if (straighteningRNRCount > 0)
+                    {
+                        tripElem.Add(new XElement("total", new XAttribute("totalinfo", " Рнр- " + straighteningRNRCount)));
+                    }
+
+
+
+                    tripElem.Add(new XAttribute("countDistance", ItogMain + ItogADD));
+                    report.Add(tripElem);
+
                 }
                 xdReport.Add(report);
                 XslCompiledTransform transform = new XslCompiledTransform();

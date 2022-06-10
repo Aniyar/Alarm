@@ -892,7 +892,7 @@ BEGIN
     puts := USkr[j].put;
 
     if (((SA <= GlbKmtrue) and (GlbKmtrue <= SB)) or
-      ((SA >= GlbKmtrue) and (GlbKmtrue >= SB))) and (NUMPUT = NPut(puts)) then
+      ((SA >= GlbKmtrue) and (GlbKmtrue >= SB)))  then
     begin { if (odd(NPut(puts)) and odd(numput)) or (not odd(NPut(puts)) and not odd(numput)) then }
       GlobPassSkorost := USkr[j].skp;
       GlobGruzSkorost := USkr[j].skg;
@@ -925,8 +925,7 @@ BEGIN
     begin
       xk := CoordinateToReal(GlbKmtrue, F_mtr[i]);
 
-      if (((ak <= xk) and (xk <= bk)) or ((ak >= xk) and (xk >= bk))) and
-        (NUMPUT = NPut(puts)) then
+      if (((ak <= xk) and (xk <= bk)) or ((ak >= xk) and (xk >= bk))) then
       begin
         F_V[i] := vvv;
         F_Vg[i] := vvg;

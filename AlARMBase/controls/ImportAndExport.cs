@@ -2837,7 +2837,8 @@ namespace ALARm
                         string[] fields = csvParser.ReadFields();
                         int id = fields.ToList().IndexOf("id"), periodid = fields.ToList().IndexOf("period_id"),
                             startkm = fields.ToList().IndexOf("start_km"), startm = fields.ToList().IndexOf("start_m"), finalkm = fields.ToList().IndexOf("final_km"), finalm = fields.ToList().IndexOf("final_m"),
-                            reason = fields.ToList().IndexOf("reason_id"), pass = fields.ToList().IndexOf("passenger"), frei = fields.ToList().IndexOf("freight"), emfrei = fields.ToList().IndexOf("empty_freight");
+                            reason = fields.ToList().IndexOf("reason_id"), pass = fields.ToList().IndexOf("passenger"),  frei = fields.ToList().IndexOf("freight"), emfrei = fields.ToList().IndexOf("empty_freight"), 
+                            date = fields.ToList().IndexOf("repair_date");
 
                         while (!csvParser.EndOfData)
                         {
@@ -2849,12 +2850,13 @@ namespace ALARm
                             string FinalKm = fields[finalkm];
                             string FinalM = fields[finalm];
                             string ReasonId = fields[reason];
+                            string RepairDate = fields[date];
                             string Pass = fields[pass];
                             string Frei = fields[frei];
                             string EmFrei = fields[emfrei];
 
                             if (periodIds.Any(r => r.OldId.Equals(long.Parse(PeriodId))))
-                                ExportImportService.Execute($@"insert into apr_tempspeed (period_id, start_km, start_m, final_km, final_m, reason_id, passenger, freight, empty_freight) values ({periodIds.First(r => r.OldId.Equals(long.Parse(PeriodId))).NewId}, {StartKm}, {StartM}, {FinalKm}, {FinalM}, {ReasonId}, {Pass}, {Frei}, {EmFrei}) returning coalesce(id, -1)");
+                                ExportImportService.Execute($@"insert into apr_tempspeed (period_id, start_km, start_m, final_km, final_m, reason_id, passenger, freight, empty_freight,repair_date) values ({periodIds.First(r => r.OldId.Equals(long.Parse(PeriodId))).NewId}, {StartKm}, {StartM}, {FinalKm}, {FinalM}, {ReasonId}, {Pass}, {Frei}, {EmFrei},{date}) returning coalesce(id, -1)");
                         }
                     }
                 progressBar.PerformStep();

@@ -346,6 +346,7 @@ namespace ALARm.Services
             return Container.Resolve<IRdStructureRepository>().GetS3(processId, type, distanceName);
         }
 
+
         public static object GetS3(Int64 processId, int type)
         {
             return Container.Resolve<IRdStructureRepository>().GetS3(processId, type);

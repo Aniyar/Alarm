@@ -243,6 +243,7 @@ namespace ALARm.Core.Report
         public DigName Digression { get; set; } = DigressionName.Undefined;
         public int ID { get; set; }
         public int Id { get; set; }
+        public int lvl { get; set; }
         public int Meter { get; set; }
         public int Km { get; set; }
         public int Degree { get; set; }

@@ -133,6 +133,7 @@ namespace ALARm_Report.Forms
 				Total comparativeTotal = null;
 				var sectionTotal = new Total
 				{
+
 					Code = kilometers[0].Track_name,
 					DirectionCode = kilometers[0].Direction_code,
 					DirectionName = kilometers[0].Direction_name
@@ -205,11 +206,14 @@ namespace ALARm_Report.Forms
 					);
 				var pchuTotal = new Total();
 				pchuTotal.Code = kilometers[0].PchuCode;
-
+			
+			
+				// var distancecode = new Total();
+				//distancecode.distancecode = distance.Code;
 				var pdElement = new XElement("pd",
 					new XAttribute("code", kilometers[0].PdCode),
 					new XAttribute("chief", kilometers[0].PdChief),
-					new XAttribute("pchu", kilometers[0].PchuCode),
+					new XAttribute("pchu", kilometers[0].PchuCode ),
 					new XAttribute("PDcode", kilometers[0].PdCode),
 					new XAttribute("pch", distance.Code)
 					);
@@ -309,6 +313,10 @@ namespace ALARm_Report.Forms
 								}
 							}
 							progressBar.Value += 1;
+							if (km.Number == 709)
+							{
+								km.Number = km.Number;
+							}
 
 							km.LoadTrackPasport(MainTrackStructureService.GetRepository(), km.TripDate);
 							km.Digressions = RdStructureService.GetDigressionMarks(km.Trip.Id, km.Track_id, km.Number);
@@ -697,9 +705,13 @@ namespace ALARm_Report.Forms
 									DevDegree2++;
 								}
 								var flag_gr = false;
-								if (digression.Comment != null) if (digression.Comment.Contains("гр")) flag_gr = true;
+								if (km.Number == 709)
+							{
+								var kmmm = km.Number;
+							}
+								if (digression.Comment != null )  if (digression.Comment.Contains("гр")) flag_gr = true;
 								if (((digression.LimitSpeedToString().Any(char.IsDigit) || flag_gr) && !digression.DigName.Equals("ПрУ")
-									&& !digression.DigName.Contains("кривая факт.") && !digression.DigName.Contains("З?") && !digression.Comment.Contains("-/-")))
+									&& !digression.DigName.Contains("кривая") && !digression.DigName.Contains("З?") && !digression.Comment.Contains("-/-") && !digression.Comment.Contains("кривая")))
 								{
 									kmTotal.IsLimited = 1;
 									//MessageBox.Show(digression.Km.ToString() + '-' +digression.DigName + '-' + digression.LimitSpeedToString());
@@ -776,7 +788,7 @@ namespace ALARm_Report.Forms
 							kmTotal.Drawdown.Degrees[0] = km.FDDrawdown;
 							kmTotal.Level.Degrees[0] = km.FDLevel;
 
-							if (km.Number == 720)
+							if (km.Number == 709)
 							{
 								var kmmm = km.Number;
 							}
@@ -867,14 +879,15 @@ namespace ALARm_Report.Forms
 						{
 							PDBTotalGenerate(ref pdbElement, ref pdbTotal, ref pdElement, ref pdTotal, km.PdbCode, km.PdbChief, ref compPdbTotal, ref compPdTotal);
 							PDTotalGenerate(ref pdElement, ref pdTotal, ref pchuElement, ref pchuTotal, km.PdCode, km.PdChief, ref compPdTotal, ref compPchuTotal);
-							PCHUTotalGenerate(ref pchuElement, ref pchuTotal, ref sectionElement, ref sectionTotal, km.PchuCode, km.PchuChief, ref compPchuTotal, ref compSectionTotal);
+							PCHUTotalGenerate(ref pchuElement, ref pchuTotal,  ref sectionElement, ref sectionTotal, km.PchuCode, km.PchuChief, ref compPchuTotal, ref compSectionTotal, distanceTotal.Code);
 							SectionTotalGenerate(ref sectionElement, ref sectionTotal, ref byKilometer, ref distanceTotal, km.Track_name, km.Direction_code, km.Direction_name, ref compSectionTotal, ref compDistanceTotal);
 						}
 						if (!pchuTotal.Code.Equals(km.PchuCode))
 						{
 							PDBTotalGenerate(ref pdbElement, ref pdbTotal, ref pdElement, ref pdTotal, km.PdbCode, km.PdbChief, ref compPdbTotal, ref compPdTotal);
 							PDTotalGenerate(ref pdElement, ref pdTotal, ref pchuElement, ref pchuTotal, km.PdCode, km.PdChief, ref compPdTotal, ref compPchuTotal);
-							PCHUTotalGenerate(ref pchuElement, ref pchuTotal, ref sectionElement, ref sectionTotal, km.PchuCode, km.PchuChief, ref compPchuTotal, ref compSectionTotal);
+							PCHUTotalGenerate(ref pchuElement, ref pchuTotal ,ref sectionElement, ref sectionTotal, km.PchuCode, km.PchuChief, ref compPchuTotal, ref compSectionTotal, distanceTotal.Code);
+						//distancecode
 						}
 						if (!pdTotal.Code.Equals(km.PdCode))
 						{
@@ -1315,7 +1328,7 @@ namespace ALARm_Report.Forms
 								DevDegree2++;
 							}
 							var flag_gr = false;
-							if (digression.Comment != null) if (digression.Comment.Contains("гр")) flag_gr = true;
+							if (digression.Comment != null) if (digression.primech == null)  if (digression.Comment.Contains("гр")) flag_gr = true;
 							if (((digression.LimitSpeedToString().Any(char.IsDigit) || flag_gr) && !digression.DigName.Equals("ПрУ")
 								&& !digression.DigName.Contains("кривая факт.") && !digression.DigName.Contains("З?") && !digression.Comment.Contains("-/-")))
 							{
@@ -1348,7 +1361,7 @@ namespace ALARm_Report.Forms
 
 								{
 									//kmTotal.IsLimited = 1;
-									kmTotal.Other++;
+									kmTotal.Other++; 
 
 
 								}
@@ -1657,7 +1670,7 @@ namespace ALARm_Report.Forms
 
 				PDBTotalGenerate(ref pdbElement, ref pdbTotal, ref pdElement, ref pdTotal, "", "", ref compPdbTotal, ref compPdTotal);
 				PDTotalGenerate(ref pdElement, ref pdTotal, ref pchuElement, ref pchuTotal, "", "", ref compPdTotal, ref compPchuTotal);
-				PCHUTotalGenerate(ref pchuElement, ref pchuTotal, ref sectionElement, ref sectionTotal, "", "", ref compPchuTotal, ref compSectionTotal);
+				PCHUTotalGenerate(ref pchuElement, ref pchuTotal, ref sectionElement, ref sectionTotal, "", "", ref compPchuTotal, ref compSectionTotal, distanceTotal.Code);
 				SectionTotalGenerate(ref sectionElement, ref sectionTotal, ref byKilometer, ref distanceTotal, "", "", "", ref compSectionTotal, ref compDistanceTotal);
 
 				var avgBall1 = (distanceTotal.MainParamPointSum + distanceTotal.CurvePointSum) / distanceTotal.Length;
@@ -1977,7 +1990,7 @@ namespace ALARm_Report.Forms
 				return (value * 100 / (double)total).ToString("0.00", nfi) == "0.00" ? "" : (value * 100 / (double)total).ToString("0.00", nfi);
 			}
 
-			void PCHUTotalGenerate(ref XElement pchuElement, ref Total pchuTotal, ref XElement distanceElement, ref Total distanceTotal, string code, string chief, ref Total compPchuTotal, ref Total compSectionTotal)
+			void PCHUTotalGenerate(ref XElement pchuElement, ref Total pchuTotal,  ref XElement distanceElement, ref Total distanceTotal,string code, string chief, ref Total compPchuTotal, ref Total compSectionTotal,string distanceCode)
 			{
 				var avgBall1 = (pchuTotal.MainParamPointSum + pchuTotal.CurvePointSum) / pchuTotal.Length;
 				var avgBall2 = (pchuTotal.MainParamPointSum + pchuTotal.CurvePointSum + pchuTotal.AddParamPointSum) / pchuTotal.Length;
@@ -2005,7 +2018,7 @@ namespace ALARm_Report.Forms
 			
 			   pchuTotal = new Total();
 				pchuTotal.Code = code;
-
+				
 				if (compPchuTotal != null)
 				{
 					var cavgBall1 = (compPchuTotal.MainParamPointSum + compPchuTotal.CurvePointSum) / compPchuTotal.Length;
@@ -2036,7 +2049,8 @@ namespace ALARm_Report.Forms
 
 				distanceElement.Add(pchuElement);
 				pchuElement = new XElement("pchu",
-							   new XAttribute("pch", distanceTotal.Code),
+							   //new XAttribute("pch", distance.Code  (24)),
+							   new XAttribute("pch", distanceCode),
 							   new XAttribute("code", code),
 							   new XAttribute("chief", chief));
 			}
@@ -2214,6 +2228,7 @@ namespace ALARm_Report.Forms
 	}
 	public class Total
 	{
+		public string distancecode { get; set; }
 		public string Code { get; set; }
 		public int Count { get; set; }
 		public string DirectionCode { get; set; }

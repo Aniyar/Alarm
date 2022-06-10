@@ -8,6 +8,7 @@ namespace ALARm.Core
 {
     public class CheckSection : MainTrackObject
     {
+        public long Track_Id { get; set; }
         public double Avg_width { get; set; }
         public double Avg_level { get; set; }
         public double Sko_width { get; set; }

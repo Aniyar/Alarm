@@ -96,6 +96,7 @@ namespace ALARm.Core.AdditionalParameteres
         public string EditReason { get; set; }
         public string Editor { get; set; }
         //
+        public int Kol { get; set; }
         public string Primech { get; set; }
         public string Pdb_section { get; set; }
         public string Fragment { get; set; }
@@ -148,7 +149,9 @@ namespace ALARm.Core.AdditionalParameteres
 
                     digression.AllowSpeed = "";
                     AllowSpeed = "";
-                    digression.DigName = DigressionName.FusingGap;
+                    
+                    digression.DigName = DigressionName.FusingGapL;
+                    digression.DigName = DigressionName.FusingGapR;
                     Dname = digression.DigName;
                     break;
                 case int gap when gap > 24 && gap <= 26:
@@ -227,6 +230,7 @@ namespace ALARm.Core.AdditionalParameteres
 
                     digression.AllowSpeed = "";
                     AllowSpeed = "";
+
                     digression.DigName = DigressionName.FusingGap;
                     Dname = digression.DigName;
                     break;

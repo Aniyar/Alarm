@@ -1950,9 +1950,9 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
 	                            AVG ( longwavesleft ) longwavesleft,
 	                            AVG ( longwavesright ) longwavesright,
 	                            AVG ( iz_45_l ) iz_45_l,
-	                            AVG ( iz_45_r ) iz_45_r ,
-                                AVG ( x_big_l ) x_big_l ,
-                                AVG ( x_big_r ) x_big_r 
+	                            AVG ( iz_45_r ) iz_45_r 
+                             --   AVG ( x_big_l ) x_big_l ,
+                               -- AVG ( x_big_r ) x_big_r 
                             FROM
 	                            PUBLIC.profiledata_{trip_id}
                             WHERE
@@ -2038,6 +2038,33 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
 	                            PUBLIC.outdata_{trip_id}
                             WHERE
 	                            km = {nkm} 
+                            ORDER BY
+	                            meter desc", commandType: CommandType.Text).ToList();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("GetGaugeFromDB error: " + e.Message);
+                    return null;
+                }
+
+            }
+        }
+        public List<CrosProf> GetGaugeFromDBkmmter(int nkm, int meter, long trip_id)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                try
+                {
+                    return db.Query<CrosProf>($@"
+                            SELECT DISTINCT
+	                            *
+                            FROM
+	                            PUBLIC.outdata_{trip_id}
+                            WHERE
+	                            km = {nkm} AND
+                                meter = {meter}
                             ORDER BY
 	                            meter desc", commandType: CommandType.Text).ToList();
                 }

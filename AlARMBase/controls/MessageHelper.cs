@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Windows.Forms;
 using MetroFramework;
 
 namespace ALARm.controls
@@ -11,7 +12,14 @@ namespace ALARm.controls
         }
         internal static void ShowWarning(IWin32Window sender, string error)
         {
-            MetroMessageBox.Show(sender, error, alerts.inserting, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            try
+            {
+                MetroMessageBox.Show(sender, error, alerts.inserting, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Ошибка при добавления " + e);
+            }
         }
     }
 }

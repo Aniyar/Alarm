@@ -21,6 +21,12 @@ namespace ALARm.Core.Report
         public string Name { get; set; }
         object Filter.Value { get => this.Value; set=> this.Value = float.Parse(((string)value).Replace(".", ",")); }
     }
+    public class INTFilter : Filter
+    {
+        public int Value { get; set; }
+        public string Name { get; set; }
+        object Filter.Value { get => this.Value; set => this.Value = int.Parse(((string)value)); }
+    }
 
     public class DoubleFilter : Filter
     {

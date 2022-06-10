@@ -454,7 +454,7 @@ namespace ALARm_Report.Forms
             {
                 htReport.Save(Path.GetTempPath() + "/report.html");
              
-                htReport.Save($@"g:\form\5.Графические диаграммы ГД\ГД-ЦНИИ-2 Уровень.html");
+                //htReport.Save($@"g:\form\5.Графические диаграммы ГД\ГД-ЦНИИ-2 Уровень.html");
             }
             catch(Exception e)
             {

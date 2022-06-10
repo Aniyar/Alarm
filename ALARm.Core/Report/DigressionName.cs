@@ -42,7 +42,7 @@
         public static DigName StrgihtPlusSag = new DigName() { Name = "Р+П", Value = 24 };
         public static DigName StrgihtPlusDrawdown = new DigName() { Name = "Р+Пр", Value = 25 };
         public static DigName StrighteningOnSwitch = new DigName() { Name = "Рст", Value = 26 };
-        public static DigName IzoGapNear = new DigName() { Name = "ИС?", Value = 27 };
+        public static DigName IzoGapNear = new DigName() { Name = "ис?;", Value = 27 };
         public static DigName PatternRetractionNear = new DigName() { Name = "ОШК?", Value = 28 };
         public static DigName LevelReverse = new DigName() { Name = "Уобр", Value = 29 };
         public static DigName Level150 = new DigName() { Name = "У150", Value = 30 };
@@ -58,7 +58,9 @@
         public static DigName LongWaveLeft = new DigName() { Name = "ДВ.п", Value = 106 }; // дн
         public static DigName ImpulsLeft = new DigName() { Name = "ИН.л", Value = 107 };
         public static DigName ImpulsRight = new DigName() { Name = "ИН.п", Value = 108 }; //импульс
-        public static DigName FusingGap = new DigName() { Name = "СЗ", Value = 109 };
+        public static DigName FusingGap = new DigName() { Name = "СЗ", Value = 109 };//слепой стык
+        public static DigName FusingGapL = new DigName() { Name = "СЗ.л", Value = 110 };//слепой стык
+        public static DigName FusingGapR = new DigName() { Name = "СЗ.п", Value = 111 };//слепой стык
 
         public static DigName Gap = new DigName() { Name = "З", Value = 110 };
         public static DigName GapSimbol = new DigName() { Name = "З?", Value = 1100 };

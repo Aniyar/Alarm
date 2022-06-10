@@ -689,6 +689,32 @@ begin
       end;
       Next;
     end;
+    // Действующиу ограничения
+    Close;
+    Sql.Clear;
+    Sql.Add('select ts.* from apr_tempspeed as ts');
+    Sql.Add('inner join tpl_period AS period on period.id = ts.period_id');
+    Sql.Add('WHERE period.adm_track_id = :track_id and :trip_date between ');
+    Sql.Add('period.start_date and period.final_date and :nkm between ts.start_km and ts.final_km ');
+    ParamByName('track_id').Value := track_id;
+    ParamByName('nkm').Value := nkm;
+    ParamByName('trip_date').Value := trip_date;
+    Open;
+    while (not(eof)) do
+    begin
+      setlength(USkr, length(USkr) + 1);
+      with USkr[length(USkr) - 1] do
+      begin
+        nkm := FieldByName('start_km').AsInteger;
+        nmtr := FieldByName('start_m').AsInteger;
+        kkm := FieldByName('final_km').AsInteger;
+        kmtr := FieldByName('final_m').AsInteger;
+        skp := FieldByName('passenger').AsInteger;
+        skg := FieldByName('freight').AsInteger;
+        put := inttostr(track_id);
+      end;
+      Next;
+    end;
 
   end;
 
@@ -2823,8 +2849,9 @@ begin
     while not eof(km_shifrovka_file) do
     begin
 
-      //                         0     1     2     3     4      5     6      7      8       9       10     11      12       13      14   15    16
-      Readln(km_shifrovka_file, indi, dv, D_PIC, D_mtr, D_ur2, D_ur1, D_sh, D_rh1, D_rh2, _D_urb, Z_Angle, _dsurb, _dsurb0, skip, skip, skip, skip,
+      // 0     1     2     3     4      5     6      7      8       9       10     11      12       13      14   15    16
+      Readln(km_shifrovka_file, indi, dv, D_PIC, D_mtr, D_ur2, D_ur1, D_sh,
+        D_rh1, D_rh2, _D_urb, Z_Angle, _dsurb, _dsurb0, skip, skip, skip, skip,
         // 17             18            19   20   21    22             23           24             25
         side_wear_right, side_wear_left, skip, skip, skip, stright_avg,
         level_avg, curvePointLevel, curvePointStr, sign);
@@ -2847,8 +2874,8 @@ begin
       setlength(TrapezLevel, U_IND + 1);
       setlength(TrapezStr, U_IND + 1);
 
-                setlength( AvgTr, U_IND + 1);
-                setlength( TrapezLevel_Get_per, U_IND + 1);
+      setlength(AvgTr, U_IND + 1);
+      setlength(TrapezLevel_Get_per, U_IND + 1);
       setlength(TrpzStr, U_IND + 1);
 
       setlength(ST_AVG, U_IND + 1);
@@ -2865,10 +2892,10 @@ begin
 
       CurvePointsLevel[U_IND] := curvePointLevel;
       CurvePointsStr[U_IND] := curvePointStr;
-          TrapezLevel_Get_per[U_IND] :=round(  _dsurb);
+      TrapezLevel_Get_per[U_IND] := round(_dsurb);
       TrapezLevel[U_IND] := _dsurb;
       TrapezStr[U_IND] := round(Z_Angle);
-            AvgTr [U_IND] := round(_dsurb0 )  ;
+      AvgTr[U_IND] := round(_dsurb0);
       TrpzStr[U_IND] := Z_Angle;
 
       // ST_AVG[U_IND] := tanba_rih * stright_avg;
@@ -2965,7 +2992,7 @@ begin
 
       Fluk_right[U_IND] := round(kf_rih * 2 * (D_rh1 - Z_Angle));
       Fluk_left[U_IND] := round(kf_rih * 2 * (D_rh2 - Z_Angle));
-      //   AvgTr[U_IND] := round(_dsurb0* (exp(-10*abs( _dsurb   )) + dsurb )    );
+      // AvgTr[U_IND] := round(_dsurb0* (exp(-10*abs( _dsurb   )) + dsurb )    );
       if (riht_nit > 0) then
       begin
         F_fluk[U_IND] := round(kf_rih * 2 * (D_rh1 - Z_Angle)); // 1.35 //1.125
@@ -2995,18 +3022,16 @@ begin
       Furb1[U_IND] := round(D_urb); // 1.09*
       Furbx[U_IND] := round(D_urb);
       Furb_sr[U_IND] := round(dsurb0); //
-            if ( abs(dsurb)<1)   then
+      if (abs(dsurb) < 1) then
 
-      F_urb_Per[U_IND] := round(1.10*( D_urb-  dsurb0  ))
+        F_urb_Per[U_IND] := round(1.10 * (D_urb - dsurb0))
       else
-         F_urb_Per[U_IND] := round(1.10*( D_urb-  dsurb ));
-           if ( abs(dsurb)<1)   then
+        F_urb_Per[U_IND] := round(1.10 * (D_urb - dsurb));
+      if (abs(dsurb) < 1) then
 
-      AvgTr[U_IND] := round(1.0*  dsurb0  )
+        AvgTr[U_IND] := round(1.0 * dsurb0)
       else
-         AvgTr[U_IND] := round(1.0*dsurb );
-
-
+        AvgTr[U_IND] := round(1.0 * dsurb);
 
       F_urb_Per_sr[U_IND] := round(_dsurb);
       // round(D_urb - dsurb); * 1.09

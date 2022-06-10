@@ -25,8 +25,8 @@ begin
     // Flag_Sablog := true;
     FileName := ParamStr(1);
     if FileName = '' then
-       //FileName := 'g:\work_shifrovka\km_709_4816.svgpdat';
-        FileName := 'g:\work_shifrovka\km_717_4820.svgpdat'  ;
+       FileName := 'g:\work_shifrovka\km_709_4816.svgpdat';
+//        FileName := 'g:\work_shifrovka\km_717_4820.svgpdat'  ;
     writeln(FileName);
 
     MainDataModule := DataModule.TMainDataModule.Create(nil);

@@ -26,15 +26,15 @@ namespace ALARm_Report.Forms
         public override void Process(long parentId, ReportTemplate template, ReportPeriod period, MetroProgressBar progressBar)
         {
             //Сделать выбор периода
-            List<long> admTracksId = new List<long>();
-            using (var choiceForm = new ChoiseForm(0))
-            {
-                choiceForm.SetTripsDataSource(parentId, period);
-                choiceForm.ShowDialog();
-                if (choiceForm.dialogResult == DialogResult.Cancel)
-                    return;
-                admTracksId = choiceForm.admTracksIDs;
-            }
+            //List<long> admTracksId = new List<long>();
+            //using (var choiceForm = new ChoiseForm(0))
+            //{
+            //    choiceForm.SetTripsDataSource(parentId, period);
+            //    choiceForm.ShowDialog();
+            //    if (choiceForm.dialogResult == DialogResult.Cancel)
+            //        return;
+            //    admTracksId = choiceForm.admTracksIDs;
+            //}
 
             XDocument htReport = new XDocument();
             using (XmlWriter writer = htReport.CreateWriter())
@@ -57,9 +57,9 @@ namespace ALARm_Report.Forms
                 XElement report = new XElement("report");
                 foreach (var tripProcess in tripProcesses)
                 {
-                    foreach (var track_id in admTracksId)
-                    {
-                        var trackName = AdmStructureService.GetTrackName(track_id);
+
+                  
+                        //var trackName = AdmStructureService.GetTrackName(track_id);
 
                         List<Digression> notes = RdStructureService.GetDigressions(tripProcess.Trip_id, distance.Code, new int[] { 2 });
 
@@ -79,8 +79,7 @@ namespace ALARm_Report.Forms
                             new XAttribute("version", $"{DateTime.Now} v{Assembly.GetExecutingAssembly().GetName().Version.ToString()}"),
                             new XAttribute("date_statement", DateTime.Now.Date.ToShortDateString()),
                             new XAttribute("direction", tripProcess.DirectionName),
-                            new XAttribute("km", kms.Min() + "-" + kms.Max()),
-                            new XAttribute("track", trackName),
+                            new XAttribute("track", curvesAdmUnits[0].Track),
                             new XAttribute("check", tripProcess.GetProcessTypeName), //ToDo
                             new XAttribute("road", roadName),
                             new XAttribute("distance", distance.Code),
@@ -96,7 +95,7 @@ namespace ALARm_Report.Forms
                         //Участки дист коррекция
                         var dist_section = MainTrackStructureService.GetDistSectionByDistId(distance.Id);
 
-                       
+
 
                         foreach (var item in notes)
                         {
@@ -123,9 +122,10 @@ namespace ALARm_Report.Forms
                         XElement PDElement = new XElement("PD");
                         XElement PDBElement = new XElement("PDB");
 
-
+                        int totalwayCount = 0;
                         int directionRecordCount = 0;
                         int trackCount = 0;
+                        int totaltrackCount = 0;
                         int PCHUCount = 0;
                         int PDCount = 0;
                         int PDBCount = 0;
@@ -147,26 +147,26 @@ namespace ALARm_Report.Forms
                             //Исскуст соорр - мосты
                             if (note.Km != prev_km)
                             {
-                                Artificials = MainTrackStructureService.GetMtoObjectsByCoord(tripProcess.Date_Vrem, note.Km, 
-                                    MainTrackStructureConst.MtoArtificialConstruction, track_id) as List<ArtificialConstruction>;
+                                Artificials = MainTrackStructureService.GetMtoObjectsByCoord(tripProcess.Date_Vrem, note.Km,
+                                    MainTrackStructureConst.MtoArtificialConstruction, tripProcess.TrackID) as List<ArtificialConstruction>;
                             }
                             var temp_bridge = Artificials.Where(o => o.Start_Km * 1000 + o.Start_M <= note.Km * 1000 + note.Meter &&
                                                                      o.Final_Km * 1000 + o.Final_M >= note.Km * 1000 + note.Meter).ToList();
                             if (temp_bridge.Any())
                             {
-                                note.Primech += " мост";
+                                note.Primech += "мост";
                             }
                             prev_km = note.Km;
 
                             //стыки
                             // запрос списка Изостыков с БПД
-                            var IzoGaps = MainTrackStructureService.GetIzoGaps(trackName, tripProcess.DirectionID);
+                            var IzoGaps = MainTrackStructureService.GetIzoGaps(curvesAdmUnits[0].Track, tripProcess.DirectionID);
                             var temp_gap = IzoGaps.Where(o => o.Km * 1000 + o.Meter == note.Km * 1000 + note.Meter).ToList();
                             if (temp_gap.Any())
                             {
                                 note.Primech += "из.стык";
                             }
-                            
+
 
                             if (previousDirectionName.Equals(string.Empty))
                                 previousDirectionName = note.Direction;
@@ -187,12 +187,14 @@ namespace ALARm_Report.Forms
                             {
                                 directionElement.Add(new XAttribute("recordCount", directionRecordCount));
                                 directionElement.Add(new XAttribute("name", previousDirectionName));
+                                directionElement.Add(new XAttribute("totalwayCount", totalwayCount));
                                 directionElement.Add(
                                     new XAttribute("direction", tripProcess.DirectionName),
                                       new XAttribute("directioncode", note.Direction));
 
                                 tracklElement.Add(new XAttribute("name", previousTrackName));
                                 tracklElement.Add(new XAttribute("recordCount", trackCount));
+                                tracklElement.Add(new XAttribute("totaltrackCount", totaltrackCount));
 
                                 PCHUElement.Add(new XAttribute("number", previousPCHUName));
                                 PCHUElement.Add(new XAttribute("recordCount", PCHUCount));
@@ -209,8 +211,10 @@ namespace ALARm_Report.Forms
                                 directionElement.Add(tracklElement);
                                 tripElem.Add(directionElement);
 
+                                totalwayCount = 0;
                                 directionRecordCount = 0;
                                 trackCount = 0;
+                                totaltrackCount = 0;
                                 PCHUCount = 0;
                                 PDCount = 0;
                                 PDBCount = 0;
@@ -233,7 +237,7 @@ namespace ALARm_Report.Forms
                             {
                                 tracklElement.Add(new XAttribute("name", previousTrackName));
                                 tracklElement.Add(new XAttribute("recordCount", trackCount));
-
+                                tracklElement.Add(new XAttribute("totaltrackCount", totaltrackCount));
                                 tracklElement.Add(
                                   new XAttribute("direction", tripProcess.DirectionName),
                                     new XAttribute("directioncode", note.Direction));
@@ -251,7 +255,7 @@ namespace ALARm_Report.Forms
                                 PCHUElement.Add(PDElement);
                                 tracklElement.Add(PCHUElement);
                                 directionElement.Add(tracklElement);
-
+                                totaltrackCount = 0;
                                 trackCount = 0;
                                 PCHUCount = 0;
                                 PDCount = 0;
@@ -347,7 +351,7 @@ namespace ALARm_Report.Forms
                                     drawdownCount += note.Count;
                                     break;
                                 case "Суж":
-                                  
+
 
                                     continue;
                                 case "Уш":
@@ -380,7 +384,9 @@ namespace ALARm_Report.Forms
                                 ));
 
                             directionRecordCount += 1;
+                            totalwayCount += note.Count;
                             trackCount += 1;
+                            totaltrackCount += note.Count;
                             PCHUCount += 1;
                             PDCount += 1;
                             PDBCount += 1;
@@ -390,16 +396,24 @@ namespace ALARm_Report.Forms
                         }
                         directionElement.Add(new XAttribute("name", previousDirectionName + previousTrackName));
                         directionElement.Add(new XAttribute("recordCount", directionRecordCount));
+                        directionElement.Add(new XAttribute("totalwayCount", totalwayCount));
 
-                        directionElement.Add(
+                         directionElement.Add(
                            new XAttribute("direction", tripProcess.DirectionName),
                            new XAttribute("directioncode", tripProcess.DirectionCode),
-                             new XAttribute("track", previousTrackName));
+                           new XAttribute("track", previousTrackName)
+                         );
+                    
 
                         tracklElement.Add(new XAttribute("name", previousTrackName));
                         tracklElement.Add(new XAttribute("recordCount", trackCount));
+                        tracklElement.Add(new XAttribute("totaltrackCount", totaltrackCount));
+                          tracklElement.Add(
+                             new XAttribute("direction", tripProcess.DirectionName),
+                             new XAttribute("directioncode", tripProcess.DirectionCode),
+                              new XAttribute("track", previousTrackName));
 
-                        PCHUElement.Add(new XAttribute("number", previousPCHUName));
+                    PCHUElement.Add(new XAttribute("number", previousPCHUName));
                         PCHUElement.Add(new XAttribute("recordCount", PCHUCount));
 
                         PDElement.Add(new XAttribute("number", previousPDName));
@@ -416,11 +430,11 @@ namespace ALARm_Report.Forms
 
 
                         tripElem.Add(new XAttribute("drawdownCount", drawdownCount));
-                      
+
                         tripElem.Add(new XAttribute("levelCount", levelCount));
                         tripElem.Add(new XAttribute("skewnessCount", skewnessCount));
                         tripElem.Add(new XAttribute("straighteningCount", straighteningCount));
-                        tracklElement.Add(new XAttribute("totalCount", drawdownCount   + levelCount + skewnessCount + straighteningCount));
+                        tracklElement.Add(new XAttribute("totalCount", drawdownCount + levelCount + skewnessCount + straighteningCount));
 
 
                         //В том числе:
@@ -428,7 +442,7 @@ namespace ALARm_Report.Forms
                         {
                             tripElem.Add(new XElement("total", new XAttribute("totalinfo", "Пр - " + drawdownCount)));
                         }
-                   
+
                         if (levelCount > 0)
                         {
                             tripElem.Add(new XElement("total", new XAttribute("totalinfo", "У - " + levelCount)));
@@ -442,15 +456,19 @@ namespace ALARm_Report.Forms
                             tripElem.Add(new XElement("total", new XAttribute("totalinfo", "Р - " + straighteningCount)));
                         }
 
-                        directionElement.Add(new XAttribute("countDistance", directionRecordCount));
-                        directionElement.Add(new XAttribute("distance", distance.Code));
                         
+                      directionElement.Add(new XAttribute("countDistance", directionRecordCount));
+                   
+
+
+                        directionElement.Add(new XAttribute("distance", distance.Code));
+
 
 
 
                         report.Add(tripElem);
 
-                    }
+                    
                 }
 
 
@@ -462,7 +480,7 @@ namespace ALARm_Report.Forms
             try
             {
                 htReport.Save(Path.GetTempPath() + "/report.html");
-                htReport.Save($@"G:\form\6.Выходные формы Основные параметры\Отступления 2 степени, близкие к 3.html");
+                //htReport.Save($@"G:\form\6.Выходные формы Основные параметры\Отступления 2 степени, близкие к 3.html");
             }
             catch
             {

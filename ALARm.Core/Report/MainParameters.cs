@@ -56,7 +56,7 @@ namespace ALARm.Core.Report
                 var PasSpeed = kilometer.Speeds.Any() ? kilometer.Speeds.First().Passenger : -1;
                 var pru_dig_list = new List<DigressionMark> { };
                 var curve_bpd_list = new List<DigressionMark> { };
-                  
+
                 var Curve_nature_value = new List<DigressionMark>();
                 int prevIndex = kilometer.Number + 1;
                 //var rezulat = new List<> ;
@@ -356,13 +356,71 @@ namespace ALARm.Core.Report
                         {
                             item.First().Km = item.First().Km;
                         }
-                        curve_bpd_list.Add(new DigressionMark()
+
+
+                        if (!curve_bpd_list.Any())
                         {
-                            Km = item.First().Km,
-                            Meter = (int)avgmeterbyItem-30,
-                            Alert = $" {(int)avgmeterbyItem - 30} R:{bpd_curve.Radius} h:{bpd_curve.Elevations[0].Lvl} Ш:{bpd_curve.Straightenings[0].Width} И:{bpd_curve.Straightenings[0].Wear} "
-                        });
-                      
+                            curve_bpd_list.Add(new DigressionMark()
+                            {
+
+                                Km = item.First().Km,
+                                lvl = (int)bpd_curve.Elevations[0].Lvl,
+                                Radius = bpd_curve.Radius,
+                                Meter = (int)avgmeterbyItem - 30,
+                                Alert = $" {(int)avgmeterbyItem - 30} R:{bpd_curve.Radius} h:{bpd_curve.Elevations[0].Lvl} Ш:{bpd_curve.Straightenings[0].Width} И:{bpd_curve.Straightenings[0].Wear} "
+                            });
+                        }
+
+                        bool pr1 = false;
+                        bool pr2 = false;
+                        int prMeter = 0;
+                        int prlvl = 0;
+                        int prrad = 0;
+
+                        // curve_bpd_list.[curve_bpd_list.Count-1]
+                        var prr1 = false;
+                        var prr2 = false;
+                        if (curve_bpd_list[curve_bpd_list.Count - 1].Meter != (int)avgmeterbyItem - 30) prr1 = true;
+                        if (curve_bpd_list[0].Meter != (int)avgmeterbyItem - 30) prr2 = true;
+                        //  (curve_bpd_list[0].lvl != (int)bpd_curve.Elevations[0].Lvl)||
+                        if (((prr1 && prr2)) && curve_bpd_list.Any())
+                        {
+                            curve_bpd_list.Add(new DigressionMark()
+                            {
+                                lvl = (int)bpd_curve.Elevations[0].Lvl,
+                                Km = item.First().Km,
+                                Radius = bpd_curve.Radius,
+                                Meter = (int)avgmeterbyItem - 30,
+                                Alert = $" {(int)avgmeterbyItem - 30} R:{bpd_curve.Radius} h:{bpd_curve.Elevations[0].Lvl} Ш:{bpd_curve.Straightenings[0].Width} И:{bpd_curve.Straightenings[0].Wear} "
+                            });
+                        }
+
+
+                        if (kilometer.Number == 714 && avgmeterbyItem > 600)
+                        {
+                            prMeter = curve_bpd_list[0].Meter;
+                            prlvl = curve_bpd_list[0].lvl;
+                            prrad = (int)curve_bpd_list[0].Radius;
+
+                            pr2 = pr2;
+                            pr1 = pr1;
+                            var Meter0 = (int)avgmeterbyItem - 30;
+                        }
+
+                        if (kilometer.Number == 714 && avgmeterbyItem < 300)
+                        {
+                            pr2 = pr2;
+                            pr1 = pr1;
+
+
+
+                            var Meter0 = (int)avgmeterbyItem - 30;
+                            prMeter = curve_bpd_list[0].Meter;
+                            prlvl = curve_bpd_list[0].lvl;
+                            prrad = (int)curve_bpd_list[0].Radius;
+
+                        }
+
                         lvl = (int)h;
 
                         //------------------------------------------------------------------------------------------
@@ -381,7 +439,11 @@ namespace ALARm.Core.Report
                             var pLvl = passportLvlData.Any() ? passportLvlData.First().Lvl : lvl;
 
                             var diff = Math.Abs(Math.Abs(lvl) - (int)Math.Abs(pLvl));
-
+                            var rdcsData = new Data { };
+                            var Vkr = RoundNumToFive(rdcsData.GetKRSpeedPass(rdcs));
+                            var Ogr = -1;
+                            if (kilometer.Speeds.First().Passenger > Vkr)
+                                Ogr = Vkr;
                             //балл
                             var ball = -1;
                             var razn = -1;
@@ -420,7 +482,15 @@ namespace ALARm.Core.Report
                                         DigName = DigressionName.Pru.Name,
                                         Pch = kilometer.PdbSection[0].Distance,
                                         DirectionName = direction.Name,
-                                        TrackName = kilometer.Track_name
+                                        TrackName = kilometer.Track_name,
+                                        PassengerSpeedAllow = kilometer.Speeds.First().Passenger,
+                                        PassengerSpeedLimit = kilometer.Speeds.First().Passenger > Ogr ? Ogr : -1,
+
+                                        FreightSpeedAllow = kilometer.Speeds.First().Freight,
+                                        FreightSpeedLimit = kilometer.Speeds.First().Freight > Ogr ? Ogr : -1
+
+
+
                                     });
                                 }
                                 catch (Exception e)
@@ -1004,7 +1074,7 @@ namespace ALARm.Core.Report
                     new XAttribute("top-title",
                         (direction != null ? $"{direction.Name} ({direction.Code})" : "Неизвестный") + " Путь: " +
                         kilometer.Track_name + $" Класс: {(trackclasses.Any() ? trackclasses.First().Class_Id.ToString() : "-")} Км:" + kilometer.Number + " " +
-                        (kilometer.PdbSection.Count > 0 ? $" ПЧ-{kilometer.PdbSection[0].Distance}" : " ПЧ-") + " Уст: " + " " +
+                        (kilometer.PdbSection.Count > 0 ? $" ПЧ-{kilometer.PdbSection[0].Distance}" : " ПЧ-")  + " Уст: " + " " +
                         (kilometer.Speeds.Count > 0 ? $"{kilometer.Speeds.First().Passenger}/{kilometer.Speeds.First().Freight}" : "-/-")),
 
                     new XAttribute("right-title",
@@ -1349,10 +1419,10 @@ namespace ALARm.Core.Report
         }
 
         private void pd_print(object sender, PrintPageEventArgs e)
-{    
-  Graphics gr = e.Graphics;
-  gr.DrawString("Sales", new Font(FontFamily.GenericMonospace, 12, FontStyle.Bold), new SolidBrush(Color.Black), new Point(40, 40));
-}
+        {
+            Graphics gr = e.Graphics;
+            gr.DrawString("Sales", new Font(FontFamily.GenericMonospace, 12, FontStyle.Bold), new SolidBrush(Color.Black), new Point(40, 40));
+        }
         public void ProcessRegion(ReportTemplate template, Kilometer kilometer, Trips trip, bool autoprint, int currentKmMeter)
         {
             XDocument htReport = new XDocument();
@@ -1470,6 +1540,11 @@ namespace ALARm.Core.Report
 
                     if (pkm == kilometer.Number)
                     {
+                        var rdcsData = new Data { };
+                        var Vkr = RoundNumToFive(rdcsData.GetKRSpeedPass(rdcs));
+                        var Ogr = -1;
+                        if (kilometer.Speeds.First().Passenger > Vkr)
+                            Ogr = Vkr;
                         var pmeter = kilometer.Length - first_pmeter;
                         pmeter = kilometer.LevelAvgTrapezoid.Count - 1 < pmeter ? kilometer.LevelAvgTrapezoid.Count - 1 : pmeter;
 
@@ -1511,7 +1586,12 @@ namespace ALARm.Core.Report
                                     Value = diff, //высота
                                     Length = curve_krug, // длина круговой
                                     Count = ball,
-                                    DigName = DigressionName.Pru.Name
+                                    DigName = DigressionName.Pru.Name,
+                                    PassengerSpeedAllow = kilometer.Speeds.First().Passenger,
+                                    PassengerSpeedLimit = kilometer.Speeds.First().Passenger > Ogr ? Ogr : -1,
+
+                                    FreightSpeedAllow = kilometer.Speeds.First().Freight,
+                                    FreightSpeedLimit = kilometer.Speeds.First().Freight > Ogr ? Ogr : -1,
                                 });
                             }
                             catch (Exception e)
@@ -1531,13 +1611,22 @@ namespace ALARm.Core.Report
                         }
 
                     }
-                    curve_bpd_list.Add(new DigressionMark()
+                    //if (!curve_bpd_list.Any())
                     {
-                        Km = -999,
-                        Meter = first_pmeter,
+                        curve_bpd_list.Add(new DigressionMark()
+                        {
+                            Km = -999,
+                            Meter = first_pmeter,
 
-                        Alert = $"{first_pmeter - 30}  Паспорт R:{ str} h:{lvl}"
-                    });
+                            Alert = $"{first_pmeter - 30}  Паспорт R:{ str} h:{lvl}"
+                        });
+                    }
+
+
+                    //if (curve_bpd_list.Any())
+                    // curve_bpd_list.Select()
+
+
 
                 }
 
@@ -1702,7 +1791,7 @@ namespace ALARm.Core.Report
                         var drh = kilometer.StrightAvgTrapezoid[index] + (kilometer.StrightRight[index] - kilometer.StrightAvgTrapezoid[index]);
                         straighteningRight += MMToPixelChartString(drh * StrightKoef + StraighRighttPosition) + "," + metre + " ";
 
-                        zeroStraighteningLeft += MMToPixelChartString(Math.Abs(kilometer.fZeroStright[index]) * Math.Sign(kilometer.StrightRight[index]) * StrightKoef  + StrightLeftPosition) + "," + metre + " ";
+                        zeroStraighteningLeft += MMToPixelChartString(Math.Abs(kilometer.fZeroStright[index]) * Math.Sign(kilometer.StrightRight[index]) * StrightKoef + StrightLeftPosition) + "," + metre + " ";
 
 
                         averageStraighteningLeft += MMToPixelChartString(kilometer.StrightAvgTrapezoid[index] * StrightKoef + StrightLeftPosition) + "," + metre + " ";
@@ -1710,9 +1799,9 @@ namespace ALARm.Core.Report
                         straighteningLeft += MMToPixelChartString(drh * StrightKoef + StrightLeftPosition) + "," + metre + " ";
 
 
-                        level += MMToPixelChartString(kilometer.Level[index] * LevelKoef  + LevelPosition) + "," + metre + " ";
-                        averageLevel += MMToPixelChartString(kilometer.LevelAvgTrapezoid[index] * LevelKoef  + LevelPosition) + "," + metre + " ";
-                        zeroLevel += MMToPixelChartString(Math.Abs(kilometer.flvl0[index]) * Math.Sign(kilometer.StrightRight[index]) * LevelKoef  + LevelPosition) + "," + metre + " ";
+                        level += MMToPixelChartString(kilometer.Level[index] * LevelKoef + LevelPosition) + "," + metre + " ";
+                        averageLevel += MMToPixelChartString(kilometer.LevelAvgTrapezoid[index] * LevelKoef + LevelPosition) + "," + metre + " ";
+                        zeroLevel += MMToPixelChartString(Math.Abs(kilometer.flvl0[index]) * Math.Sign(kilometer.StrightRight[index]) * LevelKoef + LevelPosition) + "," + metre + " ";
                     }
                     catch (Exception e)
                     {
