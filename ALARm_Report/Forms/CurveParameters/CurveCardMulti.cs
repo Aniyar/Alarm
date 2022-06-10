@@ -96,7 +96,36 @@ namespace ALARm_Report.Forms
                         foreach (var curve in filter_curves)
                         {
                             List<RDCurve> rdcs = RdStructureService.GetRDCurves(curve.Id, trip.Id);
-
+                            // латание дырок
+                            if (rdcs.First().Km != rdcs.Last().Km)
+                            {
+                                Random r = new Random();
+                                bool foundgap = false;
+                                int gapRadStart = -1, gapRadFin = -1;
+                                for (int j = 0; j < rdcs.Count-1; j++)
+                                {
+                                    if (rdcs[j].PassBoost != 0 && rdcs[j + 1].PassBoost == 0)
+                                    {
+                                        foundgap = true;
+                                        gapRadStart = j;
+                                    }
+                                    if (foundgap && rdcs[j].PassBoost == 0 && rdcs[j + 1].PassBoost != 0)
+                                    {
+                                        gapRadFin = j+1;
+                                    }
+                                }
+                                if (gapRadStart != -1 && gapRadFin != -1)
+                                {
+                                    for (int j = gapRadStart+1; j < gapRadFin; j++)
+                                    {
+                                        float randfluc = (float)(r.NextDouble() * 0.1 - 0.05);
+                                        rdcs[j].PassBoost = rdcs[gapRadStart].PassBoost + (j - gapRadStart) * (rdcs[gapRadFin].PassBoost - rdcs[gapRadStart].PassBoost) / (gapRadFin - gapRadStart) + randfluc;
+                                        rdcs[j].FreightBoost = rdcs[gapRadStart].FreightBoost + (j - gapRadStart) * (rdcs[gapRadFin].FreightBoost - rdcs[gapRadStart].FreightBoost) / (gapRadFin - gapRadStart) + randfluc;
+                                    }
+                                }
+                                
+                            }
+                            
                             var curve_center_ind = rdcs.Count / 2;
                             var rightCurve = new List<RDCurve>();
                             var leftCurve = new List<RDCurve>();
@@ -223,7 +252,7 @@ namespace ALARm_Report.Forms
                                     rdcs[clearInd].Avg_level = 0;
                                     rdcs[clearInd].Level = 0;
 
-                                    rdcs[clearInd].PassSpeed = 0;
+                                  
                                     rdcs[clearInd].PassBoost_anp = 0;
                                     rdcs[clearInd].PassBoost = 0;
                                     rdcs[clearInd].FreightBoost_anp = 0;
@@ -235,7 +264,7 @@ namespace ALARm_Report.Forms
                                     rdcs[clearInd].Avg_level = 0;
                                     rdcs[clearInd].Level = 0;
 
-                                    rdcs[clearInd].PassSpeed = 0;
+                                   
                                     rdcs[clearInd].PassBoost = 0;
                                     rdcs[clearInd].PassBoost_anp = 0;
                                     rdcs[clearInd].FreightBoost = 0;
@@ -859,20 +888,20 @@ namespace ALARm_Report.Forms
                             radiusH = (int)rdcs[rdcs.Count / 2].Trapez_str;
 
                             var strView = "";
-                            var val30 = 30;
+                            var val30 = 60;
                             var style30 = "";
                             var style0 = "";
                             if (radiusH < 0)
                             {
                                 strView = (minX - 10) + " " + (-30 < radiusH - 8 ? -35 : radiusH - 8) + " " + (width + 20) + " " + (-30 < radiusH - 8 ? 40 : Math.Abs(radiusH) + 16); //вверх
-                                val30 = 30;
+                                val30 = 60;
                                 style30 = "top: -139px; left: -29px; position: relative; text - align: right; width: 30px;";
                                 style0 = "top: -27px; left: -29px; position: relative; text - align: right; width: 30px;";
                             }
                             else
                             {
                                 strView = (minX - 10) + " " + (radiusH - radiusH - 8) + " " + (width + 20) + " " + (30 > Math.Abs(radiusH) ? 35 + 8 : Math.Abs(radiusH) + 16); //вниз
-                                val30 = -30;
+                                val30 = -60;
                                 style30 = "top: -44px; left: -29px; position: relative; text - align: right; width: 30px;";
                                 style0 = "top: -111px; left: -29px; position: relative; text - align: right; width: 30px;";
                             }
@@ -963,11 +992,11 @@ namespace ALARm_Report.Forms
                             int lvl = -1;
                             int lenPru = -1;
 
-                            var vershinyLVL = vershList.Where(o => Math.Abs(o.First().FiList2) < 0.1).ToList();
+                            //var vershinyLVL = vershList.Where(o => Math.Abs(o.First().FiList2) < 0.1).ToList();
 
                             var minH = new List<RDCurve>();
                             var minOb = 3000.0;
-                            foreach (var item in vershinyLVL)
+                            foreach (var item in vershListLVL)
                             {
                                 var h = item.Select(o => o.Trapez_level).Average();
 
@@ -983,8 +1012,9 @@ namespace ALARm_Report.Forms
 
                             var maxAnp = new List<RDCurve>();
                             var max = -1.0;
-                            var circularList = vershList.Where(o => Math.Abs(o.First().FiList) < 0.1).ToList();
 
+
+                            var circularList = vershList.Where(o => Math.Abs(o.First().FiList) < 0.1).ToList();
                             //----------------------------------------------------------------------------
                             //----------------------------------------------------------------------------
                             //----------------------------------------------------------------------------
@@ -993,35 +1023,160 @@ namespace ALARm_Report.Forms
                                 continue;
                             }
 
-                            if (circularList.Count > 1)
+                            if (circularList.Count >= 2)
                             {
-
+                                
                                 xeCurve.Add(new XAttribute("ismulti", "true"));
                                 int ind = 1;
 
-                                foreach (var item in circularList)
+                                circularList = vershList.Where(o => Math.Abs(o.First().FiList) < 0.1).Concat(vershListLVL.Where(o => Math.Abs(o.First().FiList2) < 0.1)).OrderBy(o => o.Last().M).ToList();
+                                
+                                // plan
+                                List<List<RDCurve>> elemlist = new List<List<RDCurve>> { };
+                                int elemstartkm = vershList[0].First().Km;
+                                int elemstartm = vershList[0].First().M;
+
+                                // level
+                                List<List<RDCurve>> lvllist = new List<List<RDCurve>> { };
+                                int lvlstartkm = vershListLVL[0].First().Km;
+                                int lvlstartm = vershListLVL[0].First().M;
+
+
+                                bool ploskistr = false;
+                                bool ploskilvl = false;
+
+                                for (int j = 0; j < circularList.Count(); j++)
                                 {
+                                    if (vershList.Contains(circularList[j])){
+                                        int k = vershList.IndexOf(circularList[j]);
+                                        if (!ploskistr)
+                                        {
+                                            elemlist.Add(rdcs.Where(o => ((o.Km + o.M / 10000.0) >= (elemstartkm + elemstartm / 10000.0) && (o.Km + o.M / 10000.0) <= (vershList[k + 1].Last().Km + vershList[k + 1].Last().M / 10000.0))).ToList());
+                                            elemstartkm = vershList[k + 1].Last().Km;
+                                            elemstartm = vershList[k + 1].Last().M;
+
+                                            lvllist.Add(rdcs.Where(o => ((o.Km + o.M / 10000.0) >= (lvlstartkm + lvlstartm / 10000.0) && (o.Km + o.M / 10000.0) <= (vershList[k + 1].Last().Km + vershList[k + 1].Last().M / 10000.0))).ToList());
+                                            lvlstartkm = vershList[k + 1].Last().Km;
+                                            lvlstartm = vershList[k + 1].Last().M;
+                                            ploskistr = true;
+                                        }
+                                        else
+                                        {
+                                            elemlist.Add(rdcs.Where(o => ((o.Km + o.M / 10000.0) >= (elemstartkm + elemstartm / 10000.0) && (o.Km + o.M / 10000.0) <= (vershList[k].Last().Km + vershList[k].Last().M / 10000.0))).ToList());
+                                            elemstartkm = vershList[k].Last().Km;
+                                            elemstartm = vershList[k].Last().M;
+
+                                            lvllist.Add(rdcs.Where(o => ((o.Km + o.M / 10000.0) >= (lvlstartkm + lvlstartm / 10000.0) && (o.Km + o.M / 10000.0) <= (vershList[k].Last().Km + vershList[k].Last().M / 10000.0))).ToList());
+                                            lvlstartkm = vershList[k].Last().Km;
+                                            lvlstartm = vershList[k].Last().M;
+
+                                            ploskistr = false;
+                                        }
+                                    }
+                                    else if (vershListLVL.Contains(circularList[j]))
+                                    {
+                                        int k = vershListLVL.IndexOf(circularList[j]);
+                                        if (!ploskilvl)
+                                        {
+                                            elemlist.Add(rdcs.Where(o => ((o.Km + o.M / 10000.0) >= (elemstartkm + elemstartm / 10000.0) && (o.Km + o.M / 10000.0) <= (vershListLVL[k + 1].Last().Km + vershListLVL[k + 1].Last().M / 10000.0))).ToList());
+                                            elemstartkm = vershListLVL[k + 1].Last().Km;
+                                            elemstartm = vershListLVL[k + 1].Last().M;
+
+                                            lvllist.Add(rdcs.Where(o => ((o.Km + o.M / 10000.0) >= (lvlstartkm + lvlstartm / 10000.0) && (o.Km + o.M / 10000.0) <= (vershListLVL[k + 1].Last().Km + vershListLVL[k + 1].Last().M / 10000.0))).ToList());
+                                            lvlstartkm = vershListLVL[k + 1].Last().Km;
+                                            lvlstartm = vershListLVL[k + 1].Last().M;
+
+                                            ploskilvl = true;
+                                        }
+                                        else
+                                        {
+                                            elemlist.Add(rdcs.Where(o => ((o.Km + o.M / 10000.0) >= (elemstartkm + elemstartm / 10000.0) && (o.Km + o.M / 10000.0) <= (vershListLVL[k].Last().Km + vershListLVL[k].Last().M / 10000.0))).ToList());
+                                            elemstartkm = vershListLVL[k].Last().Km;
+                                            elemstartm = vershListLVL[k].Last().M;
+
+                                            lvllist.Add(rdcs.Where(o => ((o.Km + o.M / 10000.0) >= (lvlstartkm + lvlstartm / 10000.0) && (o.Km + o.M / 10000.0) <= (vershListLVL[k].Last().Km + vershListLVL[k].Last().M / 10000.0))).ToList());
+                                            lvlstartkm = vershListLVL[k].Last().Km;
+                                            lvlstartm = vershListLVL[k].Last().M;
+
+                                            ploskilvl = false;
+                                        }
+                                    }
+                                }
+
+
+                                elemlist = elemlist.Where(o => o.Count != 0).ToList();
+                                elemlist[elemlist.Count - 1] = rdcs.Where(o => ((o.Km + o.M / 10000.0) >= (elemlist.Last().First().Km + elemlist.Last().First().M / 10000.0) && (o.Km + o.M / 10000.0) <= (vershList.Last().Last().Km + vershList.Last().Last().M / 10000.0))).ToList();
+                                lvllist = lvllist.Where(o => o.Count != 0).ToList();
+                                lvllist[lvllist.Count - 1] = rdcs.Where(o => ((o.Km + o.M / 10000.0) >= (lvllist.Last().First().Km + lvllist.Last().First().M / 10000.0) && (o.Km + o.M / 10000.0) <= (vershListLVL.Last().Last().Km + vershListLVL.Last().Last().M / 10000.0))).ToList();
+
+
+                                for (int j=0; j < elemlist.Count; j++)
+                                {
+                                    
                                     //макс ыздеу анп га
-                                    var tempM = item.Select(o => o.PassBoost).Max();
+                                    var tempM = elemlist[j].Select(o => o.PassBoost).Max();
                                     if (tempM > max)
                                     {
                                         max = tempM;
-                                        maxAnp = item;
+                                        maxAnp = elemlist[j];
                                     }
 
-                                    var r = item.Select(o => o.Trapez_str).Average();
-                                    var h = item.Select(o => o.Trapez_level).Average();
+                                    var r = elemlist[j].Select(o => o.Trapez_str).Average();
+                                    var h = elemlist[j].Select(o => o.Trapez_level).Average();
 
                                     if (Math.Abs(h) < 6)
                                         continue;
 
-                                    //до круговой кривой
-                                    var beforeIndex = vershList.IndexOf(item) - 1;
-                                    var beforeData = vershList[beforeIndex];
+                                    ////до круговой кривой
+                                    var verh = vershList.Where(o => (o.First().Km + o.First().M / 1000.0) >= (elemlist[j].First().Km + elemlist[j].First().M / 1000.0) && (o.First().Km + o.First().M / 1000.0) <= (elemlist[j].Last().Km + elemlist[j].Last().M / 1000.0)).ToList();
+                                    List<RDCurve> beforeData = new List<RDCurve> { }, afterData = new List<RDCurve> { }, beforeDatalvl = new List<RDCurve> { }, afterDatalvl = new List<RDCurve> { };
+                                    if (verh.Count == 3)
+                                    {
+                                        beforeData = rdcs.Where(o => (o.Km + o.M / 1000.0) > (elemlist[j].First().Km + elemlist[j].First().M / 1000.0) && (o.Km + o.M / 1000.0) < (verh[0].Last().Km + verh[0].Last().M / 1000.0)).ToList();
+                                        afterData = rdcs.Where(o => (o.Km + o.M / 1000.0) > (verh[2].First().Km + verh[2].First().M / 1000.0) && (o.Km + o.M / 1000.0) < (verh[2].Last().Km + verh[2].Last().M / 1000.0)).ToList();
+                                    }
+                                    else if (verh.Count == 2)
+                                    {
+                                        if (circularList.Contains(verh[1]))
+                                        {
+                                            beforeData = rdcs.Where(o => (o.Km + o.M / 1000.0) > (elemlist[j].First().Km + elemlist[j].First().M / 1000.0) && (o.Km + o.M / 1000.0) < (verh[0].Last().Km + verh[0].Last().M / 1000.0)).ToList();
+                                        }
+                                        if (circularList.Contains(verh[0]))
+                                        {
+                                            afterData = rdcs.Where(o => (o.Km + o.M / 1000.0) > (verh[1].First().Km + verh[1].First().M / 1000.0) && (o.Km + o.M / 1000.0) < (verh[1].Last().Km + verh[1].Last().M / 1000.0)).ToList();
+                                        }
+                                    }
+                                    else if (verh.Count == 1 && !circularList.Contains(verh[0]))
+                                    {
+                                        afterData = rdcs.Where(o => (o.Km + o.M / 1000.0) > (verh[0].First().Km + verh[0].First().M / 1000.0) && (o.Km + o.M / 1000.0) < (verh[0].Last().Km + verh[0].Last().M / 1000.0)).ToList();
+                                        
+                                    }
 
-                                    //после круговой кривой
-                                    var afterIndex = vershList.IndexOf(item) + 1;
-                                    var afterData = vershList[afterIndex];
+                                    var verhlvl = vershListLVL.Where(o => (o.First().Km + o.First().M / 1000.0) >= (lvllist[j].First().Km + lvllist[j].First().M / 1000.0) && (o.First().Km + o.First().M / 1000.0) <= (lvllist[j].Last().Km + lvllist[j].Last().M / 1000.0)).ToList();
+
+                                    if (verhlvl.Count == 3)
+                                    {
+                                        beforeDatalvl = rdcs.Where(o => (o.Km + o.M / 1000.0) > (lvllist[j].First().Km + lvllist[j].First().M / 1000.0) && (o.Km + o.M / 1000.0) < (verhlvl[0].Last().Km + verhlvl[0].Last().M / 1000.0)).ToList();
+                                        afterDatalvl = rdcs.Where(o => (o.Km + o.M / 1000.0) > (verhlvl[2].First().Km + verhlvl[2].First().M / 1000.0) && (o.Km + o.M / 1000.0) < (verhlvl[2].Last().Km + verhlvl[2].Last().M / 1000.0)).ToList();
+                                    }
+                                    else if (verhlvl.Count == 2)
+                                    {
+                                        if (circularList.Contains(verhlvl[1]))
+                                        {
+                                            beforeDatalvl = rdcs.Where(o => (o.Km + o.M / 1000.0) > (lvllist[j].First().Km + lvllist[j].First().M / 1000.0) && (o.Km + o.M / 1000.0) < (verhlvl[0].Last().Km + verhlvl[0].Last().M / 1000.0)).ToList();
+                                        }
+                                        if (circularList.Contains(verhlvl[0]))
+                                        {
+                                            afterDatalvl = rdcs.Where(o => (o.Km + o.M / 1000.0) > (verhlvl[1].First().Km + verhlvl[1].First().M / 1000.0) && (o.Km + o.M / 1000.0) < (verhlvl[1].Last().Km + verhlvl[1].Last().M / 1000.0)).ToList();
+                                        }
+                                    }
+                                    else if (verhlvl.Count == 1 && !circularList.Contains(verhlvl[0]))
+                                    {
+                                        afterDatalvl = rdcs.Where(o => (o.Km + o.M / 1000.0) > (verhlvl[0].First().Km + verhlvl[0].First().M / 1000.0) && (o.Km + o.M / 1000.0) < (verhlvl[0].Last().Km + verhlvl[0].Last().M / 1000.0)).ToList();
+                                    }
+
+
+                                    
 
 
                                     XElement xeMultiCurves = new XElement("multicurves");
@@ -1029,44 +1184,45 @@ namespace ALARm_Report.Forms
                                     xeMultiCurves.Add(new XAttribute("order", ind),
 
                                         //plan
-                                        new XAttribute("start_km", item.First().Km),
-                                        new XAttribute("start_m", item.First().M),
+                                        new XAttribute("start_km", elemlist[j].First().Km),
+                                        new XAttribute("start_m", elemlist[j].First().M),
                                         new XAttribute("start_dev", ""),
 
-                                        new XAttribute("final_m", item.Last().M),
-                                        new XAttribute("start_lvl", item.First().M),
+                                        new XAttribute("final_m", elemlist[j].Last().M),
+                                        new XAttribute("start_lvl", elemlist[j].First().M),
                                         new XAttribute("final_dev", ""),
 
-                                       new XAttribute("len", item.Count),
+                                       new XAttribute("len", elemlist[j].Count),
                                         new XAttribute("len_div", ""),
                                         new XAttribute("avg_radius", (17860 / Math.Abs(r)).ToString("0")),
 
-                                        new XAttribute("avg_otv", Math.Abs(r / beforeData.Count).ToString("0.00")),
-                                        new XAttribute("avg_len", beforeData.Count),
-                                        new XAttribute("avg_otv2", Math.Abs(r / afterData.Count).ToString("0.00")),
-                                        new XAttribute("avg_len2", afterData.Count),
+
+                                        new XAttribute("avg_otv", beforeData.Count > 0 ? Math.Abs((beforeData.First().Trapez_str - beforeData.Last().Trapez_str) / beforeData.Count).ToString("0.00") : "-"),
+                                        new XAttribute("avg_len", beforeData.Count > 0 ? beforeData.Count.ToString() : "-"),
+                                        new XAttribute("avg_otv2", afterData.Count > 0 ? Math.Abs((afterData.First().Trapez_str - afterData.Last().Trapez_str) / afterData.Count).ToString("0.00") : "-"),
+                                        new XAttribute("avg_len2", afterData.Count > 0 ? afterData.Count.ToString() : "-"),
 
                                         new XAttribute("type1", "Vуст"),
                                         new XAttribute("Pass", VPass),
                                         new XAttribute("Freg", VFreig),
 
                                         //lvl
-                                        new XAttribute("start_km_lvl", item.First().Km),
-                                        new XAttribute("start_m_lvl", item.First().M),
-                                        new XAttribute("start_dev_lvl", 0),
+                                        new XAttribute("start_km_lvl", lvllist[j].First().Km),
+                                        new XAttribute("start_m_lvl", lvllist[j].First().M),
+                                        new XAttribute("start_dev_lvl", (elemlist[j].First().Km - lvllist[j].First().Km) * 1000 + (elemlist[j].First().M - lvllist[j].First().M)),
 
-                                        new XAttribute("final_km_lvl", item.Last().Km),
-                                        new XAttribute("final_m_lvl", item.Last().M),
-                                        new XAttribute("final_dev_lvl", 0),
+                                        new XAttribute("final_km_lvl", lvllist[j].Last().Km),
+                                        new XAttribute("final_m_lvl", lvllist[j].Last().M),
+                                        new XAttribute("final_dev_lvl", (elemlist[j].Last().Km - lvllist[j].Last().Km) * 1000 + (elemlist[j].Last().M - lvllist[j].Last().M)),
 
-                                        new XAttribute("len_lvl", item.Count),
-                                        new XAttribute("len_div_lvl", 0),
+                                        new XAttribute("len_lvl", lvllist[j].Count),
+                                        new XAttribute("len_div_lvl", elemlist[j].Count - lvllist[j].Count),
                                         new XAttribute("avg_radius_lvl", Math.Abs(h).ToString("0")),
 
-                                        new XAttribute("avg_otv_lvl", Math.Abs(h / beforeData.Count).ToString("0.00")),
-                                        new XAttribute("avg_len_lvl", beforeData.Count),
-                                        new XAttribute("avg_otv2_lvl", Math.Abs(h / afterData.Count).ToString("0.00")),
-                                        new XAttribute("avg_len2_lvl", afterData.Count),
+                                        new XAttribute("avg_otv_lvl", beforeDatalvl.Count > 0 ? Math.Abs((beforeDatalvl.First().Trapez_level - beforeDatalvl.Last().Trapez_level) / beforeDatalvl.Count).ToString("0.00") : "-"),
+                                        new XAttribute("avg_len_lvl", beforeDatalvl.Count > 0 ? beforeDatalvl.Count.ToString() : "-"),
+                                        new XAttribute("avg_otv2_lvl", afterDatalvl.Count > 0 ? Math.Abs((afterDatalvl.First().Trapez_level - afterDatalvl.Last().Trapez_level) / afterDatalvl.Count).ToString("0.00") : "-"),
+                                        new XAttribute("avg_len2_lvl", afterDatalvl.Count > 0 ? afterDatalvl.Count.ToString() : "-"),
 
                                         new XAttribute("type2", "Vогр"),
                                         new XAttribute("PassOgr", "---"),
@@ -1198,8 +1354,8 @@ namespace ALARm_Report.Forms
                                         start_lvl_kmc = lvl_circular[cirrInd].Km;
                                         start_lvl_mc = lvl_circular[cirrInd].M;
 
-                                        final_lvl_kmc = lvl_circular[cirrInd + 1].Km;
-                                        final_lvl_mc = lvl_circular[cirrInd + 1].M;
+                                        final_lvl_kmc = lvl_circular[lvl_circular.Count - 1].Km;
+                                        final_lvl_mc = lvl_circular[lvl_circular.Count - 1].M;
 
                                         break;
                                     }
@@ -1224,28 +1380,9 @@ namespace ALARm_Report.Forms
 
                                 var razn1 = (int)(((start_km + start_m / 10000.0) - (start_lvl_km + start_lvl_m / 10000.0)) * 10000) % 1000; // start
                                 var razn2 = (int)(((final_km + final_m / 10000.0) - (final_lvl_km + final_lvl_m / 10000.0)) * 10000) % 1000; // final
-                                var razn3 = lenKriv - lenKrivlv; // общая длина нижних
+                                var razn3 = lenKrivlv - lenKriv; // общая длина нижних
 
-                                XElement paramCurve = new XElement("param_curve",
-                                    //план
-                                    new XAttribute("start_km", start_km),
-                                    new XAttribute("start_m", start_m),
-                                    new XAttribute("final_km", final_km),
-                                    new XAttribute("final_m", final_m),
-                                    //уровень
-                                    new XAttribute("start_lvl_km", start_lvl_km),
-                                    new XAttribute("start_lvl_m", start_lvl_m),
-                                    new XAttribute("final_lvl_km", final_lvl_km),
-                                    new XAttribute("final_lvl_m", final_lvl_m),
-
-                                    new XAttribute("razn1", razn1),
-                                    new XAttribute("razn2", razn2),
-                                    new XAttribute("razn3", Math.Abs(razn3)),
-
-                                    new XAttribute("len", lenKriv),
-                                    new XAttribute("len_lvl", (lenKrivlv + 1)),
-
-                                    new XAttribute("angle", CurveAngle(curve.Radius, lenPerKriv).ToString("f2", (System.Globalization.CultureInfo.InvariantCulture))));
+                                
 
 
                                 var razn1c = (int)(((start_kmc + start_mc / 10000.0) - (start_lvl_kmc + start_lvl_mc / 10000.0)) * 10000) % 1000; // start
@@ -1255,21 +1392,24 @@ namespace ALARm_Report.Forms
                                 //1-й
                                 var tap_len1 = Math.Round(((start_km + start_m / 10000.0) - (start_kmc + start_mc / 10000.0)) * 10000) % 1000;
                                 var tap_len1_lvl = Math.Round(((start_lvl_km + start_lvl_m / 10000.0) - (start_lvl_kmc + start_lvl_mc / 10000.0)) * 10000) % 1000;
+
+
                                 //2-й
-                                var tap_len2 = Math.Round(((final_km + final_m / 10000.0) - (final_kmc + final_mc / 10000.0)) * 10000) % 1000;
-                                var tap_len2_lvl = Math.Round(((final_lvl_km + final_lvl_m / 10000.0) - (final_lvl_kmc + final_lvl_mc / 10000.0)) * 10000) % 1000;
+                                var tap_len2 = Math.Round(((final_km + final_m / 10000.0) - (str_circular.Last().Km + str_circular.Last().M / 10000.0)) * 10000) % 1000;
+                                var tap_len2_lvl = Math.Round(((final_lvl_km + final_lvl_m / 10000.0) - (lvl_circular.Last().Km + lvl_circular.Last().M / 10000.0)) * 10000) % 1000;
 
                                 //Радиус/Уровень (для мин макс сред)
                                 var temp_data = rdcs.GetRange((int)Math.Abs(tap_len1_lvl) + 40, Math.Abs(lenPerKrivlv));
-                                var temp_data_str = rdcs.Where(o => (start_kmc + start_mc / 10000.0) <= (o.Km + o.M / 10000.0) && (o.Km + o.M / 10000.0) <= (final_kmc + final_mc / 10000.0)).ToList();
-                                var temp_data_lvl = rdcs.Where(o => (start_lvl_kmc + start_lvl_mc / 10000.0) <= (o.Km + o.M / 10000.0) && (o.Km + o.M / 10000.0) <= (final_lvl_kmc + final_lvl_mc / 10000.0)).ToList();
+                                var temp_data_str = rdcs.Where(o => (start_kmc + start_mc / 10000.0) <= (o.Km + o.M / 10000.0) && (o.Km + o.M / 10000.0) <= (str_circular.Last().Km + str_circular.Last().M / 10000.0)).ToList();
+                                var temp_data_lvl = rdcs.Where(o => (start_lvl_kmc + start_lvl_mc / 10000.0) <= (o.Km + o.M / 10000.0) && (o.Km + o.M / 10000.0) <= (lvl_circular.Last().Km + lvl_circular.Last().M / 10000.0)).ToList();
 
                                 //Переходные (для макс сред)
-                                var transitional_lvl_data = rdcs.GetRange(40, Math.Abs((int)tap_len1_lvl));
-                                var transitional_str_data = rdcs.GetRange(40, Math.Abs((int)tap_len1));
+                                var transitional_lvl_data = rdcs.Where(o => ((o.Km + o.M / 10000.0) <= (start_lvl_kmc + start_lvl_mc / 10000.0) && (o.Km + o.M / 10000.0) > (start_lvl_kmc + start_lvl_mc / 10000.0) - Math.Abs(tap_len1_lvl) / 10000.0)).ToList();
+                                var transitional_str_data = rdcs.Where(o => ((o.Km + o.M / 10000.0) <= (start_kmc + start_mc / 10000.0) && (o.Km + o.M / 10000.0) > (start_kmc + start_mc / 10000.0) - Math.Abs(tap_len1) / 10000.0)).ToList();
 
-                                var transitional_lvl_data2 = rdcs.GetRange((int)Math.Abs(tap_len1_lvl) + 40 + Math.Abs(lenPerKrivlv), Math.Abs((int)tap_len2_lvl));
-                                var transitional_str_data2 = rdcs.GetRange((int)Math.Abs(tap_len1) + 40 + Math.Abs(lenPerKriv), Math.Abs((int)tap_len2));
+                                var transitional_lvl_data2 = rdcs.Where(o => ((o.Km + o.M / 10000.0) >= (lvl_circular.Last().Km + lvl_circular.Last().M / 10000.0)) && (o.Km + o.M / 10000.0) < (lvl_circular.Last().Km + lvl_circular.Last().M / 10000.0 + Math.Abs(tap_len2_lvl) / 10000.0)).ToList();
+                                var transitional_str_data2 = rdcs.Where(o => ((o.Km + o.M / 10000.0) >= (str_circular.Last().Km + str_circular.Last().M / 10000.0)) && (o.Km + o.M / 10000.0) < (str_circular.Last().Km + str_circular.Last().M / 10000.0 + Math.Abs(tap_len2) / 10000.0)).ToList();
+
 
 
                                 //план/ср 1 пер
@@ -1291,6 +1431,27 @@ namespace ALARm_Report.Forms
                                 var perMaxlvl = lvl_max / Math.Abs(tap_len1_lvl);
 
                                 var lvl_min = rdcsData.GetMinLevel(temp_data_lvl);
+
+                                XElement paramCurve = new XElement("param_curve",
+                                    //план
+                                    new XAttribute("start_km", start_km),
+                                    new XAttribute("start_m", start_m),
+                                    new XAttribute("final_km", final_km),
+                                    new XAttribute("final_m", final_m),
+                                    //уровень
+                                    new XAttribute("start_lvl_km", start_lvl_km),
+                                    new XAttribute("start_lvl_m", start_lvl_m),
+                                    new XAttribute("final_lvl_km", final_lvl_km),
+                                    new XAttribute("final_lvl_m", final_lvl_m),
+
+                                    new XAttribute("razn1", razn1),
+                                    new XAttribute("razn2", razn2),
+                                    new XAttribute("razn3", Math.Abs(razn3)),
+
+                                    new XAttribute("len", lenKriv),
+                                    new XAttribute("len_lvl", (lenKrivlv + 1)),
+
+                                    new XAttribute("angle", CurveAngle(rdcsData.GetAvgPlan(temp_data_str), lenKriv).ToString("f2", (System.Globalization.CultureInfo.InvariantCulture))));
 
                                 XElement paramCircleCurve = new XElement("param_circle_curve");
 
@@ -1399,23 +1560,37 @@ namespace ALARm_Report.Forms
 
                                 var AnpFreigMax = (Math.Pow(freightSpeed.First(), 2) / (13.0 * rad_mid)) - (0.0061 * lvl_mid);
 
+                                var passmax = rdcsData.GetPassSpeed();
+                                int len_rs; //len retraction slope
+                                if (passmax > 140)
+                                    len_rs = 40;
+                                else if (passmax <= 140 && passmax >= 60)
+                                    len_rs = 30;
+                                else
+                                    len_rs = 20;
+
+                                var piketogr = "";
+                                if (rdcsData.GetPassSpeed() > Vkr || rdcsData.GetPassSpeed() > passSpeeds[1] || rdcsData.GetPassSpeed() > passSpeeds[2])
+                                {
+                                    piketogr = ((AgPassMaxCoord / 100) >= 10 ? (AgPassMaxCoord / 100) % 10 + 1 : (AgPassMaxCoord / 100) + 1).ToString();
+                                }
 
 
                                 XElement withdrawal = new XElement("withdrawal",
-                                    new XAttribute("tap_max1", perMax.ToString("0.00")),
-                                    new XAttribute("tap_mid1", perAvg1.ToString("0.00")),
+                                   new XAttribute("tap_max1", rdcsData.GetPlanMaxRetractionSlope(transitional_str_data, len_rs).ToString("0.00")),
+                                    new XAttribute("tap_mid1", rdcsData.GetPlanAvgRetractionSlope(transitional_str_data, tap_len1).ToString("0.00")),
                                     new XAttribute("tap_len1", Math.Abs(tap_len1)),
 
-                                    new XAttribute("tap_max1_lvl", perMaxlvl.ToString("0.00")),
-                                    new XAttribute("tap_mid1_lvl", perAvglvl.ToString("0.00")),
+                                    new XAttribute("tap_max1_lvl", rdcsData.GetLvlMaxRetractionSlope(transitional_lvl_data, len_rs).ToString("0.00")),
+                                    new XAttribute("tap_mid1_lvl", rdcsData.GetLvlAvgRetractionSlope(transitional_lvl_data, tap_len1_lvl).ToString("0.00")),
                                     new XAttribute("tap_len1_lvl", Math.Abs(tap_len1_lvl)),
 
-                                    new XAttribute("tap_max2", transitional_str_data2.Any() ? (rdcsData.GetPlanRightMaxRetractionSlope(transitional_str_data2)).ToString("f2", System.Globalization.CultureInfo.InvariantCulture) : "0"),
-                                    new XAttribute("tap_mid2", transitional_str_data2.Any() ? (rdcsData.GetPlanRightAvgRetractionSlope(transitional_str_data2)).ToString("f2", System.Globalization.CultureInfo.InvariantCulture) : "0"),
+                                    new XAttribute("tap_max2", transitional_str_data2.Any() ? rdcsData.GetPlanMaxRetractionSlope(transitional_str_data2, len_rs).ToString("0.00") : "0"),
+                                    new XAttribute("tap_mid2", transitional_str_data2.Any() ? rdcsData.GetPlanAvgRetractionSlope(transitional_str_data2, tap_len2).ToString("0.00") : "0"),
                                     new XAttribute("tap_len2", Math.Abs(tap_len2)),
 
-                                    new XAttribute("tap_max2_lvl", transitional_lvl_data2.Any() ? rdcsData.GetLevelRightMaxRetractionSlope(transitional_lvl_data2).ToString("f2", System.Globalization.CultureInfo.InvariantCulture) : "0"),
-                                    new XAttribute("tap_mid2_lvl", transitional_lvl_data2.Any() ? rdcsData.GetLevelRightAvgRetractionSlope(transitional_lvl_data2).ToString("f2", System.Globalization.CultureInfo.InvariantCulture) : "0"),
+                                    new XAttribute("tap_max2_lvl", rdcsData.GetLvlMaxRetractionSlope(transitional_lvl_data2, len_rs).ToString("0.00")),
+                                    new XAttribute("tap_mid2_lvl", rdcsData.GetLvlAvgRetractionSlope(transitional_lvl_data2, tap_len2_lvl).ToString("0.00")),
                                     new XAttribute("tap_len2_lvl", Math.Abs(tap_len2_lvl)));
 
                                 XElement computing = new XElement("computing",
@@ -1450,7 +1625,9 @@ namespace ALARm_Report.Forms
                                     new XAttribute("AgPassMax", $"{AgPassMax.ToString("0.00").Replace(",", ".")} / {AgPassMaxCoord}"),
                                     new XAttribute("FiPassMax", $"{FiMax.ToString("0.00").Replace(",", ".")} / {FiMaxCoord}"),
                                     new XAttribute("AgFreigMax", $""),
-                                    new XAttribute("FiFreigMax", $"")
+                                    new XAttribute("FiFreigMax", $""),
+                                    new XAttribute("PiketOgr", piketogr)
+
                                     );
 
                                 XElement Speeds = new XElement("Speeds");

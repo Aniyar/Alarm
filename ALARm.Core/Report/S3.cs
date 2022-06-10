@@ -54,7 +54,13 @@ namespace ALARm.Core.Report
         public string Name { get; set; }
         public int Count { get; set; }
     }
-	public class SumOfTheDep : RdObject
+
+    public class DigressionTotalTrack
+    {
+        public long Track_id = 0;
+        public int Count = 0;
+    }
+    public class SumOfTheDep : RdObject
     {
         public new int Km { get; set; }
         public int Fastening { get; set; }

@@ -31,17 +31,8 @@ namespace ALARm.Core
             return $"{Km} {M} {Trapez_str} {X} {Trapez_level} {FiList2}";
         }
 
-        /// <summary>
-        /// радиус
-        /// </summary>
         public float Radius { get; set; }
-        /// <summary>
-        /// уровень
-        /// </summary>
         public float Level { get; set; }
-        /// <summary>
-        /// шаблон
-        /// </summary>
         public int Gauge { get; set; }
         public float PassBoost { get; set; }
         public float SapsanBoost { get; set; }

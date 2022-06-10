@@ -168,17 +168,20 @@ namespace ALARm.Core.Report
         public int GetMinPlan(List<RDCurve> t)
         {
             return Convert.ToInt32(17860 / (t.Select(o=>Math.Abs(o.Radius)).Max() + 0.0000001));
+            //return (int)(t.Select(o => o.Radius).Min());
         }
 
         public int GetMaxPlan(List<RDCurve> t)
         {
             var temp = t.Select(o => Math.Abs(o.Radius)).Any() ? t.Select(o => Math.Abs(o.Radius)).Min() + 1 : 1;
             return Convert.ToInt32(17860 / temp);
+            //return (int)(t.Select(o => o.Radius).Max());
         }
 
         public int GetAvgPlan(List<RDCurve> t)
         {
-            return (int)(17860 / Math.Abs(t.Select(o => o.Radius).Average()+ 0.0000001));
+            return (int)(17860 / (Math.Abs(t.Select(o => o.Radius).Average()) + 0.000001));
+            //return (int)(t.Select(o => o.Radius).Average());
         }
 
         public int Get6mmWear()
@@ -485,6 +488,58 @@ namespace ALARm.Core.Report
             return RetractionSlopeLevelRight.Average();
         }
 
+        // следующие 4 функции написала Анияр
+        public float GetPlanMaxRetractionSlope(List<RDCurve> rdcs, int n)
+        {
+            float max = 0;
+            float trapmax = 0;
+            if (rdcs.Count < n)
+            {
+                n = rdcs.Count/3;
+            }
+            for (int i=0; i< rdcs.Count - n; i++)
+            {
+                float trap = (float)(Math.Abs(rdcs[n + i].Trapez_str - rdcs[i].Trapez_str) / n);
+                float temp = (float)Math.Abs((Math.Abs(rdcs[n + i].Radius - rdcs[i].Radius )/n - trap));
+                if (temp > max)
+                {
+                    max = temp;
+                }
+                if (trap > trapmax)
+                {
+                    trapmax = trap;
+                }
+            }
+            return (trapmax + max)*2;
+        }
+
+        public float GetPlanAvgRetractionSlope(List<RDCurve> rdcs, double len)
+        {
+            var max_rad = rdcs.Select(o => Math.Abs(o.Radius)).Max();
+            return (float)(2 * max_rad / Math.Abs(len));
+        }
+
+        public float GetLvlMaxRetractionSlope(List<RDCurve> rdcs, int n)
+        {
+            float max = 0;
+            for (int i = 0; i < rdcs.Count - n; i++)
+            {
+                float temp = (float)(Math.Abs(rdcs[n + i].Level - rdcs[i].Level) / n);
+                if (temp > max)
+                {
+                    max = temp;
+                }
+            }
+            return max ;
+        }
+
+        public float GetLvlAvgRetractionSlope(List<RDCurve> rdcs, double len)
+        {
+            var max_lvl = rdcs.Select(o => Math.Abs(o.Level)).Max();
+            return (float)(max_lvl / Math.Abs(len));
+        }
+
+
         public float GetPlanLeftMaxRetractionSlope(List<RDCurve> t)
         {
             var max_val = t.Select(o => Math.Abs(o.Radius)).Max();
@@ -519,7 +574,6 @@ namespace ALARm.Core.Report
         public float GetLevelRightMaxRetractionSlope(List<RDCurve> t)
         {
             var max_val = t.Select(o => Math.Abs(o.Level)).Max();
-            
             return max_val / t.Count;
         }
         public float GetLevelRightAvgRetractionSlope(List<RDCurve> t)
@@ -604,16 +658,17 @@ namespace ALARm.Core.Report
 
             return (int)Viz;
         }
-        public int GetIZSpeed(float [] T, int speed)
+        public int GetIZSpeed(double [] T, int speed)
         {
             float psi = PassBoost[0] > 140 ? 0.4f : 0.6f;
-
             int s = (int)((psi / T.Max() * 3.6 * tableP1(speed)));
             return s;
         }
         public int GetIZFreightSpeed()
         {
-            float psi = 0.6f;
+            //float psi = 0.6f;
+
+            float psi = PassBoost[0];
             int speed = (int)((psi / PassBoost.Max() * 3.6 * tableP1(FreightSpeed[0])));
             return speed;
         }
