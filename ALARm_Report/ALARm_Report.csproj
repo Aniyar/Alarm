@@ -601,7 +601,7 @@
       <Name>ALARm.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\ALARm.DataAccess\ALARm.DataAccess.csproj">
-      <Project>{DFBEF14E-4CA6-4DAA-BDA8-526B86293F11}</Project>
+      <Project>{dfbef14e-4ca6-4daa-bda8-526b86293f11}</Project>
       <Name>ALARm.DataAccess</Name>
     </ProjectReference>
     <ProjectReference Include="..\ALARm.Services\ALARm.Services.csproj">

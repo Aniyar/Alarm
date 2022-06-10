@@ -246,6 +246,7 @@ namespace ALARm.Core.Report
         public int lvl { get; set; }
         public int Meter { get; set; }
         public int Km { get; set; }
+        public int lvl { get; set; }
         public int Degree { get; set; }
         public int Length { get; set; }
         public string Prim { get; set; }

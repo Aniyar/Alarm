@@ -85,6 +85,26 @@ namespace ALARm_Report.Forms
                     }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                     XElement xeCurve = new XElement("curve",
 
                          new XAttribute("wear", "* - "),//to DO Пороговое значение износа
@@ -354,7 +374,10 @@ namespace ALARm_Report.Forms
                             List<float> gauge = new List<float>();
                             List<float> passBoost = new List<float>();
                             List<float> freightBoost = new List<float>();
-
+                            List<float> PassBoost_anp = new List<float>();
+                            List<float> FreightBoost_anp = new List<float>();
+                            List<float> TrapezStr = new List<float>();
+                            List<float> TrapezLvl = new List<float>();
                             foreach (var rdc in rdcs)
                             {
                                 x.Add(rdcs.IndexOf(rdc));
@@ -365,12 +388,25 @@ namespace ALARm_Report.Forms
                                 freightBoost.Add(rdc.FreightBoost);
                                 passSpeed.Add(rdc.PassSpeed);
                                 freightSpeed.Add(rdc.FreightSpeed);
+                                PassBoost_anp.Add(rdc.PassBoost_anp);
+                                FreightBoost_anp.Add(rdc.FreightBoost_anp);
+                                TrapezStr.Add(rdc.Trapez_str);
+                                TrapezLvl.Add(rdc.Trapez_level);
+
                             }
+                            //var lvl_midKrug = TrapezLvl.Max();
+                            // var perAvglvlKrug = lvl_mid / Math.Abs(tap_len1_lvl);
+                            //уровень/макс 1 пер
+                            var lvl_maxKrug = (int)TrapezLvl.Max(); ;
+                            // var perMaxlvlKrug = lvl_max / Math.Abs(tap_len1_lvl);
 
-                            var AnpPassMax = (Math.Pow(passSpeed.First(), 2) / (13.0 * rad_mid)) - (0.0061 * lvl_mid);
+                            //var lvl_minKrug = rdcsData.GetMinLevel(temp_data_lvl);
+                            var rad_minKrug = (int)(8865.0 / TrapezStr.Max());
+                            var AnpPassMax = (Math.Pow(passSpeed.First(), 2) / (13.0 * rad_minKrug)) - (0.0061 * lvl_maxKrug);
 
-                            var AnpFreigMax = (Math.Pow(freightSpeed.First(), 2) / (13.0 * rad_mid)) - (0.0061 * lvl_mid);
-
+                            var AnpFreigMax = (Math.Pow(freightSpeed.First(), 2) / (13.0 * rad_minKrug)) - (0.0061 * lvl_maxKrug);
+                            AnpPassMax = PassBoost_anp.Max();
+                            AnpFreigMax = FreightBoost_anp.Max();
 
                             XElement paramCurve = new XElement("param_curve",
                             new XAttribute("curve_num", curve.Num),
@@ -379,15 +415,13 @@ namespace ALARm_Report.Forms
                             new XAttribute("start_m", start_m),
                             new XAttribute("final_km", final_km),
                             new XAttribute("final_m", final_m),
-
-                            new XAttribute("vozv", lvl_mid),
-                            new XAttribute("radius", rad_mid),
+                            new XAttribute("vozv", lvl_maxKrug),
+                            new XAttribute("radius", rad_minKrug),
                             new XAttribute("Vpz_pass", passSpeed.First()),
                             new XAttribute("Vpz_gruz", freightSpeed.First()),
                             new XAttribute("Anp_pass", AnpPassMax.ToString("0.00").Replace(",", ".")),
                             new XAttribute("Anp_gruz", AnpFreigMax.ToString("0.00").Replace(",", ".")));
-
-                            if (AnpPassMax >= (double)filters0[0].Value)
+                            if ((AnpPassMax >= (double)filters0[0].Value) &&(lvl_maxKrug>6) && (rad_minKrug > 250))
                             {
                                 xeCurve.Add(paramCurve);
                             }

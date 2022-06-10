@@ -25,14 +25,17 @@ begin
     // Flag_Sablog := true;
     FileName := ParamStr(1);
     if FileName = '' then
+
        FileName := 'g:\work_shifrovka\km_709_4816.svgpdat';
 //        FileName := 'g:\work_shifrovka\km_717_4820.svgpdat'  ;
+
     writeln(FileName);
 
     MainDataModule := DataModule.TMainDataModule.Create(nil);
     MainDataModule.pgsConnection.Close();
     MainDataModule.pgsConnection.Params.LoadFromFile
       ('C:\sntfi\ALARm5\ALARmProcees\pgsparam.txt');
+
     MainDataModule.pgsConnection.Open();
     // flag_sablog := true;
 

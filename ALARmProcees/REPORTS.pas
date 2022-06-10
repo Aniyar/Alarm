@@ -336,12 +336,13 @@ begin
           ParamByName('KM').Value := glbKmTrue;
           ParamByName('M').Value := x;
 
-          ParamByName('RADIUS').Value := abs((F_fluk[i] / 2) + Fsr_rh1[i]);
+          ParamByName('RADIUS').Value := abs((F_fluk[i] / 2) + ST_AVG[i]);
           ParamByName('LEVEL').Value := abs(LV_N[i]);
 
           ParamByName('GAUGE').Value := abs(F_sh[i] - F0_sh[i]);
 
-          ParamByName('PASSBOOST').Value := GUs[i];
+          ParamByName('PASSBOOST').Value :=GUs[i];
+
           ParamByName('FREIGHTBOOST').Value := GUs2[i];
 
           ParamByName('PASSBOOST_ANP').Value := ANP_GUs[i];

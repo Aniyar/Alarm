@@ -100,7 +100,9 @@ namespace ALARm_Report.Forms
                         meter = (int)filters[1].Value;
 
                         Blazor_prov_data.GetBitmapAsync(km, meter);
+
                         var DB_gauge = AdditionalParametersService.GetGaugeFromDBkmmter(km,meter, process.Trip_id);
+
 
                         //var railstype = "";
                        

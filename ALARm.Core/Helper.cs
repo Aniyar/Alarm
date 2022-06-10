@@ -20,6 +20,9 @@ namespace ALARm.Core
         /// <summary>
         /// Пороговые величины поперечного непогашенного ускорения и ψ
         /// </summary>
+        /// 
+
+
         public static ThresholdsAcceleration GetAnp(VagonType vagonType, int curveRadius = -1)
         {
             ThresholdsAcceleration temp = new ThresholdsAcceleration { };
@@ -117,6 +120,7 @@ namespace ALARm.Core
                 return SocketState.Abortively;
             }
         }
+
         public static SocketState SendMessageToRabbitMQExchange(IConnection connection, string exchange, String message)
         {
             try
@@ -370,7 +374,7 @@ namespace ALARm.Core
                 IPHostEntry ipHost = Dns.GetHostEntry(ip);
                 IPAddress ipAddr = ipHost.AddressList[0];
                 IPEndPoint ipEndPoint = new IPEndPoint(ipAddr, port);
-
+                
                 Socket sender = new Socket(ipAddr.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
                 // Соединяем сокет с удаленной точкой
@@ -398,8 +402,9 @@ namespace ALARm.Core
 
 
             }
-            catch
+            catch (Exception e)
             {
+                Console.WriteLine(e);
                 return SocketState.Abortively;
             }
         }

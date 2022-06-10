@@ -113,7 +113,7 @@ namespace AlarmPP.Web.Components.Diagram
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("it is:" + e.Message);
+                    Console.WriteLine("autoscroll error" + e.Message);
                 }
               
 

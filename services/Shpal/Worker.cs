@@ -16,6 +16,10 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Npgsql;
+using Dapper;
+using System.IO;
+//using ALARm_Report.controls;
 
 namespace SleepersService
 {
@@ -71,27 +75,38 @@ namespace SleepersService
                 {
                     var body = ea.Body.ToArray();
                     var message = Encoding.UTF8.GetString(body);
+                    message = message.Replace("\\", "\\\\");
                     _logger.LogInformation(" [x] Received {0}", message);
 
                     JObject json = JObject.Parse(message);
+                    var kmIndex = (int)json["Km"];
+                    var kmId = (int)json["FileId"];
+                    //var path = json["Path"];
 
-                    var kmIndex = (int)json["KmIndex"];
-                    var fileId = (int)json["FileId"];
-
-                    var trip = RdStructureService.GetTripFromFileId(fileId).Last();
+                    Trips trip = RdStructureService.GetTripFromFileId(kmId)[0];
+                    int TripId = (int)trip.Id;
                     var kilometers = RdStructureService.GetKilometersByTrip(trip);
-                    var km = kilometers.Where(km => km.Number == kmIndex).ToList().First();
+                    Kilometer km = kilometers.Where(km => km.Number == kmIndex).First();
+
+
+
                     this.MainTrackStructureRepository = MainTrackStructureService.GetRepository();
 
-                    var outData = (List<OutData>)RdStructureService.GetNextOutDatas(km.Start_Index - 1, km.GetLength() - 1, trip.Id);
+
+                    var outData = (List<OutData>)RdStructureService.GetNextOutDatas(km.Start_Index - 1, km.GetLength() - 1, TripId);
                     km.AddDataRange(outData, km);
+
                     km.LoadTrackPasport(MainTrackStructureRepository, trip.Trip_date);
+                    try
+                    {
+                        GetSleepers(trip, km);
+                        Console.WriteLine("Шпалы ОК!");
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Шпалы ERROR! " + e.Message);
+                    }
 
-                    //Видеоконтроль
-                    // todo distanse id
-                    string p = GetSleepers(trip, km, 53); //стыки
-
-                    _logger.LogInformation(" [x] GetSleepers {0} {1} {2}", fileId, kmIndex, p);
 
                 };
                 _channel.BasicConsume(queue: QueueName,
@@ -100,7 +115,7 @@ namespace SleepersService
 
                 return base.StartAsync(cancellationToken);
             }
-            catch
+            catch (Exception e)
             {
                 StartAsync(cancellationToken);
                 return base.StartAsync(cancellationToken);
@@ -108,21 +123,12 @@ namespace SleepersService
         }
 
 
-        /// <summary>
-        /// Сервис по деф шпалам
-        /// </summary>
-        /// <param name="trip"></param>
-        /// <param name="km"></param>
-        /// <param name="distId"></param>
-        /// 
-
-
-        private string GetSleepers(Trips trip, Kilometer km, int distId)
+        private void GetSleepers(Trips trip, Kilometer km)
         {
             try
             {
                 var mainProcess = new MainParametersProcess { Trip_id = trip.Id };
-                var distance = AdmStructureService.GetUnit(AdmStructureConst.AdmDistance, distId) as AdmUnit;
+                //var distance = AdmStructureService.GetUnit(AdmStructureConst.AdmDistance, distId) as AdmUnit;
                 var trackName = AdmStructureService.GetTrackName(km.Track_id);
 
                 var digressions = RdStructureService.GetShpal(mainProcess, new int[] { 7 }, km.Number);
@@ -162,7 +168,7 @@ namespace SleepersService
                         //sector = MainTrackStructureService.GetSector(km.Track_id, digressions[i].Km, trip.Trip_date);
                         //sector = sector == null ? "Нет данных" : sector;
                         //pdbSection = MainTrackStructureService.GetMtoObjectsByCoord(trip.Trip_date, digressions[i].Km, MainTrackStructureConst.MtoPdbSection, trip.Direction, trackName.ToString()) as List<PdbSection>;
-                        skreplenie = MainTrackStructureService.GetMtoObjectsByCoord(trip.Trip_date, digressions[i].Km, MainTrackStructureConst.MtoRailsBrace, trip.Direction, trackName.ToString()) as List<RailsBrace>;
+                        skreplenie = MainTrackStructureService.GetMtoObjectsByCoord(trip.Trip_date, digressions[i].Km, MainTrackStructureConst.MtoRailsBrace, "Петропавловск - Шу", trackName.ToString()) as List<RailsBrace>;
                     }
 
                     var pdb = km.PdbSection.Count > 0 ? km.PdbSection[0].ToString() : " ПЧ-/ПЧУ-/ПД-/ПДБ-";
@@ -263,17 +269,12 @@ namespace SleepersService
 
                 AdditionalParametersService.Insert_defshpal(mainProcess.Trip_id, 1, digressions);
 
-
-                return "Success";
-
             }
             catch (Exception e)
             {
                 Console.WriteLine("GetSleepers " + e.Message);
-                return "Failed";
             }
         }
-
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {

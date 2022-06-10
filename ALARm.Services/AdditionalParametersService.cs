@@ -53,10 +53,12 @@ namespace ALARm.Services
         {
             return Container.Resolve<IAdditionalParametersRepository>().GetGaugeFromDB(kilometer, trip_id);
         }
+
         public static List<CrosProf> GetGaugeFromDBkmmter(int kilometer, int meter, long trip_id)
         {
             return Container.Resolve<IAdditionalParametersRepository>().GetGaugeFromDBkmmter(kilometer, meter, trip_id);
         }
+
 
 
 
