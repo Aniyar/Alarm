@@ -66,6 +66,8 @@ namespace ALARm_Report.Forms
                         var kilometers = RdStructureService.GetKilometersByTrip(trip);
 
                         kilometers = kilometers.Where(o => o.Track_id == track_id).ToList();
+                        var trackName = AdmStructureService.GetTrackName(track_id);
+                        string[] subs = tripProcess.DirectionName.Split('(');
 
                         if (kilometers.Count == 0) continue;
 
@@ -347,8 +349,9 @@ namespace ALARm_Report.Forms
                             curve.Elevations = (MainTrackStructureService.GetCurves(curve.Id, MainTrackStructureConst.MtoElCurve) as List<ElCurve>).OrderBy(el => el.RealStartCoordinate).ToList();
                             curve.Straightenings = (MainTrackStructureService.GetCurves(curve.Id, MainTrackStructureConst.MtoStCurve) as List<StCurve>).OrderBy(st => st.RealStartCoordinate).ToList();
 
-                            var speed = MainTrackStructureService.GetMtoObjectsByCoord(tripProcess.Date_Vrem, curve.Straightenings.First().Start_Km,
-                                    MainTrackStructureConst.MtoSpeed, tr.Direction, "1") as List<Speed>;
+
+                            var speed = MainTrackStructureService.GetMtoObjectsByCoord(tripProcess.Date_Vrem, curve.Start_Km, MainTrackStructureConst.MtoSpeed, subs.Any() ? subs.First() : "", trackName.ToString()) as List<Speed>;
+
                             //if (speed.Any() && speed.First().Lastochka > 100)
                             //    continue;
 
