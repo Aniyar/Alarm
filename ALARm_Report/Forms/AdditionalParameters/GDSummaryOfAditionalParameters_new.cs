@@ -598,7 +598,7 @@ namespace ALARm_Report.Forms
             try
             {
                 htReport.Save(Path.GetTempPath() + "/report.html");
-                htReport.Save($@"G:\form\5.Графические диаграммы ГД\ГД сводной доп.параметров .html");
+                //htReport.Save($@"G:\form\5.Графические диаграммы ГД\ГД сводной доп.параметров .html");
 
             }
             catch

@@ -59,6 +59,10 @@ namespace ALARm.Services
             return (Container.Resolve<IMainTrackStructureRepository>().GetMtoObjectsByCoord(travelDate, kilometrNumber, motObjectType, direction, trackNumber));
         }
 
+        //public static object GetMtoObjectsByCoord(DateTime travelDate, int kilometrNumber, int СдЕЛАТЬ ВЫБОРКУ ПО адм.ТРАК АЙДИ, string direction, string trackNumber)
+        //{
+        //    return (Container.Resolve<IMainTrackStructureRepository>().GetMtoObjectsByCoord(travelDate, kilometrNumber, motObjectType, direction, trackNumber));
+        //}
         public static List<RefPoint> GetRefPointsByTripIdToDate(long track_id, DateTime date_Vrem)
         {
             return (Container.Resolve<IMainTrackStructureRepository>().GetRefPointsByTripIdToDate(track_id, date_Vrem));

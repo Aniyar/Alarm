@@ -38,8 +38,8 @@ namespace ALARm.Core
         List<Gap> RDGetGap(long process_id, int direction, int track_id);
         List<CrosProf> GetGaugeFromDB(int kilometer, long trip_id);
 
+        List<CrosProf> GetGaugeFromDBkmmter(int kilometer, int meter, long trip_id);
 
-        List<CrosProf> GetGaugeFromDBkmmter(int kilometer,int meter, long trip_id);
         List<CrosProf> GetCrossRailProfileFromDBbyKm(int kilometer,  long trip_id);
         List<CrosProf> GetCrossRailProfileFromDBbyKm_forPPWEB(int kilometer, int index, int count, long trip_id);
     

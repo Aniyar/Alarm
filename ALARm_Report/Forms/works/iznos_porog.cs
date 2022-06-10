@@ -96,6 +96,7 @@ namespace ALARm_Report.Forms
                             new XAttribute("check", tripProcess.GetProcessTypeName),
                             new XAttribute("track", curvesAdmUnit.Track),
                             new XAttribute("road", road),
+                            new XAttribute("porogoeznah", "0"),
                             new XAttribute("distance", distance.Code),
                             new XAttribute("periodDate", period.Period),
                             new XAttribute("chief", tripProcess.Chief),
@@ -386,11 +387,11 @@ namespace ALARm_Report.Forms
 
                         int count = 0;
 
-                        //foreach (var total in totals)
-                        //{
-                        //    count += total.Count;
-                        //    tripElem.Add(new XElement("total", new XAttribute("totalinfo", total.Name + " - " + total.Count.ToString())));
-                        //}
+                        foreach (var total in totals)
+                        {
+                            count += total.Count;
+                            tripElem.Add(new XElement("total", new XAttribute("totalinfo", total.Name + " - " + total.Count.ToString())));
+                        }
 
                         //В том числе:
                         if (drawdownCount > 0)

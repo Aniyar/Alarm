@@ -27,11 +27,12 @@ namespace ALARm_Report.Forms
 
         private readonly float StraighRighttPosition = 62f;
         private readonly float StrightStep = 7.5f;
-        private readonly float StrightKoef = 0.5f;
+        private readonly float StrightKoef = 2*0.5f;
 
         private readonly float ProsKoef = 1f;
 
-        private readonly float GaugeKoef = 0.5f;
+        private readonly float GaugeKoef = 1f;
+        //0.5
 
         private readonly float StrightLeftPosition = 71f;
 
@@ -116,6 +117,10 @@ namespace ALARm_Report.Forms
 
                         foreach (var kilometer in kilometers)
                         {
+                            if( kilometer.Number == 716)
+                            {
+                                kilometer.Number = 716;
+                            }
                             XElement kmlist = new XElement("kmlist");
 
                             progressBar.Value = kilometers.IndexOf(kilometer) + 1;
@@ -201,7 +206,8 @@ namespace ALARm_Report.Forms
                                 new XAttribute("top-title",
                                     (direction != null ? $"{direction.Name} ({direction.Code})" : "Неизвестный") + " Путь: " +
                                     kilometer.Track_name + " Км:" + kilometer.Number + " " +
-                                    (kilometer.PdbSection.Count > 0 ? $" ПЧ-{kilometer.PdbSection[0].Distance}" : " ПЧ-") + " Уст: " + " " +
+                                    (kilometer.PdbSection.Count > 0 ? $" ПЧ-{kilometer.PdbSection[0].Distance}" : " ПЧ-") + " Уст: " +
+                                    (kilometer.Speeds.Count > 0 ? $"Cапс.:{kilometer.Speeds.First().Sapsan}/Ласт.:{kilometer.Speeds.First().Lastochka}/СТРИЖ:{kilometer.Speeds.First().Empty_Freight}/" : "-/-/-") +
                                     (kilometer.Speeds.Count > 0 ? $"{kilometer.Speeds.First().Passenger}/{kilometer.Speeds.First().Freight}" : "-/-")),
 
                                 new XAttribute("right-title",
@@ -476,7 +482,7 @@ namespace ALARm_Report.Forms
             }
             try
             {
-                htReport.Save($@"G:\form\1.Основные и дополнительные параметры геометрии рельсовой колеи (ГРК)\Графическая диаграмма  основных парамеров ГРК на участвке скоросного движения.html");
+                //htReport.Save($@"G:\form\1.Основные и дополнительные параметры геометрии рельсовой колеи (ГРК)\Графическая диаграмма  основных парамеров ГРК на участвке скоросного движения.html");
                 htReport.Save(Path.GetTempPath() + "/1report.html");
                 //htReport.Save($@"G:\form\G:\form\1.Основные и дополнительные параметры геометрии рельсовой колеи (ГРК)\2.Графическая диаграмма  основных парамеров ГРК на участвке скоросного движения.html");
                 var svg = htReport.Element("html").Element("body").Element("div").Element("div").Element("svg");

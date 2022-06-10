@@ -39,7 +39,13 @@ namespace ALARm_Report.Forms
                 var distance = AdmStructureService.GetUnit(AdmStructureConst.AdmDistance, parentId) as AdmUnit;
                 var roadName = AdmStructureService.GetRoadName(parentId, AdmStructureConst.AdmDistance, true);
 
-                var tripProcesses = RdStructureService.GetProcess(period, parentId, ProcessType.VideoProcess);
+                //var tripProcesses = RdStructureService.GetProcess(period, parentId, ProcessType.VideoProcess);
+                //if (tripProcesses.Count == 0)
+                //{
+                //    MessageBox.Show(Properties.Resources.paramDataMissing);
+                //    return;
+                //}
+                var tripProcesses = RdStructureService.GetMainParametersProcess(period, distance.Name);
                 if (tripProcesses.Count == 0)
                 {
                     MessageBox.Show(Properties.Resources.paramDataMissing);
@@ -99,10 +105,12 @@ namespace ALARm_Report.Forms
                         progressBar.Maximum = kms.Count;
 
                         var check_gap_state = AdditionalParametersService.Check_gap_state(tripProcess.Id, template.ID); //стыки
-                        var Pu32_gap = check_gap_state.Where(o => o.Otst.Contains("З") || o.Otst.Contains("З?")).ToList();
+                        var Pu32_gap = check_gap_state.Where(o => o.Otst_l.Contains("З") || o.Otst_r.Contains("З?")).ToList();
 
                         foreach (var km in kms)
                         {
+                            var trackclasses = (List<TrackClass>)MainTrackStructureService.GetMtoObjectsByCoord(trip.Trip_date, km.Number, MainTrackStructureConst.MtoTrackClass, trackId);
+                            
                             km.LoadTrackPasport(MainTrackStructureService.GetRepository(), tripProcess.Date_Vrem);
                             var digressions = RdStructureService.GetDigressionMarks(tripProcess.Id, km.Track_id, km.Number);
 
@@ -145,6 +153,7 @@ namespace ALARm_Report.Forms
                             var kmGap = Pu32_gap.Where(o => o.Km == km.Number).ToList();
                             foreach (var item in kmGap)
                             {
+                                
                                 var dig = new S3 { };
 
                                 dig.Km = item.Km;
@@ -176,6 +185,7 @@ namespace ALARm_Report.Forms
 
                             foreach (var s3 in ListS3)
                             {
+                                
                                 var radius = "-";
                                 var vozvihenie = "-";
                                 var norm = "-";
@@ -190,6 +200,7 @@ namespace ALARm_Report.Forms
 
                                     radius = curv.First().Straightenings.First().Radius.ToString();
                                     vozvihenie = curv.First().Elevations.First().Lvl.ToString();
+                                   
                                     norm = curv.First().Straightenings.First().Width.ToString();
                                 }
 
@@ -234,13 +245,13 @@ namespace ALARm_Report.Forms
                                 }
 
 
-
+                                ////нужно изменить З на З.л /З.пр соотвественно и нормы
                                 if (s3.Ots == "З" || s3.Ots == "З?")
                                 {
                                     XElement xeNote = new XElement("Note",
                                         new XAttribute("codDorogi", temp.Any() ? temp.First().Roadcode : "-"),
                                         new XAttribute("codNapr", temp.Any() ? temp.First().Directcode : "-"),
-                                        new XAttribute("classput", "1"),
+                                        new XAttribute("classput", trackclasses.First().Class_Id),
 
                                         new XAttribute("pch", distance.Code),
                                         new XAttribute("checkDate", temp.Any() ? temp.First().Date.ToString("dd/MM/yyyy") : "-"),
@@ -249,7 +260,7 @@ namespace ALARm_Report.Forms
                                         new XAttribute("km", s3.Km),
                                         new XAttribute("m", s3.Meter),
                                         new XAttribute("vidOts", s3.Ots),
-                                        new XAttribute("norma", "-"),
+                                        new XAttribute("norma", "30"),
                                         new XAttribute("velichOts", s3.Otkl),
                                         new XAttribute("len", "-"),
                                         new XAttribute("stepen", "-"),
@@ -259,7 +270,9 @@ namespace ALARm_Report.Forms
                                         new XAttribute("vPass", s3.Uv.ToString() == "-1" ? "-" : s3.Uv.ToString()),
                                         new XAttribute("vGruz", s3.Uvg.ToString() == "-1" ? "-" : s3.Uvg.ToString()),
                                         new XAttribute("Vogr", /*s3.Ogp.ToString().Max().ToString() == "-1" ? "-" : s3.Ogp.ToString()*/"-"),//to doo
-                                        new XAttribute("vOgrPass", s3.Ovp.ToString() == "-1" ? "-" : s3.Ovp.ToString() == "0" ? "-" : s3.Ovp.ToString()),
+
+                                          new XAttribute("vOgrPass", s3.Ovp.ToString() == "-1" ? "-" : s3.Ovp.ToString() == "0" ? "-" : s3.Ovp.ToString()),
+
                                         new XAttribute("vOgrGruz", s3.Ogp.ToString() == "-1" ? "-" : s3.Ogp.ToString() == "0" ? "-" : s3.Ogp.ToString()),
                                         new XAttribute("vOgrPorozh", "-"),
                                         new XAttribute("radius", "-"),
@@ -288,16 +301,16 @@ namespace ALARm_Report.Forms
                                     XElement xeNote = new XElement("Note",
                                             new XAttribute("codDorogi", s3.Roadcode),
                                             new XAttribute("codNapr", s3.Directcode == null ? "" : s3.Directcode),
-                                            new XAttribute("classput", "1"),
+                                            new XAttribute("classput", trackclasses.First().Class_Id),
 
                                             new XAttribute("pch", distance.Code),
                                             new XAttribute("checkDate", s3.Date.ToString("dd/MM/yyyy")),
                                             new XAttribute("nomerPS", s3.Pscode == null ? "" : s3.Pscode),
-                                            new XAttribute("nomerPuti", s3.Nput),
+                                            new XAttribute("nomerPuti", temp.Any() ? temp.First().Nput.ToString() : "-"),
                                             new XAttribute("km", s3.Km),
                                             new XAttribute("m", s3.Meter),
                                             new XAttribute("vidOts", s3.Ots),
-                                            new XAttribute("norma", norm),
+                                            new XAttribute("norma", "0.7"),
                                             new XAttribute("velichOts", otkl),
                                             new XAttribute("len", s3.Len),
                                             new XAttribute("stepen", "-"),
@@ -307,23 +320,24 @@ namespace ALARm_Report.Forms
                                             new XAttribute("vPass", s3.Uv.ToString() == "-1" ? "-" : s3.Uv.ToString()),
                                             new XAttribute("vGruz", s3.Uvg.ToString() == "-1" ? "-" : s3.Uvg.ToString()),
                                             new XAttribute("Vogr", /*s3.Ogp.ToString().Max().ToString() == "-1" ? "-" : s3.Ogp.ToString()*/"-"),//to doo
-                                            new XAttribute("vOgrPass", s3.Ovp.ToString() == "-1" ? "-" : s3.Ovp.ToString() == "0" ? "-" : s3.Ovp.ToString()),
-                                            new XAttribute("vOgrGruz", s3.Ogp.ToString() == "-1" ? "-" : s3.Ogp.ToString() == "0" ? "-" : s3.Ogp.ToString()),
+
+                                           new XAttribute("vOgrPass", s3.Ovp.ToString() == "-1" ? "-" : s3.Ovp.ToString() == "0" ? "-" : s3.Ovp.ToString()),
+                                         new XAttribute("vOgrGruz", s3.Ogp.ToString() == "-1" ? "-" : s3.Ogp.ToString() == "0" ? "-" : s3.Ogp.ToString()),
                                             new XAttribute("vOgrPorozh", "-"),
                                             new XAttribute("radius", radius),
                                             new XAttribute("elevation", vozvihenie),
                                             new XAttribute("strelka", s3.Primech.Contains("Стр.;") ? 1 : s3.Strelka),
-                                            new XAttribute("primech", s3.Primech.Contains("м;") ? "м" : "-")
+                                            new XAttribute("primech", s3.Primech.Contains("м;") ? "м" : s3.Primech.Contains("ис")?"ис": s3.Primech.Contains("гр") ? "гр" : "-")
                                             );
 
                                     tripElem.Add(xeNote);
                                 }
-                                else
+                                else if (s3.Ots == "Суж" || s3.Ots == "Уш")
                                 {
                                     XElement xeNote = new XElement("Note",
                                             new XAttribute("codDorogi", s3.Roadcode),
                                             new XAttribute("codNapr", s3.Directcode == null ? "" : s3.Directcode),
-                                            new XAttribute("classput", "1"),
+                                            new XAttribute("classput", trackclasses.First().Class_Id),
 
                                             new XAttribute("pch", distance.Code),
                                             new XAttribute("checkDate", s3.Date.ToString("dd/MM/yyyy")),
@@ -332,7 +346,42 @@ namespace ALARm_Report.Forms
                                             new XAttribute("km", s3.Km),
                                             new XAttribute("m", s3.Meter),
                                             new XAttribute("vidOts", s3.Ots),
-                                            new XAttribute("norma", norm),
+                                            new XAttribute("norma", "1520"),
+                                            new XAttribute("velichOts", s3.Otkl),
+                                            new XAttribute("len", s3.Len),
+                                            new XAttribute("stepen", s3.Typ.ToString() == "5" ? "-" : s3.Typ.ToString()),
+                                            new XAttribute("ball", ball),
+                                            new XAttribute("count", count),
+                                            new XAttribute("Vust",/* s3.Us.ToString().Max().ToString() == "-1" ? "-" : s3.Us.ToString()*/"-"),//to doo
+                                            new XAttribute("vPass", s3.Uv.ToString() == "-1" ? "-" : s3.Uv.ToString()),
+                                            new XAttribute("vGruz", s3.Uvg.ToString() == "-1" ? "-" : s3.Uvg.ToString()),
+                                            new XAttribute("Vogr", /*s3.Ogp.ToString().Max().ToString() == "-1" ? "-" : s3.Ogp.ToString()*/"-"),//to doo
+                                             new XAttribute("vOgrPass", s3.Ovp.ToString() == "-1" ? "-" : s3.Ovp.ToString() == "0" ? "-" : s3.Ovp.ToString()),
+                                        new XAttribute("vOgrGruz", s3.Ogp.ToString() == "-1" ? "-" : s3.Ogp.ToString() == "0" ? "-" : s3.Ogp.ToString()),
+                                            new XAttribute("vOgrPorozh", "-"),
+                                            new XAttribute("radius", radius),
+                                            new XAttribute("elevation", vozvihenie),
+                                            new XAttribute("strelka", s3.Primech.Contains("Стр.;") ? 1 : s3.Strelka),
+                                            new XAttribute("primech", s3.Primech.Contains("м;") ? "м" : s3.Primech.Contains("ис") ? "ис" : s3.Primech.Contains("гр") ? "гр" : "-")
+                                            );
+
+                                    tripElem.Add(xeNote);
+                                }
+                                else if ( s3.Ots == "Пр.л" || s3.Ots == "Пр.п")
+                                {
+                                    XElement xeNote = new XElement("Note",
+                                            new XAttribute("codDorogi", s3.Roadcode),
+                                            new XAttribute("codNapr", s3.Directcode == null ? "" : s3.Directcode),
+                                            new XAttribute("classput", trackclasses.First().Class_Id),
+
+                                            new XAttribute("pch", distance.Code),
+                                            new XAttribute("checkDate", s3.Date.ToString("dd/MM/yyyy")),
+                                            new XAttribute("nomerPS", s3.Pscode == null ? "" : s3.Pscode),
+                                            new XAttribute("nomerPuti", s3.Nput),
+                                            new XAttribute("km", s3.Km),
+                                            new XAttribute("m", s3.Meter),
+                                            new XAttribute("vidOts", s3.Ots),
+                                            new XAttribute("norma", "20"),
                                             new XAttribute("velichOts", s3.Otkl),
                                             new XAttribute("len", s3.Len),
                                             new XAttribute("stepen", s3.Typ.ToString() == "5" ? "-" : s3.Typ.ToString()),
@@ -348,8 +397,292 @@ namespace ALARm_Report.Forms
                                             new XAttribute("radius", radius),
                                             new XAttribute("elevation", vozvihenie),
                                             new XAttribute("strelka", s3.Primech.Contains("Стр.;") ? 1 : s3.Strelka),
-                                            new XAttribute("primech", s3.Primech.Contains("м;") ? "м" : "-")
+                                            new XAttribute("primech", s3.Primech.Contains("м;") ? "м" : s3.Primech.Contains("ис") ? "ис" : s3.Primech.Contains("гр") ? "гр" : "-")
                                             );
+
+                                    tripElem.Add(xeNote);
+                                }
+                                else if (s3.Ots == "ПрУ")
+                                {
+                                    XElement xeNote = new XElement("Note",
+                                            new XAttribute("codDorogi", s3.Roadcode),
+                                            new XAttribute("codNapr", s3.Directcode == null ? "" : s3.Directcode),
+                                            new XAttribute("classput", trackclasses.First().Class_Id),
+
+                                            new XAttribute("pch", distance.Code),
+                                            new XAttribute("checkDate", s3.Date.ToString("dd/MM/yyyy")),
+                                            new XAttribute("nomerPS", s3.Pscode == null ? "" : s3.Pscode),
+                                            new XAttribute("nomerPuti", s3.Nput),
+                                            new XAttribute("km", s3.Km),
+                                            new XAttribute("m", s3.Meter),
+                                            new XAttribute("vidOts", s3.Ots),
+                                            new XAttribute("norma", "10"),
+                                            new XAttribute("velichOts", s3.Otkl),
+                                            new XAttribute("len", s3.Len),
+                                            new XAttribute("stepen", s3.Typ.ToString() == "5" ? "-" : s3.Typ.ToString()),
+                                            new XAttribute("ball", ball),
+                                            new XAttribute("count", count),
+                                            new XAttribute("Vust",/* s3.Us.ToString().Max().ToString() == "-1" ? "-" : s3.Us.ToString()*/"-"),//to doo
+                                            new XAttribute("vPass", s3.Uv.ToString() == "-1" ? "-" : s3.Uv.ToString()),
+                                            new XAttribute("vGruz", s3.Uvg.ToString() == "-1" ? "-" : s3.Uvg.ToString()),
+                                            new XAttribute("Vogr", /*s3.Ogp.ToString().Max().ToString() == "-1" ? "-" : s3.Ogp.ToString()*/"-"),//to doo
+                                            new XAttribute("vOgrPass", s3.Ovp.ToString() == "-1" ? "-" : s3.Ovp.ToString() == "0" ? "-" : s3.Ovp.ToString()),
+                                            new XAttribute("vOgrGruz", s3.Ogp.ToString() == "-1" ? "-" : s3.Ogp.ToString() == "0" ? "-" : s3.Ogp.ToString()),
+                                            new XAttribute("vOgrPorozh", "-"),
+                                            new XAttribute("radius", radius),
+                                            new XAttribute("elevation", vozvihenie),
+                                            new XAttribute("strelka", s3.Primech.Contains("Стр.;") ? 1 : s3.Strelka),
+                                            new XAttribute("primech", s3.Primech.Contains("м;") ? "м" : s3.Primech.Contains("ис") ? "ис" : s3.Primech.Contains("гр") ? "гр" : "-")
+                                            );
+
+                                    tripElem.Add(xeNote);
+                                }
+                                else if (s3.Ots == "ОШК" || s3.Ots== "Отв.ш")
+                                {
+                                    XElement xeNote = new XElement("Note",
+                                            new XAttribute("codDorogi", s3.Roadcode),
+                                            new XAttribute("codNapr", s3.Directcode == null ? "" : s3.Directcode),
+                                            new XAttribute("classput", trackclasses.First().Class_Id),
+
+                                            new XAttribute("pch", distance.Code),
+                                            new XAttribute("checkDate", s3.Date.ToString("dd/MM/yyyy")),
+                                            new XAttribute("nomerPS", s3.Pscode == null ? "" : s3.Pscode),
+                                            new XAttribute("nomerPuti", s3.Nput),
+                                            new XAttribute("km", s3.Km),
+                                            new XAttribute("m", s3.Meter),
+                                            new XAttribute("vidOts", s3.Ots),
+                                            new XAttribute("norma", "0.2"),
+                                            new XAttribute("velichOts", s3.Otkl),
+                                            new XAttribute("len", s3.Len),
+                                            new XAttribute("stepen", s3.Typ.ToString() == "5" ? "-" : s3.Typ.ToString()),
+                                            new XAttribute("ball", ball),
+                                            new XAttribute("count", count),
+                                            new XAttribute("Vust",/* s3.Us.ToString().Max().ToString() == "-1" ? "-" : s3.Us.ToString()*/"-"),//to doo
+                                            new XAttribute("vPass", s3.Uv.ToString() == "-1" ? "-" : s3.Uv.ToString()),
+                                            new XAttribute("vGruz", s3.Uvg.ToString() == "-1" ? "-" : s3.Uvg.ToString()),
+                                            new XAttribute("Vogr", /*s3.Ogp.ToString().Max().ToString() == "-1" ? "-" : s3.Ogp.ToString()*/"-"),//to doo
+                                            new XAttribute("vOgrPass", s3.Ovp.ToString() == "-1" ? "-" : s3.Ovp.ToString() == "0" ? "-" : s3.Ovp.ToString()),
+                                            new XAttribute("vOgrGruz", s3.Ogp.ToString() == "-1" ? "-" : s3.Ogp.ToString() == "0" ? "-" : s3.Ogp.ToString()),
+                                            new XAttribute("vOgrPorozh", "-"),
+                                            new XAttribute("radius", radius),
+                                            new XAttribute("elevation", vozvihenie),
+                                            new XAttribute("strelka", s3.Primech.Contains("Стр.;") ? 1 : s3.Strelka),
+                                            new XAttribute("primech", s3.Primech.Contains("м;") ? "м" : s3.Primech.Contains("ис") ? "ис" : s3.Primech.Contains("гр") ? "гр" : "-")
+                                            );
+
+                                    tripElem.Add(xeNote);
+                                }
+                                else if (s3.Ots == "Аг")
+                                {
+                                    XElement xeNote = new XElement("Note",
+                                            new XAttribute("codDorogi", s3.Roadcode),
+                                            new XAttribute("codNapr", s3.Directcode == null ? "" : s3.Directcode),
+                                            new XAttribute("classput", trackclasses.First().Class_Id),
+
+                                            new XAttribute("pch", distance.Code),
+                                            new XAttribute("checkDate", s3.Date.ToString("dd/MM/yyyy")),
+                                            new XAttribute("nomerPS", s3.Pscode == null ? "" : s3.Pscode),
+                                            new XAttribute("nomerPuti", s3.Nput),
+                                            new XAttribute("km", s3.Km),
+                                            new XAttribute("m", s3.Meter),
+                                            new XAttribute("vidOts", s3.Ots),
+                                            new XAttribute("norma", "0.9"),
+                                            new XAttribute("velichOts", s3.Otkl),
+                                            new XAttribute("len", s3.Len),
+                                            new XAttribute("stepen", s3.Typ.ToString() == "5" ? "-" : s3.Typ.ToString()),
+                                            new XAttribute("ball", ball),
+                                            new XAttribute("count", count),
+                                            new XAttribute("Vust",/* s3.Us.ToString().Max().ToString() == "-1" ? "-" : s3.Us.ToString()*/"-"),//to doo
+                                            new XAttribute("vPass", s3.Uv.ToString() == "-1" ? "-" : s3.Uv.ToString()),
+                                            new XAttribute("vGruz", s3.Uvg.ToString() == "-1" ? "-" : s3.Uvg.ToString()),
+                                            new XAttribute("Vogr", /*s3.Ogp.ToString().Max().ToString() == "-1" ? "-" : s3.Ogp.ToString()*/"-"),//to doo
+                                            new XAttribute("vOgrPass", s3.Ovp.ToString() == "-1" ? "-" : s3.Ovp.ToString() == "0" ? "-" : s3.Ovp.ToString()),
+                                            new XAttribute("vOgrGruz", s3.Ogp.ToString() == "-1" ? "-" : s3.Ogp.ToString() == "0" ? "-" : s3.Ogp.ToString()),
+                                            new XAttribute("vOgrPorozh", "-"),
+                                            new XAttribute("radius", radius),
+                                            new XAttribute("elevation", vozvihenie),
+                                            new XAttribute("strelka", s3.Primech.Contains("Стр.;") ? 1 : s3.Strelka),
+                                            new XAttribute("primech", s3.Primech.Contains("м;") ? "м" : s3.Primech.Contains("ис") ? "ис" : s3.Primech.Contains("гр") ? "гр" : "-")
+                                            );
+
+                                    tripElem.Add(xeNote);
+                                }
+                                else if (s3.Ots == "У75")
+                                {
+                                    XElement xeNote = new XElement("Note",
+                                            new XAttribute("codDorogi", s3.Roadcode),
+                                            new XAttribute("codNapr", s3.Directcode == null ? "" : s3.Directcode),
+                                            new XAttribute("classput", trackclasses.First().Class_Id),
+
+                                            new XAttribute("pch", distance.Code),
+                                            new XAttribute("checkDate", s3.Date.ToString("dd/MM/yyyy")),
+                                            new XAttribute("nomerPS", s3.Pscode == null ? "" : s3.Pscode),
+                                            new XAttribute("nomerPuti", s3.Nput),
+                                            new XAttribute("km", s3.Km),
+                                            new XAttribute("m", s3.Meter),
+                                            new XAttribute("vidOts", s3.Ots),
+                                            new XAttribute("norma", "150"),
+                                            new XAttribute("velichOts", s3.Otkl),
+                                            new XAttribute("len", s3.Len),
+                                            new XAttribute("stepen", s3.Typ.ToString() == "5" ? "-" : s3.Typ.ToString()),
+                                            new XAttribute("ball", ball),
+                                            new XAttribute("count", count),
+                                            new XAttribute("Vust",/* s3.Us.ToString().Max().ToString() == "-1" ? "-" : s3.Us.ToString()*/"-"),//to doo
+                                            new XAttribute("vPass", s3.Uv.ToString() == "-1" ? "-" : s3.Uv.ToString()),
+                                            new XAttribute("vGruz", s3.Uvg.ToString() == "-1" ? "-" : s3.Uvg.ToString()),
+                                            new XAttribute("Vogr", /*s3.Ogp.ToString().Max().ToString() == "-1" ? "-" : s3.Ogp.ToString()*/"-"),//to doo
+                                            new XAttribute("vOgrPass", s3.Ovp.ToString() == "-1" ? "-" : s3.Ovp.ToString() == "0" ? "-" : s3.Ovp.ToString()),
+                                            new XAttribute("vOgrGruz", s3.Ogp.ToString() == "-1" ? "-" : s3.Ogp.ToString() == "0" ? "-" : s3.Ogp.ToString()),
+                                            new XAttribute("vOgrPorozh", "-"),
+                                            new XAttribute("radius", radius),
+                                            new XAttribute("elevation", vozvihenie),
+                                            new XAttribute("strelka", s3.Primech.Contains("Стр.;") ? 1 : s3.Strelka),
+                                            new XAttribute("primech", s3.Primech.Contains("м;") ? "м" : s3.Primech.Contains("ис") ? "ис" : s3.Primech.Contains("гр") ? "гр" : "-")
+                                            );
+
+                                    tripElem.Add(xeNote);
+                                }
+                                else if (s3.Ots == "Из.Б.л" || s3.Ots == "Из.Б.пр")
+                                {
+                                    XElement xeNote = new XElement("Note",
+                                            new XAttribute("codDorogi", s3.Roadcode),
+                                            new XAttribute("codNapr", s3.Directcode == null ? "" : s3.Directcode),
+                                            new XAttribute("classput", trackclasses.First().Class_Id),
+
+                                            new XAttribute("pch", distance.Code),
+                                            new XAttribute("checkDate", s3.Date.ToString("dd/MM/yyyy")),
+                                            new XAttribute("nomerPS", s3.Pscode == null ? "" : s3.Pscode),
+                                            new XAttribute("nomerPuti", s3.Nput),
+                                            new XAttribute("km", s3.Km),
+                                            new XAttribute("m", s3.Meter),
+                                            new XAttribute("vidOts", s3.Ots),
+                                            new XAttribute("norma", "4"),
+                                            new XAttribute("velichOts", s3.Otkl),
+                                            new XAttribute("len", s3.Len),
+                                            new XAttribute("stepen", s3.Typ.ToString() == "5" ? "-" : s3.Typ.ToString()),
+                                            new XAttribute("ball", ball),
+                                            new XAttribute("count", count),
+                                            new XAttribute("Vust",/* s3.Us.ToString().Max().ToString() == "-1" ? "-" : s3.Us.ToString()*/"-"),//to doo
+                                            new XAttribute("vPass", s3.Uv.ToString() == "-1" ? "-" : s3.Uv.ToString()),
+                                            new XAttribute("vGruz", s3.Uvg.ToString() == "-1" ? "-" : s3.Uvg.ToString()),
+                                            new XAttribute("Vogr", /*s3.Ogp.ToString().Max().ToString() == "-1" ? "-" : s3.Ogp.ToString()*/"-"),//to doo
+                                            new XAttribute("vOgrPass", s3.Ovp.ToString() == "-1" ? "-" : s3.Ovp.ToString() == "0" ? "-" : s3.Ovp.ToString()),
+                                            new XAttribute("vOgrGruz", s3.Ogp.ToString() == "-1" ? "-" : s3.Ogp.ToString() == "0" ? "-" : s3.Ogp.ToString()),
+                                            new XAttribute("vOgrPorozh", "-"),
+                                            new XAttribute("radius", radius),
+                                            new XAttribute("elevation", vozvihenie),
+                                            new XAttribute("strelka", s3.Primech.Contains("Стр.;") ? 1 : s3.Strelka),
+                                            new XAttribute("primech", s3.Primech.Contains("м;") ? "м" : s3.Primech.Contains("ис") ? "ис" : s3.Primech.Contains("гр") ? "гр" : "-")
+                                            );
+
+                                    tripElem.Add(xeNote);
+                                }
+                                else if (s3.Ots == "Уобр" )
+                                {
+                                    XElement xeNote = new XElement("Note",
+                                            new XAttribute("codDorogi", s3.Roadcode),
+                                            new XAttribute("codNapr", s3.Directcode == null ? "" : s3.Directcode),
+                                            new XAttribute("classput", trackclasses.First().Class_Id),
+
+                                            new XAttribute("pch", distance.Code),
+                                            new XAttribute("checkDate", s3.Date.ToString("dd/MM/yyyy")),
+                                            new XAttribute("nomerPS", s3.Pscode == null ? "" : s3.Pscode),
+                                            new XAttribute("nomerPuti", s3.Nput),
+                                            new XAttribute("km", s3.Km),
+                                            new XAttribute("m", s3.Meter),
+                                            new XAttribute("vidOts", s3.Ots),
+                                            new XAttribute("norma", s3.Otkl <15 ? "20":"40"),
+                                            new XAttribute("velichOts", s3.Otkl),
+                                            new XAttribute("len", s3.Len),
+                                            new XAttribute("stepen", s3.Typ.ToString() == "5" ? "-" : s3.Typ.ToString()),
+                                            new XAttribute("ball", ball),
+                                            new XAttribute("count", count),
+                                            new XAttribute("Vust",/* s3.Us.ToString().Max().ToString() == "-1" ? "-" : s3.Us.ToString()*/"-"),//to doo
+                                            new XAttribute("vPass", s3.Uv.ToString() == "-1" ? "-" : s3.Uv.ToString()),
+                                            new XAttribute("vGruz", s3.Uvg.ToString() == "-1" ? "-" : s3.Uvg.ToString()),
+                                            new XAttribute("Vogr", /*s3.Ogp.ToString().Max().ToString() == "-1" ? "-" : s3.Ogp.ToString()*/"-"),//to doo
+                                            new XAttribute("vOgrPass", s3.Ovp.ToString() == "-1" ? "-" : s3.Ovp.ToString() == "0" ? "-" : s3.Ovp.ToString()),
+                                            new XAttribute("vOgrGruz", s3.Ogp.ToString() == "-1" ? "-" : s3.Ogp.ToString() == "0" ? "-" : s3.Ogp.ToString()),
+                                            new XAttribute("vOgrPorozh", "-"),
+                                            new XAttribute("radius", radius),
+                                            new XAttribute("elevation", vozvihenie),
+                                            new XAttribute("strelka", s3.Primech.Contains("Стр.;") ? 1 : s3.Strelka),
+                                            new XAttribute("primech", s3.Primech.Contains("м;") ? "м" : s3.Primech.Contains("ис") ? "ис" : s3.Primech.Contains("гр") ? "гр" : "-")
+                                            );
+
+                                    tripElem.Add(xeNote);
+                                }
+
+
+                                else if (s3.Ots == "Пси")
+                                {
+                                    XElement xeNote = new XElement("Note",
+                                            new XAttribute("codDorogi", s3.Roadcode),
+                                            new XAttribute("codNapr", s3.Directcode == null ? "" : s3.Directcode),
+                                            new XAttribute("classput", trackclasses.First().Class_Id),
+
+                                            new XAttribute("pch", distance.Code),
+                                            new XAttribute("checkDate", s3.Date.ToString("dd/MM/yyyy")),
+                                            new XAttribute("nomerPS", s3.Pscode == null ? "" : s3.Pscode),
+                                            new XAttribute("nomerPuti", s3.Nput),
+                                            new XAttribute("km", s3.Km),
+                                            new XAttribute("m", s3.Meter),
+                                            new XAttribute("vidOts", s3.Ots),
+                                            new XAttribute("norma", "0.65"),
+                                            new XAttribute("velichOts", s3.Otkl),
+                                            new XAttribute("len", s3.Len),
+                                            new XAttribute("stepen", s3.Typ.ToString() == "5" ? "-" : s3.Typ.ToString()),
+                                            new XAttribute("ball", ball),
+                                            new XAttribute("count", count),
+                                            new XAttribute("Vust",/* s3.Us.ToString().Max().ToString() == "-1" ? "-" : s3.Us.ToString()*/"-"),//to doo
+                                            new XAttribute("vPass", s3.Uv.ToString() == "-1" ? "-" : s3.Uv.ToString()),
+                                            new XAttribute("vGruz", s3.Uvg.ToString() == "-1" ? "-" : s3.Uvg.ToString()),
+                                            new XAttribute("Vogr", /*s3.Ogp.ToString().Max().ToString() == "-1" ? "-" : s3.Ogp.ToString()*/"-"),//to doo
+                                            new XAttribute("vOgrPass", s3.Ovp.ToString() == "-1" ? "-" : s3.Ovp.ToString() == "0" ? "-" : s3.Ovp.ToString()),
+                                            new XAttribute("vOgrGruz", s3.Ogp.ToString() == "-1" ? "-" : s3.Ogp.ToString() == "0" ? "-" : s3.Ogp.ToString()),
+                                            new XAttribute("vOgrPorozh", "-"),
+                                            new XAttribute("radius", radius),
+                                            new XAttribute("elevation", vozvihenie),
+                                            new XAttribute("strelka", s3.Primech.Contains("Стр.;") ? 1 : s3.Strelka),
+                                            new XAttribute("primech", s3.Primech.Contains("м;") ? "м" : s3.Primech.Contains("ис") ? "ис" : s3.Primech.Contains("гр") ? "гр" : "-")
+                                            );
+
+                                    tripElem.Add(xeNote);
+                                }
+                                else
+                                {
+                                    XElement xeNote = new XElement("Note",
+                                            new XAttribute("codDorogi", s3.Roadcode),
+                                            new XAttribute("codNapr", s3.Directcode == null ? "" : s3.Directcode),
+                                            new XAttribute("classput", trackclasses.First().Class_Id),
+
+                                            new XAttribute("pch", distance.Code),
+                                            new XAttribute("checkDate", s3.Date.ToString("dd/MM/yyyy")),
+                                            new XAttribute("nomerPS", s3.Pscode == null ? "" : s3.Pscode),
+                                            new XAttribute("nomerPuti", s3.Nput),
+                                            new XAttribute("km", s3.Km),
+                                            new XAttribute("m", s3.Meter),
+                                            new XAttribute("vidOts", s3.Ots),
+                                            new XAttribute("norma", "-"),
+                                            new XAttribute("velichOts", s3.Otkl),
+                                            new XAttribute("len", s3.Len),
+                                            new XAttribute("stepen", s3.Typ.ToString() == "5" ? "-" : s3.Typ.ToString()),
+                                            new XAttribute("ball", ball),
+                                            new XAttribute("count", count),
+                                            new XAttribute("Vust",/* s3.Us.ToString().Max().ToString() == "-1" ? "-" : s3.Us.ToString()*/"-"),//to doo
+                                            new XAttribute("vPass", s3.Uv.ToString() == "-1" ? "-" : s3.Uv.ToString()),
+                                            new XAttribute("vGruz", s3.Uvg.ToString() == "-1" ? "-" : s3.Uvg.ToString()),
+                                            new XAttribute("Vogr", /*s3.Ogp.ToString().Max().ToString() == "-1" ? "-" : s3.Ogp.ToString()*/"-"),//to doo
+                                             new XAttribute("vOgrPass", s3.Ovp.ToString() == "-1" ? "-" : s3.Ovp.ToString() == "0" ? "-" : s3.Ovp.ToString()),
+                                        new XAttribute("vOgrGruz", s3.Ogp.ToString() == "-1" ? "-" : s3.Ogp.ToString() == "0" ? "-" : s3.Ogp.ToString()),
+
+                                            new XAttribute("vOgrPorozh", "-"),
+                                            new XAttribute("radius", radius),
+                                            new XAttribute("elevation", vozvihenie),
+                                            new XAttribute("strelka", s3.Primech.Contains("Стр.;") ? 1 : s3.Strelka),
+                                            new XAttribute("primech", s3.Primech.Contains("м;") ? "м" : s3.Primech.Contains("ис") ? "ис" : s3.Primech.Contains("гр") ? "гр" : "-")
+                                            );
+
 
                                     tripElem.Add(xeNote);
                                 }

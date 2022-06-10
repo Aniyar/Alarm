@@ -21,7 +21,7 @@ namespace ALARm_Report.Forms
     {
         public override void Process(Int64 parentId, ReportTemplate template, ReportPeriod period, MetroProgressBar progressBar)
         {
-           
+
             //Сделать выбор периода
             List<long> admTracksId = new List<long>();
             using (var choiceForm = new ChoiseForm(0))
@@ -43,32 +43,71 @@ namespace ALARm_Report.Forms
                 var road = AdmStructureService.GetRoadName(distance.Id, AdmStructureConst.AdmDistance, true);
                 distance.Name = distance.Name.Replace("ПЧ-", "");
 
-                var tripProcesses = RdStructureService.GetTripsOnDistance(parentId, period);
-              
+                //var tripProcesses = RdStructureService.GetTripsOnDistance(parentId, period);
+
+                //if (tripProcesses.Count == 0)
+                //{
+                //    MessageBox.Show(Properties.Resources.paramDataMissing);
+                //    return;
+                //}
+                var tripProcesses = RdStructureService.GetMainParametersProcess(period, distance.Name);
                 if (tripProcesses.Count == 0)
                 {
                     MessageBox.Show(Properties.Resources.paramDataMissing);
                     return;
                 }
 
-              
-            
 
-                        XElement report = new XElement("report");
+
+
+                XElement report = new XElement("report");
                 foreach (var tripProcess in tripProcesses)
                 {
+
+          
+                    int skewnessCount = 0; //П - просадка
+                    int drawdownCount = 0; //Пр - перекос
+                
+                 
+                    int PMCount = 0;//П м
+               
+                    int anpCount = 0;//Анп
+                    int anpquestiomCount = 0; // ?Анп
+                    int uklonvopros = 0;
+                    int otklonvopros = 0;
+                    int uklonobr = 0;
+                    int uklon150vopros = 0;
+                    int uklon75vopros = 0;
+                    int Zazorvopros = 0;
+                    int IBLCount = 0;
+
+                    XElement tripElem = new XElement("trip",
+                          new XAttribute("version", $"{DateTime.Now} v{Assembly.GetExecutingAssembly().GetName().Version.ToString()}"),
+
+                          new XAttribute("check", tripProcess.GetProcessTypeName),
+
+                          new XAttribute("road", road),
+                          new XAttribute("distance", distance.Code),
+                          new XAttribute("periodDate", period.Period),
+                          new XAttribute("chief", tripProcess.Chief),
+                          new XAttribute("ps", tripProcess.Car));
+
+                    var Itog = 0;
+
                     foreach (var track_id in admTracksId)
                     {
                         var trips = RdStructureService.GetTrips();
                         var tr = trips.Where(t => t.Id == tripProcess.Trip_id).ToList();
-                        if (tr.Any()) continue;
-
+                        if (!tr.Any()) continue;
 
                         var trackName = AdmStructureService.GetTrackName(track_id);
                         var trip = RdStructureService.GetTrip(tripProcess.Id);
                         var kilometers = RdStructureService.GetKilometersByTrip(trip);
                         //tripp.Track_Id = track_id;
                         kilometers = kilometers.Where(o => o.Track_id == track_id).ToList();
+
+                        //tripElem.Add(new XAttribute("direction", kilometers[0].Direction));
+                        //tripElem.Add(new XAttribute("track", kilometers[0].Track_name));
                         //var kilometers = RdStructureService.GetKilometersByTrip(trip);
 
                         ////Выбор километров по проезду-----------------
@@ -89,37 +128,13 @@ namespace ALARm_Report.Forms
                         kilometers = kilometers.Where(Km => ((float)(float)filters[0].Value <= Km.Number && Km.Number <= (float)(float)filters[1].Value)).ToList();
                         kilometers = (trip.Travel_Direction == Direction.Reverse ? kilometers.OrderBy(o => o.Number) : kilometers.OrderByDescending(o => o.Number)).ToList();
                         //--------------------------------------------
-                        int constrictionCount = 0; //Суж
-                        int broadeningCount = 0; //Уш
-                        int levelCount = 0; //У
-                        int skewnessCount = 0; //П - просадка
-                        int drawdownCount = 0; //Пр - перекос
-                        int straighteningCount = 0; //Р
-                        int slopeCount = 0;//Укл
-                        int PMCount = 0;//П м
-                        int IBLCount = 0;//Иб.л
-                        int anpCount = 0;//Анп
-                        int RNRCount = 0;//Рнр
-                        int RPlusPCount = 0;//Р+П
-                        int RNRPlusPCount = 0;//Рнр+П
-                        int RNRSTCount = 0;//Рнрст
-                        int ThirdStepenCount = 0;//3ст
 
 
 
-                        XElement tripElem = new XElement("trip",
-                            new XAttribute("version", $"{DateTime.Now} v{Assembly.GetExecutingAssembly().GetName().Version.ToString()}"),
-                            new XAttribute("direction", kilometers[0].Direction_name),
-                            new XAttribute("check", trip.GetProcessTypeName),
-                            new XAttribute("track", kilometers[0].Track_name),
-                            new XAttribute("road", road),
-                            new XAttribute("distance", distance.Code),
-                            new XAttribute("periodDate", period.Period),
-                            new XAttribute("chief", trip.Chief),
-                            new XAttribute("ps", trip.Car));
+
 
                         // запрос ОСнов параметров с бд
-                        var ListS3 = RdStructureService.GetS3(kilometers.First().Trip.Id) as List<S3>; //пру
+
 
 
                         //запрос доп параметров с бд
@@ -130,21 +145,34 @@ namespace ALARm_Report.Forms
                             return;
                         }
 
+                        //XElement xeDirection = new XElement("directions");
+                        //XElement xeTracks = new XElement("tracks");
+
+                        List<DigressionTotal> totals = new List<DigressionTotal>();
+                        DigressionTotal digressionTotal = new DigressionTotal();
                         XElement xeDirection = new XElement("directions");
                         XElement xeTracks = new XElement("tracks");
-
-                        var Itog = 0;
-
+                        XElement xeTrackscount = new XElement("trackscount");
                         foreach (var km in kilometers)
                         {
 
+                            if (km.Number == 707)
+                            {
+                                km.Number = km.Number;
+                            }
+                            var ListS3 = RdStructureService.GetS3(kilometers.First().Trip.Id) as List<S3>; //пру
+                            ListS3 = ListS3.Where(o => o.Km == km.Number).ToList();
                             var closeToDanger = new List<string>() { DigressionName.RampNear.Name, DigressionName.IzoGapNear.Name, DigressionName.SpeedUpNear.Name, DigressionName.PatternRetractionNear.Name,
                                 DigressionName.LevelReverse.Name, DigressionName.Level150.Name, DigressionName.Level75.Name, DigressionName.GapSimbol.Name };
                             //var PRUbyKmMAIN = ListS3.Where(o => (o.Ovp != -1 && o.Ovp != 0 && o.Ogp != -1 && o.Ogp != 0 && o.Km == km.Number)).ToList();
                             //var PRUbyKmADD = AddParam.Where(o => (o.Ovp != -1 && o.Ovp != 0 && o.Ogp != 1 && o.Ogp != 0 && o.Km == km.Number)).ToList();
 
-                            var PRUbyKmMAIN = ListS3.Where(o => o.Km == km.Number && closeToDanger.Contains(o.Ots)).ToList();
-                            var PRUbyKmADD = AddParam.Where(o =>  o.Km == km.Number && closeToDanger.Contains(o.Ots)).ToList();
+
+                            var PRUbyKmMAIN = ListS3.Where(o => closeToDanger.Contains(o.Ots)).ToList();
+                            PRUbyKmMAIN.AddRange(ListS3.Where(o => o.Primech.Contains("ис?")).ToList());
+                            //PRUbyKmMAIN.AddRange(ListS3.Where(o => o.Primech.Contains("З?")).ToList());
+
+                            var PRUbyKmADD = AddParam.Where(o => o.Km == km.Number && (closeToDanger.Contains(o.Ots) || closeToDanger.Contains(o.Primech))).ToList();
 
 
                             //PRUbyKmMAIN.AddRange(PRUbyKmADD);
@@ -163,54 +191,31 @@ namespace ALARm_Report.Forms
                                 {
                                     case "Пр.п":
                                     case "Пр.л":
-                                        drawdownCount += s3.Kol;
+                                        drawdownCount += 1;
                                         break;
-                                    case "Анп":
-                                        anpCount += s3.Kol;
-                                        break;
+                                  
                                     case "?Анп":
-                                        anpCount += s3.Kol;
+                                        anpquestiomCount += 1;
                                         break;
-                                    case "Суж":
-                                        constrictionCount += s3.Kol;
+                                    case "?Укл":
+                                        uklonvopros += 1;
                                         break;
-                                    case "Уш":
-                                        broadeningCount += s3.Kol;
+                                    case "ОШК?":
+                                        otklonvopros += 1;
                                         break;
-                                    case "У":
-                                        levelCount += s3.Kol;
+                                    case "Уобр":
+                                        uklonobr += 1;
                                         break;
-                                    case "П":
-                                        skewnessCount += s3.Kol;
+                                    case "?У150":
                                         break;
-                                    case "Р":
-                                        straighteningCount += s3.Kol;
+                                        uklon150vopros += 1;
+                                    case "У75":
+                                        uklon75vopros += 1;
                                         break;
-                                    case "Укл":
-                                        slopeCount += s3.Kol;
-                                        break;
-                                    case "П м":
-                                        PMCount += s3.Kol;
-                                        break;
-                                    case "Иб.л":
-                                        IBLCount += s3.Kol;
+                                    case "З?":
+                                        Zazorvopros += 1;
                                         break;
 
-                                    case "Рнр":
-                                        RNRCount += s3.Kol;
-                                        break;
-                                    case "Р+П":
-                                        RPlusPCount += s3.Kol;
-                                        break;
-                                    case "Рнр+П":
-                                        RNRPlusPCount += s3.Kol;
-                                        break;
-                                    case "Рнрст":
-                                        RNRSTCount += s3.Kol;
-                                        break;
-                                    case "3ст":
-                                        ThirdStepenCount += s3.Kol;
-                                        break;
 
                                 }
 
@@ -220,14 +225,25 @@ namespace ALARm_Report.Forms
                                     new XAttribute("m", s3.Meter),
                                     new XAttribute("Data", s3.TripDateTime.ToString("dd.MM.yyyy")),
                                     new XAttribute("Ots", s3.Ots),
-                                    new XAttribute("Otkl", s3.Otkl.ToString("0.0")),
+                                    new XAttribute("Otkl", s3.Ots == "?Анп" ? s3.Primech : s3.Otkl.ToString("0.0")),
                                     new XAttribute("len", s3.Len),
                                     new XAttribute("Stepen", s3.Typ.ToString() == "5" ? "-" : s3.Typ.ToString()),
                                     new XAttribute("vpz", s3.Uv + "/" + s3.Uvg),
                                     new XAttribute("vogr", s3.Ovp + "/" + s3.Ogp),
-                                    new XAttribute("Primech", s3.Primech.ToString() == "м;" ? "мост" : s3.Primech.ToString()));
+                                    new XAttribute("Primech", s3.Primech.ToString() == "м;" ? "мост" : ""));
 
+                                if (totals.Any(t => t.Name == s3.Ots))
+                                {
+                                    totals.Where(t => t.Name == s3.Ots).First().Count += 1;
+                                }
+                                else
+                                {
+                                    digressionTotal.Name = s3.Ots;
+                                    digressionTotal.Count += 1;
+                                    totals.Add(digressionTotal);
+                                }
 
+                               
                                 xeTracks.Add(xeMain);
                                 //xeTracks.Add(new XAttribute("track", s3.Put));
                                 //        xeTracks.Add(new XAttribute("countDistance", drawdownCount + constrictionCount + broadeningCount + levelCount + skewnessCount + straighteningCount));
@@ -255,88 +271,75 @@ namespace ALARm_Report.Forms
                                     new XAttribute("vpz", km.Speeds.Last().Passenger + "/" + km.Speeds.Last().Freight),
                                     new XAttribute("vogr", s3.Ovp + "/" + s3.Ogp),
                                     new XAttribute("Primech", ""));
+                                if (totals.Any(t => t.Name == s3.Ots))
+                                {
+                                    totals.Where(t => t.Name == s3.Ots).First().Count += s3.Kol;
+                                }
+                                else
+                                {
+                                    digressionTotal.Name = s3.Ots;
+                                    digressionTotal.Count += s3.Kol;
+                                    totals.Add(digressionTotal);
+                                }
+
+                             
+
 
                                 xeTracks.Add(xeAdd);
                                 xeTracks.Add(new XAttribute("track", s3.Put));
-                                Itog += 1;
+                                Itog += s3.Kol;
                             }
 
 
                         }
 
 
-                        Itog += drawdownCount + constrictionCount + broadeningCount + levelCount + skewnessCount + straighteningCount + anpCount + RNRCount + RPlusPCount + RNRPlusPCount + RNRSTCount + ThirdStepenCount;
-
-                        //В том числе:
-                        if (drawdownCount > 0)
-                        {
-                            tripElem.Add(new XElement("total", new XAttribute("totalinfo", "Пр - " + drawdownCount)));
-                        }
-                        if (constrictionCount > 0)
-                        {
-                            tripElem.Add(new XElement("total", new XAttribute("totalinfo", "Суж - " + constrictionCount)));
-                        }
-                        if (broadeningCount > 0)
-                        {
-                            tripElem.Add(new XElement("total", new XAttribute("totalinfo", "Уш - " + broadeningCount)));
-                        }
-                        if (levelCount > 0)
-                        {
-                            tripElem.Add(new XElement("total", new XAttribute("totalinfo", "У - " + levelCount)));
-                        }
-                        if (skewnessCount > 0)
-                        {
-                            tripElem.Add(new XElement("total", new XAttribute("totalinfo", "П - " + skewnessCount)));
-                        }
-                        if (straighteningCount > 0)
-                        {
-                            tripElem.Add(new XElement("total", new XAttribute("totalinfo", "Р - " + straighteningCount)));
-                        }
-                        if (slopeCount > 0)
-                        {
-                            tripElem.Add(new XElement("total", new XAttribute("totalinfo", "Укл - " + slopeCount)));
-                        }
-                        if (PMCount > 0)
-                        {
-                            tripElem.Add(new XElement("total", new XAttribute("totalinfo", "П м - " + PMCount)));
-                        }
-                        if (IBLCount > 0)
-                        {
-                            tripElem.Add(new XElement("total", new XAttribute("totalinfo", "Иб.л - " + IBLCount)));
-                        }
-
-                        if (anpCount > 0)
-                        {
-                            tripElem.Add(new XElement("total", new XAttribute("totalinfo", "Анп - " + anpCount)));
-                        }
-                        if (RNRCount > 0)
-                        {
-                            tripElem.Add(new XElement("total", new XAttribute("totalinfo", "Рнр - " + RNRCount)));
-                        }
-                        if (RPlusPCount > 0)
-                        {
-                            tripElem.Add(new XElement("total", new XAttribute("totalinfo", "Р+П - " + RPlusPCount)));
-                        }
-                        if (RNRPlusPCount > 0)
-                        {
-                            tripElem.Add(new XElement("total", new XAttribute("totalinfo", "Рнр+П - " + RNRPlusPCount)));
-                        }
-                        if (RNRSTCount > 0)
-                        {
-                            tripElem.Add(new XElement("total", new XAttribute("totalinfo", "Рнрст - " + RNRSTCount)));
-                        }
-                        if (ThirdStepenCount > 0)
-                        {
-                            tripElem.Add(new XElement("total", new XAttribute("totalinfo", "3ст - " + ThirdStepenCount)));
-                        }
 
 
-                        xeTracks.Add(new XAttribute("countDistance", drawdownCount + constrictionCount + broadeningCount + levelCount + skewnessCount + straighteningCount + slopeCount + PMCount + IBLCount + anpCount + RNRCount + RPlusPCount + RNRPlusPCount + RNRSTCount + ThirdStepenCount));
+                     
+                        xeTracks.Add(new XAttribute("direction",tripProcess.DirectionName ));
+                        xeTracks.Add(new XAttribute("countbyput", digressionTotal.Count));
+                        xeTracks.Add(new XAttribute("distance", distance.Code));
                         xeTracks.Add(new XAttribute("track", kilometers[0].Track_name));
                         xeDirection.Add(xeTracks);
                         tripElem.Add(xeDirection);
-                        report.Add(tripElem);
+
                     }
+                    Itog += drawdownCount +  skewnessCount +  anpCount ;
+
+                    //В том числе:
+                    if (drawdownCount > 0)
+                    {
+                        tripElem.Add(new XElement("total", new XAttribute("totalinfo", "Пр - " + drawdownCount)));
+                    }
+                  
+                    if (skewnessCount > 0)
+                    {
+                        tripElem.Add(new XElement("total", new XAttribute("totalinfo", "П - " + skewnessCount)));
+                    }
+                 
+                    if (PMCount > 0)
+                    {
+                        tripElem.Add(new XElement("total", new XAttribute("totalinfo", "П м - " + PMCount)));
+                    }
+                    if (IBLCount > 0)
+                    {
+                        tripElem.Add(new XElement("total", new XAttribute("totalinfo", "Ибл - " + IBLCount)));
+                    }
+
+                    
+                    if (anpCount > 0)
+                    {
+                        tripElem.Add(new XElement("total", new XAttribute("totalinfo", "Анп - " + anpCount)));
+                    }
+                    if (anpquestiomCount > 0)
+                    {
+                        tripElem.Add(new XElement("total", new XAttribute("totalinfo", "?Анп - " + anpquestiomCount)));
+                    }
+                 
+                    tripElem.Add(new XAttribute("countDistance", drawdownCount + anpquestiomCount + IBLCount+  skewnessCount +  PMCount +  anpCount));
+
+                    report.Add(tripElem);
                 }
                 xdReport.Add(report);
                 XslCompiledTransform transform = new XslCompiledTransform();
@@ -348,9 +351,9 @@ namespace ALARm_Report.Forms
                 htReport.Save(Path.GetTempPath() + "/report.html");
                 //htReport.Save($@"G:\form\G:\form\1.Основные и дополнительные параметры геометрии рельсовой колеи (ГРК)\Ведомость «Отступления близкие к предельным».pdf");
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                MessageBox.Show("Ошибка сохранения файлы" +e);
+                MessageBox.Show("Ошибка сохранения файлы" + e);
             }
             finally
             {

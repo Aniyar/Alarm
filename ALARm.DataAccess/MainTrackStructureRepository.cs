@@ -779,12 +779,23 @@ namespace ALARm.DataAccess
                             and adn.NAME = @directCode 
                             and @ncurkm between aps.start_km and aps.final_km ", new { ncurkm = nkm, travelDate = date, trackNum = trackNumber, directCode = directionCode }).ToList();
                     case MainTrackStructureConst.MtoCheckSection:
+
+                        //var txt4 = $@"Select tcs.* from tpl_check_sections as tcs 
+                        //    INNER JOIN TPL_PERIOD as tp on tp.ID = tcs.PERIOD_ID 
+                        //    INNER JOIN ADM_TRACK as atr on atr.ID = tp.ADM_TRACK_ID 
+                        //    INNER JOIN ADM_DIRECTION as adn on adn.ID = atr.ADM_DIRECTION_ID 
+                        //    WHERE '{date}' BETWEEN tp.START_DATE and tp.FINAL_DATE 
+                        //    and atr.CODE = '{trackNumber}'
+                        //    and adn.NAME ='{directionCode}'
+                        //    and {nkm} between tcs.start_km and tcs.final_km ";
+                        //return db.Query<CheckSection>(txt4).ToList();
+                        //int СдЕЛАТЬ ВЫБОРКУ ПО адм.ТРАК АЙДИ
                         return db.Query<CheckSection>(@"Select tcs.* from tpl_check_sections as tcs 
                             INNER JOIN TPL_PERIOD as tp on tp.ID = tcs.PERIOD_ID 
                             INNER JOIN ADM_TRACK as atr on atr.ID = tp.ADM_TRACK_ID 
                             INNER JOIN ADM_DIRECTION as adn on adn.ID = atr.ADM_DIRECTION_ID 
                             WHERE @travelDate BETWEEN tp.START_DATE and tp.FINAL_DATE 
-                            and atr.CODE = @trackNum 
+                           -- and atr.CODE = @trackNum 
                             and adn.NAME = @directCode 
                             and @ncurkm between tcs.start_km and tcs.final_km ", new { ncurkm = nkm, travelDate = date, trackNum = trackNumber, directCode = directionCode }).ToList();
                     case MainTrackStructureConst.MtoPdbSection:
@@ -977,7 +988,8 @@ namespace ALARm.DataAccess
                         dp.Add("passenger", ((TempSpeed)mtoobject).Passenger);
                         dp.Add("freight", (mtoobject as TempSpeed).Freight);
                         dp.Add("empty_freight", ((TempSpeed)mtoobject).Empty_Freight);
-                        dp.Add("reasonid", ((TempSpeed)mtoobject).Reason_Id);
+                        dp.Add("reasonid", ((TempSpeed)mtoobject).Reason_Id);                       
+                  
                         break;
                     case MainTrackStructureConst.MtoElevation:
                         procedure = "insertelevation";
@@ -1225,8 +1237,8 @@ namespace ALARm.DataAccess
                             commandType: CommandType.Text);
                         break;
                     case MainTrackStructureConst.MtoTempSpeed:
-                        result = db.Execute("UPDATE APR_TEMPSPEED SET START_KM=@skm, START_M=@sm, FINAL_KM=@fkm, FINAL_M=@fm, PASSENGER=@passenger, FREIGHT=@freight, EMPTY_FREIGHT=@empty_freight, REASON_ID=@reasonid WHERE ID=@id",
-                            new { skm = mtobject.Start_Km, sm = mtobject.Start_M, fkm = mtobject.Final_Km, fm = mtobject.Final_M, passenger = ((TempSpeed)mtobject).Passenger, freight = ((TempSpeed)mtobject).Freight, empty_freight = ((TempSpeed)mtobject).Empty_Freight, reasonid = ((TempSpeed)mtobject).Reason_Id, id = mtobject.Id },
+                        result = db.Execute("UPDATE APR_TEMPSPEED SET START_KM=@skm, START_M=@sm, FINAL_KM=@fkm, FINAL_M=@fm, PASSENGER=@passenger, FREIGHT=@freight, EMPTY_FREIGHT=@empty_freight, REASON_ID=@reasonid,repair_date=@repairdate WHERE ID=@id",
+                            new { skm = mtobject.Start_Km, sm = mtobject.Start_M, fkm = mtobject.Final_Km, fm = mtobject.Final_M, passenger = ((TempSpeed)mtobject).Passenger, freight = ((TempSpeed)mtobject).Freight, empty_freight = ((TempSpeed)mtobject).Empty_Freight, reasonid = ((TempSpeed)mtobject).Reason_Id, repairdate = ((TempSpeed)mtobject).Repair_date.Date, id = mtobject.Id },
                             commandType: CommandType.Text);
                         break;
                     case MainTrackStructureConst.MtoElevation:
@@ -2342,7 +2354,23 @@ namespace ALARm.DataAccess
                                 order by elcurve.start_km * 10000 + elcurve.start_m").ToList();
                         }
                         return curves;
-
+           
+                    case MainTrackStructureConst.MtoTempSpeed:
+                        var ttt1 = $@"
+                                        SELECT
+                                            tempspeed.*, cas.name as reason, tperiod.*
+                                            FROM
+	                                            apr_tempspeed tempspeed 
+	                                            INNER JOIN tpl_period tperiod ON tperiod.ID = tempspeed.period_id 
+	                                            and ('{date.ToString("dd-MM-yyyy")}' between tperiod.start_date and tperiod.final_date)
+	                                            INNER JOIN adm_track track ON track.ID = tperiod.adm_track_id 
+                                                INNER JOIN cat_tempspeed_reason as cas on cas.id = tempspeed.reason_id
+                                            WHERE
+	                                            {nkm} BETWEEN tempspeed.start_km 
+	                                            AND tempspeed.final_km
+                                    ";
+                  
+                        return db.Query<Speed>(ttt1).ToList();
                     //Класс пути (один объект)
                     case MainTrackStructureConst.MtoTrackClass:
                         var ttt = $@"select trackclass.*, classtype.name as class_type from apr_trackclass trackclass
@@ -2451,7 +2479,7 @@ namespace ALARm.DataAccess
                             and atr.id = @trackId 
                             and @ncurkm between tcs.start_km and tcs.final_km ", new { ncurkm = nkm, travelDate = date, trackId = track_id }).ToList();
                     case MainTrackStructureConst.MtoPdbSection:
-                        return db.Query<PdbSection>(@"Select ap.ID, road.name as road, road.abbr as roadAbbr, adn.code as nod, adc.code as distance, apc.CODE as pchu, apd.CODE as pd, ap.CODE as pdb, ap.chief_fullname as chief from ADM_PDB as ap 
+                        var sql2 = $@"Select ap.ID, road.name as road, road.abbr as roadAbbr, adn.code as nod, adc.code as distance, apc.CODE as pchu, apd.CODE as pd, ap.CODE as pdb, ap.chief_fullname as chief from ADM_PDB as ap 
                             INNER JOIN ADM_PD as apd on apd.ID = ap.ADM_PD_ID 
                             INNER JOIN ADM_PCHU as apc on apc.ID = apd.ADM_PCHU_ID 
                             INNER JOIN ADM_DISTANCE as adc on adc.ID = apc.ADM_DISTANCE_ID 
@@ -2460,10 +2488,13 @@ namespace ALARm.DataAccess
                             INNER JOIN tpl_pdb_section as tps on tps.adm_pdb_id = ap.id 
                             INNER JOIN TPL_PERIOD as tp on tp.ID = tps.PERIOD_ID 
                             INNER JOIN ADM_TRACK as atr on atr.ID = tp.ADM_TRACK_ID 
-                            WHERE @travelDate BETWEEN tp.START_DATE and tp.FINAL_DATE 
-                            and atr.id = @trackId 
-                            and @ncurkm between tps.start_km and tps.final_km 
-                            ", new { ncurkm = nkm, travelDate = date, trackId = track_id }).ToList();
+                            WHERE  '{date:dd-MM-yyyy}' BETWEEN tp.START_DATE and tp.FINAL_DATE 
+                            and atr.id ={track_id}
+                                and {nkm} between tps.start_km and tps.final_km 
+                            ";
+                        return db.Query<PdbSection>(sql2).ToList();
+
+
                     case MainTrackStructureConst.MtoStCurve:
                         return db.Query<StCurve>(@"Select cs.NAME as Side, stcurve.* from apr_stcurve as stcurve
                             INNER JOIN APR_CURVE as acu on acu.id = stcurve.curve_id
@@ -2834,9 +2865,11 @@ namespace ALARm.DataAccess
                         else if (item.DigName == DigressionName.Pru.Name)
                         {
                             //ПРУ
+                            
                             db.Execute($@"
-                                INSERT INTO s3(km, meter, trip_id, ots, kol, otkl, len, track_id, isadditional, typ, pch, naprav, put)
-	                            VALUES ('{kilometer.Number}', '{item.Meter}', '{kilometer.Trip.Id}', '{item.DigName}', '{item.Count}', '{item.Value}', '{item.Length}', '{kilometer.Track_id}', 0,2, '{item.Pch}', '{item.DirectionName}', '{item.TrackName}')");
+                                INSERT INTO s3(km, meter, trip_id, ots, kol, otkl, len, track_id, isadditional, typ, pch, naprav, put,uv,uvg,ovp,ogp)
+	                            VALUES ('{kilometer.Number}', '{item.Meter}', '{kilometer.Trip.Id}', '{item.DigName}', '{item.Count}', '{item.Value}', '{item.Length}',
+                                '{kilometer.Track_id}', 0,2, '{item.Pch}', '{item.DirectionName}', '{item.TrackName}','{item.PassengerSpeedAllow}', '{item.FreightSpeedAllow}', '{item.PassengerSpeedLimit}', '{item.FreightSpeedLimit}')");
                         }
                         else
                         {

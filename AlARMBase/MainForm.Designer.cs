@@ -1472,7 +1472,7 @@
             this.metroTabControl1.Location = new System.Drawing.Point(0, 0);
             this.metroTabControl1.Multiline = true;
             this.metroTabControl1.Name = "metroTabControl1";
-            this.metroTabControl1.SelectedIndex = 10;
+            this.metroTabControl1.SelectedIndex = 13;
             this.metroTabControl1.Size = new System.Drawing.Size(1142, 595);
             this.metroTabControl1.SizeMode = System.Windows.Forms.TabSizeMode.FillToRight;
             this.metroTabControl1.Style = MetroFramework.MetroColorStyle.Teal;

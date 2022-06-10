@@ -445,7 +445,7 @@ namespace ALARm.DataAccess
                 string sqltext = @"
                 select distinct direction.id as direction_id,
                 direction.code AS direction_code,
-                concat(direction.name, '(', direction.code, ')') as direction_name, 
+                concat(direction.name, '(', direction.code, ')') as direction_name, kilom.start as start_m, kilom.final as final_m,
                 track.id as track_id,track.code as track_name, kilom.*, kilom.num as number from kilometers as kilom
                 LEFT join rd_process as rdp on rdp.trip_id = kilom.trip_id
                 inner join adm_track as track on track.id = kilom.track_id
@@ -1975,6 +1975,8 @@ namespace ALARm.DataAccess
             }
         }
 
+        
+
         public object GetBedemost(Int64 trip_id)
         {
             using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
@@ -3016,8 +3018,10 @@ namespace ALARm.DataAccess
                 if (db.State == ConnectionState.Closed)
                     db.Open();
 
-                return db.Query<AdmTrack>($@"select track.*, False as Accept, coalesce(track.adm_direction_id, -1) as Parent_id from adm_track track
-                    inner join trips on trips.id = {tripId}
+                return db.Query<AdmTrack>($@"select distinct track.*, False as Accept, coalesce(track.adm_direction_id, -1) as Parent_id 
+                    from adm_track track
+                    inner join fragments on fragments.trip_id = {tripId} and fragments.adm_track_id = track.id
+                    inner join trips on trips.id = fragments.trip_id
                     inner join adm_direction direction on direction.id = track.adm_direction_id and direction.id = trips.direction_id
                     order by track.code", commandType: CommandType.Text).ToList();
             }
@@ -3876,6 +3880,7 @@ namespace ALARm.DataAccess
                 {
                     return db.Query<CheckSection>($@"SELECT
 	                                                    km,
+                                                        trip_id,
 	                                                    AVG ( LEVEL ) AS trip_mo_level,
 	                                                    STDDEV_POP ( LEVEL ) AS trip_sko_level,
 	                                                    AVG ( gauge ) AS trip_mo_gauge,
@@ -3885,7 +3890,8 @@ namespace ALARm.DataAccess
 	                                                    km,
 	                                                    meter,
 	                                                    LEVEL,
-	                                                    gauge 
+	                                                    gauge,
+                                                        trip_id
                                                     FROM
 	                                                    outdata_{trip_id} 
                                                     WHERE
@@ -3894,7 +3900,8 @@ namespace ALARm.DataAccess
                                                     ORDER BY
 	                                                    km * 1000+meter) data
                                                     GROUP BY
-	                                                    km").ToList();
+	                                                    km,
+                                                        trip_id").ToList();
                 }
                 catch
                 {

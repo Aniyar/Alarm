@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.mdtDate = new MetroFramework.Controls.MetroDateTime();
             this.mpFinalM = new MetroFramework.Controls.MetroPanel();
             this.passenger = new MetroFramework.Controls.MetroTextBox();
             this.metroLabel4 = new MetroFramework.Controls.MetroLabel();
@@ -294,6 +295,30 @@
             this.catalogListBox.UseSelectable = true;
             this.catalogListBox.Visible = false;
             // 
+            ////  ДАта
+
+
+            //// mdtDate
+            //// 
+            //this.mdtDate.Dock = System.Windows.Forms.DockStyle.Fill;
+            //this.mdtDate.Location = new System.Drawing.Point(145, 5);
+            //this.mdtDate.MinimumSize = new System.Drawing.Size(0, 29);
+            //this.mdtDate.Name = "mdtDate";
+            //this.mdtDate.Size = new System.Drawing.Size(251, 29);
+            //this.mdtDate.TabIndex = 2;
+            //// 
+            //// metroLabel2
+            //// 
+            //this.metroLabel2.Dock = System.Windows.Forms.DockStyle.Left;
+            //this.metroLabel2.Location = new System.Drawing.Point(5, 5);
+            //this.metroLabel2.Name = "metroLabel2";
+            //this.metroLabel2.Size = new System.Drawing.Size(140, 29);
+            //this.metroLabel2.TabIndex = 1;
+            //this.metroLabel2.Text = "Дата";
+            //this.metroLabel2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            //// 
+
+
             // coordControl
             // 
             this.coordControl.AutoSize = true;
@@ -493,5 +518,6 @@
         private MetroFramework.Controls.MetroPanel metroPanel5;
         private MetroFramework.Controls.MetroTextBox tbLastochka;
         private MetroFramework.Controls.MetroLabel metroLabel5;
+        private MetroFramework.Controls.MetroDateTime mdtDate;
     }
 }

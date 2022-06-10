@@ -1950,9 +1950,9 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
 	                            AVG ( longwavesleft ) longwavesleft,
 	                            AVG ( longwavesright ) longwavesright,
 	                            AVG ( iz_45_l ) iz_45_l,
-	                            AVG ( iz_45_r ) iz_45_r ,
-                                AVG ( x_big_l ) x_big_l ,
-                                AVG ( x_big_r ) x_big_r 
+	                            AVG ( iz_45_r ) iz_45_r 
+                             --   AVG ( x_big_l ) x_big_l ,
+                               -- AVG ( x_big_r ) x_big_r 
                             FROM
 	                            PUBLIC.profiledata_{trip_id}
                             WHERE
@@ -2049,7 +2049,9 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
 
             }
         }
-        public List<CrosProf> GetGaugeFromDBkmmter(int nkm, int meter,long trip_id)
+
+        public List<CrosProf> GetGaugeFromDBkmmter(int nkm, int meter, long trip_id)
+
         {
             using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
             {

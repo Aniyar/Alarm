@@ -1231,7 +1231,12 @@ namespace ALARm.Core.Report
                         {
                             switch (note.Digression.Name)
                             {
-                                //нпк
+                               // слепой стык 
+                                case string name when name == DigressionName.TreadTiltRight.Name:
+                                    markPosition = 605.7f;
+                                    isMarkNote = false;
+                                    break;
+                            //нпк
                                 case string name when name == DigressionName.TreadTiltRight.Name:
                                     markPosition = 605.7f;
                                     isMarkNote = false;
@@ -1472,7 +1477,7 @@ namespace ALARm.Core.Report
                         //доп. параметры
                         else
                         {
-                            if ((new[] { DigressionName.FusingGap, DigressionName.AnomalisticGap, DigressionName.Gap, DigressionName.GapSimbol }).Contains(note.Digression))
+                            if ((new[] { DigressionName.FusingGapL, DigressionName.FusingGapR, DigressionName.AnomalisticGap, DigressionName.Gap, DigressionName.GapSimbol }).Contains(note.Digression))
                             {
 
                             }
@@ -1548,7 +1553,7 @@ namespace ALARm.Core.Report
                         prim = Regex.Replace(prim, "  ", " ");
                     }
 
-                    if ((note.Digression == DigressionName.FusingGap) || (note.Digression == DigressionName.AnomalisticGap) || (note.Digression == DigressionName.Gap) || note.Digression == DigressionName.GapSimbol)
+                    if ((note.Digression == DigressionName.FusingGapL) || (note.Digression == DigressionName.FusingGapR) || (note.Digression == DigressionName.AnomalisticGap) || (note.Digression == DigressionName.Gap) || note.Digression == DigressionName.GapSimbol)
                     {
                         digElements.Add(new XElement("m",
                                              new XAttribute("top", -meter),
@@ -1718,6 +1723,7 @@ namespace ALARm.Core.Report
                                                      //new XAttribute("x", 540),
                                                      new XAttribute("x", 145),//выравниваем "Гр,ис,м,*" в одну линнию
                                                      new XAttribute("note", note.IsLong ? "*" : "")
+
                                                      ));
 
 

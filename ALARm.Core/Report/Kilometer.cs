@@ -58,6 +58,10 @@ namespace ALARm.Core
         /// </summary>
         public List<Speed> Speeds;
         /// <summary>
+        /// установленные скорости
+        /// </summary>
+        public List<Speed> Runninin;
+        /// <summary>
         /// искусственные сооружения
         /// </summary>
         public List<ArtificialConstruction> Artificials;
@@ -65,6 +69,7 @@ namespace ALARm.Core
         /// административное деление
         /// </summary>
         public List<PdbSection> PdbSection;
+        
 
         public List<RepairProject> RepairProjects { get; private set; }
 
@@ -72,6 +77,8 @@ namespace ALARm.Core
         /// тип шпал
         /// </summary>
         public List<CrossTie> CrossTies;
+        public List<Dateremont> Dateremont;
+        
         /// <summary>
         /// стрелочные переводы
         /// </summary>
@@ -146,7 +153,10 @@ namespace ALARm.Core
 
         public float Lkm { get; set; }
         public int GetLength() {
-            return Math.Abs(Start_m - Final_m) + 1 ;
+           // if ((Final_Index > -1) && (Start_Index > -1))
+                //return Math.Abs(Start_Index - Final_Index) + 1;
+            //else
+                return Math.Abs(Start_m - Final_m) + 1;
             
         }
         public int Track_id { get; set; }
@@ -862,6 +872,7 @@ namespace ALARm.Core
 
         public void LoadTrackPasport(IMainTrackStructureRepository mainTrackStructureRepository, DateTime trip_date)
         {
+            Runninin = mainTrackStructureRepository.GetMtoObjectsByCoord(trip_date, Number, MainTrackStructureConst.MtoTempSpeed, Track_id) as List<Speed>;
             Speeds = mainTrackStructureRepository.GetMtoObjectsByCoord(trip_date, Number, MainTrackStructureConst.MtoSpeed, Track_id) as List<Speed>;
             ElevationData = mainTrackStructureRepository.GetMtoObjectsByCoord(trip_date, Number, MainTrackStructureConst.MtoElevation, Track_id) as List<Elevation>;
             Artificials = mainTrackStructureRepository.GetMtoObjectsByCoord(trip_date, Number, MainTrackStructureConst.MtoArtificialConstruction, Track_id) as List<ArtificialConstruction>;
@@ -871,6 +882,8 @@ namespace ALARm.Core
             {
                 CrossTies.Add(new CrossTie { Crosstie_type_id = (int)CrosTieType.Woody, Start_Km = Number, Start_M = 1, Final_Km = Number, Final_M = Final_m });
             }
+            //Dateremont = mainTrackStructureRepository.GetMtoObjectsByCoord(trip_date, Number, MainTrackStructureConst.MtoRepairProject, Track_id) as List<Dateremont>;
+            
             Switches = mainTrackStructureRepository.GetMtoObjectsByCoord(trip_date, Number, MainTrackStructureConst.MtoSwitch, Track_id) as List<Switch>;
             StraighteningThreads = mainTrackStructureRepository.GetMtoObjectsByCoord(trip_date, Number, MainTrackStructureConst.MtoStraighteningThread, Track_id) as List<StraighteningThread>;
             LongRailses = mainTrackStructureRepository.GetMtoObjectsByCoord(trip_date, Number, MainTrackStructureConst.MtoLongRails, Track_id) as List<LongRails>;
@@ -1132,6 +1145,36 @@ namespace ALARm.Core
                         Digressions.Add(new DigressionMark() { NotMoveAlert = true, Meter = StationSection[0].Final_M, Alert = $"       {Sector};{StationSection[0].Final_M} Станция: {StationSection[0].Station}" });
                     }
                 }
+                if (RepairProjects.Count > 0)
+                {
+                    if (RepairProjects[0].Start_Km == Number)
+                    {
+                        Sector = mainTrackStructureRepository.GetSector(Track_id, Number - 1, trip.Trip_date) ?? "";
+                        Digressions.Add(new DigressionMark() { NotMoveAlert = true, Meter = RepairProjects[0].Start_M, Alert = $"{RepairProjects[0].Start_M} {RepairProjects[0].Repair_date.ToString("dd.MM.yyyy")} {RepairProjects[0].Type_id };" });
+                    }
+                    else
+                    if (RepairProjects[0].Final_Km == Number)
+                    {
+                        Sector = mainTrackStructureRepository.GetSector(Track_id, Number + 1, trip.Trip_date) ?? "";
+                        Digressions.Add(new DigressionMark() { NotMoveAlert = true, Meter = RepairProjects[0].Final_M, Alert = $"{RepairProjects[0].Repair_date.ToString("dd.MM.yyyy")} {RepairProjects[0].Type_id} " });
+                    }
+                }
+                if (Runninin.Count > 0)
+                {
+                    
+
+                    if (Runninin[0].Start_Km == Number)
+                    {
+                        Sector = mainTrackStructureRepository.GetSector(Track_id, Number - 1, trip.Trip_date) ?? "";
+                        Digressions.Add(new DigressionMark() { NotMoveAlert = true, Meter = Runninin[0].Start_M, Alert = $"{Runninin[0].Reason} V : {Runninin[0].Passenger }  ;{Runninin[0].Start_M} ПК:{((Runninin[0].Start_M +1)/100)+1} ;" });
+                    }
+                    else
+                    if (Runninin[0].Final_Km == Number)
+                    {
+                        Sector = mainTrackStructureRepository.GetSector(Track_id, Number + 1, trip.Trip_date) ?? "";
+                        Digressions.Add(new DigressionMark() { NotMoveAlert = true, Meter = Runninin[0].Final_M, Alert = $"{Runninin[0].Reason} V : {Runninin[0].Passenger } ;{Runninin[0].Start_M} ПК: {((Runninin[0].Start_M + 1) / 100) + 1} ;" });
+                    }
+                }
 
                 Digressions.AddRange(rdStructureRepository.GetDigressionMarks(trip.Id, Track_id, Number));
             }
@@ -1276,6 +1319,7 @@ namespace ALARm.Core
         public string X_big_r { get; set; } = "";
         public int Start_Index { get; set; } = -1;
         public int Final_Index => Start_Index + GetLength();
+        //public int Final_Index { get; set; }
         public string TrapezLevel { get; set; } = "";
         public string Level1 { get; set; } = "";
         public string Level2 { get; set; } = "";
