@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Forms, dialogs, Messages, SysUtils, Controls, Classes, Params,
-  FuncsProcs, math, StdCtrls;
+  FuncsProcs, Math, StdCtrls;
 
 type
   tfun = record
@@ -1768,26 +1768,28 @@ begin
         Frh := Fsr_rh1[i] * k_nusk;
 
         Hi := abs(LV_AVG[i]); // abs(Fsr_Urb[i]);
-        R_i := 17860 / (abs(ST_AVG[i]) + 0.00000001);
+
+
 
         ANP_Hi := abs(TrapezLevel[i]); // abs(Fsr_Urb[i]);
+            R_i := 17860 / (abs(ST_AVG[i]+F_fluk[i]/2.0) + 0.01);
         ANP_R_i := 17860 / (abs(TrapezStr[i]) + 0.00000001);
 
         Vdps := trunc(sqrt((CNepUsk + abs(kfforAnp * Hi)) * 13 * R_i) / 5) * 5;
+        var F_Vmax := MaxIntValue(F_V)*MaxIntValue(F_V);
+        var F_Vgmax := MaxIntValue(F_Vg)*MaxIntValue(F_Vg);
+        GUs[i] := F_Vmax / (13.0 * R_i) - kfforAnp * Hi;
+        GUs2[i] := F_Vgmax / (13.0 * R_i) - kfforAnp * Hi;
 
-        GUs[i] := (F_V[i] * F_V[i]) / (13.0 * R_i) - kfforAnp * Hi;
-        GUs2[i] := (F_Vg[i] * F_Vg[i]) / (13.0 * R_i) - kfforAnp * Hi;
-
-        ANP_GUs[i] := (F_V[i] * F_V[i]) / (13.0 * ANP_R_i) - kfforAnp * ANP_Hi;
-        ANP_GUs2[i] := (F_Vg[i] * F_Vg[i]) / (13.0 * ANP_R_i) -
-          kfforAnp * ANP_Hi;
+        ANP_GUs[i] := F_Vmax / (13.0 * ANP_R_i) - kfforAnp * ANP_Hi;
+        ANP_GUs2[i] := F_Vgmax / (13.0 * ANP_R_i) - kfforAnp * ANP_Hi;
 
         if jal3 or jal4 then
         begin
 
           Frh := Fsr_rh1[i] * k_nusk;
           Hi := abs(Furb_sr[i]); // abs(Fsr_Urb[i]);
-          R_i := 17860 / (abs(Frh) + 0.00000001);
+          R_i := 17860 / (abs(ST_AVG[i]+F_fluk[i]/2.0) + 0.01);
 
           Vdps := trunc(sqrt((CNepUsk + abs(kfforAnp * Hi)) * 13 * R_i)
             / 5) * 5;
@@ -1799,12 +1801,10 @@ begin
           An[k] := F_Mtr[i];
           setlength(V_psi, k + 1);
           V_psi[k] := F_V[i];
-          Us[k] := ((F_V[i] * F_V[i]) / (13.0 * R_i) - kfforAnp *
-            abs(Fsr_Urb[i]));
+          Us[k] := (F_Vmax / (13.0 * R_i) - kfforAnp * abs(Fsr_Urb[i]));
           // abs(Fsr_Urb[i]);
 
-          Us2[k] := ((F_Vg[i] * F_Vg[i]) / (13.0 * R_i) - kfforAnp *
-            abs(Fsr_Urb[i]));
+          Us2[k] := (F_Vgmax / (13.0 * R_i) - kfforAnp * abs(Fsr_Urb[i]));
           // abs(Fsr_Urb[i]);
 
           k := k + 1;
