@@ -97,7 +97,7 @@ namespace ALARm_Report.Forms
                         var tr = trips.Where(t => t.Id == tripProcess.Trip_id).ToList().First();
                         var trip = RdStructureService.GetTrip(tripProcess.Id);
                         var kilometers = RdStructureService.GetKilometersByTrip(trip);
-                        
+                        var trackName = AdmStructureService.GetTrackName(track_id);
 
 
                         kilometers = kilometers.Where(o => o.Track_id == track_id).ToList();
@@ -123,6 +123,8 @@ namespace ALARm_Report.Forms
                         List<Curve> curves = RdStructureService.GetCurvesInTrip(tripProcess.Trip_id) as List<Curve>;
                         //фильтр по выбранным км
                         var filter_curves = curves.Where(o => ((float)(float)filters[0].Value <= o.Start_Km && o.Final_Km <= (float)(float)filters[1].Value)).ToList();
+
+                        string[] subs = tripProcess.DirectionName.Split('(');
                         foreach (var curve in filter_curves)
                         {
                             List<RDCurve> rdcs = RdStructureService.GetRDCurves(curve.Id, trip.Id);
@@ -379,8 +381,8 @@ namespace ALARm_Report.Forms
                             curve.Elevations = (MainTrackStructureService.GetCurves(curve.Id, MainTrackStructureConst.MtoElCurve) as List<ElCurve>).OrderBy(el => el.RealStartCoordinate).ToList();
                             curve.Straightenings = (MainTrackStructureService.GetCurves(curve.Id, MainTrackStructureConst.MtoStCurve) as List<StCurve>).OrderBy(st => st.RealStartCoordinate).ToList();
 
-                            var speed = MainTrackStructureService.GetMtoObjectsByCoord(tripProcess.Date_Vrem, curve.Straightenings.First().Start_Km,
-                                    MainTrackStructureConst.MtoSpeed, tr.Direction, "1") as List<Speed>;
+                            var speed = MainTrackStructureService.GetMtoObjectsByCoord(tripProcess.Date_Vrem, curve.Start_Km, MainTrackStructureConst.MtoSpeed, subs.Any() ? subs.First() : "", trackName.ToString()) as List<Speed>;
+
                             //if (speed.Any() && speed.First().Lastochka > 100)
                             //    continue;
 
