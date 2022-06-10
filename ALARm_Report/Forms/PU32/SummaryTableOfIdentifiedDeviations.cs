@@ -259,8 +259,8 @@ namespace ALARm_Report.Forms
                                         new XAttribute("vPass", s3.Uv.ToString() == "-1" ? "-" : s3.Uv.ToString()),
                                         new XAttribute("vGruz", s3.Uvg.ToString() == "-1" ? "-" : s3.Uvg.ToString()),
                                         new XAttribute("Vogr", /*s3.Ogp.ToString().Max().ToString() == "-1" ? "-" : s3.Ogp.ToString()*/"-"),//to doo
-                                        new XAttribute("vOgrPass", s3.Ovp.ToString() == "-1" ? "-" : s3.Ovp.ToString()),
-                                        new XAttribute("vOgrGruz", s3.Ogp.ToString() == "-1" ? "-" : s3.Ogp.ToString()),
+                                        new XAttribute("vOgrPass", s3.Ovp.ToString() == "-1" ? "-" : s3.Ovp.ToString() == "0" ? "-" : s3.Ovp.ToString()),
+                                        new XAttribute("vOgrGruz", s3.Ogp.ToString() == "-1" ? "-" : s3.Ogp.ToString() == "0" ? "-" : s3.Ogp.ToString()),
                                         new XAttribute("vOgrPorozh", "-"),
                                         new XAttribute("radius", "-"),
                                         new XAttribute("elevation", "-"),
@@ -307,8 +307,8 @@ namespace ALARm_Report.Forms
                                             new XAttribute("vPass", s3.Uv.ToString() == "-1" ? "-" : s3.Uv.ToString()),
                                             new XAttribute("vGruz", s3.Uvg.ToString() == "-1" ? "-" : s3.Uvg.ToString()),
                                             new XAttribute("Vogr", /*s3.Ogp.ToString().Max().ToString() == "-1" ? "-" : s3.Ogp.ToString()*/"-"),//to doo
-                                            new XAttribute("vOgrPass", s3.Ovp.ToString() == "-1" ? "-" : s3.Ovp.ToString()),
-                                            new XAttribute("vOgrGruz", s3.Ogp.ToString() == "-1" ? "-" : s3.Ogp.ToString()),
+                                            new XAttribute("vOgrPass", s3.Ovp.ToString() == "-1" ? "-" : s3.Ovp.ToString() == "0" ? "-" : s3.Ovp.ToString()),
+                                            new XAttribute("vOgrGruz", s3.Ogp.ToString() == "-1" ? "-" : s3.Ogp.ToString() == "0" ? "-" : s3.Ogp.ToString()),
                                             new XAttribute("vOgrPorozh", "-"),
                                             new XAttribute("radius", radius),
                                             new XAttribute("elevation", vozvihenie),
@@ -342,8 +342,8 @@ namespace ALARm_Report.Forms
                                             new XAttribute("vPass", s3.Uv.ToString() == "-1" ? "-" : s3.Uv.ToString()),
                                             new XAttribute("vGruz", s3.Uvg.ToString() == "-1" ? "-" : s3.Uvg.ToString()),
                                             new XAttribute("Vogr", /*s3.Ogp.ToString().Max().ToString() == "-1" ? "-" : s3.Ogp.ToString()*/"-"),//to doo
-                                            new XAttribute("vOgrPass", s3.Ovp.ToString() == "-1" ? "-" : s3.Ovp.ToString()),
-                                            new XAttribute("vOgrGruz", s3.Ogp.ToString() == "-1" ? "-" : s3.Ogp.ToString()),
+                                            new XAttribute("vOgrPass", s3.Ovp.ToString() == "-1" ? "-" : s3.Ovp.ToString() == "0" ? "-" : s3.Ovp.ToString()),
+                                            new XAttribute("vOgrGruz", s3.Ogp.ToString() == "-1" ? "-" : s3.Ogp.ToString() == "0" ? "-" : s3.Ogp.ToString()),
                                             new XAttribute("vOgrPorozh", "-"),
                                             new XAttribute("radius", radius),
                                             new XAttribute("elevation", vozvihenie),
@@ -367,7 +367,7 @@ namespace ALARm_Report.Forms
             }
             try
             {
-                htReport.Save($@"G:\form\6.Выходные формы Основные параметры\30.Сводная таблица выявленных отступлений (ФП-1.4).html");
+                //htReport.Save($@"G:\form\6.Выходные формы Основные параметры\30.Сводная таблица выявленных отступлений (ФП-1.4).html");
                 htReport.Save(Path.GetTempPath() + "/report.html");
             }
             catch

@@ -1681,7 +1681,7 @@ const
   CNepUsk = 0.7; // m/c*c
   Cpsi = 0.6; // m/c*c*c
 var
-  ii, i, j, sj, Vmx, k, xmod, v1, V2, v1_psi, v2_psi, vt, vtg, xxxx,
+  F_Vmax, F_Vmaxg,ii, i, j, sj, Vmx, k, xmod, v1, V2, v1_psi, v2_psi, vt, vtg, xxxx,
     len: INTEGER;
   Ri, An, Hm, Us, Us2, Mas_Vpsi, Vdps_, Psi, V_psi: array of real;
   y1, y2, y3, y4: real;
@@ -1754,6 +1754,9 @@ begin
       setlength(ANP_GUs, high(Fsr_rh1) + 1);
       setlength(ANP_GUs2, high(Fsr_rh1) + 1);
 
+
+      F_Vmax := MaxIntValue(F_V);
+      F_Vmaxg := MaxIntValue(F_Vg);
       for i := 0 to high(Fsr_rh1) - 20 do
       begin
         current_coord := CoordinateToReal(GlbKmTrue, F_Mtr[i]);
@@ -1781,8 +1784,10 @@ begin
         GUs[i] := F_Vmax / (13.0 * R_i) - kfforAnp * Hi;
         GUs2[i] := F_Vgmax / (13.0 * R_i) - kfforAnp * Hi;
 
+
         ANP_GUs[i] := F_Vmax / (13.0 * ANP_R_i) - kfforAnp * ANP_Hi;
         ANP_GUs2[i] := F_Vgmax / (13.0 * ANP_R_i) - kfforAnp * ANP_Hi;
+
 
         if jal3 or jal4 then
         begin

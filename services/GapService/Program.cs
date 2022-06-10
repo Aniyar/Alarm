@@ -23,6 +23,7 @@ namespace GapService
                 .UseSerilog()
                 .ConfigureServices((hostContext, services) =>
                 {
+
                     IConfiguration configuration = hostContext.Configuration;
                     Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(hostContext.Configuration).CreateLogger();
                     services.Configure<RabbitMQConfiguration>(configuration.GetSection(nameof(RabbitMQConfiguration)));

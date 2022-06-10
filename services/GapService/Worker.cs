@@ -51,7 +51,21 @@ namespace GapService
 
         public override Task StartAsync(CancellationToken cancellationToken)
         {
-            try 
+            //_logger.LogInformation(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json"));
+            //try
+            //{
+
+            //    var blazor = new Blazor_ProfileData();
+            //    blazor.conn = new NpgsqlConnection(Helper.ConnectionString());
+            //    blazor.conn.Open();
+            //    _logger.LogInformation("база ашылды");
+            //}
+            //catch (Exception e)
+            //{
+            //    _logger.LogInformation("baseconnect:" + e.Message);
+            //}
+
+            try
             {
                 _logger.LogInformation($"Connection try [{tryCount++}].");
                 _connection = _connectionFactory.CreateConnection();
@@ -67,8 +81,8 @@ namespace GapService
                                    routingKey: "");
                 _channel.BasicQos(0, 1, false);
                 _logger.LogInformation($"Queue [{QueueName}] is waiting for messages.");
-
-
+                var Blazor = new Blazor_ProfileData();
+               
                 //////Выбор километров по проезду-----------------
                 //var filterForm = new FilterForm();
                 //var filters = new List<Filter>();
@@ -95,16 +109,16 @@ namespace GapService
                     var kmIndex = (int)json["Km"];
                     var kmId = (int)json["FileId"];
                     //var path = json["Path"];
-                    
+                    // {'FileId':18308, 'Km':707, 'Path': '\DESKTOP-EMAFC5J\common\video_objects\desktop\242_18308_km_707.csv'}
                     Trips trip = RdStructureService.GetTripFromFileId(kmId)[0];
                     int TripId = (int)trip.Id;
                     var kilometers = RdStructureService.GetKilometersByTrip(trip);
                     Kilometer km = kilometers.Where(km => km.Number == kmIndex).First();
-                    
+
 
                     // Очищает таблицы для сервисов
                     //ClearServiceTables(TripId);
-                    // Читает файлы проезда и обновляет номер километра в таблице трип файлс
+                    //Читает файлы проезда и обновляет номер километра в таблице трип файлс
                     //PutKilometers(TripId);
 
 
@@ -141,33 +155,40 @@ namespace GapService
                     this.MainTrackStructureRepository = MainTrackStructureService.GetRepository();
 
 
-                        var outData = (List<OutData>)RdStructureService.GetNextOutDatas(km.Start_Index - 1, km.GetLength() - 1, TripId);
-                        km.AddDataRange(outData, km);
+                    var outData = (List<OutData>)RdStructureService.GetNextOutDatas(km.Start_Index - 1, km.GetLength() - 1, TripId);
+                    km.AddDataRange(outData, km);
 
-                        km.LoadTrackPasport(MainTrackStructureRepository, trip.Trip_date);
+                    km.LoadTrackPasport(MainTrackStructureRepository, trip.Trip_date);
 
-                    var Blazor2 = new Blazor_TestData();
+                    //var Blazor2 = new Blazor_TestData();
+                    //try
+                    //{
+                    //    bool flag = true;
+                    //    string koridorfile = RdStructureService.GetTripFiles(km.Number, TripId, "ProfilPoverxKoridor");
+                    //    string kupefile = RdStructureService.GetTripFiles(km.Number, TripId, "ProfilPoverxKupe");
+                    //    while (flag)
+                    //    {
+                    //        flag = Blazor2.GetBitmapAsync(koridorfile, kupefile);
+                    //        Blazor2.CurrentFrameIndex++;
+                    //    }
+                    //    Console.WriteLine("тест дата ОК");
+                    //}
+                    //catch (Exception e)
+                    //{
+                    //    Console.WriteLine("тест дата ERROR! " + e.Message);
+                    //}
+
+                    _logger.LogInformation("");
+                    var Blazor = new Blazor_ProfileData();
+                    Blazor.conn = new NpgsqlConnection(Helper.ConnectionString());
                     try
                     {
-                        bool flag = true;
-                        string koridorfile = RdStructureService.GetTripFiles(km.Number, TripId, "ProfilPoverxKoridor");
-                        string kupefile = RdStructureService.GetTripFiles(km.Number, TripId, "ProfilPoverxKupe");
-                        while (flag)
-                        {
-                            flag = Blazor2.GetBitmapAsync(koridorfile, kupefile);
-                            Blazor2.CurrentFrameIndex++;
-                        }
-                        Console.WriteLine("тест дата ОК");
-                    }
-                    catch (Exception e)
+                        Blazor.conn.Open();
+                        _logger.LogInformation("база ашылды");
+                    } catch(Exception e)
                     {
-                        Console.WriteLine("тест дата ERROR! " + e.Message);
+                        _logger.LogInformation(e.Message);
                     }
-
-
-                    var Blazor = new Blazor_ProfileData();
-                    Blazor.conn = new NpgsqlConnection(Blazor.cs);
-                    Blazor.conn.Open();
                     Blazor.in_koridor = new BinaryReader(File.Open(Blazor.Vnutr__profil__koridor, FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
                     var data = Blazor.in_koridor.ReadBytes(8);
                     Blazor.in_koridor_count = BitConverter.ToSingle(data, 0);
@@ -177,6 +198,7 @@ namespace GapService
                     data = Blazor.in_kupe.ReadBytes(8);
                     Blazor.in_kupe_count = BitConverter.ToSingle(data, 0);
                     Blazor.in_kupe_size = BitConverter.ToSingle(data, 4);
+                    
                     try
                     {
                         bool flag = true;
@@ -184,29 +206,29 @@ namespace GapService
                         {
                             flag = Blazor.GetBitmapAsync(km.Number, TripId);
                         }
-                        Console.WriteLine("профайл дата ОК");
+                        _logger.LogInformation("профайл дата ОК");
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine("профайл дата ERROR! " + e.Message);
+                        _logger.LogInformation("профайл дата ERROR! " + e.Message);
                     }
 
-                    var Blazor3 = new Blazor3(); //poverh shpal
-                    try
-                    {
-                        bool flag = true;
-                        string koridorfile = RdStructureService.GetTripFiles(km.Number, TripId, "ProfilSHpalyKoridor");
-                        string kupefile = RdStructureService.GetTripFiles(km.Number, TripId, "ProfilSHpalyKupe");
-                        while (flag)
-                        {
-                            flag = Blazor3.GetBitmapAsync(koridorfile, kupefile);
-                        }
-                        Console.WriteLine("Поверх шпал дата ОК");
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("Поверх шпал ERROR! " + e.Message);
-                    }
+                    //var Blazor3 = new Blazor3(); //poverh shpal
+                    //try
+                    //{
+                    //    bool flag = true;
+                    //    string koridorfile = RdStructureService.GetTripFiles(km.Number, TripId, "ProfilSHpalyKoridor");
+                    //    string kupefile = RdStructureService.GetTripFiles(km.Number, TripId, "ProfilSHpalyKupe");
+                    //    while (flag)
+                    //    {
+                    //        flag = Blazor3.GetBitmapAsync(koridorfile, kupefile);
+                    //    }
+                    //    Console.WriteLine("Поверх шпал дата ОК");
+                    //}
+                    //catch (Exception e)
+                    //{
+                    //    Console.WriteLine("Поверх шпал ERROR! " + e.Message);
+                    //}
 
                     try
                     {
@@ -651,7 +673,7 @@ namespace GapService
 
                 }
 
-                var cs = "Host=DESKTOP-EMAFC5J;Username=postgres;Password=alhafizu;Database=railway_comp";
+                var cs = "Host=DESKTOP-EMAFC5J;Username=postgres;Password=alhafizu;Database=Aniyar_COpy";
 
                 var con = new NpgsqlConnection(cs);
                 con.Open();

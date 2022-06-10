@@ -461,6 +461,8 @@ namespace ALARm.DataAccess
             }
         }
 
+       
+
 
         public List<VideoObject> GetRdObjectKm(string object_id, string km, string trip_files)
         {
@@ -3767,6 +3769,7 @@ namespace ALARm.DataAccess
 
                             (SELECT DISTINCT
 	                            trip_id AS process_id,
+                                track_id,
 	                            radius,
 	                            LEVEL,
 	                            gauge,

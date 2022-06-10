@@ -56,7 +56,7 @@ namespace ALARm.Core.AdditionalParameteres
         public float Impulsesright { get; set; }
         public float Shortwavesleft { get; set; }
         public float Shortwavesright { get; set; }
-        
+        public float Level { get; set; }
         public float Mediumwavesleft { get; set; }
         public float Mediumwavesright { get; set; }
         public float Longwavesleft { get; set; }

@@ -27,7 +27,7 @@ namespace ALARm_Report.Forms
         public override void Process(Int64 distanceId, ReportTemplate template, ReportPeriod period, MetroProgressBar progressBar)
         {
             XDocument htReport = new XDocument();
-          
+
             using (XmlWriter writer = htReport.CreateWriter())
             {
                 //Сделать выбор периода
@@ -58,35 +58,32 @@ namespace ALARm_Report.Forms
 
                 foreach (var process in mainProcesses)
                 {
-                    foreach(var track_id in admTracksId)
+                    foreach (var track_id in admTracksId)
                     {
                         //var rd_curves_wear_great_13 = (RdStructureService.GetRdTables(process, 9) as List<RDCurve>).Where(r => r.Wear >= 13.0).ToList();
                         var trackName = AdmStructureService.GetTrackName(track_id);
                         var trip = RdStructureService.GetTrip(process.Id);
-                        var kms = RdStructureService.GetKilometersByTrip(trip);
-                        kms = kms.Where(o => o.Track_id == track_id).ToList();
-                        if (kms.Count() == 0) continue;
+                        
 
-                        var lkm = kms.Select(o => o.Number).ToList();
-                        if (lkm.Count() == 0) continue;
-                        var lm = kms.Select(o => o.Number).ToList();
-                        if (lkm.Count() == 0) continue;
-
-                        if (kms == null || kms.Count == 0)
-                            continue;
 
                         var filterForm = new FilterForm();
                         var filters = new List<Filter>();
+                        int km = trip.Start_Km;
+                        int meter = trip.Start_M;
 
-                        filters.Add(new FloatFilter() { Name = " (км)", Value = lkm.Min() });
-                        filters.Add(new FloatFilter() { Name = "(метер)", Value = lm.Min() });
-                        //if (rd_curves_wear_great_13.Count < 1)
-                        //    continue;
+                        filters.Add(new INTFilter() { Name = "KM", Value = km });
+                        filters.Add(new INTFilter() { Name = "meter", Value = meter });
                         filterForm.SetDataSource(filters);
+                        
                         if (filterForm.ShowDialog() == DialogResult.Cancel)
                             return;
-                        var Blazor_prov_data = new AppData();
+
                         
+
+
+                        var Blazor_prov_data = new AppData();
+
+                       
                         Blazor_prov_data.conn = new NpgsqlConnection(Blazor_prov_data.cs);
                         Blazor_prov_data.conn.Open();
                         Blazor_prov_data.in_koridor = new BinaryReader(File.Open(Blazor_prov_data.Vnutr__profil__koridor, FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
@@ -98,94 +95,125 @@ namespace ALARm_Report.Forms
                         data = Blazor_prov_data.in_kupe.ReadBytes(8);
                         Blazor_prov_data.in_kupe_count = BitConverter.ToSingle(data, 0);
                         Blazor_prov_data.in_kupe_size = BitConverter.ToSingle(data, 4);
-                        Blazor_prov_data.GetBitmapAsync(700,800);
+                        
+                        km = (int)filters[0].Value;
+                        meter = (int)filters[1].Value;
 
-                        XElement xePages = new XElement("pages",
+                        Blazor_prov_data.GetBitmapAsync(km, meter);
+                        var DB_gauge = AdditionalParametersService.GetGaugeFromDBkmmter(700,800, process.Trip_id);
 
-                            new XAttribute("version", $"{DateTime.Now} v{Assembly.GetExecutingAssembly().GetName().Version.ToString()}"),
-                            new XAttribute("car", process.Car),
-                            new XAttribute("chief", process.Chief),
-                            new XAttribute("ps", process.Car),
-                            new XAttribute("check", process.GetProcessTypeName),
-                            new XAttribute("period", period.Period),
+                        //var railstype = "";
+                       
+                        
+                            XElement xePages = new XElement("pages",
+
+                          new XAttribute("version", $"{DateTime.Now} v{Assembly.GetExecutingAssembly().GetName().Version.ToString()}"),
+                          new XAttribute("car", process.Car),
+                          new XAttribute("chief", process.Chief),
+                          new XAttribute("ps", process.Car),
+                          new XAttribute("check", process.GetProcessTypeName),
+                          new XAttribute("period", period.Period),
+
+                          new XAttribute("pointsleft", Blazor_prov_data.PointsLeft.ToString("0.00").Replace(",", ".")),
+                          new XAttribute("pointsright", Blazor_prov_data.PointsRight.ToString("0.00").Replace(",", ".")),
                           
-                            new XAttribute("pointsleft", Blazor_prov_data.PointsLeft.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("pointsright", Blazor_prov_data.PointsRight.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("railspoints", " 61.9, 400, 25, 84.5623876, 35.6, 180, 71.25, 33.28728189, 17.31756333, 375.0000105"),
-                            //X_lef
-                            new XAttribute("xelem1", Blazor_prov_data.Xtest1.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("xelem2", Blazor_prov_data.Xtest2.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("xelem3", Blazor_prov_data.Xtest3.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("xelem3value", Blazor_prov_data.pu_l.First()),
-                            new XAttribute("xelem4", Blazor_prov_data.Xtest4.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("x_big", Blazor_prov_data.Xtest5.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("xrad1", Blazor_prov_data.Xrad.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("bottom_x1", Blazor_prov_data.Bottom_x1.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("bottom_x2", Blazor_prov_data.Bottom_x1.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("x_per2_l", Blazor_prov_data.Perpen_x2_l.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("radX_l", Blazor_prov_data.RadX_l.ToString("0.00").Replace(",", ".")),
-                            ////
+
+                          new XAttribute("railspoints", " 61.9, 400, 25, 84.5623876, 35.6, 180, 71.25, 33.28728189, 17.31756333, 375.0000105"),
+                          //X_lef
+                          new XAttribute("xelem1", Blazor_prov_data.Xtest1.ToString("0.00").Replace(",", ".")),
+                          new XAttribute("xelem2", Blazor_prov_data.Xtest2.ToString("0.00").Replace(",", ".")),
+                          new XAttribute("xelem3", Blazor_prov_data.Xtest3.ToString("0.00").Replace(",", ".")),
+                          new XAttribute("xelem4", Blazor_prov_data.Xtest4.ToString("0.00").Replace(",", ".")),
+                          new XAttribute("x_big", Blazor_prov_data.Xtest5.ToString("0.00").Replace(",", ".")),
+                          new XAttribute("xrad1", Blazor_prov_data.Xrad.ToString("0.00").Replace(",", ".")),
+                          new XAttribute("bottom_x1", Blazor_prov_data.Bottom_x1.ToString("0.00").Replace(",", ".")),
+                          new XAttribute("bottom_x2", Blazor_prov_data.Bottom_x1.ToString("0.00").Replace(",", ".")),
+                          new XAttribute("x_per2_l", Blazor_prov_data.Perpen_x2_l.ToString("0.00").Replace(",", ".")),
+                          new XAttribute("radX_l", Blazor_prov_data.RadX_l.ToString("0.00").Replace(",", ".")),
+                          ///Значения 
+                          new XAttribute("xelem3_pu_l", "1/" + (int)(1 / Blazor_prov_data.pu_l.First())),
+                          //new XAttribute("xelem3_pu_l", Blazor_prov_data.pu_l.First().ToString("0.00")),
+                          new XAttribute("xelem3_npk_l", "1/" + (int)(1 / Blazor_prov_data.npk_l.First())),
+                          new XAttribute("xelem3_bok_iz_l", "1/" + (int)(1 / Blazor_prov_data.bok_l.First())),
+                          new XAttribute("xelem3_pu_r", "1/" + (int)(1 / Blazor_prov_data.pu_r.First())),
+                          new XAttribute("xelem3_npk_r", "1/" + (int)(1 / Blazor_prov_data.npk_r.First())),
+                          new XAttribute("xelem3_bok_iz_r", "1/" + (int)(1 / Blazor_prov_data.bok_r.First())),
+                          new XAttribute("xelem3_gauge", DB_gauge.Select(o => o.Gauge).First().ToString("0.00")),
+                          new XAttribute("xelem3_level", DB_gauge.Select(o => o.Level).First().ToString("0.00")),
+
+                          //new XAttribute("xelem3_npk_l", Blazor_prov_data.npk_l.First().ToString("0.00")),
+                          //new XAttribute("xelem3_bok_iz_l", Blazor_prov_data.bok_l.First().ToString("0.00")),
+                          //new XAttribute("xelem3_pu_r", Blazor_prov_data.pu_r.First().ToString("0.00")),
+                          //new XAttribute("xelem3_npk_r", Blazor_prov_data.npk_r.First().ToString("0.00")),
+                          //new XAttribute("xelem3_bok_iz_r", Blazor_prov_data.bok_r.First().ToString("0.00")),
+                          //new XAttribute("xelem3_shablon", Blazor_prov_data.bok_r.First().ToString("0.00")),
+                          //new XAttribute("xelem3_gauge", DB_gauge.Select(o => o.Gauge).First().ToString("0.00")),
+                          //new XAttribute("xelem3_level", DB_gauge.Select(o => o.Level).First().ToString("0.00")),
+                            /// 
+                            ///
                             new XAttribute("yelem1", Blazor_prov_data.Ytest1.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("yelem2", Blazor_prov_data.Ytest2.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("yelem3", Blazor_prov_data.Ytest3.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("yelem4", Blazor_prov_data.Ytest4.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("y_big", Blazor_prov_data.Ytest_big.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("yrad1", Blazor_prov_data.Ytest5.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("bottom_y1", Blazor_prov_data.Bottom_y1.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("bottom_y2", Blazor_prov_data.Bottom_y2.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("y_per2_l", Blazor_prov_data.Perpen_y2_l.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("radY_l", Blazor_prov_data.RadY_l.ToString("0.00").Replace(",", ".")),
-                            ////x_right
-                            new XAttribute("xelem1_r", Blazor_prov_data.Xtest1_r.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("xelem2_r", Blazor_prov_data.Xtest2_r.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("xelem3_r", Blazor_prov_data.Xtest3_r.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("xelem4_r", Blazor_prov_data.Xtest4_r.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("x_big_r", Blazor_prov_data.X_big_r.First().ToString("0.00").Replace(",", ".")),
-                            new XAttribute("xrad1_r", Blazor_prov_data.Xtest5_r.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("bottom_x1_r", Blazor_prov_data.Bottom_x2_r.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("bottom_x2_r", Blazor_prov_data.Bottom_x1_r.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("x_per2_l_r", Blazor_prov_data.Perpen_x1_r.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("radX_l_r", Blazor_prov_data.RadX_r.ToString("0.00").Replace(",", ".")),
-                            ////
-                            new XAttribute("yelem1_r", Blazor_prov_data.Ytest1_r.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("yelem2_r", Blazor_prov_data.Ytest2_r.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("yelem3_r", Blazor_prov_data.Ytest3_r.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("yelem4_r", Blazor_prov_data.Ytest4_r.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("y_big_r", Blazor_prov_data.Ytest_big_r.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("yrad1_r", Blazor_prov_data.Ytest5_r.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("bottom_y1_r", Blazor_prov_data.Bottom_y1_r.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("bottom_y2_r", Blazor_prov_data.Bottom_y2_r.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("y_per2_l_r", Blazor_prov_data.Perpen_y1_r.ToString("0.00").Replace(",", ".")),
-                            new XAttribute("radY_l_r", Blazor_prov_data.RadY_r.ToString("0.00").Replace(",", ".")),
+                          new XAttribute("yelem2", Blazor_prov_data.Ytest2.ToString("0.00").Replace(",", ".")),
+                          new XAttribute("yelem3", Blazor_prov_data.Ytest3.ToString("0.00").Replace(",", ".")),
+                          new XAttribute("yelem4", Blazor_prov_data.Ytest4.ToString("0.00").Replace(",", ".")),
+                          new XAttribute("y_big", Blazor_prov_data.Ytest_big.ToString("0.00").Replace(",", ".")),
+                          new XAttribute("yrad1", Blazor_prov_data.Ytest5.ToString("0.00").Replace(",", ".")),
+                          new XAttribute("bottom_y1", Blazor_prov_data.Bottom_y1.ToString("0.00").Replace(",", ".")),
+                          new XAttribute("bottom_y2", Blazor_prov_data.Bottom_y2.ToString("0.00").Replace(",", ".")),
+                          new XAttribute("y_per2_l", Blazor_prov_data.Perpen_y2_l.ToString("0.00").Replace(",", ".")),
+                          new XAttribute("radY_l", Blazor_prov_data.RadY_l.ToString("0.00").Replace(",", ".")),
+                          ////x_right
+                          new XAttribute("xelem1_r", Blazor_prov_data.Xtest1_r.ToString("0.00").Replace(",", ".")),
+                          new XAttribute("xelem2_r", Blazor_prov_data.Xtest2_r.ToString("0.00").Replace(",", ".")),
+                          new XAttribute("xelem3_r", Blazor_prov_data.Xtest3_r.ToString("0.00").Replace(",", ".")),
+                          new XAttribute("xelem4_r", Blazor_prov_data.Xtest4_r.ToString("0.00").Replace(",", ".")),
+                          new XAttribute("x_big_r", Blazor_prov_data.X_big_r.First().ToString("0.00").Replace(",", ".")),
+                          new XAttribute("xrad1_r", Blazor_prov_data.Xtest5_r.ToString("0.00").Replace(",", ".")),
+                          new XAttribute("bottom_x1_r", Blazor_prov_data.Bottom_x2_r.ToString("0.00").Replace(",", ".")),
+                          new XAttribute("bottom_x2_r", Blazor_prov_data.Bottom_x1_r.ToString("0.00").Replace(",", ".")),
+                          new XAttribute("x_per2_l_r", Blazor_prov_data.Perpen_x1_r.ToString("0.00").Replace(",", ".")),
+                          new XAttribute("radX_l_r", Blazor_prov_data.RadX_r.ToString("0.00").Replace(",", ".")),
+                          ////
+                          new XAttribute("yelem1_r", Blazor_prov_data.Ytest1_r.ToString("0.00").Replace(",", ".")),
+                          new XAttribute("yelem2_r", Blazor_prov_data.Ytest2_r.ToString("0.00").Replace(",", ".")),
+                          new XAttribute("yelem3_r", Blazor_prov_data.Ytest3_r.ToString("0.00").Replace(",", ".")),
+                          new XAttribute("yelem4_r", Blazor_prov_data.Ytest4_r.ToString("0.00").Replace(",", ".")),
+                          new XAttribute("y_big_r", Blazor_prov_data.Ytest_big_r.ToString("0.00").Replace(",", ".")),
+                          new XAttribute("yrad1_r", Blazor_prov_data.Ytest5_r.ToString("0.00").Replace(",", ".")),
+                          new XAttribute("bottom_y1_r", Blazor_prov_data.Bottom_y1_r.ToString("0.00").Replace(",", ".")),
+                          new XAttribute("bottom_y2_r", Blazor_prov_data.Bottom_y2_r.ToString("0.00").Replace(",", ".")),
+                          new XAttribute("y_per2_l_r", Blazor_prov_data.Perpen_y1_r.ToString("0.00").Replace(",", ".")),
+                          new XAttribute("radY_l_r", Blazor_prov_data.RadY_r.ToString("0.00").Replace(",", ".")),
 
 
-                            new XAttribute("distance", distance.Code),
-                            new XAttribute("direction", process.DirectionName + " (" + process.DirectionCode + ")"),
-                            new XAttribute("track", trackName));
+                          new XAttribute("distance", distance.Code),
+                          new XAttribute("direction", process.DirectionName + " (" + process.DirectionCode + ")"),
+                          new XAttribute("track", trackName));
 
-                        for(int i = 0; i < Blazor_prov_data.PointsLeft.Length - 1; i = i + 2)
-                         {
-                            if (!Double.IsNaN(Blazor_prov_data.PointsLeft[i]) && !Double.IsNaN(Blazor_prov_data.PointsLeft[i + 1]))
+                            for (int i = 0; i < Blazor_prov_data.PointsLeft.Length - 1; i = i + 2)
+
                             {
-                                XElement PointsLeft = new XElement("pointsLeft",
-                                new XAttribute("cx", Blazor_prov_data.PointsLeft[i].ToString().Replace(",", ".")),
-                                new XAttribute("cy", Blazor_prov_data.PointsLeft[i + 1].ToString().Replace(",", ".")));
-                                xePages.Add(PointsLeft);
-                            }
-                            
-                        }
-                        for (int j = 0; j < Blazor_prov_data.PointsRight.Length - 1; j = j + 2)
-                        {
-                            if (!Double.IsNaN(Blazor_prov_data.PointsRight[j]) && !Double.IsNaN(Blazor_prov_data.PointsLeft[j + 1]))
-                            {
-                                XElement PointsRight = new XElement("pointsRight",
-                                 new XAttribute("cx_r", Blazor_prov_data.PointsRight[j].ToString().Replace(",", ".")),
-                                 new XAttribute("cy_r", Blazor_prov_data.PointsRight[j + 1].ToString().Replace(",", ".")));
-                                xePages.Add(PointsRight);
-                            }
-                        }
+                                if (!Double.IsNaN(Blazor_prov_data.PointsLeft[i]) && !Double.IsNaN(Blazor_prov_data.PointsLeft[i + 1]))
+                                {
+                                    XElement PointsLeft = new XElement("pointsLeft",
+                                    new XAttribute("cx", Blazor_prov_data.PointsLeft[i].ToString().Replace(",", ".")),
+                                    new XAttribute("cy", Blazor_prov_data.PointsLeft[i + 1].ToString().Replace(",", ".")));
+                                    xePages.Add(PointsLeft);
+                                }
 
-                        report.Add(xePages);
+                            }
+                            for (int j = 0; j < Blazor_prov_data.PointsRight.Length - 1; j = j + 2)
+                            {
+                                if (!Double.IsNaN(Blazor_prov_data.PointsRight[j]) && !Double.IsNaN(Blazor_prov_data.PointsRight[j + 1]))
+                                {
+                                    XElement PointsRight = new XElement("pointsRight",
+                                     new XAttribute("cx_r", Blazor_prov_data.PointsRight[j].ToString().Replace(",", ".")),
+                                     new XAttribute("cy_r", Blazor_prov_data.PointsRight[j + 1].ToString().Replace(",", ".")));
+                                    xePages.Add(PointsRight);
+                                }
+                            }
+
+                            report.Add(xePages);
+                      
                     }
                 }
 
@@ -375,7 +403,9 @@ namespace ALARm_Report.Forms
         public double ExponentCoef = -1;
 
         public int width = 150;
-        public string cs = "Host=DESKTOP-EMAFC5J;Username=postgres;Password=alhafizu;Database=PAPA_COPY";
+
+        public string cs = ALARm.DataAccess.Helper.ConnectionString();
+
         //public string cs = "Host=localhost;Username=postgres;Password=alhafizu;Database=railway";
         public NpgsqlConnection conn { get; set; }
 
@@ -454,7 +484,7 @@ namespace ALARm_Report.Forms
                         Array.Reverse(buff);
                         Meter = BitConverter.ToInt32(buff, 0);
                     }
-                    
+
                     //long ll = CurrentFrameIndex * ((long)in_koridor_size) + 8;
                     //reader.BaseStream.Seek(ll, SeekOrigin.Begin);
                     //var data = reader.ReadBytes(4);
@@ -736,8 +766,8 @@ namespace ALARm_Report.Forms
                     var x_big_r = new List<double> { };
 
 
-                    
-                  
+
+
                 }
                 CurrentFrame = FrameImgLeft;
             }
@@ -843,7 +873,7 @@ namespace ALARm_Report.Forms
                         //Console.WriteLine($" Max {xOut} {xIn} Gap_len:" + (xOut - xIn));
                         if (Math.Abs(xOut - xIn) <= 20)
                         {
-                            
+
                             xIn = -1;
                         }
                         else
@@ -857,7 +887,7 @@ namespace ALARm_Report.Forms
                                     PromCount++;
                                 }
                             }
-                            
+
                         }
                     }
                     if (flagIn == true)
@@ -892,7 +922,7 @@ namespace ALARm_Report.Forms
                         //Console.WriteLine($" Min {xOutmin} {xInmin} Gap_len:" + (xOutmin - xInmin));
                         if (Math.Abs(xOutmin - xInmin) <= 20)
                         {
-                            
+
                             xIn = -1;
                         }
                         else
@@ -906,7 +936,7 @@ namespace ALARm_Report.Forms
                                     PromCount++;
                                 }
                             }
-                            
+
                         }
                     }
                     if (flagIn == true)
@@ -937,7 +967,7 @@ namespace ALARm_Report.Forms
             return sb.ToString();
         }
 
-       
+
 
         public string VectorToPoints(float[] vector)
         {
@@ -1011,6 +1041,7 @@ namespace ALARm_Report.Forms
                     return;
             }
            
+
 
             double maxY = arrY.Max();
             arrY = arrY.Select(a => a * (-1) + maxY).ToList();

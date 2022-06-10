@@ -55,8 +55,6 @@ namespace ALARm.Core.Report
                 //ПРУ
                 var PasSpeed = kilometer.Speeds.Any() ? kilometer.Speeds.First().Passenger : -1;
                 var pru_dig_list = new List<DigressionMark> { };
-                var curve_bpd_list = new List<DigressionMark> { };
-                  
                 var Curve_nature_value = new List<DigressionMark>();
                 int prevIndex = kilometer.Number + 1;
                 //var rezulat = new List<> ;
@@ -178,7 +176,10 @@ namespace ALARm.Core.Report
                     {
                         StrPoins.Add(item.First());
                     }
-                    StrPoins.Add(strData.Last());
+                    if (strData.Any())
+                    {
+                        StrPoins.Add(strData.Last());
+                    }
 
 
                     var rightCurveLvl = new List<RDCurve>();
@@ -293,7 +294,11 @@ namespace ALARm.Core.Report
                     {
                         LevelPoins.Add(item.First());
                     }
-                    LevelPoins.Add(LvlData.Last());
+                    if (LvlData.Any())
+                    {
+                        LevelPoins.Add(LvlData.Last());
+                    }
+
 
 
                     int lvl = -1, str = -1, lenPerKrivlv = -1;
@@ -351,6 +356,7 @@ namespace ALARm.Core.Report
 
                             Alert = $"кривая факт. R:{ (17860 / Math.Abs(r)):0} H:{ Math.Abs(h):0}"
                         });
+
 
                         if (item.First().Km == 717)
                         {
@@ -522,265 +528,249 @@ namespace ALARm.Core.Report
                     lenPru = minH.Count;
                     lvl = (int)minOb;
 
-
-                    try
+                    if (StrPoins.Any() && LevelPoins.Any())
                     {
-                        //Поиск круговой кривой рихтовки
-                        var str_circular = new List<RDCurve> { };
-
-                        for (int strIndex = 1; strIndex < StrPoins.Count - 1; strIndex++)
+                        try
                         {
-                            if (Math.Abs(StrPoins[strIndex].X - StrPoins[strIndex - 1].X) < 13)
-                                continue;
+                            //Поиск круговой кривой рихтовки
+                            var str_circular = new List<RDCurve> { };
 
-                            var firstDiffX = Math.Abs(Math.Abs(StrPoins[strIndex].Trapez_str) - Math.Abs(StrPoins[strIndex - 1].Trapez_str)) / Math.Abs(StrPoins[strIndex].X - StrPoins[strIndex - 1].X);
-                            var secondDiffX = Math.Abs(Math.Abs(StrPoins[strIndex].Trapez_str) - Math.Abs(StrPoins[strIndex + 1].Trapez_str)) / Math.Abs(StrPoins[strIndex].X - StrPoins[strIndex + 1].X);
-
-                            if (5.0 * firstDiffX < secondDiffX || 5.0 * secondDiffX < firstDiffX)
+                            for (int strIndex = 1; strIndex < StrPoins.Count - 1; strIndex++)
                             {
-                                str_circular.Add(StrPoins[strIndex]);
-                            }
-                        }
-                        if (kilometer.Number == 715)
-                        {
-                            // var x = 0;
+                                if (Math.Abs(StrPoins[strIndex].X - StrPoins[strIndex - 1].X) < 13)
+                                    continue;
 
-                        }
-                        //  {
-                        if (Math.Abs(Math.Abs(StrPoins[StrPoins.Count - 1].Trapez_str) - Math.Abs(StrPoins[StrPoins.Count - 2].Trapez_str)) / Math.Abs(StrPoins[StrPoins.Count - 1].X - StrPoins[StrPoins.Count - 2].X) < 0.05)
-                        {
-                            str_circular.Add(StrPoins[StrPoins.Count - 1]);
-                        }
-                        /// }
-                        //  else
-                        //  {
-                        // if (Math.Abs(Math.Abs(StrPoins[StrPoins.Count - 1].Trapez_str) - Math.Abs(StrPoins[StrPoins.Count - 2].Trapez_str)) / Math.Abs(StrPoins[StrPoins.Count - 1].X - StrPoins[StrPoins.Count - 2].X) < 0.05)
-                        //   Нужно разобраться
-                        // {
-                        //continue;
-                        // }
-                        //  }
+                                var firstDiffX = Math.Abs(Math.Abs(StrPoins[strIndex].Trapez_str) - Math.Abs(StrPoins[strIndex - 1].Trapez_str)) / Math.Abs(StrPoins[strIndex].X - StrPoins[strIndex - 1].X);
+                                var secondDiffX = Math.Abs(Math.Abs(StrPoins[strIndex].Trapez_str) - Math.Abs(StrPoins[strIndex + 1].Trapez_str)) / Math.Abs(StrPoins[strIndex].X - StrPoins[strIndex + 1].X);
 
-
-
-                        if (Math.Abs(Math.Abs(StrPoins[StrPoins.Count - 1].Trapez_str) - Math.Abs(StrPoins[StrPoins.Count - 2].Trapez_str)) / Math.Abs(StrPoins[StrPoins.Count - 1].X - StrPoins[StrPoins.Count - 2].X) < 0.05)
-                        {
-                            str_circular.Add(StrPoins[StrPoins.Count - 1]);
-                        }
-
-                        //Поиск круговой кривой уровень
-                        var lvl_circular = new List<RDCurve> { };
-
-                        for (int lvlIndex = 1; lvlIndex < LevelPoins.Count - 1; lvlIndex++)
-                        {
-                            if (Math.Abs(LevelPoins[lvlIndex].X - LevelPoins[lvlIndex - 1].X) < 6)
-                                continue;
-
-                            var firstDiffX = Math.Abs(Math.Abs(LevelPoins[lvlIndex].Trapez_level) - Math.Abs(LevelPoins[lvlIndex - 1].Trapez_level)) / Math.Abs(LevelPoins[lvlIndex].X - LevelPoins[lvlIndex - 1].X);
-                            var secondDiffX = Math.Abs(Math.Abs(LevelPoins[lvlIndex].Trapez_level) - Math.Abs(LevelPoins[lvlIndex + 1].Trapez_level)) / Math.Abs(LevelPoins[lvlIndex].X - LevelPoins[lvlIndex + 1].X);
-
-                            if (5.0 * firstDiffX < secondDiffX || 5.0 * secondDiffX < firstDiffX)
-                            {
-                                lvl_circular.Add(LevelPoins[lvlIndex]);
-                            }
-                        }
-                        if (Math.Abs(Math.Abs(LevelPoins[LevelPoins.Count - 1].Trapez_level) - Math.Abs(LevelPoins[LevelPoins.Count - 2].Trapez_level)) / Math.Abs(LevelPoins[LevelPoins.Count - 1].X - LevelPoins[LevelPoins.Count - 2].X) < 0.05)
-                        {
-                            lvl_circular.Add(LevelPoins[LevelPoins.Count - 1]);
-                        }
-
-                        //нижние 2 точки трапеции
-                        var start_km = StrPoins.First().Km;
-                        var start_m = StrPoins.First().M;
-                        var final_km = StrPoins.Last().Km;
-                        var final_m = StrPoins.Last().M;
-
-                        var start_lvl_km = LevelPoins.First().Km;
-                        var start_lvl_m = LevelPoins.First().M;
-                        var final_lvl_km = LevelPoins.Last().Km;
-                        var final_lvl_m = LevelPoins.Last().M;
-
-                        //верхние 2 точки трапеции
-                        var start_kmc = str_circular.First().Km;
-                        var start_mc = str_circular.First().M;
-                        var final_kmc = str_circular.Last().Km;
-                        var final_mc = str_circular.Last().M;
-
-                        for (int cirrInd = 0; cirrInd < str_circular.Count - 1; cirrInd++)
-                        {
-                            if (Math.Abs(str_circular[cirrInd].Trapez_str - str_circular[cirrInd + 1].Trapez_str) /
-                                Math.Abs(str_circular[cirrInd].X - str_circular[cirrInd + 1].X) > 0.0065
-
-                                && (Math.Abs(str_circular[cirrInd].Trapez_str) < 5 || Math.Abs(str_circular[cirrInd + 1].Trapez_str) < 5))
-                            {
-                                continue;
-                            }
-                            else
-                            {
-                                //начальный до 1 переходной
-                                var circ1Ind = StrPoins.IndexOf(str_circular[cirrInd]);
-                                for (int iii = circ1Ind - 1; iii >= 0; iii--)
+                                if (5.0 * firstDiffX < secondDiffX || 5.0 * secondDiffX < firstDiffX)
                                 {
-                                    if (Math.Abs(StrPoins[iii].Trapez_str) < 3)
-                                    {
-                                        start_km = StrPoins[iii].Km;
-                                        start_m = StrPoins[iii].M;
-                                        //var final_km = StrPoins.Last().Km;
-                                        //var final_m = StrPoins.Last().M;
-                                        break;
-                                    }
+                                    str_circular.Add(StrPoins[strIndex]);
                                 }
-                                //конечный от 2 переходной
-                                var circ2Ind = StrPoins.IndexOf(str_circular[cirrInd + 1]);
-                                for (int iii = circ2Ind + 1; iii < StrPoins.Count; iii++)
-                                {
-                                    if (Math.Abs(StrPoins[iii].Trapez_str) < 3)
-                                    {
-                                        //start_km = StrPoins[iii].Km;
-                                        //start_m = StrPoins[iii].M;
-                                        final_km = StrPoins[iii].Km;
-                                        final_m = StrPoins[iii].M;
-                                        break;
-                                    }
-                                }
-
-                                // круговая верхние точки
-                                start_kmc = str_circular[cirrInd].Km;
-                                start_mc = str_circular[cirrInd].M;
-
-                                final_kmc = str_circular[cirrInd + 1].Km;
-                                final_mc = str_circular[cirrInd + 1].M;
-
-                                break;
                             }
+                            if (Math.Abs(Math.Abs(StrPoins[StrPoins.Count - 1].Trapez_str) - Math.Abs(StrPoins[StrPoins.Count - 2].Trapez_str)) / Math.Abs(StrPoins[StrPoins.Count - 1].X - StrPoins[StrPoins.Count - 2].X) < 0.05)
+                            {
+                                str_circular.Add(StrPoins[StrPoins.Count - 1]);
+                            }
+
+                            if (Math.Abs(Math.Abs(StrPoins[StrPoins.Count - 1].Trapez_str) - Math.Abs(StrPoins[StrPoins.Count - 2].Trapez_str)) / Math.Abs(StrPoins[StrPoins.Count - 1].X - StrPoins[StrPoins.Count - 2].X) < 0.05)
+                            {
+                                str_circular.Add(StrPoins[StrPoins.Count - 1]);
+                            }
+                            //Поиск круговой кривой уровень
+                            var lvl_circular = new List<RDCurve> { };
+
+                            for (int lvlIndex = 1; lvlIndex < LevelPoins.Count - 1; lvlIndex++)
+                            {
+                                if (Math.Abs(LevelPoins[lvlIndex].X - LevelPoins[lvlIndex - 1].X) < 6)
+                                    continue;
+
+                                var firstDiffX = Math.Abs(Math.Abs(LevelPoins[lvlIndex].Trapez_level) - Math.Abs(LevelPoins[lvlIndex - 1].Trapez_level)) / Math.Abs(LevelPoins[lvlIndex].X - LevelPoins[lvlIndex - 1].X);
+                                var secondDiffX = Math.Abs(Math.Abs(LevelPoins[lvlIndex].Trapez_level) - Math.Abs(LevelPoins[lvlIndex + 1].Trapez_level)) / Math.Abs(LevelPoins[lvlIndex].X - LevelPoins[lvlIndex + 1].X);
+
+                                if (5.0 * firstDiffX < secondDiffX || 5.0 * secondDiffX < firstDiffX)
+                                {
+                                    lvl_circular.Add(LevelPoins[lvlIndex]);
+                                }
+                            }
+                            if (Math.Abs(Math.Abs(LevelPoins[LevelPoins.Count - 1].Trapez_level) - Math.Abs(LevelPoins[LevelPoins.Count - 2].Trapez_level)) / Math.Abs(LevelPoins[LevelPoins.Count - 1].X - LevelPoins[LevelPoins.Count - 2].X) < 0.05)
+                            {
+                                lvl_circular.Add(LevelPoins[LevelPoins.Count - 1]);
+                            }
+
+                            //нижние 2 точки трапеции
+                            var start_km = StrPoins.First().Km;
+                            var start_m = StrPoins.First().M;
+                            var final_km = StrPoins.Last().Km;
+                            var final_m = StrPoins.Last().M;
+
+                            var start_lvl_km = LevelPoins.First().Km;
+                            var start_lvl_m = LevelPoins.First().M;
+                            var final_lvl_km = LevelPoins.Last().Km;
+                            var final_lvl_m = LevelPoins.Last().M;
+
+                            //верхние 2 точки трапеции
+                            var start_kmc = str_circular.First().Km;
+                            var start_mc = str_circular.First().M;
+                            var final_kmc = str_circular.Last().Km;
+                            var final_mc = str_circular.Last().M;
+
+                            for (int cirrInd = 0; cirrInd < str_circular.Count - 1; cirrInd++)
+                            {
+                                if (Math.Abs(str_circular[cirrInd].Trapez_str - str_circular[cirrInd + 1].Trapez_str) /
+                                    Math.Abs(str_circular[cirrInd].X - str_circular[cirrInd + 1].X) > 0.0065
+
+                                    && (Math.Abs(str_circular[cirrInd].Trapez_str) < 5 || Math.Abs(str_circular[cirrInd + 1].Trapez_str) < 5))
+                                {
+                                    continue;
+                                }
+                                else
+                                {
+                                    //начальный до 1 переходной
+                                    var circ1Ind = StrPoins.IndexOf(str_circular[cirrInd]);
+                                    for (int iii = circ1Ind - 1; iii >= 0; iii--)
+                                    {
+                                        if (Math.Abs(StrPoins[iii].Trapez_str) < 3)
+                                        {
+                                            start_km = StrPoins[iii].Km;
+                                            start_m = StrPoins[iii].M;
+                                            //var final_km = StrPoins.Last().Km;
+                                            //var final_m = StrPoins.Last().M;
+                                            break;
+                                        }
+                                    }
+                                    //конечный от 2 переходной
+                                    var circ2Ind = StrPoins.IndexOf(str_circular[cirrInd + 1]);
+                                    for (int iii = circ2Ind + 1; iii < StrPoins.Count; iii++)
+                                    {
+                                        if (Math.Abs(StrPoins[iii].Trapez_str) < 3)
+                                        {
+                                            //start_km = StrPoins[iii].Km;
+                                            //start_m = StrPoins[iii].M;
+                                            final_km = StrPoins[iii].Km;
+                                            final_m = StrPoins[iii].M;
+                                            break;
+                                        }
+                                    }
+
+                                    // круговая верхние точки
+                                    start_kmc = str_circular[cirrInd].Km;
+                                    start_mc = str_circular[cirrInd].M;
+
+                                    final_kmc = str_circular[cirrInd + 1].Km;
+                                    final_mc = str_circular[cirrInd + 1].M;
+
+                                    break;
+                                }
+                            }
+
+
+                            var start_lvl_kmc = lvl_circular.First().Km;
+                            var start_lvl_mc = lvl_circular.First().M;
+                            var final_lvl_kmc = lvl_circular.Last().Km;
+                            var final_lvl_mc = lvl_circular.Last().M;
+
+                            for (int cirrInd = 0; cirrInd < lvl_circular.Count - 1; cirrInd++)
+                            {
+                                if (Math.Abs(lvl_circular[cirrInd].Trapez_level - lvl_circular[cirrInd + 1].Trapez_level) /
+                                    Math.Abs(lvl_circular[cirrInd].X - lvl_circular[cirrInd + 1].X) > 0.0065
+
+                                    && (Math.Abs(lvl_circular[cirrInd].Trapez_level) < 5 || Math.Abs(lvl_circular[cirrInd + 1].Trapez_level) < 5))
+                                {
+                                    continue;
+                                }
+                                else
+                                {
+                                    //начальный до 1 переходной
+                                    var circ1Ind = LevelPoins.IndexOf(lvl_circular[cirrInd]);
+                                    for (int iii = circ1Ind - 1; iii >= 0; iii--)
+                                    {
+                                        if (Math.Abs(LevelPoins[iii].Trapez_level) < 3)
+                                        {
+                                            start_lvl_km = LevelPoins[iii].Km;
+                                            start_lvl_m = LevelPoins[iii].M;
+                                            //var final_km = StrPoins.Last().Km;
+                                            //var final_m = StrPoins.Last().M;
+                                            break;
+                                        }
+                                    }
+                                    //конечный от 2 переходной
+                                    var circ2Ind = LevelPoins.IndexOf(lvl_circular[cirrInd + 1]);
+                                    for (int iii = circ2Ind + 1; iii < LevelPoins.Count; iii++)
+                                    {
+                                        if (Math.Abs(LevelPoins[iii].Trapez_level) < 3)
+                                        {
+                                            //start_km = StrPoins[iii].Km;
+                                            //start_m = StrPoins[iii].M;
+                                            final_lvl_km = LevelPoins[iii].Km;
+                                            final_lvl_m = LevelPoins[iii].M;
+                                            break;
+                                        }
+                                    }
+                                    //круговая верхние точки
+                                    start_lvl_kmc = lvl_circular[cirrInd].Km;
+                                    start_lvl_mc = lvl_circular[cirrInd].M;
+
+                                    final_lvl_kmc = lvl_circular[cirrInd + 1].Km;
+                                    final_lvl_mc = lvl_circular[cirrInd + 1].M;
+
+                                    break;
+                                }
+                            }
+
+                            var lenPerKriv10000 = ((start_kmc + start_mc / 10000.0) - (final_kmc + final_mc / 10000.0)) * 10000;
+                            var lenPerKriv = Math.Abs((int)lenPerKriv10000 % 1000);
+
+                            var lenKriv10000 = ((start_km + start_m / 10000.0) - (final_km + final_m / 10000.0)) * 10000;
+                            var lenKriv = Math.Abs((int)lenKriv10000 % 1000);
+
+                            var lenPerKriv10000lv = ((start_lvl_kmc + start_lvl_mc / 10000.0) - (final_lvl_kmc + final_lvl_mc / 10000.0)) * 10000;
+                            lenPerKrivlv = Math.Abs((int)lenPerKriv10000lv % 1000);
+
+                            var lenKriv10000lv = ((start_lvl_km + start_lvl_m / 10000.0) - (final_lvl_km + final_lvl_m / 10000.0)) * 10000;
+                            var lenKrivlv = Math.Abs((int)lenKriv10000lv % 1000);
+
+                            var d = false;
+                            if ((start_km + start_m / 10000.0) > (final_km + final_m / 10000.0))
+                                d = true;
+
+
+                            var razn1 = (int)(((start_km + start_m / 10000.0) - (start_lvl_km + start_lvl_m / 10000.0)) * 10000) % 1000; // start
+                            var razn2 = (int)(((final_km + final_m / 10000.0) - (final_lvl_km + final_lvl_m / 10000.0)) * 10000) % 1000; // final
+                            var razn3 = lenKriv - lenKrivlv; // общая длина нижних
+
+                            var razn1c = (int)(((start_kmc + start_mc / 10000.0) - (start_lvl_kmc + start_lvl_mc / 10000.0)) * 10000) % 1000; // start
+                            var razn2c = (int)(((final_kmc + final_mc / 10000.0) - (final_lvl_kmc + final_lvl_mc / 10000.0)) * 10000) % 1000; // final
+
+                            //Переходные 
+                            //1-й
+                            var tap_len1 = Math.Round(((start_km + start_m / 10000.0) - (start_kmc + start_mc / 10000.0)) * 10000) % 1000;
+                            var tap_len1_lvl = Math.Round(((start_lvl_km + start_lvl_m / 10000.0) - (start_lvl_kmc + start_lvl_mc / 10000.0)) * 10000) % 1000;
+                            //2-й
+                            var tap_len2 = Math.Round(((final_km + final_m / 10000.0) - (final_kmc + final_mc / 10000.0)) * 10000) % 1000;
+                            var tap_len2_lvl = Math.Round(((final_lvl_km + final_lvl_m / 10000.0) - (final_lvl_kmc + final_lvl_mc / 10000.0)) * 10000) % 1000;
+
+                            //Радиус/Уровень (для мин макс сред)
+                            var temp_data = rdcs.GetRange((int)Math.Abs(tap_len1_lvl) + 40, Math.Abs(lenPerKrivlv));
+                            var temp_data_str = rdcs.Where(o => (start_kmc + start_mc / 10000.0) <= (o.Km + o.M / 10000.0) && (o.Km + o.M / 10000.0) <= (final_kmc + final_mc / 10000.0)).ToList();
+                            var temp_data_lvl = rdcs.Where(o => (start_lvl_kmc + start_lvl_mc / 10000.0) <= (o.Km + o.M / 10000.0) && (o.Km + o.M / 10000.0) <= (final_lvl_kmc + final_lvl_mc / 10000.0)).ToList();
+
+                            //Переходные (для макс сред)
+                            var transitional_lvl_data = rdcs.GetRange(40, Math.Abs((int)tap_len1_lvl));
+                            var transitional_str_data = rdcs.GetRange(40, Math.Abs((int)tap_len1));
+
+                            var transitional_lvl_data2 = rdcs.GetRange((int)Math.Abs(tap_len1_lvl) + 40 + Math.Abs(lenPerKrivlv), Math.Abs((int)tap_len2_lvl));
+                            var transitional_str_data2 = rdcs.GetRange((int)Math.Abs(tap_len1) + 40 + Math.Abs(lenPerKriv), Math.Abs((int)tap_len2));
+
+                            Data rdcsData = new Data();
+
+                            //план/ср 1 пер
+                            var rad_mid = rdcsData.GetAvgPlan(temp_data_str);
+                            var temp1 = (8865.0 / rad_mid) * 4;
+                            var perAvg1 = temp1 / Math.Abs(tap_len1);
+                            //план/макс 1пер
+                            var rad_max = rdcsData.GetMaxPlan(temp_data_str);
+                            var temp = (8865.0 / rad_max) * 4;
+                            var perMax = temp / Math.Abs(tap_len1);
+
+                            var rad_min = rdcsData.GetMinPlan(temp_data_str);
+
+                            //уровень/ср 1 пер
+                            var lvl_mid = rdcsData.GetAvgLevel(temp_data_lvl);
+                            var perAvglvl = lvl_mid / Math.Abs(tap_len1_lvl);
+                            //уровень/макс 1 пер
+                            var lvl_max = rdcsData.GetMaxLevel(temp_data_lvl);
+                            var perMaxlvl = lvl_max / Math.Abs(tap_len1_lvl);
+
+                            var lvl_min = rdcsData.GetMinLevel(temp_data_lvl);
+
+                            //lvl = lvl_mid;
+                            str = rad_mid;
                         }
-
-
-                        var start_lvl_kmc = lvl_circular.First().Km;
-                        var start_lvl_mc = lvl_circular.First().M;
-                        var final_lvl_kmc = lvl_circular.Last().Km;
-                        var final_lvl_mc = lvl_circular.Last().M;
-
-                        for (int cirrInd = 0; cirrInd < lvl_circular.Count - 1; cirrInd++)
+                        catch (Exception e)
                         {
-                            if (Math.Abs(lvl_circular[cirrInd].Trapez_level - lvl_circular[cirrInd + 1].Trapez_level) /
-                                Math.Abs(lvl_circular[cirrInd].X - lvl_circular[cirrInd + 1].X) > 0.0065
-
-                                && (Math.Abs(lvl_circular[cirrInd].Trapez_level) < 5 || Math.Abs(lvl_circular[cirrInd + 1].Trapez_level) < 5))
-                            {
-                                continue;
-                            }
-                            else
-                            {
-                                //начальный до 1 переходной
-                                var circ1Ind = LevelPoins.IndexOf(lvl_circular[cirrInd]);
-                                for (int iii = circ1Ind - 1; iii >= 0; iii--)
-                                {
-                                    if (Math.Abs(LevelPoins[iii].Trapez_level) < 3)
-                                    {
-                                        start_lvl_km = LevelPoins[iii].Km;
-                                        start_lvl_m = LevelPoins[iii].M;
-                                        //var final_km = StrPoins.Last().Km;
-                                        //var final_m = StrPoins.Last().M;
-                                        break;
-                                    }
-                                }
-                                //конечный от 2 переходной
-                                var circ2Ind = LevelPoins.IndexOf(lvl_circular[cirrInd + 1]);
-                                for (int iii = circ2Ind + 1; iii < LevelPoins.Count; iii++)
-                                {
-                                    if (Math.Abs(LevelPoins[iii].Trapez_level) < 3)
-                                    {
-                                        //start_km = StrPoins[iii].Km;
-                                        //start_m = StrPoins[iii].M;
-                                        final_lvl_km = LevelPoins[iii].Km;
-                                        final_lvl_m = LevelPoins[iii].M;
-                                        break;
-                                    }
-                                }
-                                //круговая верхние точки
-                                start_lvl_kmc = lvl_circular[cirrInd].Km;
-                                start_lvl_mc = lvl_circular[cirrInd].M;
-
-                                final_lvl_kmc = lvl_circular[cirrInd + 1].Km;
-                                final_lvl_mc = lvl_circular[cirrInd + 1].M;
-
-                                break;
-                            }
+                            Console.WriteLine("Ошибка при расчете натурной кривой" + e);
                         }
-
-                        var lenPerKriv10000 = ((start_kmc + start_mc / 10000.0) - (final_kmc + final_mc / 10000.0)) * 10000;
-                        var lenPerKriv = Math.Abs((int)lenPerKriv10000 % 1000);
-
-                        var lenKriv10000 = ((start_km + start_m / 10000.0) - (final_km + final_m / 10000.0)) * 10000;
-                        var lenKriv = Math.Abs((int)lenKriv10000 % 1000);
-
-                        var lenPerKriv10000lv = ((start_lvl_kmc + start_lvl_mc / 10000.0) - (final_lvl_kmc + final_lvl_mc / 10000.0)) * 10000;
-                        lenPerKrivlv = Math.Abs((int)lenPerKriv10000lv % 1000);
-
-                        var lenKriv10000lv = ((start_lvl_km + start_lvl_m / 10000.0) - (final_lvl_km + final_lvl_m / 10000.0)) * 10000;
-                        var lenKrivlv = Math.Abs((int)lenKriv10000lv % 1000);
-
-                        var d = false;
-                        if ((start_km + start_m / 10000.0) > (final_km + final_m / 10000.0))
-                            d = true;
-
-
-                        var razn1 = (int)(((start_km + start_m / 10000.0) - (start_lvl_km + start_lvl_m / 10000.0)) * 10000) % 1000; // start
-                        var razn2 = (int)(((final_km + final_m / 10000.0) - (final_lvl_km + final_lvl_m / 10000.0)) * 10000) % 1000; // final
-                        var razn3 = lenKriv - lenKrivlv; // общая длина нижних
-
-                        var razn1c = (int)(((start_kmc + start_mc / 10000.0) - (start_lvl_kmc + start_lvl_mc / 10000.0)) * 10000) % 1000; // start
-                        var razn2c = (int)(((final_kmc + final_mc / 10000.0) - (final_lvl_kmc + final_lvl_mc / 10000.0)) * 10000) % 1000; // final
-
-                        //Переходные 
-                        //1-й
-                        var tap_len1 = Math.Round(((start_km + start_m / 10000.0) - (start_kmc + start_mc / 10000.0)) * 10000) % 1000;
-                        var tap_len1_lvl = Math.Round(((start_lvl_km + start_lvl_m / 10000.0) - (start_lvl_kmc + start_lvl_mc / 10000.0)) * 10000) % 1000;
-                        //2-й
-                        var tap_len2 = Math.Round(((final_km + final_m / 10000.0) - (final_kmc + final_mc / 10000.0)) * 10000) % 1000;
-                        var tap_len2_lvl = Math.Round(((final_lvl_km + final_lvl_m / 10000.0) - (final_lvl_kmc + final_lvl_mc / 10000.0)) * 10000) % 1000;
-
-                        //Радиус/Уровень (для мин макс сред)
-                        var temp_data = rdcs.GetRange((int)Math.Abs(tap_len1_lvl) + 40, Math.Abs(lenPerKrivlv));
-                        var temp_data_str = rdcs.Where(o => (start_kmc + start_mc / 10000.0) <= (o.Km + o.M / 10000.0) && (o.Km + o.M / 10000.0) <= (final_kmc + final_mc / 10000.0)).ToList();
-                        var temp_data_lvl = rdcs.Where(o => (start_lvl_kmc + start_lvl_mc / 10000.0) <= (o.Km + o.M / 10000.0) && (o.Km + o.M / 10000.0) <= (final_lvl_kmc + final_lvl_mc / 10000.0)).ToList();
-
-                        //Переходные (для макс сред)
-                        var transitional_lvl_data = rdcs.GetRange(40, Math.Abs((int)tap_len1_lvl));
-                        var transitional_str_data = rdcs.GetRange(40, Math.Abs((int)tap_len1));
-
-                        var transitional_lvl_data2 = rdcs.GetRange((int)Math.Abs(tap_len1_lvl) + 40 + Math.Abs(lenPerKrivlv), Math.Abs((int)tap_len2_lvl));
-                        var transitional_str_data2 = rdcs.GetRange((int)Math.Abs(tap_len1) + 40 + Math.Abs(lenPerKriv), Math.Abs((int)tap_len2));
-
-                        Data rdcsData = new Data();
-
-                        //план/ср 1 пер
-                        var rad_mid = rdcsData.GetAvgPlan(temp_data_str);
-                        var temp1 = (8865.0 / rad_mid) * 4;
-                        var perAvg1 = temp1 / Math.Abs(tap_len1);
-                        //план/макс 1пер
-                        var rad_max = rdcsData.GetMaxPlan(temp_data_str);
-                        var temp = (8865.0 / rad_max) * 4;
-                        var perMax = temp / Math.Abs(tap_len1);
-
-                        var rad_min = rdcsData.GetMinPlan(temp_data_str);
-
-                        //уровень/ср 1 пер
-                        var lvl_mid = rdcsData.GetAvgLevel(temp_data_lvl);
-                        var perAvglvl = lvl_mid / Math.Abs(tap_len1_lvl);
-                        //уровень/макс 1 пер
-                        var lvl_max = rdcsData.GetMaxLevel(temp_data_lvl);
-                        var perMaxlvl = lvl_max / Math.Abs(tap_len1_lvl);
-
-                        var lvl_min = rdcsData.GetMinLevel(temp_data_lvl);
-
-                        //lvl = lvl_mid;
-                        str = rad_mid;
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("Ошибка при расчете натурной кривой" + e.Message);
                     }
 
                     var curve_center = (bpd_curve.Start_Km * 1000 + bpd_curve.Start_M) + ((bpd_curve.Final_Km * 1000 + bpd_curve.Final_M) - (bpd_curve.Start_Km * 1000 + bpd_curve.Start_M)) / 2;
@@ -798,82 +788,83 @@ namespace ALARm.Core.Report
                                                    (bpd_curve.Elevations.First().Transition_1 + bpd_curve.Elevations.First().Transition_2);
 
                     //АНП
-                    try
+                    if (rdcs.Any())
                     {
-                        //Passenger
-                        var PassBoostAbs = rdcs.Select(o => Math.Abs(o.PassBoost_anp)).ToList();
-                        var PassboostMax = PassBoostAbs.Max();
-                        var MaxPassboostIndex = PassBoostAbs.IndexOf(PassboostMax);
-                        var AnpPassMax = PassboostMax * Math.Sign(rdcs[MaxPassboostIndex].PassBoost_anp);
-                        //Freight
-                        var FreightBoostAbs = rdcs.Select(o => Math.Abs(o.FreightBoost_anp)).ToList();
-                        var FreightboostMax = FreightBoostAbs.Max();
-                        var MaxFreightboostIndex = FreightBoostAbs.IndexOf(FreightboostMax);
-                        var AnpFreigMax = FreightboostMax * Math.Sign(rdcs[MaxFreightboostIndex].FreightBoost_anp);
-
-
-                        //var AnpPassMax = rdcs.Select(o => o.PassBoost_anp).Max();
-                        //var AnpFreigMax = rdcs.Select(o => o.FreightBoost_anp).Max();
-
-                        var rdcsData = new Data { };
-                        var Vkr = RoundNumToFive(rdcsData.GetKRSpeedPass(rdcs));
-                        var Ogr = -1;
-                        if (kilometer.Speeds.First().Passenger > Vkr)
-                            Ogr = Vkr;
-
-
-                        var Dname = "";
-
-                        //if (AnpPassMax > 0.70)
-                        //{
-                        //    Dname = DigressionName.SpeedUp.Name;
-                        //    Ogr = RoundNumToFive(Ogr);
-                        //}
-                        //else if (0.65 <= AnpPassMax && AnpPassMax <= 0.70)
-
-                        if (AnpPassMax > 0.70 && kilometer.Number == pkm)
+                        try
                         {
-                            Dname = DigressionName.SpeedUp.Name;
-                            Ogr = RoundNumToFive(Ogr);
-                        }
-                        else if (0.65 <= AnpPassMax && AnpPassMax <= 0.70 && kilometer.Number == pkm)
+                            //Passenger
+                            var PassBoostAbs = rdcs.Select(o => Math.Abs(o.PassBoost_anp)).ToList();
+                            var PassboostMax = PassBoostAbs.Max();
+                            var MaxPassboostIndex = PassBoostAbs.IndexOf(PassboostMax);
+                            var AnpPassMax = PassboostMax * Math.Sign(rdcs[MaxPassboostIndex].PassBoost_anp);
+                            //Freight
+                            var FreightBoostAbs = rdcs.Select(o => Math.Abs(o.FreightBoost_anp)).ToList();
+                            var FreightboostMax = FreightBoostAbs.Max();
+                            var MaxFreightboostIndex = FreightBoostAbs.IndexOf(FreightboostMax);
+                            var AnpFreigMax = FreightboostMax * Math.Sign(rdcs[MaxFreightboostIndex].FreightBoost_anp);
 
 
-                        {
-                            Dname = DigressionName.SpeedUpNear.Name;
-                            Ogr = -1;
-                        }
+                            //var AnpPassMax = rdcs.Select(o => o.PassBoost_anp).Max();
+                            //var AnpFreigMax = rdcs.Select(o => o.FreightBoost_anp).Max();
 
-                        if (Dname != "")
-                        {
-                            pru_dig_list.Add(new DigressionMark
+                            var rdcsData = new Data { };
+                            var Vkr = RoundNumToFive(rdcsData.GetKRSpeedPass(rdcs));
+                            var Ogr = -1;
+                            if (kilometer.Speeds.First().Passenger > Vkr)
+                                Ogr = Vkr;
+
+
+                            var Dname = "";
+
+                            //if (AnpPassMax > 0.70)
+                            //{
+                            //    Dname = DigressionName.SpeedUp.Name;
+                            //    Ogr = RoundNumToFive(Ogr);
+                            //}
+                            //else if (0.65 <= AnpPassMax && AnpPassMax <= 0.70)
+
+                            if (AnpPassMax > 0.70 && kilometer.Number == pkm)
                             {
-                                Km = kilometer.Number,
-                                Meter = maxAnp[maxAnp.Count / 2].M,
+                                Dname = DigressionName.SpeedUp.Name;
+                                Ogr = RoundNumToFive(Ogr);
+                            }
+                            else if (0.65 <= AnpPassMax && AnpPassMax <= 0.70 && kilometer.Number == pkm)
+                            {
+                                Dname = DigressionName.SpeedUpNear.Name;
+                                Ogr = -1;
+                            }
 
-                                Length = maxAnp.Count, // длина круговой
+                            if (Dname != "")
+                            {
+                                pru_dig_list.Add(new DigressionMark
+                                {
+                                    Km = kilometer.Number,
+                                    Meter = maxAnp[maxAnp.Count / 2].M,
 
-                                DigName = Dname,
+                                    Length = maxAnp.Count, // длина круговой
 
-                                //Comment = $"П:{AnpPassMax:0.00}      Г:{AnpFreigMax:0.00}",
+                                    DigName = Dname,
 
-                                Comment = $"{AnpPassMax:0.00}",
+                                    //Comment = $"П:{AnpPassMax:0.00}      Г:{AnpFreigMax:0.00}",
 
-                                PassengerSpeedAllow = kilometer.Speeds.First().Passenger,
-                                PassengerSpeedLimit = kilometer.Speeds.First().Passenger > Ogr ? Ogr : -1,
+                                    Comment = $"{AnpPassMax:0.00}",
 
-                                FreightSpeedAllow = kilometer.Speeds.First().Freight,
-                                FreightSpeedLimit = kilometer.Speeds.First().Freight > Ogr ? Ogr : -1,
+                                    PassengerSpeedAllow = kilometer.Speeds.First().Passenger,
+                                    PassengerSpeedLimit = kilometer.Speeds.First().Passenger > Ogr ? Ogr : -1,
 
-                                Pch = kilometer.PdbSection[0].Distance,
-                                DirectionName = direction.Name,
-                                TrackName = kilometer.Track_name
-                            });
+                                    FreightSpeedAllow = kilometer.Speeds.First().Freight,
+                                    FreightSpeedLimit = kilometer.Speeds.First().Freight > Ogr ? Ogr : -1,
+
+                                    Pch = kilometer.PdbSection[0].Distance,
+                                    DirectionName = direction.Name,
+                                    TrackName = kilometer.Track_name
+                                });
+                            }
                         }
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine($"АНП write s3 error {e.Message}");
+                        catch (Exception e)
+                        {
+                            Console.WriteLine($"АНП write s3 error {e.Message}");
+                        }
                     }
 
                     if (pkm == kilometer.Number)
@@ -907,63 +898,12 @@ namespace ALARm.Core.Report
                             ball = 50;
                             razn = diff - 25;
                         }
-
-                        //if (ball != -1)
-                        //{
-                        //    try
-                        //    {
-                        //        pru_dig_list.Add(new DigressionMark
-                        //        {
-                        //            Km = kilometer.Number,
-                        //            Meter = first_pmeter,
-                        //            Value = diff, //высота
-                        //            Length = lenPru, // длина круговой
-                        //            Count = ball,
-                        //            DigName = DigressionName.Pru.Name,
-                        //            Pch = kilometer.PdbSection[0].Distance,
-                        //            DirectionName = direction.Name,
-                        //            TrackName = kilometer.Track_name
-                        //        });
-                        //    }
-                        //    catch (Exception e)
-                        //    {
-                        //        Console.WriteLine($"ПрУ write s3 error {e.Message}");
-                        //    }
-                        //}
-
-
-                        //if (lvl != -1)
-                        //{
-                        //    //Curve_nature_value.Add(new DigressionMark()
-                        //    pru_dig_list.Add(new DigressionMark()
-                        //    {
-                        //        Km = -999,
-                        //        Meter = first_pmeter,
-                        //        Alert = $"{first_pmeter} Крив. факт R:{ str } h:{ lvl }"
-                        //    });
-                        //}
-
-                        //else
-                        //{
-                        //    //пустая если ошибка при вычислений
-                        //    ////Curve_nature_value.Add(new DigressionMark()
-                        //    pru_dig_list.Add(new DigressionMark()
-                        //    {
-                        //        Km = -999,
-                        //        Meter = first_pmeter,
-                        //        Alert = $"{first_pmeter} Крив. факт R: h:"
-                        //    });
-                        //}
-
-
                     }
                 }
 
                 if (pru_dig_list.Any())
                     MainTrackStructureRepository.Pru_write(kilometer.Track_id, kilometer, pru_dig_list);
 
-                if (curve_bpd_list.Any())
-                    MainTrackStructureRepository.Bpd_write(kilometer.Track_id, kilometer, curve_bpd_list);
                 // добавление ПрУ и натурные значения кривой
                 kilometer.Digressions = Curve_nature_value;
 
@@ -1262,6 +1202,9 @@ namespace ALARm.Core.Report
                         //пасспорт рихт
                         zeroStraightening += MMToPixelChartString(kilometer.fZeroStright[index] * StrightKoef + StraighRighttPosition) + "," + metre + " ";
                         zeroStraighteningLeft += MMToPixelChartString(kilometer.fZeroStright[index] * StrightKoef + StrightLeftPosition) + "," + metre + " ";
+                        //Паспорт уровень
+                        zeroLevel += MMToPixelChartString(kilometer.flvl0[index] * LevelKoef + LevelPosition) + "," + metre + " ";
+
                         //ср линия рихт
                         averageStraighteningRight += MMToPixelChartString(kilometer.StrightAvgTrapezoid[index] * StrightKoef + StraighRighttPosition) + "," + metre + " ";
                         averageStraighteningLeft += MMToPixelChartString(kilometer.StrightAvgTrapezoid[index] * StrightKoef + StrightLeftPosition) + "," + metre + " ";
@@ -1277,8 +1220,7 @@ namespace ALARm.Core.Report
 
                         level += MMToPixelChartString(kilometer.Level[index] * LevelKoef + LevelPosition) + "," + metre + " ";
                         averageLevel += MMToPixelChartString(kilometer.LevelAvgTrapezoid[index] * LevelKoef + LevelPosition) + "," + metre + " ";
-                        zeroLevel += MMToPixelChartString(kilometer.flvl0[index] * LevelKoef + LevelPosition) + "," + metre + " ";
-
+                       
                         avglevel += MMToPixelChartString(kilometer.LevelAvg[index] * LevelKoef + LevelPosition) + "," + metre + " ";
                     }
                     catch (Exception e)
@@ -1407,10 +1349,10 @@ namespace ALARm.Core.Report
         }
 
         private void pd_print(object sender, PrintPageEventArgs e)
-{    
-  Graphics gr = e.Graphics;
-  gr.DrawString("Sales", new Font(FontFamily.GenericMonospace, 12, FontStyle.Bold), new SolidBrush(Color.Black), new Point(40, 40));
-}
+        {
+            Graphics gr = e.Graphics;
+            gr.DrawString("Sales", new Font(FontFamily.GenericMonospace, 12, FontStyle.Bold), new SolidBrush(Color.Black), new Point(40, 40));
+        }
         public void ProcessRegion(ReportTemplate template, Kilometer kilometer, Trips trip, bool autoprint, int currentKmMeter)
         {
             XDocument htReport = new XDocument();
@@ -1426,7 +1368,6 @@ namespace ALARm.Core.Report
                 //ПРУ
                 var PasSpeed = kilometer.Speeds.Any() ? kilometer.Speeds.First().Passenger : -1;
                 var pru_dig_list = new List<DigressionMark> { };
-                var curve_bpd_list = new List<DigressionMark> { };
                 var Curve_nature_value = new List<DigressionMark>();
 
                 foreach (var bpd_curve in kilometer.Curves)
@@ -1587,8 +1528,8 @@ namespace ALARm.Core.Report
                                 Alert = $"{first_pmeter} Крив. факт R:{ str } h:{ lvl }"
                             });
                         }
-
                     }
+
                     //if (!curve_bpd_list.Any())
                     {
                         curve_bpd_list.Add(new DigressionMark()
@@ -1603,16 +1544,12 @@ namespace ALARm.Core.Report
                
                     //if (curve_bpd_list.Any())
                   // curve_bpd_list.Select()
-               
-
 
                 }
 
                 if (pru_dig_list.Any())
                     MainTrackStructureRepository.Pru_write(kilometer.Track_id, kilometer, pru_dig_list);
 
-                if (curve_bpd_list.Any())
-                    MainTrackStructureRepository.Bpd_write(kilometer.Track_id, kilometer, curve_bpd_list);
                 // добавление ПрУ и натурные значения кривой
                 kilometer.Digressions = Curve_nature_value;
 
@@ -1769,7 +1706,7 @@ namespace ALARm.Core.Report
                         var drh = kilometer.StrightAvgTrapezoid[index] + (kilometer.StrightRight[index] - kilometer.StrightAvgTrapezoid[index]);
                         straighteningRight += MMToPixelChartString(drh * StrightKoef + StraighRighttPosition) + "," + metre + " ";
 
-                        zeroStraighteningLeft += MMToPixelChartString(Math.Abs(kilometer.fZeroStright[index]) * Math.Sign(kilometer.StrightRight[index]) * StrightKoef  + StrightLeftPosition) + "," + metre + " ";
+                        zeroStraighteningLeft += MMToPixelChartString(Math.Abs(kilometer.fZeroStright[index]) * Math.Sign(kilometer.StrightRight[index]) * StrightKoef + StrightLeftPosition) + "," + metre + " ";
 
 
                         averageStraighteningLeft += MMToPixelChartString(kilometer.StrightAvgTrapezoid[index] * StrightKoef + StrightLeftPosition) + "," + metre + " ";
@@ -1777,9 +1714,9 @@ namespace ALARm.Core.Report
                         straighteningLeft += MMToPixelChartString(drh * StrightKoef + StrightLeftPosition) + "," + metre + " ";
 
 
-                        level += MMToPixelChartString(kilometer.Level[index] * LevelKoef  + LevelPosition) + "," + metre + " ";
-                        averageLevel += MMToPixelChartString(kilometer.LevelAvgTrapezoid[index] * LevelKoef  + LevelPosition) + "," + metre + " ";
-                        zeroLevel += MMToPixelChartString(Math.Abs(kilometer.flvl0[index]) * Math.Sign(kilometer.StrightRight[index]) * LevelKoef  + LevelPosition) + "," + metre + " ";
+                        level += MMToPixelChartString(kilometer.Level[index] * LevelKoef + LevelPosition) + "," + metre + " ";
+                        averageLevel += MMToPixelChartString(kilometer.LevelAvgTrapezoid[index] * LevelKoef + LevelPosition) + "," + metre + " ";
+                        zeroLevel += MMToPixelChartString(Math.Abs(kilometer.flvl0[index]) * Math.Sign(kilometer.StrightRight[index]) * LevelKoef + LevelPosition) + "," + metre + " ";
                     }
                     catch (Exception e)
                     {
