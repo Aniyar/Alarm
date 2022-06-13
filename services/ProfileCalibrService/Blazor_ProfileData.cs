@@ -340,15 +340,6 @@ namespace ProfileCalibrService
             {
                 try
                 {
-                    if (Kilometer == kmnum && FoundRight == false)
-                    {
-                        FoundRight = true;
-                    }
-                    if (Kilometer == kmnum && FoundRight == true)
-                    {
-                        return false;
-                    }
-
                     long ll = CurrentFrameIndex * (long)in_kupe_size + 8;
                     reader.BaseStream.Seek(ll, SeekOrigin.Begin);
                     var encoderCounter = reader.ReadUInt64();

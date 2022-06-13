@@ -116,11 +116,11 @@ namespace ProfileCalibrService
                         {
                             flag = Blazor.GetBitmapAsync(km.Number, TripId);
                         }
-                        Console.WriteLine("профайл дата ОК");
+                        _logger.LogInformation("профайл дата ОК");
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine("профайл дата ERROR! " + e.Message);
+                        _logger.LogInformation("профайл дата ERROR! " + e.Message);
                     }
                 };
                 _channel.BasicConsume(queue: QueueName,
