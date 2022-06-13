@@ -1707,7 +1707,7 @@ const
   CNepUsk = 0.7; // m/c*c
   Cpsi = 0.6; // m/c*c*c
 var
-  F_Vmax, F_Vmaxg,ii, i, j, sj, Vmx, k, xmod, v1, V2, v1_psi, v2_psi, vt, vtg, xxxx,
+  F_Vmax, F_Vgmax,ii, i, j, sj, Vmx, k, xmod, v1, V2, v1_psi, v2_psi, vt, vtg, xxxx,
     len: INTEGER;
   Ri, An, Hm, Us, Us2, Mas_Vpsi, Vdps_, Psi, V_psi: array of real;
   y1, y2, y3, y4: real;
@@ -1782,7 +1782,7 @@ begin
 
 
       F_Vmax := MaxIntValue(F_V);
-      F_Vmaxg := MaxIntValue(F_Vg);
+      F_Vgmax := MaxIntValue(F_Vg);
       for i := 0 to high(Fsr_rh1) - 20 do
       begin
         current_coord := CoordinateToReal(GlbKmTrue, F_Mtr[i]);
@@ -1805,8 +1805,9 @@ begin
         ANP_R_i := 17860 / (abs(TrapezStr[i]) + 0.00000001);
 
         Vdps := trunc(sqrt((CNepUsk + abs(kfforAnp * Hi)) * 13 * R_i) / 5) * 5;
-        var F_Vmax := MaxIntValue(F_V)*MaxIntValue(F_V);
-        var F_Vgmax := MaxIntValue(F_Vg)*MaxIntValue(F_Vg);
+
+
+
         GUs[i] := F_Vmax / (13.0 * R_i) - kfforAnp * Hi;
         GUs2[i] := F_Vgmax / (13.0 * R_i) - kfforAnp * Hi;
 

@@ -341,7 +341,7 @@ namespace ALARm_Report.Forms
                                             digressionTotal.Name = s3.Ots;
                                             digressionTotal.Count += s3.Kol;
                                             totals.Add(digressionTotal);
-                                        tracktotals.Where(o => o.Track_id == track_id).FirstOrDefault().Count += s3.Kol;
+                                        //tracktotals.Where(o => o.Track_id == track_id).FirstOrDefault().Count += s3.Kol;
                                     }
 
                                         xeTracks.Add(xeNote);

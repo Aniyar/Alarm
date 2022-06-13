@@ -1018,13 +1018,34 @@ namespace ALARm.Core.Report
 
                 svgLength = kilometer.GetLength() < 1000 ? 1000 : kilometer.GetLength();
                 var xp = (-kilometer.Start_m - svgLength - 50) + (svgLength + 105) - 52;
+                var runnin = "";
+                if (kilometer.Runninin.Count > 0)
+                {
+                    if (kilometer.Runninin[0].Start_Km == kilometer.Number)
+                    {
+                        runnin = kilometer.Runninin[0].Reason + "V:" + kilometer.Runninin[0].Passenger + "Км:" + kilometer.Runninin[0].Start_Km + "ПК:" + (((kilometer.Runninin[0].Start_M + 1) / 100) + 1);
+                    }
 
+                }
+              
+              
+              
                 XElement addParam = new XElement("addparam",
-                    new XAttribute("top-title",
-                        (direction != null ? $"{direction.Name} ({direction.Code})" : "Неизвестный") + " Путь: " +
+
+                    new XAttribute("top-title", (runnin!= "" ? runnin : "")+
+                           (direction != null ? $"{direction.Name} ({direction.Code})" : "Неизвестный") + " Путь: " +
                         kilometer.Track_name + $" Класс: {(trackclasses.Any() ? trackclasses.First().Class_Id.ToString() : "-")} Км:" + kilometer.Number + " " +
-                        (kilometer.PdbSection.Count > 0 ? $" ПЧ-{kilometer.PdbSection[0].Distance}" : " ПЧ-")  + " Уст: " + " " +
-                        (kilometer.Speeds.Count > 0 ? $"{kilometer.Speeds.First().Passenger}/{kilometer.Speeds.First().Freight}" : "-/-")),
+                        (kilometer.PdbSection.Count > 0 ? $" ПЧ-{kilometer.PdbSection[0].Distance}" : " ПЧ-") + " Уст: " + " " +
+                        (kilometer.Speeds.Count > 0 ? $"{kilometer.Speeds.First().Passenger}/{kilometer.Speeds.First().Freight}" : "-/-"))
+                    {
+
+                    },
+                    //new XAttribute("top-title",
+                    //    (direction != null ? $" {(kilometer.Runninin[0].Start_Km == kilometer.Number ? kilometer.Runninin[0].Reason + "V:" + kilometer.Runninin[0].Passenger + "Км:" + kilometer.Runninin[0].Start_Km + "ПК:" + (((kilometer.Runninin[0].Start_M + 1) / 100) + 1) : "")} {direction.Name} ({direction.Code})" : "Неизвестный") + " Путь: " +
+                    // kilometer.Track_name + $" Класс: {(trackclasses.Any() ? trackclasses.First().Class_Id.ToString() : "-")} Км:" + kilometer.Number + " " +
+                    // (kilometer.PdbSection.Count > 0 ? $" ПЧ-{kilometer.PdbSection[0].Distance}" : " ПЧ-") + " Уст: " + " " +
+                    // (kilometer.Speeds.Count > 0 ? $"{kilometer.Speeds.First().Passenger}/{kilometer.Speeds.First().Freight}" : "-/-")),
+
 
                     new XAttribute("right-title",
                         copyright + ": " + "ПО " + softVersion + "  " +
@@ -1562,16 +1583,15 @@ namespace ALARm.Core.Report
                     }
 
                     //if (!curve_bpd_list.Any())
-                    {
-                        curve_bpd_list.Add(new DigressionMark()
-                        {
-                            Km = -999,
-                            Meter = first_pmeter,
+                    //{
+                    //    curve_bpd_list.Add(new DigressionMark()
+                    //    {
+                    //        Km = -999,
+                    //        Meter = first_pmeter,
 
-
-                            Alert = $"{first_pmeter - 30}  Паспорт R:{ str} h:{lvl}"
-                        });
-                    }
+                    //        Alert = $"{first_pmeter - 30}  Паспорт R:{ str} h:{lvl}"
+                    //    });
+                    //}
 
 
                     //if (curve_bpd_list.Any())
