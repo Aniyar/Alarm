@@ -29,13 +29,7 @@ namespace ALARm.Core.Report
         object Filter.Value { get => this.Value; set => this.Value = int.Parse(((string)value)); }
     }
 
-    public class INTFilter : Filter
-    {
-        public int Value { get; set; }
-        public string Name { get; set; }
-        object Filter.Value { get => this.Value; set => this.Value = int.Parse(((string)value)); }
-    }
-
+ 
     public class DoubleFilter : Filter
     {
         public double Value { get; set; }

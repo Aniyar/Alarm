@@ -444,7 +444,7 @@ namespace ALARm_Report.Forms
                                 digression.AllowSpeed = gap.Vdop;
                                 digression.Velich = Math.Max(gap.Zazor, gap.R_zazor);
 
-                                digression.DigName = gap.Otst == "З" ? DigressionName.Gap : gap.Otst == "З?" ? DigressionName.GapSimbol : DigressionName.Undefined;
+                                digression.DigName = gap.Otst == "З" ? DigressionName.Gap : gap.Otst_l == "З?" ? DigressionName.GapSimbol_left : gap.Otst_r == "З?" ? DigressionName.GapSimbol_right : DigressionName.Undefined;
 
                                 addDigressions.Add(digression);
                             }
@@ -454,27 +454,41 @@ namespace ALARm_Report.Forms
 
                             foreach (var dig in addDigressions)
                             {
+                                if (dig.Meter == 974)
+                                {
+                                    dig.DigName = dig.DigName;
+                                }
                                 if (dig.DigName == DigressionName.ReducedWearLeft) continue;
                                 if (dig.DigName == DigressionName.ReducedWearRight) continue;
                                 if (dig.DigName == DigressionName.VertIznosR) continue;
+                                if (dig.DigName == DigressionName.GapSimbol_left)
+                                {
+                                    dig.DigName = dig.DigName;
+                                }
                                 if (dig.DigName == DigressionName.VertIznosL) continue;
-
                                 if (dig.Length < 1)
                                 {
                                     if (dig.DigName != DigressionName.FusingGap)
                                     {
-                                        if (dig.DigName != DigressionName.GapSimbol)
                                         {
-                                            if (dig.DigName != DigressionName.Gap)
+                                            dig.DigName = dig.DigName;
+                                        }
+                                        if (dig.DigName != DigressionName.GapSimbol_left)
+                                        {
+                                            if (dig.DigName != DigressionName.GapSimbol_right)
                                             {
-                                                continue;
+                                                if (dig.DigName != DigressionName.Gap)
+                                                {
+                                                    continue;
+                                                }
                                             }
                                         }
                                     }
                                 }
 
                                 if (dig.DigName == DigressionName.FusingGap ||
-                                    dig.DigName == DigressionName.GapSimbol ||
+                                    dig.DigName == DigressionName.GapSimbol_left ||
+                                    dig.DigName == DigressionName.GapSimbol_right ||
                                     dig.DigName == DigressionName.Gap)
                                 {
                                     //if (dig.Velich > 35) continue;

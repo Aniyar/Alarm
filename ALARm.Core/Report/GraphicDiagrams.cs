@@ -1498,7 +1498,14 @@ namespace ALARm.Core.Report
 
                     }
 
-                    string ogrSk = note.LimitSpeedToString(); ;
+                    string ogrSk = note.LimitSpeedToString();
+                    //if (note.Degree >0 &&  note.Alert.Contains("обкатка"))
+                    //  /if note.Alert.Any())
+                    //    if (note.Degree > 0 )
+                    //    {
+                    //    note.Km = note.Km;
+                        
+                    //}
                     if ((note.LimitSpeedToString() != "-/-") && (note.LimitSpeedToString() != ""))
                     {
                         if ((note.Degree == 4))

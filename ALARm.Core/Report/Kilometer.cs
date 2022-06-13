@@ -1159,22 +1159,22 @@ namespace ALARm.Core
                         Digressions.Add(new DigressionMark() { NotMoveAlert = true, Meter = RepairProjects[0].Final_M, Alert = $"{RepairProjects[0].Repair_date.ToString("dd.MM.yyyy")} {RepairProjects[0].Type_id} " });
                     }
                 }
-                if (Runninin.Count > 0)
-                {
+                //if (Runninin.Count > 0)
+                //{
                     
 
-                    if (Runninin[0].Start_Km == Number)
-                    {
-                        Sector = mainTrackStructureRepository.GetSector(Track_id, Number - 1, trip.Trip_date) ?? "";
-                        Digressions.Add(new DigressionMark() { NotMoveAlert = true, Meter = Runninin[0].Start_M, Alert = $"{Runninin[0].Reason} V : {Runninin[0].Passenger }  ;{Runninin[0].Start_M} ПК:{((Runninin[0].Start_M +1)/100)+1} ;" });
-                    }
-                    else
-                    if (Runninin[0].Final_Km == Number)
-                    {
-                        Sector = mainTrackStructureRepository.GetSector(Track_id, Number + 1, trip.Trip_date) ?? "";
-                        Digressions.Add(new DigressionMark() { NotMoveAlert = true, Meter = Runninin[0].Final_M, Alert = $"{Runninin[0].Reason} V : {Runninin[0].Passenger } ;{Runninin[0].Start_M} ПК: {((Runninin[0].Start_M + 1) / 100) + 1} ;" });
-                    }
-                }
+                //    if (Runninin[0].Start_Km == Number)
+                //    {
+                //        Sector = mainTrackStructureRepository.GetSector(Track_id, Number - 1, trip.Trip_date) ?? "";
+                //        Digressions.Add(new DigressionMark() { NotMoveAlert = true, Meter = Runninin[0].Start_M, Alert = $"{Runninin[0].Reason} V : {Runninin[0].Passenger }  ;{Runninin[0].Start_M} ПК:{((Runninin[0].Start_M +1)/100)+1} ;" });
+                //    }
+                //    else
+                //    if (Runninin[0].Final_Km == Number)
+                //    {
+                //        Sector = mainTrackStructureRepository.GetSector(Track_id, Number + 1, trip.Trip_date) ?? "";
+                //        Digressions.Add(new DigressionMark() { NotMoveAlert = true, Meter = Runninin[0].Final_M, Alert = $"{Runninin[0].Reason} V : {Runninin[0].Passenger } ;{Runninin[0].Start_M} ПК: {((Runninin[0].Start_M + 1) / 100) + 1} ;" });
+                //    }
+                //}
 
                 Digressions.AddRange(rdStructureRepository.GetDigressionMarks(trip.Id, Track_id, Number));
             }
@@ -1260,6 +1260,7 @@ namespace ALARm.Core
                 var picket = Pickets.GetPicket(digression.Meter);
                 if (picket != null)
                 {
+
                     if (CNI != "")
                         digression.CNI = CNI;
 

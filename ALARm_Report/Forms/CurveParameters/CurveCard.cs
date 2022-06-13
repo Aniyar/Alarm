@@ -61,7 +61,7 @@ namespace ALARm_Report.Forms
                         var trips = RdStructureService.GetTrips();
                         var tr = trips.Where(t => t.Id == tripProcess.Trip_id).ToList().First();
 
-                        
+
                         var trip = RdStructureService.GetTrip(tripProcess.Id);
                         var kilometers = RdStructureService.GetKilometersByTrip(trip);
 
@@ -91,9 +91,9 @@ namespace ALARm_Report.Forms
                         List<Curve> curves = RdStructureService.GetCurvesInTrip(tripProcess.Trip_id) as List<Curve>;
                         //фильтр по выбранным км
                         var filter_curves = curves.Where(o => ((float)(float)filters[0].Value <= o.Start_Km && o.Final_Km <= (float)(float)filters[1].Value)).ToList();
-                       
 
-                        
+
+
                         foreach (var curve in filter_curves)
                         {
                             List<RDCurve> rdcs = RdStructureService.GetRDCurves(curve.Id, trip.Id);
@@ -199,7 +199,7 @@ namespace ALARm_Report.Forms
                                 {
                                     krug.Add(strData[versh]);
                                 }
-                                else if (strData[versh].FiList> 0.1)
+                                else if (strData[versh].FiList > 0.1)
                                 {
                                     if (krug.Any())
                                     {
@@ -1025,7 +1025,7 @@ namespace ALARm_Report.Forms
                             var max = -1.0;
                             var circularList = vershList.Where(o => Math.Abs(o.First().FiList) < 0.1).ToList();
 
-                        
+
 
                             int len = rdcsData.X3IndexPlan - rdcsData.X0IndexPlan;
                             int len2 = rdcsData.X2IndexPlan - rdcsData.X1IndexPlan;
@@ -1372,22 +1372,22 @@ namespace ALARm_Report.Forms
                                 {
                                     piketogr = ((AgPassMaxCoord / 100) >= 10 ? (AgPassMaxCoord / 100) % 10 + 1 : (AgPassMaxCoord / 100) + 1).ToString();
                                 }
-                                    XElement withdrawal = new XElement("withdrawal",
-                                    new XAttribute("tap_max1", rdcsData.GetPlanMaxRetractionSlope(transitional_str_data, len_rs).ToString("0.00")),
-                                    new XAttribute("tap_mid1", rdcsData.GetPlanAvgRetractionSlope(transitional_str_data, tap_len1).ToString("0.00")),
-                                    new XAttribute("tap_len1", Math.Abs(tap_len1)),
+                                XElement withdrawal = new XElement("withdrawal",
+                                new XAttribute("tap_max1", rdcsData.GetPlanMaxRetractionSlope(transitional_str_data, len_rs).ToString("0.00")),
+                                new XAttribute("tap_mid1", rdcsData.GetPlanAvgRetractionSlope(transitional_str_data, tap_len1).ToString("0.00")),
+                                new XAttribute("tap_len1", Math.Abs(tap_len1)),
 
-                                    new XAttribute("tap_max1_lvl", rdcsData.GetLvlMaxRetractionSlope(transitional_lvl_data, len_rs).ToString("0.00")),
-                                    new XAttribute("tap_mid1_lvl", perAvglvl.ToString("0.00")),
-                                    new XAttribute("tap_len1_lvl", Math.Abs(tap_len1_lvl)),
+                                new XAttribute("tap_max1_lvl", rdcsData.GetLvlMaxRetractionSlope(transitional_lvl_data, len_rs).ToString("0.00")),
+                                new XAttribute("tap_mid1_lvl", perAvglvl.ToString("0.00")),
+                                new XAttribute("tap_len1_lvl", Math.Abs(tap_len1_lvl)),
 
-                                    new XAttribute("tap_max2", transitional_str_data2.Any() ? rdcsData.GetPlanMaxRetractionSlope(transitional_str_data2, len_rs).ToString("0.00") : "0"),
-                                    new XAttribute("tap_mid2", transitional_str_data2.Any() ? rdcsData.GetPlanAvgRetractionSlope(transitional_str_data2, tap_len2).ToString("0.00") : "0"),
-                                    new XAttribute("tap_len2", Math.Abs(tap_len2)),
+                                new XAttribute("tap_max2", transitional_str_data2.Any() ? rdcsData.GetPlanMaxRetractionSlope(transitional_str_data2, len_rs).ToString("0.00") : "0"),
+                                new XAttribute("tap_mid2", transitional_str_data2.Any() ? rdcsData.GetPlanAvgRetractionSlope(transitional_str_data2, tap_len2).ToString("0.00") : "0"),
+                                new XAttribute("tap_len2", Math.Abs(tap_len2)),
 
-                                    new XAttribute("tap_max2_lvl", rdcsData.GetLvlMaxRetractionSlope(transitional_lvl_data2, len_rs).ToString("0.00")),
-                                    new XAttribute("tap_mid2_lvl", (lvl_mid / Math.Abs(tap_len2_lvl)).ToString("0.00")),
-                                    new XAttribute("tap_len2_lvl", Math.Abs(tap_len2_lvl)));
+                                new XAttribute("tap_max2_lvl", rdcsData.GetLvlMaxRetractionSlope(transitional_lvl_data2, len_rs).ToString("0.00")),
+                                new XAttribute("tap_mid2_lvl", (lvl_mid / Math.Abs(tap_len2_lvl)).ToString("0.00")),
+                                new XAttribute("tap_len2_lvl", Math.Abs(tap_len2_lvl)));
 
                                 XElement computing = new XElement("computing",
                                     //Анп
