@@ -628,8 +628,8 @@ namespace ProfileCalibrService
                                                 (bok_l_m.Any() ? bok_l_m.Average() : 0.0).ToString("0.00000").Replace(",", ".") + "," + //Бок из
                                                 (bok_r_m.Any() ? bok_r_m.Average() : 0.0).ToString("0.00000").Replace(",", ".") + "," +
 
-                                                (npk_l_m.Any() ? npk_l_m.Average() : 3.0 / 40.0).ToString("0.00000").Replace(",", ".") + "," + //нпк
-                                                (npk_r_m.Any() ? npk_r_m.Average() : 3.0 / 40.0).ToString("0.00000").Replace(",", ".") + "," +
+                                                (npk_l_m.Any() ? npk_l_m.Average() : 3.0 / 45.0).ToString("0.00000").Replace(",", ".") + "," + //нпк
+                                                (npk_r_m.Any() ? npk_r_m.Average() : 3.0 / 45.0).ToString("0.00000").Replace(",", ".") + "," +
 
                                                 (iz45_l_m.Any() ? iz45_l_m.Average() : 0.0).ToString("0.0000").Replace(",", ".") + "," + //И45
                                                 (iz45_r_m.Any() ? iz45_r_m.Average() : 0.0).ToString("0.0000").Replace(",", ".") + "," +
@@ -1020,7 +1020,7 @@ namespace ProfileCalibrService
             {
                 TryReadProfile(ref sideX, ref sideY, ref headX, ref headY, arrX.ToArray(), arrY.ToArray(), calcParam.HeadCoef, calcParam.BottomSideCoef, calcParam.TopSideCoef); //раотает жб
             }
-            catch (Exception e )
+            catch (Exception e)
             {
                 Console.WriteLine("Ошибка " + e.Message);
                 //throw;
@@ -1121,87 +1121,87 @@ namespace ProfileCalibrService
             List<double> sideX2 = new List<double>(), sideY2 = new List<double>();
             var side_count = arrSideY.Length / 3;
 
-            
-                var level_side_count = side_count / 3;
 
+            var level_side_count = side_count / 3;
+
+            try
+            {
+                for (int i = 0; i <= side_count; i++)
+                {
+                    if (i < level_side_count)
+                    {
+                        sideX1.Add(arrSideX[i]);
+                        sideY1.Add(arrSideY[i]);
+                    }
+                    if (i > level_side_count * 2)
+                    {
+                        sideX2.Add(arrSideX[i]);
+                        sideY2.Add(arrSideY[i]);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Исключение " + e.Message);
+                //throw e;
+            }
+
+            //шейка 2 нукте лев
+            if (side == Side.Left)
+            {
                 try
                 {
-                    for (int i = 0; i <= side_count; i++)
-                    {
-                        if (i < level_side_count)
-                        {
-                            sideX1.Add(arrSideX[i]);
-                            sideY1.Add(arrSideY[i]);
-                        }
-                        if (i > level_side_count * 2)
-                        {
-                            sideX2.Add(arrSideX[i]);
-                            sideY2.Add(arrSideY[i]);
-                        }
-                    }
+                    var x1min = sideX1.Min();
+                    var y1min = sideY1[sideX1.IndexOf(x1min)];
+
+                    var x2min = sideX2.Min();
+                    var y2min = sideY2[sideX2.IndexOf(x2min)];
+
+                    Xtest1 = x1min; //green
+                    Ytest1 = y1min * (-1) + Math.Max(arrHeadY.Max(), arrSideY.Max());
+                    Xtest2 = x2min; //red
+                    Ytest2 = y2min * (-1) + Math.Max(arrHeadY.Max(), arrSideY.Max());
+                    //X_big_l = x1min; //orange
+                    //Ytest1 = y1min * (-1) + Math.Max(arrHeadY.Max(), arrSideY.Max());
+                    //X_big_r = x1min; //orange
+                    //Ytest1 = y1min * (-1) + Math.Max(arrHeadY.Max(), arrSideY.Max());
+
+                    X_big_l.Add(Xtest1);
+
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine("Исключение " + e.Message);
                     //throw e;
                 }
-
-                //шейка 2 нукте лев
-                if (side == Side.Left)
-                {
-                    try
-                    {
-                        var x1min = sideX1.Min();
-                        var y1min = sideY1[sideX1.IndexOf(x1min)];
-
-                        var x2min = sideX2.Min();
-                        var y2min = sideY2[sideX2.IndexOf(x2min)];
-
-                        Xtest1 = x1min; //green
-                        Ytest1 = y1min * (-1) + Math.Max(arrHeadY.Max(), arrSideY.Max());
-                        Xtest2 = x2min; //red
-                        Ytest2 = y2min * (-1) + Math.Max(arrHeadY.Max(), arrSideY.Max());
-                        //X_big_l = x1min; //orange
-                        //Ytest1 = y1min * (-1) + Math.Max(arrHeadY.Max(), arrSideY.Max());
-                        //X_big_r = x1min; //orange
-                        //Ytest1 = y1min * (-1) + Math.Max(arrHeadY.Max(), arrSideY.Max());
-
-                        X_big_l.Add(Xtest1);
-
-                    }
-                    catch (Exception e )
-                    {
-                        Console.WriteLine("Исключение " + e.Message);
-                        //throw e;
-                    }
-                }
-                //шейка 2 нукте прав
-                if (side == Side.Right)
-                {
-                    try
-                    {
-                        var x1min = sideX1.Min();
-                        var y1min = sideY1[sideX1.IndexOf(x1min)];
-
-                        var x2min = sideX2.Min();
-                        var y2min = sideY2[sideX2.IndexOf(x2min)];
-
-                        var x_big_1min_l = sideX1.Min();
-                        var x_big_1min_r = sideX2.Min();
-                        Xtest1_r = x1min * (-1) + Math.Max(arrHeadX.Max(), arrSideX.Max());
-                        Ytest1_r = y1min * (-1) + Math.Max(arrHeadY.Max(), arrSideY.Max());
-                        Xtest2_r = x2min * (-1) + Math.Max(arrHeadX.Max(), arrSideX.Max());
-                        Ytest2_r = y2min * (-1) + Math.Max(arrHeadY.Max(), arrSideY.Max());
-                        X_big_r.Add(Xtest1_r);
-
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("Исключение " + e.Message);
-                        //throw e;
-                    }
             }
-            
+            //шейка 2 нукте прав
+            if (side == Side.Right)
+            {
+                try
+                {
+                    var x1min = sideX1.Min();
+                    var y1min = sideY1[sideX1.IndexOf(x1min)];
+
+                    var x2min = sideX2.Min();
+                    var y2min = sideY2[sideX2.IndexOf(x2min)];
+
+                    var x_big_1min_l = sideX1.Min();
+                    var x_big_1min_r = sideX2.Min();
+                    Xtest1_r = x1min * (-1) + Math.Max(arrHeadX.Max(), arrSideX.Max());
+                    Ytest1_r = y1min * (-1) + Math.Max(arrHeadY.Max(), arrSideY.Max());
+                    Xtest2_r = x2min * (-1) + Math.Max(arrHeadX.Max(), arrSideX.Max());
+                    Ytest2_r = y2min * (-1) + Math.Max(arrHeadY.Max(), arrSideY.Max());
+                    X_big_r.Add(Xtest1_r);
+
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Исключение " + e.Message);
+                    //throw e;
+                }
+            }
+
             //----головка---------------------------------------------------------
             List<double> headX1 = new List<double>(), headY1 = new List<double>();
             List<double> headX2 = new List<double>(), headY2 = new List<double>();
@@ -1816,7 +1816,7 @@ namespace ProfileCalibrService
 
                 pu_l_str = pu_l_str + $"{(RolAver0l * WearCoef * 10).ToString("0.00").Replace(",", ".")},{CurrentFrameIndex} ";
                 pu_l.Add(fi);
-                var fi_npl = 3.0 / 40.0 + 1.051 * (RolAver0l - 1.0 / 20.0) + d_vert_left / 300.0; ;// + vert_l[vert_l.Count-1]/400; 
+                var fi_npl = 3.0 / 45.0 + 1.051 * (RolAver0l - 1.0 / 20.0)  ;// + vert_l[vert_l.Count-1]/400; 
 
                 npk_aArr.Add(fi_npl);
                 npk_l.Add(fi_npl);
@@ -1932,7 +1932,7 @@ namespace ProfileCalibrService
                     pu_r_str = pu_r_str + $"{((RolAver0) * WearCoef * 10).ToString("0.00").Replace(",", ".")},{CurrentFrameIndex} ";
                     pu_r.Add(RolAver0);
 
-                    var fi_npr = 3.0 / 40.0 + 1.051 * (RolAver0 - 1.0 / 20.0) + d_vert_rigt / 300.0;
+                    var fi_npr = 3.0 / 45.0 + 1.051 * (RolAver0 - 1.0 / 20.0) ;
 
                     npk_aArr_r.Add(fi_npr);
                     npk_r.Add(fi_npr);

@@ -169,8 +169,16 @@ namespace ALARm_Report.Forms
                                 }
                                 else
                                 {
-                                    dig.Ovp = int.Parse(item.Vdop.Split('/')[1]);
-                                    dig.Ogp = int.Parse(item.Vdop.Split('/')[1]);
+                                    try
+                                    {
+                                        dig.Ovp = int.Parse(item.Vdop.Split('/')[1]);
+                                        dig.Ogp = int.Parse(item.Vdop.Split('/')[1]);
+                                    }
+                                    catch
+                                    {
+                                        Console.WriteLine("Скорости не были получены и расчитаны");
+                                    }
+                                    
                                 }
 
                                 dig.Uv = int.Parse(item.Vpz.Split('/')[0]);
@@ -652,17 +660,17 @@ namespace ALARm_Report.Forms
                                 else
                                 {
                                     XElement xeNote = new XElement("Note",
-                                            new XAttribute("codDorogi", s3.Roadcode),
+                                            new XAttribute("codDorogi", s3.Roadcode == null ? "" : s3.Roadcode),
                                             new XAttribute("codNapr", s3.Directcode == null ? "" : s3.Directcode),
                                             new XAttribute("classput", trackclasses.First().Class_Id),
 
                                             new XAttribute("pch", distance.Code),
                                             new XAttribute("checkDate", s3.Date.ToString("dd/MM/yyyy")),
                                             new XAttribute("nomerPS", s3.Pscode == null ? "" : s3.Pscode),
-                                            new XAttribute("nomerPuti", s3.Nput),
+                                            new XAttribute("nomerPuti", trackName /*s3.Nput*/ ),
                                             new XAttribute("km", s3.Km),
                                             new XAttribute("m", s3.Meter),
-                                            new XAttribute("vidOts", s3.Ots),
+                                            new XAttribute("vidOts", s3.Ots == null ? "" : s3.Ots),
                                             new XAttribute("norma", "-"),
                                             new XAttribute("velichOts", s3.Otkl),
                                             new XAttribute("len", s3.Len),
@@ -681,7 +689,7 @@ namespace ALARm_Report.Forms
                                             new XAttribute("elevation", vozvihenie),
                                             new XAttribute("strelka", s3.Primech.Contains("Стр.;") ? 1 : s3.Strelka),
                                             new XAttribute("primech", s3.Primech.Contains("м;") ? "м" : s3.Primech.Contains("ис") ? "ис" : s3.Primech.Contains("гр") ? "гр" : "-")
-                                            );
+                                            ); ;
 
 
                                     tripElem.Add(xeNote);
