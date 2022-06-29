@@ -69,7 +69,6 @@ namespace WavesService
                 _logger.LogInformation($"Queue [{QueueName}] is waiting for messages.");
 
 
-
                 var consumer = new EventingBasicConsumer(_channel);
                 consumer.Received += async (model, ea) =>
                 {
@@ -294,7 +293,6 @@ namespace WavesService
                     }
 
 
-                    // Коэфиценты увеличены с 0.15 до 1.15
                     var koef_long = 0.15;
                     var koef_medium = 0.15;
                     var koef_short = 0.15;
@@ -330,7 +328,7 @@ namespace WavesService
                 //импульсы
                 for (int i = 0; i < bolshe0.Count; i++)
                 {
-                    if (bolshe0[i].H < 0.8)
+                    if (bolshe0[i].H < 0.1)
                     {
                         ImpulsLeft.Add(new Digression
                         {
@@ -359,7 +357,7 @@ namespace WavesService
                 }
                 for (int i = 0; i < bolshe0_r.Count; i++)
                 {
-                    if (bolshe0_r[i].H < 0.6)
+                    if (bolshe0_r[i].H < 0.1)
                     {
                         ImpulsRight.Add(new Digression
                         {
@@ -386,9 +384,8 @@ namespace WavesService
 
                 }
 
-                var cs = "Host=DESKTOP-EMAFC5J;Username=postgres;Password=alhafizu;Database=railway_comp";
 
-                var con = new NpgsqlConnection(cs);
+                var con = new NpgsqlConnection(Helper.ConnectionString());
                 con.Open();
 
                 var cmd = new NpgsqlCommand();
@@ -421,7 +418,7 @@ namespace WavesService
                     {
                         var qrStr = $@"UPDATE  profiledata_{trip_id}
                                    SET   imp_left ={(ImpulsLeft[i].Intensity_ra).ToString("0.0000").Replace(",", ".")},
-                                   implen_left = {ImpulsLeft[i].Length},impthreat_left = '{ImpulsLeft[i].Threat}'
+                                   implen_left = {ImpulsLeft[i].Length}, impthreat_left = '{ImpulsLeft[i].Threat}'
                                    where km = {ImpulsLeft[i].Km} and meter = {ImpulsLeft[i].Meter}";
                         cmd.CommandText = qrStr;
                         cmd.ExecuteNonQuery();

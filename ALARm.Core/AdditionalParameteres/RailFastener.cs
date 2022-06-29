@@ -37,6 +37,8 @@ namespace ALARm.Core.AdditionalParameteres
         public string Norma { get; set; }
         public Location Location { get; set; }
 
+        //public int Koord { get; set; }
+
         public abstract void AddDigression(Digression digression);
 
         public int GetMeter()
@@ -61,8 +63,9 @@ namespace ALARm.Core.AdditionalParameteres
                     digressions.Add(digression);
                 }
             }
-            
+
             //получаем список негодных скреплений
+            // GetBadRailFasteners(tripId, orderBySide, code, trackName, km);
             var badFasteners = rdStructureRepository.GetBadRailFasteners(videoProcess.Trip_id, true, videoProcess.TrackName);
 
             for (int i = 0; i < badFasteners.Count - 1; i++)

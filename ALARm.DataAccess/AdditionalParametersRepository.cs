@@ -869,6 +869,33 @@ namespace ALARm.DataAccess
 
             }
         }
+
+        bool IAdditionalParametersRepository.CheckRdVideoKmExists(int km, int trip_id)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                try
+                {
+                    List<dynamic> res = db.Query($@"
+                    select distinct rdkm.file_id, group_id from rd_rvo_kilometer rdkm
+                    left join trip_files f on f.id = rdkm.file_id
+                    where km = {km} and trip_id = {trip_id} and processed = 1 
+                    ").ToList();
+                    if (res != null && res.Count == 4)
+                    {
+                        return true;
+                    }
+                }
+                catch(Exception e)
+                {
+                    return false;
+                }
+            }
+            return false;
+        }
+
         object IAdditionalParametersRepository.Insert_badfastening(long trip_id, int iD, List<RailFastener> badFasteners)
         {
             using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
@@ -1108,54 +1135,54 @@ namespace ALARm.DataAccess
                 {
                     var gap_l = gaps.Where(o => o.Threat == Threat.Left).ToList();
                     var gap_r = gaps.Where(o => o.Threat == Threat.Right).ToList();
-                   
-                    
+
+                    var Dig_r = "";
+                    var Dig_l = "";
                     foreach (var gap in gap_l)
                     {
-
-                        if(gap.Km == 700)
-                        {
-                            
-                        }
                         var zabeg = "-999";
                         var Vdop = "";
                         var Ots = "";
 
-                        var r = gap_r.Where(o => o.Km == gap.Km && (o.Meter >= gap.Meter-1 && o.Meter <= gap.Meter + 1)).ToList();
+                        var r = gap_r.Where(o => o.Km == gap.Km && (o.Meter >= gap.Meter - 1 && o.Meter <= gap.Meter + 1)).ToList();
                         if (r.Any())
                         {
+                            
                             if (gap.Zazor == -1)
                             {
                                 double k = (double)gap.H / (double)r.First().H;
                                 gap.Zazor = (int)(r.First().Zazor * k);
                                 gap.GetDigressions436();
-                                //if (gap.DigName.Name.Equals("З?"))
-                                //    gap.DigName.Name = "З?Л";
-                                //if (gap.DigName.Name.Equals("З"))
-                                //    gap.DigName.Name = "ЗЛ";
                             }
                             if (r.First().Zazor == -1)
                             {
                                 double k = (double)r.First().H / (double)gap.H;
                                 r.First().Zazor = (int)(gap.Zazor * k);
                                 r.First().GetDigressions436();
-                                //if (gap.DigName.Name.Equals("З?"))
-                                //    gap.DigName.Name = "З?Л";
-                                //if (gap.DigName.Name.Equals("З"))
-                                //    gap.DigName.Name = "ЗЛ";
                             }
 
                             zabeg = (gap.Koord - r.First().Koord).ToString();
                             Vdop = gap.Zazor < r.First().Zazor ? r.First().AllowSpeed : gap.AllowSpeed;
-                            
+                            Ots = gap.DigName.Name == "неизвестный" ? r.First().DigName.Name : gap.DigName.Name;
+                        }
+                        if (gap.Zazor == -1)
+                        {
+                            double k = (double)gap.H / (double)r.First().H;
+                            gap.Zazor = (int)(r.First().Zazor * k);
+                            gap.GetDigressions436();
                         }
 
-                        var Dig_l = gap.DigName.Name == "неизвестный" ? "" : gap.DigName.Name;
-                        var Dig_r = r.First().DigName.Name == "неизвестный" ? "" : r.First().DigName.Name;
-                        // var Dig = Ots == "неизвестный" ? "" : Ots;
-
+                        Dig_l = gap.DigName.Name == "неизвестный" ? "" : gap.DigName.Name;
+                        if (r.Count > 0)
+                        {
+                            Dig_r = r.First().DigName.Name == "неизвестный" ? "" : r.First().DigName.Name;
+                        }
+                       
                         i++;
-
+                        if (gap.Meter == 598)
+                        {
+                            gap.Meter = 598;
+                        }
                         var txt = $@"INSERT INTO report_gaps (
 	                                        trip_id,
 	                                        pdb_section,
@@ -1169,8 +1196,8 @@ namespace ALARm.DataAccess
                                             temp,
 	                                        zabeg,
 	                                        vdop,
-	                                        otst_l,
-                                            otst_r,
+	                                        otst_r,
+                                            otst_l,
 	                                        file_id,
 	                                        fnum,
 	                                        ms,
@@ -1179,7 +1206,6 @@ namespace ALARm.DataAccess
 	                                        r_ms,
 	                                        template_id ,x ,y ,h ,
                                                          x_r ,y_r ,h_r
-
                                         
                                         )
                                         VALUES
@@ -1196,8 +1222,8 @@ namespace ALARm.DataAccess
                                             '{gap.temp}',
                                             '{zabeg}',
                                             '{ (!r.Any() ? gap.AllowSpeed : Vdop)}',
-                                            '{ Dig_l }',
                                             '{ Dig_r }',
+                                            '{ Dig_l }',                                         
                                             '{gap.Fileid}',
                                             '{gap.Fnum}',
                                             '{gap.Ms}',
@@ -1211,12 +1237,21 @@ namespace ALARm.DataAccess
                                             '{(r.Any() ? r.First().X.ToString() : "-999")}',
                                             '{(r.Any() ? r.First().Y.ToString() : "-999")}',
                                             '{(r.Any() ? r.First().H.ToString() : "-999")}');";
-                        db.Execute(txt);
+
+                        try
+                        {
+                            db.Execute(txt);
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine("Ошибка записи в БД " + e.Message + "Ошибка на {i} записи");
+                        }
                     }
                     return "Удачно записано!";
                 }
                 catch (Exception e)
                 {
+                    gaps.First().Meter.ToString().First();
                     Console.WriteLine("Ошибка записи в БД " + e.Message);
                     return $"Ошибка на {i} записи";
                 }
@@ -1234,6 +1269,53 @@ namespace ALARm.DataAccess
                                     " order by km, meter,fnum" , commandType: CommandType.Text).ToList();
             }
         }
+
+        public List<CrosProf> GetProfileDataByKmMeter(int km, int meter, long trip_id)
+        {
+            using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
+            {
+                if (db.State == ConnectionState.Closed)
+                    db.Open();
+                try
+                {
+                    return db.Query<CrosProf>(
+                    $@"SELECT 
+                             ID,
+	                        meter,
+	                        pu_l,
+	                        pu_r,
+	                        vert_l,
+	                        vert_r,
+	                        bok_l,
+	                        bok_r,
+	                        npk_l,
+	                        npk_r,
+                            shortwavesleft,
+                            shortwavesright,
+                            mediumwavesleft,
+                            mediumwavesright,
+                            longwavesleft,
+                            longwavesright,
+	                        iz_45_l,
+	                        iz_45_r,
+                            x_big_l,
+                            x_big_r,
+                            pointsright,
+                            pointsleft
+                        FROM
+	                        PUBLIC.profiledata_{trip_id}
+                        WHERE
+	                        km = {km} AND meter = {meter} 
+                        ").ToList();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("GetNextProfileDatas " + ex.Message);
+                    return new List <CrosProf> { };
+                }
+            }
+        }
+
         public List<Gap> GetGaps(Int64 process_id, int direction, int kilometer)
         {
             using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
@@ -3543,13 +3625,12 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
 					                                ( SELECT travel_direction FROM trips WHERE ID = {trip_id} ) * ( local_fnum * 200.0 ) - ( SELECT car_position FROM trips WHERE ID = {trip_id} ) * ( y - ( 320.0 / 2.0 ) ) / 1.2 
 				                                ) AS koord 
 			                                FROM
-				                                rd_video_objects rvo
+				                                rd_video_objects as rvo
 				                                INNER JOIN trip_files tf ON tf.ID = rvo.file_id 
 			                                WHERE
 				                                km = {km} 
 				                                AND oid = {(int)VideoObjectType.GapFull}
 				                                AND threat_id = {(int)Threat.Left}
-                                                and trip_id = {trip_id}
 			                                ORDER BY
 				                                koord 
 			                                ) data1 

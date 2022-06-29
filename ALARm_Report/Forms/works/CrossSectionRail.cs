@@ -2,6 +2,7 @@
 using ALARm.Core;
 using ALARm.Core.AdditionalParameteres;
 using ALARm.Core.Report;
+using ALARm.DataAccess;
 using ALARm.Services;
 using ALARm_Report.controls;
 using MetroFramework.Controls;
@@ -26,23 +27,22 @@ namespace ALARm_Report.Forms
     {
         public override void Process(Int64 distanceId, ReportTemplate template, ReportPeriod period, MetroProgressBar progressBar)
         {
-            XDocument htReport = new XDocument();
+            
+            //Сделать выбор периода
+            List<long> admTracksId = new List<long>();
+            using (var choiceForm = new ChoiseForm(0))
+            {
+                choiceForm.SetTripsDataSource(distanceId, period);
+                choiceForm.ShowDialog();
+                if (choiceForm.dialogResult == DialogResult.Cancel)
+                    return;
+                admTracksId = choiceForm.admTracksIDs;
+            }
 
+            XDocument htReport = new XDocument();
             using (XmlWriter writer = htReport.CreateWriter())
             {
-                //Сделать выбор периода
-                List<long> admTracksId = new List<long>();
-                using (var choiceForm = new ChoiseForm(0))
-                {
-                    choiceForm.SetTripsDataSource(distanceId, period);
-                    choiceForm.ShowDialog();
-                    if (choiceForm.dialogResult == DialogResult.Cancel)
-                        return;
-                    admTracksId = choiceForm.admTracksIDs;
-                }
-
-                XDocument xdReport = new XDocument();
-                XElement report = new XElement("report");
+                
 
                 var distance = AdmStructureService.GetUnit(AdmStructureConst.AdmDistance, distanceId) as AdmUnit;
                 var road = AdmStructureService.GetRoadName(distance.Id, AdmStructureConst.AdmDistance, true);
@@ -54,6 +54,9 @@ namespace ALARm_Report.Forms
                     return;
                 }
 
+                XDocument xdReport = new XDocument();
+                XElement report = new XElement("report");
+
                 //var distance = AdmStructureService.GetUnit(AdmStructureConst.AdmDistance, distanceId) as AdmUnit;
 
                 foreach (var process in mainProcesses)
@@ -63,9 +66,13 @@ namespace ALARm_Report.Forms
                         //var rd_curves_wear_great_13 = (RdStructureService.GetRdTables(process, 9) as List<RDCurve>).Where(r => r.Wear >= 13.0).ToList();
                         var trackName = AdmStructureService.GetTrackName(track_id);
                         var trip = RdStructureService.GetTrip(process.Id);
-                        
+                        var trips = RdStructureService.GetTrips();
+                        var tr = trips.Where(t => t.Id == process.Trip_id).ToList().First();
 
+                        var kilometers = RdStructureService.GetKilometersByTrip(trip);
+                        kilometers = kilometers.Where(o => o.Track_id == track_id).ToList();
 
+                        if (kilometers.Count == 0) continue;
                         var filterForm = new FilterForm();
                         var filters = new List<Filter>();
                         int km = trip.Start_Km;
@@ -78,12 +85,18 @@ namespace ALARm_Report.Forms
                         if (filterForm.ShowDialog() == DialogResult.Cancel)
                             return;
 
-                        
+                        km = (int)filters[0].Value;
+                        meter = (int)filters[1].Value;
+                        var ProfileData = AdditionalParametersService.GetProfileDataByKmMeter(km, meter, process.Trip_id).FirstOrDefault();
+                        if (ProfileData == null)
+                        {
+                            continue;
+                        }
 
+                        List<double> Pointsleft = ProfileData.Pointsleft.Split(',').Select(x => double.Parse(x.Replace(".", ","))).ToList();
+                        List<double> Pointsright = ProfileData.Pointsright.Split(',').Select(x => double.Parse(x.Replace(".", ","))).ToList();
 
                         var Blazor_prov_data = new AppData();
-
-                       
                         Blazor_prov_data.conn = new NpgsqlConnection(Blazor_prov_data.cs);
                         Blazor_prov_data.conn.Open();
                         Blazor_prov_data.in_koridor = new BinaryReader(File.Open(Blazor_prov_data.Vnutr__profil__koridor, FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
@@ -95,19 +108,16 @@ namespace ALARm_Report.Forms
                         data = Blazor_prov_data.in_kupe.ReadBytes(8);
                         Blazor_prov_data.in_kupe_count = BitConverter.ToSingle(data, 0);
                         Blazor_prov_data.in_kupe_size = BitConverter.ToSingle(data, 4);
-                        
-                        km = (int)filters[0].Value;
-                        meter = (int)filters[1].Value;
 
                         Blazor_prov_data.GetBitmapAsync(km, meter);
 
                         var DB_gauge = AdditionalParametersService.GetGaugeFromDBkmmter(km,meter, process.Trip_id);
 
-
+                        //var ProfileData = AdditionalParametersService.GetProfileDataByKmMeter(km, meter, process.Trip_id);
                         //var railstype = "";
-                       
-                        
-                            XElement xePages = new XElement("pages",
+
+
+                        XElement xePages = new XElement("pages",
 
                           new XAttribute("version", $"{DateTime.Now} v{Assembly.GetExecutingAssembly().GetName().Version.ToString()}"),
                           new XAttribute("car", process.Car),
@@ -116,11 +126,11 @@ namespace ALARm_Report.Forms
                           new XAttribute("check", process.GetProcessTypeName),
                           new XAttribute("period", period.Period),
 
-                          new XAttribute("pointsleft", Blazor_prov_data.PointsLeft.ToString("0.00").Replace(",", ".")),
-                          new XAttribute("pointsright", Blazor_prov_data.PointsRight.ToString("0.00").Replace(",", ".")),
+                          new XAttribute("pointsleft", Pointsleft),
+                          new XAttribute("pointsright", Pointsright),
                           
 
-                          new XAttribute("railspoints", " 61.9, 400, 25, 84.5623876, 35.6, 180, 71.25, 33.28728189, 17.31756333, 375.0000105"),
+                          new XAttribute("railspoints", Blazor_prov_data.GetNominalRailScheme(Rails.r65)),
                           //X_lef
                           new XAttribute("xelem1", Blazor_prov_data.Xtest1.ToString("0.00").Replace(",", ".")),
                           new XAttribute("xelem2", Blazor_prov_data.Xtest2.ToString("0.00").Replace(",", ".")),
@@ -133,26 +143,15 @@ namespace ALARm_Report.Forms
                           new XAttribute("x_per2_l", Blazor_prov_data.Perpen_x2_l.ToString("0.00").Replace(",", ".")),
                           new XAttribute("radX_l", Blazor_prov_data.RadX_l.ToString("0.00").Replace(",", ".")),
                           ///Значения 
-                          new XAttribute("xelem3_pu_l", "1/" + (int)(1 / Blazor_prov_data.pu_l.First())),
-                          //new XAttribute("xelem3_pu_l", Blazor_prov_data.pu_l.First().ToString("0.00")),
-                          new XAttribute("xelem3_npk_l", "1/" + (int)(1 / Blazor_prov_data.npk_l.First())),
-                          new XAttribute("xelem3_bok_iz_l", "1/" + (int)(1 / Blazor_prov_data.bok_l.First())),
-                          new XAttribute("xelem3_pu_r", "1/" + (int)(1 / Blazor_prov_data.pu_r.First())),
-                          new XAttribute("xelem3_npk_r", "1/" + (int)(1 / Blazor_prov_data.npk_r.First())),
-                          new XAttribute("xelem3_bok_iz_r", "1/" + (int)(1 / Blazor_prov_data.bok_r.First())),
+                          new XAttribute("xelem3_pu_l", "1/" + (int)(1 / ProfileData.Pu_l)),
+                          new XAttribute("xelem3_npk_l", "1/" + (int)(1 / ProfileData.Npk_l)),
+                          new XAttribute("xelem3_bok_iz_l", "1/" + (int)(1 / ProfileData.Bok_l)),
+                          new XAttribute("xelem3_pu_r", "1/" + (int)(1 / ProfileData.Pu_r)),
+                          new XAttribute("xelem3_npk_r", "1/" + (int)(1 / ProfileData.Npk_r)),
+                          new XAttribute("xelem3_bok_iz_r", "1/" + (int)(1 / ProfileData.Bok_r)),
                           new XAttribute("xelem3_gauge", DB_gauge.Select(o => o.Gauge).First().ToString("0.00")),
                           new XAttribute("xelem3_level", DB_gauge.Select(o => o.Level).First().ToString("0.00")),
 
-                          //new XAttribute("xelem3_npk_l", Blazor_prov_data.npk_l.First().ToString("0.00")),
-                          //new XAttribute("xelem3_bok_iz_l", Blazor_prov_data.bok_l.First().ToString("0.00")),
-                          //new XAttribute("xelem3_pu_r", Blazor_prov_data.pu_r.First().ToString("0.00")),
-                          //new XAttribute("xelem3_npk_r", Blazor_prov_data.npk_r.First().ToString("0.00")),
-                          //new XAttribute("xelem3_bok_iz_r", Blazor_prov_data.bok_r.First().ToString("0.00")),
-                          //new XAttribute("xelem3_shablon", Blazor_prov_data.bok_r.First().ToString("0.00")),
-                          //new XAttribute("xelem3_gauge", DB_gauge.Select(o => o.Gauge).First().ToString("0.00")),
-                          //new XAttribute("xelem3_level", DB_gauge.Select(o => o.Level).First().ToString("0.00")),
-                            /// 
-                            ///
                             new XAttribute("yelem1", Blazor_prov_data.Ytest1.ToString("0.00").Replace(",", ".")),
                           new XAttribute("yelem2", Blazor_prov_data.Ytest2.ToString("0.00").Replace(",", ".")),
                           new XAttribute("yelem3", Blazor_prov_data.Ytest3.ToString("0.00").Replace(",", ".")),
@@ -191,25 +190,24 @@ namespace ALARm_Report.Forms
                           new XAttribute("direction", process.DirectionName + " (" + process.DirectionCode + ")"),
                           new XAttribute("track", trackName));
 
-                            for (int i = 0; i < Blazor_prov_data.PointsLeft.Length - 1; i = i + 2)
-
+                            for (int i = 0; i < Pointsleft.Count - 1; i = i + 2)
                             {
-                                if (!Double.IsNaN(Blazor_prov_data.PointsLeft[i]) && !Double.IsNaN(Blazor_prov_data.PointsLeft[i + 1]))
+                                if (!Double.IsNaN(Pointsleft[i]) && !Double.IsNaN(Pointsleft[i + 1]))
                                 {
                                     XElement PointsLeft = new XElement("pointsLeft",
-                                    new XAttribute("cx", Blazor_prov_data.PointsLeft[i].ToString().Replace(",", ".")),
-                                    new XAttribute("cy", Blazor_prov_data.PointsLeft[i + 1].ToString().Replace(",", ".")));
+                                    new XAttribute("cx", (Pointsleft[i] + Math.Abs(Blazor_prov_data.RadX_l - 21.5158753)).ToString().Replace(",", ".")),
+                                    new XAttribute("cy", Pointsleft[i + 1].ToString().Replace(",", ".")));
                                     xePages.Add(PointsLeft);
                                 }
 
                             }
-                            for (int j = 0; j < Blazor_prov_data.PointsRight.Length - 1; j = j + 2)
+                            for (int j = 0; j < Pointsright.Count - 1; j = j + 2)
                             {
-                                if (!Double.IsNaN(Blazor_prov_data.PointsRight[j]) && !Double.IsNaN(Blazor_prov_data.PointsRight[j + 1]))
+                                if (!Double.IsNaN(Pointsright[j]) && !Double.IsNaN(Pointsright[j + 1]))
                                 {
                                     XElement PointsRight = new XElement("pointsRight",
-                                     new XAttribute("cx_r", Blazor_prov_data.PointsRight[j].ToString().Replace(",", ".")),
-                                     new XAttribute("cy_r", Blazor_prov_data.PointsRight[j + 1].ToString().Replace(",", ".")));
+                                     new XAttribute("cx_r", (Pointsright[j] - 50).ToString().Replace(",", ".")), 
+                                     new XAttribute("cy_r", Pointsright[j + 1].ToString().Replace(",", ".")));
                                     xePages.Add(PointsRight);
                                 }
                             }
@@ -473,9 +471,11 @@ namespace ALARm_Report.Forms
             {
                 try
                 {
+                    int min = 1;
+                    int max = (int)((int)(in_koridor.BaseStream.Length - 8) / in_koridor_size);
                     while (!(Kilometer == kmnum && Meter == metr))
                     {
-                        CurrentFrameIndex++;
+                        CurrentFrameIndex = (min + max) / 2;
                         long pos = CurrentFrameIndex * ((long)in_koridor_size) + 8;
                         reader.BaseStream.Seek(pos, SeekOrigin.Begin);
                         reader.ReadBytes(32);
@@ -485,6 +485,18 @@ namespace ALARm_Report.Forms
                         buff = reader.ReadBytes(4);
                         Array.Reverse(buff);
                         Meter = BitConverter.ToInt32(buff, 0);
+                        if (Kilometer * 10000 + Meter == kmnum * 10000 + metr)
+                        {
+                            break;
+                        }
+                        else if (Kilometer * 10000 + Meter < kmnum * 10000 + metr)
+                        {
+                            min = CurrentFrameIndex + 1;
+                        }
+                        else
+                        {
+                            max = CurrentFrameIndex - 1;
+                        }
                     }
 
                     //long ll = CurrentFrameIndex * ((long)in_koridor_size) + 8;
@@ -715,36 +727,6 @@ namespace ALARm_Report.Forms
                         side_id_R = "0";
                         period_r = true;
                     }
-                    //запрашиваем объекты с базы координаты болтов
-                    //try
-                    //{
-                    //    if (QueryData == false)
-                    //    {
-                    //        if (conn.State == System.Data.ConnectionState.Closed)
-                    //            conn.Open();
-                    //        var cmd = new NpgsqlCommand();
-                    //        cmd.Connection = conn;
-                    //        cmd.CommandText = $@"
-                    //                        SELECT km, mtr FROM rd_video_objects_{trip_id_L}
-                    //                        where oid in (0,1,2,5,6,7,8)
-                    //                        group by km, mtr
-                    //                        order by km, mtr";
-                    //        NpgsqlDataReader rdr = cmd.ExecuteReader();
-                    //        if (rdr.FieldCount > 0)
-                    //        {
-                    //            while (rdr.Read())
-                    //            {
-                    //                OKm.Add(rdr.GetInt32(0));
-                    //                OMeter.Add(rdr.GetInt32(1));
-                    //            }
-                    //            QueryData = true;
-                    //        }
-                    //        conn.Close();
-                    //    }
-                    //}
-                    //catch
-                    //{
-                    //}
 
                     CurrentProfileLeft(Vnutr__profil__koridor, number, meter);
                     CurrentProfileRight(Vnutr__profil__kupe);

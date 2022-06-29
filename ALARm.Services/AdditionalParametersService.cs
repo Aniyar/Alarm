@@ -24,6 +24,11 @@ namespace ALARm.Services
             return Container.Resolve<IAdditionalParametersRepository>().GetGaps(process_id, direction, kilometer);
         }
 
+        public static List<CrosProf> GetProfileDataByKmMeter(int km, int meter, long trip_id)
+        {
+            return Container.Resolve<IAdditionalParametersRepository>().GetProfileDataByKmMeter(km, meter, trip_id);
+        }
+
         public static List<int> GetKilometers(long process_id, int direction)
         {
             return Container.Resolve<IAdditionalParametersRepository>().GetKilometers(process_id, direction);
@@ -203,6 +208,12 @@ namespace ALARm.Services
         {
             return Container.Resolve<IAdditionalParametersRepository>().Insert_badfastening(trip_id, iD, badFasteners);
         }
+
+        public static bool CheckRdVideoKmExists(int km, int tripid)
+        {
+            return Container.Resolve<IAdditionalParametersRepository>().CheckRdVideoKmExists(km, tripid);
+        }
+
         public static List<Digression> Check_defshpal_state(long trip_id, int iD)
         {
             return Container.Resolve<IAdditionalParametersRepository>().Check_defshpal_state(trip_id, iD);

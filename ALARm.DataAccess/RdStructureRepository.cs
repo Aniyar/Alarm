@@ -1364,8 +1364,8 @@ namespace ALARm.DataAccess
 		                                    ) DATA 
 	                                    ) DATA 
                                     WHERE
-	                                    razn > 20000 
-	                                    OR razn < 500 ";
+	                                    --razn > 20000 OR
+	                                     razn < 250 ";
 
                     var DB_obj = db.Query<Digression>(query, commandType: CommandType.Text).ToList();
 
@@ -1383,7 +1383,9 @@ namespace ALARm.DataAccess
                         var After_gap = new List<Digression> { };
                         var Find_gap = false;
 
-                        var Selected_region = DB_obj.Where(o => o.Meter >= gap.Meter - 1 && o.Meter <= gap.Meter + 1).ToList();
+                        var Selected_region = DB_obj.Where(o => o.Koord >= gap.Koord - 450 && o.Koord <= gap.Koord + 450).ToList();
+                        var Selected_region2 = DB_obj.Where(o => o.Fnum >= gap.Fnum - 2 && o.Fnum <= gap.Fnum + 2).ToList();
+                        var Selected_region3 = DB_obj.Where(o => o.Meter >= gap.Meter - 1 && o.Meter <= gap.Meter + 1).ToList();
 
                         foreach (var item in Selected_region)
                         {
@@ -1392,17 +1394,19 @@ namespace ALARm.DataAccess
 
                             if (Find_gap == false)
                             {
-                                Before_gap.Add(item);
+                                if (item.Oid != (int)VideoObjectType.GapFull)
+                                    Before_gap.Add(item);
                             }
                             else
                             {
-                                After_gap.Add(item);
+                                if (item.Oid != (int)VideoObjectType.GapFull)
+                                    After_gap.Add(item);
                             }
                         }
 
-                        if(After_gap.Count > 4)
+                        if(After_gap.Count > 3)
                         {
-                            After_gap = After_gap.GetRange(0, 4).ToList();
+                            After_gap = After_gap.GetRange(0, 3).ToList();
                         }
                         if(Before_gap.Where(o=>o.Razn > 300).Any())
                         {
@@ -1425,7 +1429,7 @@ namespace ALARm.DataAccess
 
                         var cc = Math.Max(Before_gap.Count, After_gap.Count) * 2;
                         //string overlay = "";
-                       string overlay = $"{ (cc >= 6 ? 6 : cc) } отверстия";
+                       string overlay = $"{ (cc >= 6 ? 6 : 4) } отверстия";
                        
 
 
@@ -2762,7 +2766,8 @@ namespace ALARm.DataAccess
                                                {(int)VideoObjectType.P350MissingClamp},
                                                {(int)VideoObjectType.KD65NB},
                                                {(int)VideoObjectType.KppNoPad}) 
-		                                AND trips.ID = {tripId} 
+		                                AND trips.ID = {tripId}
+                                        
                                         {(km == -1 ? "" : $"and km={km}")}
 		                                and h > 15 
 		                                AND w > 15 
@@ -3565,21 +3570,35 @@ namespace ALARm.DataAccess
                     db.Open();
                 try
                 {
-                    string sql =   "COPY rd_video_objects (oid, fnum, km, pt, mtr, x, y, w, h, prb, ms, file_id, local_fnum, km_index) FROM '" + filePath + "' DELIMITER ',' ";
-                    if (db.Execute("COPY rd_video_objects (oid, fnum, km, pt, mtr, x, y, w, h, prb, ms, file_id, local_fnum, km_index) FROM '" + filePath + "' DELIMITER ',' ") > 0) 
-                        db.Execute($"Update rd_rvo_kilometer set processed = 1 where file_id = {fileID} and km = {km}");
-                        List<dynamic> res = db.Query($@"
-                        select distinct rdkm.file_id, group_id from rd_rvo_kilometer rdkm
-                        left join trip_files f on f.id = rdkm.file_id
-                        where km = {km} and trip_id = (select trip_id from trip_files where id = {fileID}) and processed = 1 and group_id = (select group_id from rd_rvo_kilometer where km = {km} and file_id = {fileID})
-                        ").ToList();
-                    var result = new long[res.Count+1];
+                    using (StreamReader sr = new StreamReader(filePath))
+                    {
+                        string line;
+                        // currentLine will be null when the StreamReader reaches the end of file
+                        while ((line = sr.ReadLine()) != null) { 
+                            string sql = "INSERT INTO rd_video_objects (oid, fnum, km, pt, mtr, x, y, w, h, prb, ms, file_id, local_fnum, km_index) VALUES (" + line + ")";
+                            try
+                            {
+                                db.Execute(sql);
+                            }
+                            catch(Exception e)
+                            {
+                                Console.WriteLine("RunRvoDataInsert1Error:" + e.Message);
+                            }
+                        }
+                    }
+                    db.Execute($"Update rd_rvo_kilometer set processed = 1 where file_id = {fileID} and km = {km}");
+                    List<dynamic> res = db.Query($@"
+                    select distinct rdkm.file_id, group_id from rd_rvo_kilometer rdkm
+                    left join trip_files f on f.id = rdkm.file_id
+                    where km = {km} and trip_id = (select trip_id from trip_files where id = {fileID}) and processed = 1 
+                    ").ToList();
+                    // and group_id = (select group_id from rd_rvo_kilometer where km = {km} and file_id = {fileID})
+                    var result = new long[res.Count];
                     if (res.Count == 0)
                         return null;
-                    result[0] = res[0].group_id;
                     foreach(var d in res)
                     {
-                        result[res.IndexOf(d) + 1] = d.file_id;
+                        result[res.IndexOf(d)] = d.file_id;
                     }
                     return result;
                         
@@ -4359,7 +4378,8 @@ namespace ALARm.DataAccess
             }
         }
 
-        public List<CrosProf> GetNextProfileDatas(int meter, int count, long trip_id)
+
+            public List<CrosProf> GetNextProfileDatas(int meter, int count, long trip_id)
         {
             using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
             {
@@ -4654,7 +4674,7 @@ namespace ALARm.DataAccess
             {
                 if (db.State == ConnectionState.Closed)
                     db.Open();
-                return db.Query<long>($@"SELECT id FROM trip_files WHERE km_num = {num} AND trip_id = {trip_id}").ToList();
+                return db.Query<long>($@"SELECT id FROM trip_files WHERE km_num = {num} AND description = 'StykiKupeVneshn' AND trip_id = {trip_id}").ToList();
             }
 
         }

@@ -17,6 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\ALARm.Core\ALARm.Core.csproj" />
     <ProjectReference Include="..\..\ALARm.DataAccess\ALARm.DataAccess.csproj" />
+    <ProjectReference Include="..\..\ALARm.Services\ALARm.Services.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -27,8 +27,12 @@ namespace ALARm.Core.AdditionalParameteres
         public float Imp { get; set; }
         public string Impthreat { get; set; }
 
-      
-        public int Meter { get; set; }
+        public string impthreat_left { get; set; }
+        public string impthreat_right { get; set; }
+        public string Pointsleft { get; set; }
+        public string Pointsright { get; set; }
+
+
         public string DigName { get; set; }
         public int Typ { get; set; }
         public int Count { get; set; }
