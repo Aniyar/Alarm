@@ -212,6 +212,10 @@ namespace ALARm.Core.Report
                         AllowSpeed = "0/0";
                         DigName = DigressionName.Gap;
                         break;
+                    case var value when value == 0:
+                        AllowSpeed = "0/0";
+                        DigName = DigressionName.FusingGap;
+                        break;
                 }
             }
             else if (101 <= PassSpeed && PassSpeed <= 200)

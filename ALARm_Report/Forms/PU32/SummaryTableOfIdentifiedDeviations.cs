@@ -1,6 +1,5 @@
 ﻿using ALARm.Core;
 using ALARm.Core.Report;
-using ALARm.DataAccess;
 using ALARm.Services;
 using ALARm_Report.controls;
 using MetroFramework.Controls;
@@ -9,8 +8,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Linq;
