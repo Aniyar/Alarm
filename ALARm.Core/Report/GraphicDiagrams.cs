@@ -1484,6 +1484,10 @@ namespace ALARm.Core.Report
                             else
                             {
                                 if (note.DigName != DigressionName.NoneStrighteningST.Name)
+                                    if (note.Length >= 100)
+                                    {
+                                        //test
+                                    }
                                     digElements.Add(new XElement("line",
                                                     new XAttribute("y1", -note.Meter),
                                                     new XAttribute("y2", -note.finish_meter),

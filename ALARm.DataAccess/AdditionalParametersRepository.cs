@@ -1951,8 +1951,8 @@ max(final-start) as zazor, max(final-start) as Length, max(start) as start,
 	                            AVG ( longwavesright ) longwavesright,
 	                            AVG ( iz_45_l ) iz_45_l,
 	                            AVG ( iz_45_r ) iz_45_r 
-                             --   AVG ( x_big_l ) x_big_l ,
-                               -- AVG ( x_big_r ) x_big_r 
+                               -- AVG ( x_big_l ) x_big_l ,
+                                --AVG ( x_big_r ) x_big_r 
                             FROM
 	                            PUBLIC.profiledata_{trip_id}
                             WHERE
