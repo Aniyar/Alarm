@@ -25,16 +25,16 @@ namespace ALARm_Report.Forms
         public override void Process(long parentId, ReportTemplate template, ReportPeriod period, MetroProgressBar progressBar)
         {
             //Сделать выбор периода
-            
-            //using (var choiceForm = new ChoiseForm(0))
-            //{
-            //    choiceForm.SetTripsDataSource(parentId, period);
-            //    choiceForm.ShowDialog();
-            //    if (choiceForm.dialogResult == DialogResult.Cancel)
-            //        return;
-            //    //admTracksId = choiceForm.admTracksIDs;
-            //}
-            XDocument htReport = new XDocument();
+            List<long> admTracksId = new List<long>();
+            using (var choiceForm = new ChoiseForm(0))
+            {
+                choiceForm.SetTripsDataSource(parentId, period);
+                choiceForm.ShowDialog();
+                if (choiceForm.dialogResult == DialogResult.Cancel)
+                    return;
+                admTracksId = choiceForm.admTracksIDs;
+            }
+                XDocument htReport = new XDocument();
             using (XmlWriter writer = htReport.CreateWriter())
             {
                 XDocument xdReport = new XDocument();
@@ -57,7 +57,6 @@ namespace ALARm_Report.Forms
                     DigressionTotal shaplontotal = new DigressionTotal();
                     DigressionTotal leveltotal = new DigressionTotal();
                     
-                    List<AdmTrack> admTracksId = new List<AdmTrack>();
                     XElement tripElem = new XElement("trip",
                       new XAttribute("version", $"{DateTime.Now} v{Assembly.GetExecutingAssembly().GetName().Version.ToString()}"),
                       new XAttribute("date_statement", DateTime.Now.Date.ToShortDateString()),
@@ -72,15 +71,14 @@ namespace ALARm_Report.Forms
                     leveltotal.Count = 0;
                     shaplontotal.Count = 0;
                     digressionTotal.Count = 0;
-                    admTracksId = RdStructureService.GetTracksOnTrip(tripProcess.Trip_id);
                     foreach (var track in admTracksId)
                     {
                         
-                        var trackName = AdmStructureService.GetTrackName(track.Id);
+                        var trackName = AdmStructureService.GetTrackName(track);
                   
                         var trip = RdStructureService.GetTrip(tripProcess.Id);
                         var kilometers = RdStructureService.GetKilometersByTrip(trip);
-                        kilometers = kilometers.Where(ckm => ckm.Track_id == track.Id).ToList();
+                        kilometers = kilometers.Where(ckm => ckm.Track_id == track).ToList();
                         var totalwaytrack = 0;
                         XElement xeDirection = new XElement("directions");
                         XElement xeTracks = new XElement("tracks");
