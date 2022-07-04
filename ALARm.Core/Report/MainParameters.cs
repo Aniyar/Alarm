@@ -553,7 +553,7 @@ namespace ALARm.Core.Report
                     {
                         try
                         {
-                            //Поиск круговой кривой рихтовки
+                            //Поиск круговой кривой рихтовкие
                             var str_circular = new List<RDCurve> { };
 
                             for (int strIndex = 1; strIndex < StrPoins.Count - 1; strIndex++)

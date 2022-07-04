@@ -254,7 +254,7 @@ namespace ALARm.Core.Report
         public string Prim { get; set; }
         public string NewBedemostComment { get; set; }
         public double Radius { get; set; } = 10000;
-        public CrosTieType CrosTieType { get; set; } = CrosTieType.Concrete;
+        public CrosTieType CrosTieType { get; set; } = CrosTieType.Before96;
         public float Dlina { get; set; }
         public float Value { get; set; }
         public int Count { get; set; }
