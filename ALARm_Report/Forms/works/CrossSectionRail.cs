@@ -125,9 +125,11 @@ namespace ALARm_Report.Forms
                           new XAttribute("ps", process.Car),
                           new XAttribute("check", process.GetProcessTypeName),
                           new XAttribute("period", period.Period),
-
-                          new XAttribute("pointsleft", Pointsleft),
-                          new XAttribute("pointsright", Pointsright),
+                          new XAttribute("km", km),
+                          new XAttribute("meter", meter),
+                          new XAttribute("Vdop", ""),
+                          //new XAttribute("pointsleft", Pointsleft),
+                          //new XAttribute("pointsright", Pointsright),
                           
 
                           new XAttribute("railspoints", Blazor_prov_data.GetNominalRailScheme(Rails.r65)),
@@ -185,7 +187,8 @@ namespace ALARm_Report.Forms
                           new XAttribute("y_per2_l_r", Blazor_prov_data.Perpen_y1_r.ToString("0.00").Replace(",", ".")),
                           new XAttribute("radY_l_r", Blazor_prov_data.RadY_r.ToString("0.00").Replace(",", ".")),
 
-
+                          new XAttribute("bok_iz_l", ProfileData.Bok_l),
+                          new XAttribute("bok_iz_r", ProfileData.Bok_r),
                           new XAttribute("distance", distance.Code),
                           new XAttribute("direction", process.DirectionName + " (" + process.DirectionCode + ")"),
                           new XAttribute("track", trackName));

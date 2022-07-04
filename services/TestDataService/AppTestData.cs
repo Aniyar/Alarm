@@ -410,11 +410,8 @@ namespace TestDataService
             }
         }
 
-        private void SendShortDataDB()
+        private void SendShortDataDB(long trip_id)
         {
-            //if (900 < Meter) continue;
-
-            var trip_id = 242;
 
             var con = new NpgsqlConnection(ALARm.DataAccess.Helper.ConnectionString());
             con.Open();
@@ -550,7 +547,7 @@ namespace TestDataService
         }
 
 
-        public bool GetBitmapAsync(string file_kor, string file_kupe)
+        public bool GetBitmapAsync(string file_kor, string file_kupe, int trip_id)
         {
             {
                 GC.Collect();
@@ -565,7 +562,7 @@ namespace TestDataService
                             return false;
                         }
                         CurrentPoverhProfRight(file_kupe);
-                        SendShortDataDB();
+                        SendShortDataDB(trip_id);
                         if (Meter == 981)
                         {
                             var a = 0;

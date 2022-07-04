@@ -1022,67 +1022,68 @@ namespace ALARm_Report.Forms
 
                             if (curve.Straightenings.Count > 1)
                             {
-                                xeCurve.Add(new XAttribute("ismulti", "true"));
-                                int ind = 1;
-                                foreach (StCurve stCurve in curve.Straightenings)
-                                {
-                                    Data mRdcsData = new Data();
-                                    XElement xeMultiCurves = new XElement("multicurves");
-                                    float defaultRetractionSlopeLeft = stCurve.Transition_1 != 0 ? radiusH * 1f / stCurve.Transition_1 : 0;
-                                    float defaultRetractionSlopeRight = stCurve.Transition_2 != 0 ? radiusH * 1f / stCurve.Transition_2 : 0;
-                                    x = new List<int>();
-                                    passSpeed = new List<int>();
-                                    freightSpeed = new List<int>();
-                                    plan = new List<float>();
-                                    level = new List<float>();
-                                    gauge = new List<float>();
-                                    passBoost = new List<float>();
-                                    freightBoost = new List<float>();
-                                    foreach (var rdc in rdcs.Where(r => r.GetRealCoordinate() >= stCurve.RealStartCoordinate && r.GetRealCoordinate() <= stCurve.RealFinalCoordinate))
-                                    {
-                                        x.Add(rdcs.IndexOf(rdc));
-                                        plan.Add(rdc.Radius);
-                                        level.Add(rdc.Level);
-                                        gauge.Add(rdc.Gauge);
-                                        passBoost.Add(rdc.PassBoost);
-                                        freightBoost.Add(rdc.FreightBoost);
-                                        passSpeed.Add(rdc.PassSpeed);
-                                        freightSpeed.Add(rdc.FreightSpeed);
-                                        radiusAverage += rdc.GetRadiusCoord();
-                                        levelAverage += rdc.GetLevelCoord();
-                                        passboost += rdc.GetPassBoostCoord();
-                                        freightboost += rdc.GetFreightBoostCoord();
-                                        gaugeAverage += rdc.GetGaugeCoord();
-                                    }
-                                    mRdcsData = new Data(x, plan, level, gauge, passBoost, freightBoost, passSpeed, freightSpeed, transitionLength1, transitionLength2);
-                                    xeMultiCurves.Add(new XAttribute("order", ind),
-                                        new XAttribute("start_km", stCurve.Start_Km),
-                                        new XAttribute("start_m", stCurve.Start_M),
-                                        new XAttribute("final_km", stCurve.Final_Km),
-                                        new XAttribute("final_m", stCurve.Final_M),
-                                        new XAttribute("start_lvl", matchCurveCoords.OrderBy(m => Math.Abs(m.StAbsCoords)).FirstOrDefault().StElDifference),
-                                        new XAttribute("final_lvl", matchCurveCoords.OrderBy(m => Math.Abs(m.StAbsCoords)).FirstOrDefault().StElDifference),
+                                continue;
+                                //xeCurve.Add(new XAttribute("ismulti", "true"));
+                                //int ind = 1;
+                                //foreach (StCurve stCurve in curve.Straightenings)
+                                //{
+                                //    Data mRdcsData = new Data();
+                                //    XElement xeMultiCurves = new XElement("multicurves");
+                                //    float defaultRetractionSlopeLeft = stCurve.Transition_1 != 0 ? radiusH * 1f / stCurve.Transition_1 : 0;
+                                //    float defaultRetractionSlopeRight = stCurve.Transition_2 != 0 ? radiusH * 1f / stCurve.Transition_2 : 0;
+                                //    x = new List<int>();
+                                //    passSpeed = new List<int>();
+                                //    freightSpeed = new List<int>();
+                                //    plan = new List<float>();
+                                //    level = new List<float>();
+                                //    gauge = new List<float>();
+                                //    passBoost = new List<float>();
+                                //    freightBoost = new List<float>();
+                                //    foreach (var rdc in rdcs.Where(r => r.GetRealCoordinate() >= stCurve.RealStartCoordinate && r.GetRealCoordinate() <= stCurve.RealFinalCoordinate))
+                                //    {
+                                //        x.Add(rdcs.IndexOf(rdc));
+                                //        plan.Add(rdc.Radius);
+                                //        level.Add(rdc.Level);
+                                //        gauge.Add(rdc.Gauge);
+                                //        passBoost.Add(rdc.PassBoost);
+                                //        freightBoost.Add(rdc.FreightBoost);
+                                //        passSpeed.Add(rdc.PassSpeed);
+                                //        freightSpeed.Add(rdc.FreightSpeed);
+                                //        radiusAverage += rdc.GetRadiusCoord();
+                                //        levelAverage += rdc.GetLevelCoord();
+                                //        passboost += rdc.GetPassBoostCoord();
+                                //        freightboost += rdc.GetFreightBoostCoord();
+                                //        gaugeAverage += rdc.GetGaugeCoord();
+                                //    }
+                                //    mRdcsData = new Data(x, plan, level, gauge, passBoost, freightBoost, passSpeed, freightSpeed, transitionLength1, transitionLength2);
+                                //    xeMultiCurves.Add(new XAttribute("order", ind),
+                                //        new XAttribute("start_km", stCurve.Start_Km),
+                                //        new XAttribute("start_m", stCurve.Start_M),
+                                //        new XAttribute("final_km", stCurve.Final_Km),
+                                //        new XAttribute("final_m", stCurve.Final_M),
+                                //        new XAttribute("start_lvl", matchCurveCoords.OrderBy(m => Math.Abs(m.StAbsCoords)).FirstOrDefault().StElDifference),
+                                //        new XAttribute("final_lvl", matchCurveCoords.OrderBy(m => Math.Abs(m.StAbsCoords)).FirstOrDefault().StElDifference),
 
-                                        new XAttribute("len", Math.Abs(stCurve.Start_Km * 1000 + stCurve.Start_M - stCurve.Final_Km * 1000 - stCurve.Final_M)),
-                                        new XAttribute("len_lvl", ""),
-                                        new XAttribute("radius", rdcsData.GetAvgPlan()),
-                                        new XAttribute("lvl", rdcsData.GetAvgLevel()),
-                                        new XAttribute("midtap", rdcsData.GetPlanLeftAvgRetractionSlope()),
-                                        new XAttribute("midtap_lvl", rdcsData.GetPlanRightAvgRetractionSlope()),
-                                        new XAttribute("len2", stCurve.Transition_1),
-                                        new XAttribute("len2_lvl", stCurve.Transition_2),
-                                        new XAttribute("anp", rdcsData.GetUnliquidatedAccelerationPassengerAvg().ToString("f2", System.Globalization.CultureInfo.InvariantCulture) + "\\" + rdcsData.GetUnliquidatedAccelerationPassengerMax().ToString("f2", System.Globalization.CultureInfo.InvariantCulture)),
-                                        new XAttribute("anp2", rdcsData.GetUnliquidatedAccelerationFreightAvg().ToString("f2", System.Globalization.CultureInfo.InvariantCulture) + "\\" + rdcsData.GetUnliquidatedAccelerationFreightMax().ToString("f2", System.Globalization.CultureInfo.InvariantCulture)),
-                                        new XAttribute("psi", rdcsData.BoostChangeRateMax().ToString("f2", System.Globalization.CultureInfo.InvariantCulture)),
-                                        new XAttribute("pass1", rdcsData.GetPassSpeed().ToString()),
-                                        new XAttribute("pass2", RoundNumToFive(Math.Min(Math.Min(rdcsData.GetCriticalSpeed(), rdcsData.GetPRSpeed()[0]), rdcsData.GetIZPassSpeed())).ToString()),
-                                        new XAttribute("frei1", rdcsData.GetFreightSpeed().ToString()),
-                                        new XAttribute("frei2", RoundNumToFive(Math.Min(Math.Min(rdcsData.GetCriticalSpeed() > 90 ? 90 : rdcsData.GetCriticalSpeed() - Convert.ToInt32(rdcsData.GetCriticalSpeed() * 0.03), rdcsData.GetPRSpeed()[1]), rdcsData.GetIZFreightSpeed())).ToString()));
+                                //        new XAttribute("len", Math.Abs(stCurve.Start_Km * 1000 + stCurve.Start_M - stCurve.Final_Km * 1000 - stCurve.Final_M)),
+                                //        new XAttribute("len_lvl", ""),
+                                //        new XAttribute("radius", rdcsData.GetAvgPlan()),
+                                //        new XAttribute("lvl", rdcsData.GetAvgLevel()),
+                                //        new XAttribute("midtap", rdcsData.GetPlanLeftAvgRetractionSlope()),
+                                //        new XAttribute("midtap_lvl", rdcsData.GetPlanRightAvgRetractionSlope()),
+                                //        new XAttribute("len2", stCurve.Transition_1),
+                                //        new XAttribute("len2_lvl", stCurve.Transition_2),
+                                //        new XAttribute("anp", rdcsData.GetUnliquidatedAccelerationPassengerAvg().ToString("f2", System.Globalization.CultureInfo.InvariantCulture) + "\\" + rdcsData.GetUnliquidatedAccelerationPassengerMax().ToString("f2", System.Globalization.CultureInfo.InvariantCulture)),
+                                //        new XAttribute("anp2", rdcsData.GetUnliquidatedAccelerationFreightAvg().ToString("f2", System.Globalization.CultureInfo.InvariantCulture) + "\\" + rdcsData.GetUnliquidatedAccelerationFreightMax().ToString("f2", System.Globalization.CultureInfo.InvariantCulture)),
+                                //        new XAttribute("psi", rdcsData.BoostChangeRateMax().ToString("f2", System.Globalization.CultureInfo.InvariantCulture)),
+                                //        new XAttribute("pass1", rdcsData.GetPassSpeed().ToString()),
+                                //        new XAttribute("pass2", RoundNumToFive(Math.Min(Math.Min(rdcsData.GetCriticalSpeed(), rdcsData.GetPRSpeed()[0]), rdcsData.GetIZPassSpeed())).ToString()),
+                                //        new XAttribute("frei1", rdcsData.GetFreightSpeed().ToString()),
+                                //        new XAttribute("frei2", RoundNumToFive(Math.Min(Math.Min(rdcsData.GetCriticalSpeed() > 90 ? 90 : rdcsData.GetCriticalSpeed() - Convert.ToInt32(rdcsData.GetCriticalSpeed() * 0.03), rdcsData.GetPRSpeed()[1]), rdcsData.GetIZFreightSpeed())).ToString()));
 
-                                    xeCurve.Add(xeMultiCurves);
+                                //    xeCurve.Add(xeMultiCurves);
 
-                                    ind++;
-                                }
+                                //    ind++;
+                                //}
                             }
 
                             int len = rdcsData.X3IndexPlan - rdcsData.X0IndexPlan;

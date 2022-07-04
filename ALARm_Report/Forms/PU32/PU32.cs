@@ -346,6 +346,10 @@ namespace ALARm_Report.Forms
 								digression.AllowSpeed = gap.Vdop;
 								//digression.Velich = Math.Max(gap.Zazor, gap.R_zazor);
 								//digression.DigName = gap.Otst == "З" ? DigressionName.Gap : DigressionName.GapSimbol;
+								if (gap.Otst_l == "СЗ" || gap.Otst_r == "СЗ")
+                                {
+									continue;
+                                }
 								if (gap.Otst_l != "")
 								{
 									digression.DigName = gap.Otst_l == "З" ? DigressionName.Gap_left : DigressionName.GapSimbol_left;
@@ -926,8 +930,13 @@ namespace ALARm_Report.Forms
 								digression.FreightSpeedLimit = -1;
 							}
 							digression.AllowSpeed = gap.Vdop;
-							//digression.Velich = Math.Max(gap.Zazor, gap.R_zazor);
-							//digression.DigName = gap.Otst == "З" ? DigressionName.Gap : DigressionName.GapSimbol;
+						//digression.Velich = Math.Max(gap.Zazor, gap.R_zazor);
+						//digression.DigName = gap.Otst == "З" ? DigressionName.Gap : DigressionName.GapSimbol;
+
+						if (gap.Otst_l == "СЗ" || gap.Otst_r == "СЗ")
+						{
+							continue;
+						}
 						if (gap.Otst_l != "")
 						{
 							digression.DigName = gap.Otst_l == "З" ? DigressionName.Gap_left : DigressionName.GapSimbol_left;
