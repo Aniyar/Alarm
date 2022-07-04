@@ -530,7 +530,8 @@ namespace ALARm_Report.Forms
 							if (zazor.Any())
 							{
 								km.Number = km.Number;
-								kmTotal.Zazor = zazor.Count;
+								kmTotal.ZazorV = zazor.Where(o => o.DigName.Equals("З?П") || o.DigName.Equals("З?Л")).Count();
+								kmTotal.Zazor = zazor.Where(o => o.DigName.Equals("ЗП") || o.DigName.Equals("ЗЛ")).Count();
 							}
 
 
@@ -1130,8 +1131,9 @@ namespace ALARm_Report.Forms
 						if (zazor.Any())
 						{
 							km.Number = km.Number;
-							kmTotal.Zazor = zazor.Count;
-						}
+							kmTotal.ZazorV = zazor.Where(o => o.DigName.Equals("З?П") || o.DigName.Equals("З?Л")).Count();
+							kmTotal.Zazor = zazor.Where(o => o.DigName.Equals("ЗП") || o.DigName.Equals("ЗЛ")).Count();
+					}
 
 
 
@@ -1712,7 +1714,7 @@ namespace ALARm_Report.Forms
 					new XAttribute("PRU", distanceTotal.Pru),
 					new XAttribute("OSHK", distanceTotal.Oshk),
 					new XAttribute("IZNOS", distanceTotal.Iznos),
-					new XAttribute("ZAZOR", distanceTotal.Zazor), //
+					new XAttribute("ZAZOR", distanceTotal.ZazorV.ToString() + "(" + distanceTotal.Zazor.ToString() + ")"), //
 					new XAttribute("NEROVNOSTY", distanceTotal.NerProf),
 					//
 
@@ -1939,7 +1941,7 @@ namespace ALARm_Report.Forms
 					new XAttribute("PRU", sectionTotal.Pru),
 					new XAttribute("OSHK", sectionTotal.Oshk),
 					new XAttribute("IZNOS", sectionTotal.Iznos),
-					new XAttribute("ZAZOR", sectionTotal.Zazor), //
+					new XAttribute("ZAZOR", sectionTotal.ZazorV.ToString() + "(" + sectionTotal.Zazor.ToString() + ")"), //
 					new XAttribute("NEROVNOSTY", sectionTotal.NerProf),
 					//
 					new XAttribute("other", (sectionTotal.Combination + sectionTotal.Curves + sectionTotal.Other)),
@@ -2274,6 +2276,7 @@ namespace ALARm_Report.Forms
 		public int Iznos { get; set; }
 		public int Sochet { get; set; }
 		public int Zazor { get; set; }
+		public int ZazorV { get; set; } //zazor s voprosom
 		public int Pu32_gap_count { get; set; }
 		public int NerProf { get; set; }
 		//TO DOO SOC
@@ -2319,7 +2322,7 @@ namespace ALARm_Report.Forms
 				NerProf = t1.NerProf + t2.NerProf,
 				
 				Zazor = t1.Zazor + t2.Zazor,
-
+				ZazorV = t1.ZazorV + t2.ZazorV,
 				DirectionCode = t1.DirectionCode,
 				Code = t1.Code,
 				IsLimited = t1.IsLimited + t2.IsLimited,
