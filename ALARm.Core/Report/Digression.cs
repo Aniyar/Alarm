@@ -213,7 +213,6 @@ namespace ALARm.Core.Report
                         DigName = DigressionName.Gap;
                         break;
                     case var value when value == 0:
-                        AllowSpeed = "0/0";
                         DigName = DigressionName.FusingGap;
                         break;
                 }

@@ -66,7 +66,6 @@ namespace ALARm_Report.Forms
                     return;
                 }
                 string prevDirection = "";
-                tripProcesses = tripProcesses.Where(o => o.Trip_id == 242).ToList();
 
                 foreach (var tripProcess in tripProcesses)
                 {

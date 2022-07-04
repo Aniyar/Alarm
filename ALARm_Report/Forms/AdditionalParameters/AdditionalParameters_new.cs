@@ -794,8 +794,8 @@ namespace ALARm_Report.Forms
                 }
            
             }
-            SendShortDataDBMEDIUMWAYES(number);
-            SendPoverhDataDB();
+            SendShortDataDBMEDIUMWAYES(number, trip);
+            SendPoverhDataDB(trip);
             //ShortData.Clear();
         }
  
@@ -839,9 +839,8 @@ namespace ALARm_Report.Forms
             public double Diff_r { get; set; }
         }
 
-        private void SendPoverhDataDB()
+        private void SendPoverhDataDB(long trip_id)
         {
-            var trip_id = "242";
             
             var con = new NpgsqlConnection(ALARm.DataAccess.Helper.ConnectionString());
 
@@ -881,9 +880,8 @@ namespace ALARm_Report.Forms
             }
             con.Close();
         }
-        private void SendShortDataDBMEDIUMWAYES(int km)
+        private void SendShortDataDBMEDIUMWAYES(int km, long trip_id)
         {
-            var trip_id = 242;
 
             var con = new NpgsqlConnection(ALARm.DataAccess.Helper.ConnectionString());
 

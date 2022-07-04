@@ -105,7 +105,7 @@ namespace TestDataService
                         string kupefile = RdStructureService.GetTripFiles(km.Number, TripId, "ProfilPoverxKupe");
                         while (flag)
                         {
-                            flag = Blazor2.GetBitmapAsync(koridorfile, kupefile);
+                            flag = Blazor2.GetBitmapAsync(koridorfile, kupefile, TripId);
                             Blazor2.CurrentFrameIndex++;
                         }
                         _logger.LogInformation("тест дата ОК");

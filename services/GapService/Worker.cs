@@ -115,12 +115,12 @@ namespace GapService
 
                     km.LoadTrackPasport(MainTrackStructureRepository, trip.Trip_date);
 
-                    bool found_next_km = false;
-                    while (!found_next_km)
-                    {
-                        found_next_km = AdditionalParametersService.CheckRdVideoKmExists(km.Number-1, TripId);
-                        System.Threading.Thread.Sleep(1000);
-                    }
+                    //bool found_next_km = false;
+                    //while (!found_next_km)
+                    //{
+                    //    found_next_km = AdditionalParametersService.CheckRdVideoKmExists(km.Number-1, TripId);
+                    //    System.Threading.Thread.Sleep(1000);
+                    //}
 
                     try
                     {
@@ -132,74 +132,74 @@ namespace GapService
                         _logger.LogInformation("GAPS ERROR! " + e.Message);
                     }
 
-                    try
-                    {
-                        GetBolt(trip, km); //�����
-                        _logger.LogInformation("BOLT OK!");
-                    }
-                    catch (Exception e)
-                    {
-                        _logger.LogInformation("BOLT ERROR! " + e.Message);
-                    }
+                    //try
+                    //{
+                    //    GetBolt(trip, km); //�����
+                    //    _logger.LogInformation("BOLT OK!");
+                    //}
+                    //catch (Exception e)
+                    //{
+                    //    _logger.LogInformation("BOLT ERROR! " + e.Message);
+                    //}
 
-                    try
-                    {
-                        GetBalast(trip, km); //������
-                        _logger.LogInformation("BALLAST OK!");
-                    }
-                    catch (Exception e)
-                    {
-                        _logger.LogInformation("BALLAST ERROR! " + e.Message);
-                    }
+                    //try
+                    //{
+                    //    GetBalast(trip, km); //������
+                    //    _logger.LogInformation("BALLAST OK!");
+                    //}
+                    //catch (Exception e)
+                    //{
+                    //    _logger.LogInformation("BALLAST ERROR! " + e.Message);
+                    //}
 
-                    try
-                    {
-                        GetPerpen(trip, km);
-                        _logger.LogInformation("Perpen OK!");
-                    }
-                    catch (Exception e)
-                    {
-                        _logger.LogInformation("Perpen ERROR! " + e.Message);
-                    }
+                    //try
+                    //{
+                    //    GetPerpen(trip, km);
+                    //    _logger.LogInformation("Perpen OK!");
+                    //}
+                    //catch (Exception e)
+                    //{
+                    //    _logger.LogInformation("Perpen ERROR! " + e.Message);
+                    //}
 
-                    try
-                    {
-                        GetSleepers(trip, km);
-                        _logger.LogInformation("SLEEPERS OK!");
-                    }
-                    catch (Exception e)
-                    {
-                        _logger.LogInformation("SLEEPERS ERROR! " + e.Message);
-                    }
+                    //try
+                    //{
+                    //    GetSleepers(trip, km);
+                    //    _logger.LogInformation("SLEEPERS OK!");
+                    //}
+                    //catch (Exception e)
+                    //{
+                    //    _logger.LogInformation("SLEEPERS ERROR! " + e.Message);
+                    //}
 
-                    try
-                    {
-                        GetdeviationsinSleepers(trip, km); //��� �����
-                        _logger.LogInformation("DEVIATION SLEEPER OK!");
-                    }
-                    catch (Exception e)
-                    {
-                        _logger.LogInformation("DEVIATION SLEEPERS ERROR! " + e.Message);
-                    }
+                    //try
+                    //{
+                    //    GetdeviationsinSleepers(trip, km); //��� �����
+                    //    _logger.LogInformation("DEVIATION SLEEPER OK!");
+                    //}
+                    //catch (Exception e)
+                    //{
+                    //    _logger.LogInformation("DEVIATION SLEEPERS ERROR! " + e.Message);
+                    //}
 
-                    try
-                    {
-                        Getbadfasteners(trip, km); //����������
-                        _logger.LogInformation("BADFASTENER OK!");
-                    }
-                    catch (Exception e)
-                    {
-                        _logger.LogInformation("BADFASTENER ERROR! " + e.Message);
-                    }
-                    try
-                    {
-                        Getdeviationsinfastening(trip, km); //��� � �����
-                        _logger.LogInformation("deviationsinfastening OK!");
-                    }
-                    catch (Exception e)
-                    {
-                        _logger.LogInformation("deviationsinfastening ERROR! " + e.Message);
-                    }
+                    //try
+                    //{
+                    //    Getbadfasteners(trip, km); //����������
+                    //    _logger.LogInformation("BADFASTENER OK!");
+                    //}
+                    //catch (Exception e)
+                    //{
+                    //    _logger.LogInformation("BADFASTENER ERROR! " + e.Message);
+                    //}
+                    //try
+                    //{
+                    //    Getdeviationsinfastening(trip, km); //��� � �����
+                    //    _logger.LogInformation("deviationsinfastening OK!");
+                    //}
+                    //catch (Exception e)
+                    //{
+                    //    _logger.LogInformation("deviationsinfastening ERROR! " + e.Message);
+                    //}
                 };
                 _channel.BasicConsume(queue: QueueName,
                                       autoAck: true,

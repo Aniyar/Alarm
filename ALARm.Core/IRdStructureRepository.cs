@@ -184,6 +184,6 @@ namespace ALARm.Core
         public List<Kilometer> GetBedemostKilometers();
         public int FinishProcessing(long trip_id);
         void SetFileID(int km, long fileid, long trip_id);
-        public List<long> GetFileID(int trip_id, int num);
+        public List<long> GetFileID(long trip_id, int num);
     }
 }

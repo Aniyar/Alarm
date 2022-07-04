@@ -4668,7 +4668,7 @@ namespace ALARm.DataAccess
             }
 
         }
-        public List<long> GetFileID(int trip_id, int num)
+        public List<long> GetFileID(long trip_id, int num)
         {
             using (IDbConnection db = new NpgsqlConnection(Helper.ConnectionString()))
             {

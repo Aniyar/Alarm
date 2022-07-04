@@ -142,7 +142,7 @@ namespace AlarmPP.Web.Components.Diagram
             StartMeter = CurrentKm.Start_m;
             while (AppData.VideoProcessing)
             {
-                FileIdList = AppData.RdStructureRepository.GetFileID(242, Number);
+                FileIdList = AppData.RdStructureRepository.GetFileID(AppData.Trip.Id, Number);
                 GetImage2(FileIdList[0]);
                 StateHasChanged();
                 await Task.Delay(AppData.Speed);
