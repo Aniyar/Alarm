@@ -32,6 +32,8 @@ namespace ProfileCalibrService
         private string QueueName = "";
         public int tryCount = 0;
         public IMainTrackStructureRepository MainTrackStructureRepository;
+        public IRdStructureRepository RdStructureRepository = new RdStructureRepository();
+
 
         public Worker(ILogger<Worker> logger, IOptions<RabbitMQConfiguration> options)
         {
@@ -80,9 +82,16 @@ namespace ProfileCalibrService
                     JObject json = JObject.Parse(message);
                     var kmIndex = (int)json["Km"];
                     var kmId = (int)json["FileId"];
-                    //var path = json["Path"];
+                    var path = (string)json["Path"];
+                    path = "\\" + path;
+
+
                     // {'FileId':18308, 'Km':707, 'Path': '\DESKTOP-EMAFC5J\common\video_objects\desktop\242_18308_km_707.csv'}
+                    
+
                     Trips trip = RdStructureService.GetTripFromFileId(kmId)[0];
+                    
+                    
                     int TripId = (int)trip.Id;
                     _logger.LogInformation("got trip");
                     var kilometers = RdStructureService.GetKilometersByTrip(trip);
@@ -116,11 +125,11 @@ namespace ProfileCalibrService
                         {
                             flag = Blazor.GetBitmapAsync(km.Number, TripId);
                         }
-                        Console.WriteLine("профайл дата ОК");
+                        _logger.LogInformation("профайл дата ОК");
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine("профайл дата ERROR! " + e.Message);
+                        _logger.LogInformation("профайл дата ERROR! " + e.Message);
                     }
                 };
                 _channel.BasicConsume(queue: QueueName,
@@ -157,4 +166,6 @@ namespace ProfileCalibrService
         public int Port { get; set; }
 
     }
+
+    
 }

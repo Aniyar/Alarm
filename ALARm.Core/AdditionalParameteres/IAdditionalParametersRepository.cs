@@ -22,6 +22,7 @@ namespace ALARm.Core
         Bitmap GetFrame(int v, Int64 file_id);
         List<VideoObject> GetObjectsByFrameNumber(int frame_Number, Int64 trip_id);
         List<Gap> GetGapsByFrameNumber(int frame_Number, Int64 id);
+        List<CrosProf> GetProfileDataByKmMeter(int km, int meter, long trip_id);
         Bitmap MatrixToTimage(int[,] matrix);
         List<RailFastener> GetRailFasteners(long tripId, int kilometer);
         List<int> GetKilometersByTripId(Int64 process_id);
@@ -94,5 +95,6 @@ namespace ALARm.Core
 
         List<Digression> Insert_additional_param_state(List<Digression> addDigressions, int nkm);
         List<DataFlow> GetShortRough(long trip_id, int number);
+        bool CheckRdVideoKmExists(int km, int tripid);
     }
 }

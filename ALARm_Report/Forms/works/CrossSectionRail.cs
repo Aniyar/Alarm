@@ -27,7 +27,7 @@ namespace ALARm_Report.Forms
     {
         public override void Process(Int64 distanceId, ReportTemplate template, ReportPeriod period, MetroProgressBar progressBar)
         {
-
+            
             //Сделать выбор периода
             List<long> admTracksId = new List<long>();
             using (var choiceForm = new ChoiseForm(0))
@@ -42,7 +42,7 @@ namespace ALARm_Report.Forms
             XDocument htReport = new XDocument();
             using (XmlWriter writer = htReport.CreateWriter())
             {
-
+                }
 
                 var distance = AdmStructureService.GetUnit(AdmStructureConst.AdmDistance, distanceId) as AdmUnit;
                 var road = AdmStructureService.GetRoadName(distance.Id, AdmStructureConst.AdmDistance, true);
@@ -87,14 +87,14 @@ namespace ALARm_Report.Forms
 
                         km = (int)filters[0].Value;
                         meter = (int)filters[1].Value;
-                        //var ProfileData = AdditionalParametersService.GetProfileDataByKmMeter(km, meter, process.Trip_id).FirstOrDefault();
-                        //if (ProfileData == null)
-                        //{
-                        //    continue;
-                        //}
+                        var ProfileData = AdditionalParametersService.GetProfileDataByKmMeter(km, meter, process.Trip_id).FirstOrDefault();
+                        if (ProfileData == null)
+                        {
+                            continue;
+                        }
 
-                        //List<double> Pointsleft = .Pointsleft.Split(',').Select(x => double.Parse(x.Replace(".", ","))).ToList();
-                        //List<double> Pointsright = ProfileData.Pointsright.Split(',').Select(x => double.Parse(x.Replace(".", ","))).ToList();
+                        List<double> Pointsleft = ProfileData.Pointsleft.Split(',').Select(x => double.Parse(x.Replace(".", ","))).ToList();
+                        List<double> Pointsright = ProfileData.Pointsright.Split(',').Select(x => double.Parse(x.Replace(".", ","))).ToList();
 
                         var Blazor_prov_data = new AppData();
                         Blazor_prov_data.conn = new NpgsqlConnection(Blazor_prov_data.cs);
@@ -108,13 +108,12 @@ namespace ALARm_Report.Forms
                         data = Blazor_prov_data.in_kupe.ReadBytes(8);
                         Blazor_prov_data.in_kupe_count = BitConverter.ToSingle(data, 0);
                         Blazor_prov_data.in_kupe_size = BitConverter.ToSingle(data, 4);
+                        
 
                         Blazor_prov_data.GetBitmapAsync(km, meter);
 
-                        var DB_gauge = AdditionalParametersService.GetGaugeFromDBkmmter(km, meter, process.Trip_id);
+                        var DB_gauge = AdditionalParametersService.GetGaugeFromDBkmmter(km,meter, process.Trip_id);
 
-                        //var ProfileData = AdditionalParametersService.GetProfileDataByKmMeter(km, meter, process.Trip_id);
-                        //var railstype = "";
 
 
                         XElement xePages = new XElement("pages",
@@ -126,9 +125,9 @@ namespace ALARm_Report.Forms
                           new XAttribute("check", process.GetProcessTypeName),
                           new XAttribute("period", period.Period),
 
-                          new XAttribute("pointsleft", Blazor_prov_data.PointsLeft),
-                          new XAttribute("pointsright", Blazor_prov_data.PointsRight),
-
+                          new XAttribute("pointsleft", Pointsleft),
+                          new XAttribute("pointsright", Pointsright),
+                          
 
                           new XAttribute("railspoints", Blazor_prov_data.GetNominalRailScheme(Rails.r65)),
                           //X_lef
@@ -143,12 +142,12 @@ namespace ALARm_Report.Forms
                           new XAttribute("x_per2_l", Blazor_prov_data.Perpen_x2_l.ToString("0.00").Replace(",", ".")),
                           new XAttribute("radX_l", Blazor_prov_data.RadX_l.ToString("0.00").Replace(",", ".")),
                           ///Значения 
-                          new XAttribute("xelem3_pu_l", "1/" + (int)(1 / Blazor_prov_data.pu_l.First())),
-                          new XAttribute("xelem3_npk_l", "1/" + (int)(1 / Blazor_prov_data.npk_l.First())),
-                          new XAttribute("xelem3_bok_iz_l", "1/" + (int)(1 / Blazor_prov_data.bok_l.First())),
-                          new XAttribute("xelem3_pu_r", "1/" + (int)(1 / Blazor_prov_data.pu_r.First())),
-                          new XAttribute("xelem3_npk_r", "1/" + (int)(1 / Blazor_prov_data.npk_r.First())),
-                          new XAttribute("xelem3_bok_iz_r", "1/" + (int)(1 / Blazor_prov_data.bok_r.First())),
+                          new XAttribute("xelem3_pu_l", "1/" + (int)(1 / ProfileData.Pu_l)),
+                          new XAttribute("xelem3_npk_l", "1/" + (int)(1 / ProfileData.Npk_l)),
+                          new XAttribute("xelem3_bok_iz_l", "1/" + (int)(1 / ProfileData.Bok_l)),
+                          new XAttribute("xelem3_pu_r", "1/" + (int)(1 / ProfileData.Pu_r)),
+                          new XAttribute("xelem3_npk_r", "1/" + (int)(1 / ProfileData.Npk_r)),
+                          new XAttribute("xelem3_bok_iz_r", "1/" + (int)(1 / ProfileData.Bok_r)),
                           new XAttribute("xelem3_gauge", DB_gauge.Select(o => o.Gauge).First().ToString("0.00")),
                           new XAttribute("xelem3_level", DB_gauge.Select(o => o.Level).First().ToString("0.00")),
 
@@ -190,25 +189,26 @@ namespace ALARm_Report.Forms
                           new XAttribute("direction", process.DirectionName + " (" + process.DirectionCode + ")"),
                           new XAttribute("track", trackName));
 
-                        for (int i = 0; i < Blazor_prov_data.PointsLeft.Length - 1; i = i + 2)
-                        {
-                            if (!Double.IsNaN(Blazor_prov_data.PointsLeft[i]) && !Double.IsNaN(Blazor_prov_data.PointsLeft[i + 1]))
+                            for (int i = 0; i < Pointsleft.Count - 1; i = i + 2)
                             {
-                                XElement PointsLeft = new XElement("pointsLeft",
-                                new XAttribute("cx", (Blazor_prov_data.PointsLeft[i] + 10).ToString().Replace(",", ".")),
-                                new XAttribute("cy", Blazor_prov_data.PointsLeft[i + 1].ToString().Replace(",", ".")));
-                                xePages.Add(PointsLeft);
-                            }
+                                if (!Double.IsNaN(Pointsleft[i]) && !Double.IsNaN(Pointsleft[i + 1]))
+                                {
+                                    XElement PointsLeft = new XElement("pointsLeft",
+                                    new XAttribute("cx", (Pointsleft[i] + Math.Abs(Blazor_prov_data.RadX_l - 21.5158753)).ToString().Replace(",", ".")),
+                                    new XAttribute("cy", Pointsleft[i + 1].ToString().Replace(",", ".")));
+                                    xePages.Add(PointsLeft);
+                                }
 
-                        }
-                        for (int j = 0; j < Blazor_prov_data.PointsRight.Length - 1; j = j + 2)
-                        {
-                            if (!Double.IsNaN(Blazor_prov_data.PointsRight[j]) && !Double.IsNaN(Blazor_prov_data.PointsRight[j + 1]))
+                            }
+                            for (int j = 0; j < Pointsright.Count - 1; j = j + 2)
                             {
-                                XElement PointsRight = new XElement("pointsRight",
-                                 new XAttribute("cx_r", (Blazor_prov_data.PointsRight[j] - 50).ToString().Replace(",", ".")),
-                                 new XAttribute("cy_r", Blazor_prov_data.PointsRight[j + 1].ToString().Replace(",", ".")));
-                                xePages.Add(PointsRight);
+                                if (!Double.IsNaN(Pointsright[j]) && !Double.IsNaN(Pointsright[j + 1]))
+                                {
+                                    XElement PointsRight = new XElement("pointsRight",
+                                     new XAttribute("cx_r", (Pointsright[j] - 50).ToString().Replace(",", ".")), 
+                                     new XAttribute("cy_r", Pointsright[j + 1].ToString().Replace(",", ".")));
+                                    xePages.Add(PointsRight);
+                                }
                             }
                         }
 

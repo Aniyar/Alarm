@@ -13,10 +13,24 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using ALARm.DataAccess;
 
 
 namespace MainService
 {
+    public class ProcessedKm
+    {
+        public File file ;
+        public int Number = 0;
+        public string message;
+
+        public ProcessedKm(File file, int num, string mess)
+        {
+            this.file = file;
+            this.Number = num;
+            this.message = mess;
+        }
+    }
     public class Worker : BackgroundService
     {
        
@@ -26,14 +40,14 @@ namespace MainService
         private IConnection _connection;
         private IModel _channel;
         private string QueueName = "";
-        private IRdStructureRepository RdStructureRepository;
+        public IMainTrackStructureRepository MainTrackStructureRepository;
+        public IRdStructureRepository RdStructureRepository = new RdStructureRepository();
         public int tryCount = 0;
         //{'FileId':17105, 'Km':42, 'Path': '\SCL-12\common\video_objects\desktop\213_17105_km_42.csv'}
-        public Worker(ILogger<Worker> logger, IRdStructureRepository rdStructureRepository, IOptions<RabbitMQConfiguration> options)
+        public Worker(ILogger<Worker> logger, IOptions<RabbitMQConfiguration> options)
         {
             QueueName = options.Value.Queue;
             _logger = logger;
-            RdStructureRepository = rdStructureRepository;
             
             _connectionFactory = new ConnectionFactory
             {
@@ -45,34 +59,60 @@ namespace MainService
             };
         }
 
+        
         public override Task StartAsync(CancellationToken cancellationToken)
         {
-
             try
             {
                 _logger.LogInformation($"Connection try [{tryCount++}].");
                 _connection = _connectionFactory.CreateConnection();
-                _channel = _connection.CreateModel();
-                _channel.QueueDeclarePassive(QueueName);
+                _channel = _connection.CreateModel();;
+                _channel.QueueDeclare(queue: QueueName,
+                                    durable: false,
+                                    exclusive: false,
+                                    autoDelete: false,
+                                    arguments: null);
+                _channel.QueueBind(queue: QueueName,
+                                   exchange: "Neural",
+                                   routingKey: "");
                 _channel.BasicQos(0, 1, false);
                 _logger.LogInformation($"Queue [{QueueName}] is waiting for messages.");
                 var consumer = new EventingBasicConsumer(_channel);
+                var processed = new List<ProcessedKm>();
                 consumer.Received += async (model, ea) =>
                 {
                     var body = ea.Body.ToArray();
                     var message = Encoding.UTF8.GetString(body).Replace("'","\"").Replace("\\", "\\\\");
+                    _logger.LogInformation(" [x] Received {0}", message);
                     var file = JObject.Parse(message).ToObject<File>();
-                    file.Path = file.Path.Replace(@"\DESKTOP-EMAFC5J", @"G:");
+                    file.Path = "\\" + file.Path;
                     var res = RdStructureRepository.RunRvoDataInsert(file.Km, file.FileId, file.Path);
-                    if (res != null) {
-                        if ((Group)res[0] == Group.VideoObjects && res.Count() > 4)
+                    
+                    if (res != null)
+                    {
+                        if (res.Count() == 4)
                         {
-                            var msg = "{'FileId':["+ $"{res[1]},{res[2]},{res[3]},{res[4]}" + "], 'KmIndex':" + file.Km + "}";
-                            Helper.SendMessageToRabbitMQExchange(_connection, "alarm",  msg);
+                            ALARm.Core.Helper.SendMessageToRabbitMQExchange(_connection, "alarm", message);
                         }
                     }
-                    _logger.LogInformation(res != null ? res.ToString() : "");
-                    
+
+
+                    //if (processed.Where(o => o.file.Km == file.Km).Any())
+                    //{
+                    //    processed.Where(o => o.file.Km == file.Km).First().Number++;
+                    //}
+                    //else
+                    //{
+                    //    processed.Add(new ProcessedKm(file, 1, message));
+                    //}
+                    //if (processed.Where(o => o.file.Km == file.Km).First().Number == 4)
+                    //{
+                    //    Thread.Sleep(20000);
+                    //    ALARm.Core.Helper.SendMessageToRabbitMQExchange(_connection, "alarm", message);
+                    //    _logger.LogInformation(res != null ? res.ToString() : "processed km " + file.Km.ToString());
+                    //}
+
+
                 };
                 _channel.BasicConsume(queue: QueueName,
                                      autoAck: true,

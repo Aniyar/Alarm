@@ -63,8 +63,7 @@ namespace AlarmPP.Web.Components.Diagram
             try
             {
                 int carPosition = (int)AppData.Trip.Car_Position;
-                int direction = (int)CurrentKm.Direction;
-                Filter = AppData.AdditionalParametersRepository.getFilter(fileid, CurrentMs + 200 * carPosition * direction);
+                Filter = AppData.AdditionalParametersRepository.getFilter(fileid, CurrentMs + 200 * carPosition);
             }
             catch (Exception e)
             {
@@ -89,23 +88,29 @@ namespace AlarmPP.Web.Components.Diagram
                 var commonBitMap = new Bitmap(W * 5, H * N_rows);
                 Graphics g = Graphics.FromImage(commonBitMap);
 
-                //for (int i = 0; i < N_rows; i++)
-                //{
-                //    g.DrawImageUnscaled(rows[N_rows - i - 1][0], 0, (H - upperKoef) * i);
-                //    g.DrawImageUnscaled(rows[N_rows - i - 1][1], W, (H - upperKoef) * i );
-                //    g.DrawImageUnscaled(rows[N_rows - i - 1][2], W * 2, (H - upperKoef) * i);
-                //    g.DrawImageUnscaled(rows[N_rows - i - 1][3], W * 3, (H - upperKoef) * i);
-                //    g.DrawImageUnscaled(rows[N_rows - i - 1][4], W * 4, (H - upperKoef) * i);
-                //}
-
-                for (int i = 0; i < N_rows; i++)
+                if (AppData.Trip.Car_Position == CarPosition.Base)
                 {
-                    g.DrawImageUnscaled(RotateImage(rows[N_rows - i - 1][0], -1), 0, (H - upperKoef) * i - 46);
-                    g.DrawImageUnscaled(RotateImage(rows[N_rows - i - 1][1], 1), W, (H - upperKoef) * i - 65);
-                    g.DrawImageUnscaled(RotateImage(rows[N_rows - i - 1][2], 1), W * 2, (H - upperKoef) * i - 35);
-                    g.DrawImageUnscaled(RotateImage(rows[N_rows - i - 1][3], -3), W * 3, (H - upperKoef) * i - 24);
-                    g.DrawImageUnscaled(RotateImage(rows[N_rows - i - 1][4], 4), W * 4, (H - upperKoef) * i - 24);
+                    for (int i = 0; i < N_rows; i++)
+                    {
+                        g.DrawImageUnscaled(RotateImage(rows[i][0], -1), 0, (H - upperKoef) * i - 46);
+                        g.DrawImageUnscaled(RotateImage(rows[i][1], 1), W, (H - upperKoef) * i - 45);
+                        g.DrawImageUnscaled(RotateImage(rows[i][2], 1), W * 2, (H - upperKoef) * i - 35);
+                        g.DrawImageUnscaled(RotateImage(rows[i][3], -3), W * 3, (H - upperKoef) * i - 24);
+                        g.DrawImageUnscaled(RotateImage(rows[i][4], 4), W * 4, (H - upperKoef) * i - 24);
+                    }
                 }
+                else
+                {
+                    for (int i = 0; i < N_rows; i++)
+                    {
+                        g.DrawImageUnscaled(rows[N_rows - i - 1][0], 0, (H - upperKoef) * i - 46);
+                        g.DrawImageUnscaled(rows[N_rows - i - 1][1], W, (H - upperKoef) * i - 65);
+                        g.DrawImageUnscaled(rows[N_rows - i - 1][2], W * 2, (H - upperKoef) * i - 35);
+                        g.DrawImageUnscaled(rows[N_rows - i - 1][3], W * 3, (H - upperKoef) * i - 24);
+                        g.DrawImageUnscaled(rows[N_rows - i - 1][4], W * 4, (H - upperKoef) * i - 24);
+                    }
+                }
+                
 
                 if (rows[1] != null)
                 {

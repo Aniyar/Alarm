@@ -36,7 +36,9 @@ namespace ALARm.Core
         public string PdbSection { get; set; }
         public long TrackId { get; set; }
         public double RealCoordinate => Km + Mtr / 10000.0;
-        
+
+        public int Koord { get; set; }
+
     }
     public enum VideoObjectType
     {

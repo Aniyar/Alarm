@@ -138,12 +138,7 @@ namespace ProfileCalibrService
         double s1 = 0;
         public int LeftWavesIndex { get; set; } = 0;
         public int RightWavesIndex { get; set; } = 0;
-        public List<double> ShortWavesLeft { get; set; } = new List<double>();
-        public List<double> ShortWavesRight { get; set; } = new List<double>();
-        public List<double> MediumWavesLeft { get; set; } = new List<double>();
-        public List<double> MediumWavesRight { get; set; } = new List<double>();
-        public List<double> LongWavesLeft { get; set; } = new List<double>();
-        public List<double> LongWavesRight { get; set; } = new List<double>();
+
 
         //Для записи скольз среднее
         public List<double> RollAverWrite_pu_l { get; set; } = new List<double>();
@@ -191,7 +186,7 @@ namespace ProfileCalibrService
 
         //public string Vnutr__profil__kupe = @"F:\o59m\ShablonKORR\Profile_Calibr\242_Vnutr__profil__koridor_2021_10_18_16_43_58.Profile_Calibr";
         //public string Vnutr__profil__koridor = @"F:\o59m\ShablonKUPE\Profile_Calibr\242_Vnutr__profil__kupe_2021_10_18_16_43_58.Profile_Calibr";
-
+        //Надо сделать по Трипайди
         public string Vnutr__profil__kupe = @"\\DESKTOP-EMAFC5J\o59m\ShablonKORR\Profile_Calibr\242_Vnutr__profil__koridor_2021_10_18_16_43_58.Profile_Calibr";
         public string Vnutr__profil__koridor = @"\\DESKTOP-EMAFC5J\o59m\ShablonKUPE\Profile_Calibr\242_Vnutr__profil__kupe_2021_10_18_16_43_58.Profile_Calibr";
 
@@ -250,23 +245,33 @@ namespace ProfileCalibrService
             {
                 try
                 {
-                    while (Kilometer != kmnum && FoundKm == false)
+                    int metr = Meters[0];
+                    int min = 1;
+                    int max = (int)((int)(in_koridor.BaseStream.Length - 8) / in_koridor_size);
+                    while (!(Kilometer == kmnum && Meter == 0))
                     {
-                        CurrentFrameIndex++;
+                        CurrentFrameIndex = (min + max) / 2;
                         long pos = CurrentFrameIndex * ((long)in_koridor_size) + 8;
                         reader.BaseStream.Seek(pos, SeekOrigin.Begin);
                         reader.ReadBytes(32);
-                        var data = reader.ReadBytes(4);
-                        Array.Reverse(data);
-                        Kilometer = BitConverter.ToInt32(data);
-                    }
-                    if (Kilometer == kmnum && FoundKm == false)
-                    {
-                        FoundKm = true;
-                    }
-                    if (Kilometer != kmnum && FoundKm == true)
-                    {
-                        return false;
+                        var buf = reader.ReadBytes(4);
+                        Array.Reverse(buf);
+                        Kilometer = BitConverter.ToInt32(buf, 0);
+                        buf = reader.ReadBytes(4);
+                        Array.Reverse(buf);
+                        Meter = BitConverter.ToInt32(buf, 0);
+                        if (Kilometer * 10000 + Meter == kmnum * 10000 + metr)
+                        {
+                            break;
+                        }
+                        else if (Kilometer * 10000 + Meter < kmnum * 10000 + metr)
+                        {
+                            min = CurrentFrameIndex + 1;
+                        }
+                        else
+                        {
+                            max = CurrentFrameIndex - 1;
+                        }
                     }
 
                     long ll = CurrentFrameIndex * ((long)in_koridor_size) + 8;
@@ -521,6 +526,15 @@ namespace ProfileCalibrService
                     var bok_r_m = new List<double> { };
                     var npk_l_m = new List<double> { };
                     var npk_r_m = new List<double> { };
+
+                 
+                    var shortWavesLeft = new List<double> { };
+                    var shortWavesRight = new List<double> { };
+                    var mediumWavesLeft = new List<double> { };
+                    var mediumWavesRight = new List<double> { };
+                    var longWavesLeft = new List<double> { };
+                    var longWavesRight = new List<double> { };
+
                     var iz45_l_m = new List<double> { };
                     var iz45_r_m = new List<double> { };
                     var x_big_l = new List<double> { };
@@ -560,10 +574,12 @@ namespace ProfileCalibrService
                                                 imp_right REAL,
                                                 implen_left REAL,
                                                 implen_right REAL,
-                                                impthreat_left REAL,
-                                                impthreat_right REAL,
+                                                impthreat_left VARCHAR,
+                                                impthreat_right VARCHAR,
                                                 x_big_l REAL,
-                                                x_big_r REAL
+                                                x_big_r REAL,
+                                                PointsRight VARCHAR (10000),
+                                                PointsLeft VARCHAR (10000)
                                                
                                                )";
                             cmd.ExecuteNonQuery();
@@ -587,8 +603,14 @@ namespace ProfileCalibrService
                                             vert_r_m.Add(i < vert_r.Count() ? vert_r[i] : 0.0);
                                             bok_l_m.Add(i < bok_l.Count() ? bok_l[i] : 0.0);
                                             bok_r_m.Add(i < bok_r.Count() ? bok_r[i] : 0.0);
-                                            npk_l_m.Add(i < npk_l.Count() ? npk_l[i] : 3.0 / 40.0);
-                                            npk_r_m.Add(i < npk_r.Count() ? npk_r[i] : 3.0 / 40.0);
+                                            npk_l_m.Add(i < npk_l.Count() ? npk_l[i] : 3.0 / 45.0);
+                                            npk_r_m.Add(i < npk_r.Count() ? npk_r[i] : 3.0 / 45.0);
+                                            shortWavesLeft.Add(i < SWavesLeft.Count() ? SWavesLeft[i] : 0.0);
+                                            shortWavesRight.Add(i < SWavesRight.Count() ? SWavesRight[i] : 0.0);
+                                            mediumWavesLeft.Add(i < MWavesLeft.Count() ? MWavesLeft[i] : 0.0);
+                                            mediumWavesRight.Add(i < MWavesRight.Count() ? MWavesRight[i] : 0.0);
+                                            longWavesLeft.Add(i < LWavesLeft.Count() ? LWavesLeft[i] : 0.0);
+                                            longWavesRight.Add(i < LWavesRight.Count() ? LWavesRight[i] : 0.0);
                                             iz45_l_m.Add(i < iz45_l.Count() ? iz45_l[i] : 0.0);
                                             iz45_r_m.Add(i < iz45_r.Count() ? iz45_r[i] : 0.0);
                                             x_big_l.Add(i < X_big_l.Count() ? X_big_l[i] : 0.0);
@@ -608,15 +630,37 @@ namespace ProfileCalibrService
                                         {
                                             if (startMeter != -1)
                                             {
-                                                Console.WriteLine(Meters[i] + " " + pu_l_m.Count);
+                                                string[] PointsLeftStr = PointsLeft.Select(i => Math.Round(i, 2).ToString()).ToArray();
+                                                string PLS = String.Join(", ", PointsLeftStr);
+                                                string[] PointsRightStr = PointsRight.Select(i => Math.Round(i, 2).ToString()).ToArray();
+                                                string PRS = String.Join(", ", PointsRightStr);
 
                                                 var qrStr = $@"INSERT INTO profiledata_{ trip_id }
-                                                (km, meter, pu_l, pu_r, vert_l, vert_r, bok_l, bok_r, 
-                                                npk_l, npk_r,
-                                                --ShortWavesLeft, ShortWavesRight, MediumWavesLeft, MediumWavesRight, LongWavesLeft, LongWavesRight,
-                                                 iz_45_l, iz_45_r,x_big_l, x_big_r
-                                                ) VALUES(" +
-                                                Kms[i].ToString() + "," +
+                                                (
+                                                    km,
+                                                    meter,
+                                                    pu_l,
+                                                    pu_r,
+                                                    vert_l,
+                                                    vert_r,
+                                                    bok_l,
+                                                    bok_r, 
+                                                    npk_l,
+                                                    npk_r,
+                                                    ShortWavesLeft,
+                                                    ShortWavesRight,
+                                                    MediumWavesLeft,
+                                                    MediumWavesRight,
+                                                    LongWavesLeft,
+                                                    LongWavesRight,
+                                                    iz_45_l,
+                                                    iz_45_r,
+                                                    x_big_l,
+                                                    x_big_r,
+                                                    PointsLeft,
+                                                    PointsRight
+)
+                                        VALUES(" + Kms[i].ToString() + "," +
                                                 Meters[i].ToString() + "," +
 
                                                 (pu_l_m.Any() ? pu_l_m.Average() : 1.0 / 20.0).ToString("0.00000").Replace(",", ".") + "," + //пу
@@ -631,11 +675,20 @@ namespace ProfileCalibrService
                                                 (npk_l_m.Any() ? npk_l_m.Average() : 3.0 / 45.0).ToString("0.00000").Replace(",", ".") + "," + //нпк
                                                 (npk_r_m.Any() ? npk_r_m.Average() : 3.0 / 45.0).ToString("0.00000").Replace(",", ".") + "," +
 
+                                                (shortWavesLeft.Any() ? shortWavesLeft.Average() : 0.0).ToString("0.00000").Replace(",", ".") + "," + //ShortWavesLeft
+                                                (shortWavesRight.Any() ? shortWavesRight.Average() : 0.0).ToString("0.00000").Replace(",", ".") + "," +//ShortWavesRight
+
+                                                (mediumWavesLeft.Any() ? mediumWavesLeft.Average() : 0.0).ToString("0.00000").Replace(",", ".") + "," + //MediumWavesLeft
+                                                (mediumWavesRight.Any() ? mediumWavesRight.Average() : 0.0).ToString("0.00000").Replace(",", ".") + "," +//MediumWavesRight
+
+                                                (longWavesLeft.Any() ? longWavesLeft.Average() : 0.0).ToString("0.00000").Replace(",", ".") + "," + //LongWavesLeft
+                                                (longWavesRight.Any() ? longWavesRight.Average() : 0.0).ToString("0.00000").Replace(",", ".") + "," +//LongWavesRight
+
                                                 (iz45_l_m.Any() ? iz45_l_m.Average() : 0.0).ToString("0.0000").Replace(",", ".") + "," + //И45
                                                 (iz45_r_m.Any() ? iz45_r_m.Average() : 0.0).ToString("0.0000").Replace(",", ".") + "," +
 
                                                 (x_big_l.Any() ? x_big_l.Average() : 0.0).ToString("0.0000").Replace(",", ".") + "," + //И45
-                                                (x_big_r.Any() ? x_big_r.Average() : 0.0).ToString("0.0000").Replace(",", ".")
+                                                (x_big_r.Any() ? x_big_r.Average() : 0.0).ToString("0.0000").Replace(",", ".") + "," + "'"+ PLS + "'" + "," + "'" + PRS + "'"
                                                 + ")";
 
                                                 cmd.CommandText = qrStr;
@@ -650,6 +703,12 @@ namespace ProfileCalibrService
                                                 bok_r_m.Clear();
                                                 npk_l_m.Clear();
                                                 npk_r_m.Clear();
+                                                shortWavesLeft.Clear();
+                                                shortWavesRight.Clear();
+                                                mediumWavesLeft.Clear();
+                                                mediumWavesRight.Clear();
+                                                longWavesLeft.Clear();
+                                                longWavesRight.Clear();
                                                 iz45_l_m.Clear();
                                                 iz45_r_m.Clear();
                                                 x_big_l.Clear();
@@ -658,8 +717,9 @@ namespace ProfileCalibrService
                                             }
                                             startMeter = Meters[i];
                                         }
-                                        catch (Exception)
+                                        catch (Exception e)
                                         {
+                                            Console.WriteLine(e.Message);
                                             throw;
                                         }
                                     }
@@ -677,6 +737,13 @@ namespace ProfileCalibrService
                                 bok_r_m.Clear();
                                 npk_l_m.Clear();
                                 npk_r_m.Clear();
+
+                                shortWavesLeft.Clear();
+                                shortWavesRight.Clear();
+                                mediumWavesLeft.Clear();
+                                mediumWavesRight.Clear();
+                                longWavesLeft.Clear();
+                                longWavesRight.Clear();
                                 iz45_l_m.Clear();
                                 iz45_r_m.Clear();
 
@@ -1051,7 +1118,7 @@ namespace ProfileCalibrService
                     MWavesLeft.Add(0);
                     LWavesLeft.Add(0);
                     X_big_l.Add(0);
-                    X_big_r.Add(0);
+                    //X_big_r.Add(0);
                 }
                 else
                 {
@@ -1070,7 +1137,7 @@ namespace ProfileCalibrService
                     MWavesRight.Add(0);
                     LWavesRight.Add(0);
                     X_big_l.Add(0);
-                    X_big_r.Add(0);
+                    //X_big_r.Add(0);
                 }
                 return;
             }
@@ -1400,7 +1467,39 @@ namespace ProfileCalibrService
                 //throw e;
             }
 
+
             //боковой из----->>>>>>>>>>>
+
+            List<double> DList = new List<double>();
+            double aver = 0.0;
+
+            try
+            {
+                var A1 = 1 / (Bottom_x2 - Bottom_x1);
+                var B1 = -1 / (Bottom_y2 - Bottom_y1);
+                var C1 = -(Bottom_x1 / (Bottom_x2 - Bottom_x1)) + (Bottom_y1 / (Bottom_y2 - Bottom_y1));
+
+                if (razn_arr.Count() >= width)
+                {
+                    aver = razn_arr.GetRange(razn_arr.Count - width, width).Average();
+                }
+                else
+                {
+                    aver = razn_arr.Count() > 0 ? razn_arr.Average() : 0;
+                }
+
+                for (int i = 0; i < arrHeadY.Count() - 1; i++)
+                {
+                    var Dr1 = Math.Abs(A1 * (arrHeadX[i]) + B1 * (arrHeadY[i] * (-1) + Math.Max(arrHeadY.Max(), arrSideY.Max())) + C1) / Math.Sqrt(Math.Pow(A1, 2) + Math.Pow(B1, 2));
+                    DList.Add(Dr1);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Исключение " + e.Message);
+                //throw e;
+            }
+
             double bok_elem = 0;
             if (side == Side.Left)
             {
@@ -1412,9 +1511,13 @@ namespace ProfileCalibrService
                 var golovka_x2_index = arrHeadX[arrHeadY.IndexOf(headY1.Min())];
                 var golovka_y2_index = arrHeadY[arrHeadY.IndexOf(headY1.Min())];
 
-                var prog = golovka_y2_index - 13;
+                var golovka_x2_l = arrHeadX[DList.IndexOf(DList.Max())];
+                var golovka_y2_l = arrHeadY[DList.IndexOf(DList.Max())];
+
+                var prog = golovka_y2_l - 13;
                 var x = 0.0;
-                for (int i = 0; i < arrHeadY.Count(); i++)
+
+                for (int i = arrHeadY.IndexOf(golovka_y2_l); i < arrHeadY.Count(); i++)
                 {
                     try
                     {
@@ -1432,6 +1535,7 @@ namespace ProfileCalibrService
                         //throw e;
                     }
                 }
+
                 Xtest5 = down13x;
                 Ytest5 = down13y * (-1) + Math.Max(arrHeadY.Max(), arrSideY.Max());
                 bok_elem = arrHeadX.Max() - down13x;
@@ -1460,14 +1564,18 @@ namespace ProfileCalibrService
                 var golovka_x2_index = arrHeadX[arrHeadY.IndexOf(headY1.Min())];
                 var golovka_y2_index = arrHeadY[arrHeadY.IndexOf(headY1.Min())];
 
-                var prog = golovka_y2_index - 13;
-                var xr = 1110.0;
-                for (int i = 0; i < arrHeadY.Count(); i++)
+                var golovka_x2_l = arrHeadX[DList.IndexOf(DList.Max())];
+                var golovka_y2_l = arrHeadY[DList.IndexOf(DList.Max())];
+
+                var prog = golovka_y2_l - 13;
+
+                var xr = golovka_x2_l;
+                for (int i = arrHeadY.Count()-1; i > 0; i--)
                 {
                     try
                     {
                         if (xr < arrHeadX[i]) { xr = arrHeadX[i]; }
-                        if (prog <= arrHeadY[i] && arrHeadX[i] <= xr)
+                        if (prog >= arrHeadY[i] && arrHeadX[i] <= xr)
                         {
                             down13x = arrHeadX[i];
                             down13y = arrHeadY[i];
@@ -1503,6 +1611,8 @@ namespace ProfileCalibrService
                 bok_r.Add(bok_elem);
 
             }
+
+
 
             //---Верт износ от нижних опорных точек-------Side.Left---------------------------
             if (side == Side.Left)
@@ -1590,10 +1700,12 @@ namespace ProfileCalibrService
 
                 }
 
+
+
                 //----------------------------------------------------------------------------------------------------------------------------------------------
 
-                List<double> DList = new List<double>();
-                double aver = 0.0;
+                 DList = new List<double>();
+                 aver = 0.0;
 
                 try
                 {
@@ -1623,7 +1735,7 @@ namespace ProfileCalibrService
                     //throw e;
                 }
 
-
+                
 
                 var Dmin = DList.Max() - 145.5;
                 //--------------------------
@@ -1789,10 +1901,10 @@ namespace ProfileCalibrService
                     LS.Add(fi);
 
                     var RolAver = LS.Average();
-                    var e = Math.Exp(ExponentCoef * 50 * Math.Abs(fi - 1 / 20.0));
-                    var e1 = Math.Exp(ExponentCoef * 50 * Math.Abs(RolAver - fi));
 
-                    fifluk_l = (fi - 1 / 20.0) * e1;
+                    var e1 = Math.Exp(ExponentCoef * 20 * Math.Abs(RolAver - fi));
+
+                    fifluk_l = (RolAver - fi) * e1;
                 }
                 else
                 {
@@ -1818,10 +1930,10 @@ namespace ProfileCalibrService
 
                 pu_l_str = pu_l_str + $"{(RolAver0l * WearCoef * 10).ToString("0.00").Replace(",", ".")},{CurrentFrameIndex} ";
                 pu_l.Add(fifluk_l + 1.0 / 20.0);
-                var fi_npl = 3.0 / 45.0 + 1.051 * fifluk_l;// + vert_l[vert_l.Count-1]/400; 
+                var fi_npl = 3.0 / 45.0 + 1.001 * fifluk_l;// + vert_l[vert_l.Count-1]/400; 
 
-                npk_aArr.Add(fi_npl);
-                npk_l.Add(fi_npl);
+                npk_aArr.Add(3.0 / 45.0 + 1.001 * fifluk_l);
+                npk_l.Add(3.0 / 45.0 + 1.051 * fifluk_l);
                 npk_l_str = npk_l_str + $"{((fi_npl) * WearCoef * 10).ToString("0.00").Replace(",", ".")},{CurrentFrameIndex} ";
 
                 //------------------------------------------------------------------------------------------------------------------------------
@@ -1901,7 +2013,7 @@ namespace ProfileCalibrService
                     if (fiArr_r.Count() <= width)
                     {
                         s0 = s0 + fi;
-                        fi = 1.0 / 20.0;
+                        fi = fi;
                     }
 
                     //if (fiArr_r.Count() > width)
@@ -1916,10 +2028,10 @@ namespace ProfileCalibrService
                         LS.Add(fi);
 
                         var RolAver = LS.Average();
-                        var e = Math.Exp(ExponentCoef * 50 * Math.Abs(fi - 1 / 20.0));
-                        var e1 = Math.Exp(ExponentCoef * 50 * Math.Abs(RolAver - fi));
+
+                        var e1 = Math.Exp(ExponentCoef * 20 * Math.Abs(RolAver - fi));
                         fifluk_r = (fi - RolAver) * e1;
-                        // fi = 1 / 20.0 + (fi - 1 / 20.0) * e - 0.006;
+
                     }
 
                     var RolAver0 = 1.0 / 20.0;
@@ -1931,14 +2043,11 @@ namespace ProfileCalibrService
                         var LS0 = fiArr_r.Skip(fiArr_r.Count() - width1).Take(width1).ToList();
                         RolAver0 = LS0.Average();
                     }
-                    var fi_npr = 3.0 / 45.0 + 1.051 * fifluk_r;
+                    var fi_npr = 3.0 / 45.0 + 1.0 * fifluk_r;
                     pu_r_str = pu_r_str + $"{((RolAver0) * WearCoef * 10).ToString("0.00").Replace(",", ".")},{CurrentFrameIndex} ";
                     pu_r.Add(1.0 / 20.0 + fifluk_r);
 
-
-
-                    //npk_aArr_r.Add(RolAver0);
-                    npk_r.Add(fi_npr);
+                    npk_r.Add(3.0 / 45.0 + 1.0 * fifluk_r);
                     npk_r_str = npk_r_str + $"{((fi_npr) * WearCoef * 10).ToString("0.00").Replace(",", ".")},{CurrentFrameIndex} ";
                 }
 
@@ -1947,8 +2056,8 @@ namespace ProfileCalibrService
                 var B1 = -1 / (Bottom_y2_r - Bottom_y1_r);
                 var C1 = -(Bottom_x1_r / (Bottom_x2_r - Bottom_x1_r)) + (Bottom_y1_r / (Bottom_y2_r - Bottom_y1_r));
 
-                List<double> DList = new List<double>();
-                double aver = 0.0;
+                 DList = new List<double>();
+                 aver = 0.0;
                 if (razn_arr_r.Count() >= width)
                 {
                     aver = razn_arr_r.Skip(razn_arr_r.Count() - width).Take(width).Average();

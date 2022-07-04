@@ -16,10 +16,6 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Npgsql;
-using Dapper;
-using System.IO;
-//using ALARm_Report.controls;
 
 namespace GapService
 {
@@ -51,20 +47,6 @@ namespace GapService
 
         public override Task StartAsync(CancellationToken cancellationToken)
         {
-            //_logger.LogInformation(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json"));
-            //try
-            //{
-
-            //    var blazor = new Blazor_ProfileData();
-            //    blazor.conn = new NpgsqlConnection(Helper.ConnectionString());
-            //    blazor.conn.Open();
-            //    _logger.LogInformation("база ашылды");
-            //}
-            //catch (Exception e)
-            //{
-            //    _logger.LogInformation("baseconnect:" + e.Message);
-            //}
-
             try
             {
                 _logger.LogInformation($"Connection try [{tryCount++}].");
@@ -81,20 +63,7 @@ namespace GapService
                                    routingKey: "");
                 _channel.BasicQos(0, 1, false);
                 _logger.LogInformation($"Queue [{QueueName}] is waiting for messages.");
-                var Blazor = new Blazor_ProfileData();
-               
-                //////Выбор километров по проезду-----------------
-                //var filterForm = new FilterForm();
-                //var filters = new List<Filter>();
 
-                //filters.Add(new FloatFilter() { Name = "Начало (км)", Value = lkm.Min() });
-                //filters.Add(new FloatFilter() { Name = "Конец (км)", Value = lkm.Max() });
-
-                //filterForm.SetDataSource(filters);
-                //if (filterForm.ShowDialog() == DialogResult.Cancel)
-                //    return;
-
-                //lkm = lkm.Where(o => ((float)(float)filters[0].Value <= o && o <= (float)(float)filters[1].Value)).ToList();
 
 
                 var consumer = new EventingBasicConsumer(_channel);
@@ -108,28 +77,10 @@ namespace GapService
                     JObject json = JObject.Parse(message);
                     var kmIndex = (int)json["Km"];
                     var kmId = (int)json["FileId"];
-                    //var path = json["Path"];
-                    // {'FileId':18308, 'Km':707, 'Path': '\DESKTOP-EMAFC5J\common\video_objects\desktop\242_18308_km_707.csv'}
-                    Trips trip = RdStructureService.GetTripFromFileId(kmId)[0];
-                    int TripId = (int)trip.Id;
-                    var kilometers = RdStructureService.GetKilometersByTrip(trip);
-                    Kilometer km = kilometers.Where(km => km.Number == kmIndex).First();
+                    var path = (string)json["Path"];
+                    path = "\\" + path;
 
-
-                    // Очищает таблицы для сервисов
-                    //ClearServiceTables(TripId);
-                    //Читает файлы проезда и обновляет номер километра в таблице трип файлс
-                    //PutKilometers(TripId);
-
-
-
-                    //var kmFinal = (int)json["KmFinal"];
-
-                    //{
-                    //    "TripId":242,
-                    //    "DistId":45,
-                    //    "KmIndex":700
-                    //}
+                    //{ 'FileId':18318, 'Km':709, 'Path': '\DESKTOP-EMAFC5J\common\video_objects\desktop\242_18318_km_709.csv'}
 
 
 
@@ -147,186 +98,108 @@ namespace GapService
                     //km.AddDataRange(outData, km);
                     //km.LoadTrackPasport(MainTrackStructureRepository, trip.Trip_date);
 
-                    ////Видеоконтроль
+                    ////�������������
                     //// todo distanse id
-                    //string p = GetGaps(trip, km, 53, queruString); //стыки
+                    //string p = GetGaps(trip, km, 53, queruString); //�����
 
 
+                    Trips trip = RdStructureService.GetTripFromFileId(kmId)[0];
+                    int TripId = (int)trip.Id;
+
+                    var kilometers = RdStructureService.GetKilometersByTrip(trip);
+                    var km = kilometers.Where(km => km.Number == kmIndex).ToList().First();
                     this.MainTrackStructureRepository = MainTrackStructureService.GetRepository();
-
 
                     var outData = (List<OutData>)RdStructureService.GetNextOutDatas(km.Start_Index - 1, km.GetLength() - 1, TripId);
                     km.AddDataRange(outData, km);
 
                     km.LoadTrackPasport(MainTrackStructureRepository, trip.Trip_date);
 
-                    //var Blazor2 = new Blazor_TestData();
-                    //try
-                    //{
-                    //    bool flag = true;
-                    //    string koridorfile = RdStructureService.GetTripFiles(km.Number, TripId, "ProfilPoverxKoridor");
-                    //    string kupefile = RdStructureService.GetTripFiles(km.Number, TripId, "ProfilPoverxKupe");
-                    //    while (flag)
-                    //    {
-                    //        flag = Blazor2.GetBitmapAsync(koridorfile, kupefile);
-                    //        Blazor2.CurrentFrameIndex++;
-                    //    }
-                    //    Console.WriteLine("тест дата ОК");
-                    //}
-                    //catch (Exception e)
-                    //{
-                    //    Console.WriteLine("тест дата ERROR! " + e.Message);
-                    //}
-
-                    _logger.LogInformation("");
-                    var Blazor = new Blazor_ProfileData();
-                    Blazor.conn = new NpgsqlConnection(Helper.ConnectionString());
-                    try
+                    bool found_next_km = false;
+                    while (!found_next_km)
                     {
-                        Blazor.conn.Open();
-                        _logger.LogInformation("база ашылды");
-                    } catch(Exception e)
-                    {
-                        _logger.LogInformation(e.Message);
+                        found_next_km = AdditionalParametersService.CheckRdVideoKmExists(km.Number-1, TripId);
+                        System.Threading.Thread.Sleep(1000);
                     }
-                    Blazor.in_koridor = new BinaryReader(File.Open(Blazor.Vnutr__profil__koridor, FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
-                    var data = Blazor.in_koridor.ReadBytes(8);
-                    Blazor.in_koridor_count = BitConverter.ToSingle(data, 0);
-                    Blazor.in_koridor_size = BitConverter.ToSingle(data, 4);
 
-                    Blazor.in_kupe = new BinaryReader(File.Open(Blazor.Vnutr__profil__kupe, FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
-                    data = Blazor.in_kupe.ReadBytes(8);
-                    Blazor.in_kupe_count = BitConverter.ToSingle(data, 0);
-                    Blazor.in_kupe_size = BitConverter.ToSingle(data, 4);
-                    
                     try
                     {
-                        bool flag = true;
-                        while (flag)
-                        {
-                            flag = Blazor.GetBitmapAsync(km.Number, TripId);
-                        }
-                        _logger.LogInformation("профайл дата ОК");
+                        GetGaps(trip, km); //�����
+                        _logger.LogInformation("GAPS OK!");
                     }
                     catch (Exception e)
                     {
-                        _logger.LogInformation("профайл дата ERROR! " + e.Message);
+                        _logger.LogInformation("GAPS ERROR! " + e.Message);
                     }
 
-                    //var Blazor3 = new Blazor3(); //poverh shpal
-                    //try
-                    //{
-                    //    bool flag = true;
-                    //    string koridorfile = RdStructureService.GetTripFiles(km.Number, TripId, "ProfilSHpalyKoridor");
-                    //    string kupefile = RdStructureService.GetTripFiles(km.Number, TripId, "ProfilSHpalyKupe");
-                    //    while (flag)
-                    //    {
-                    //        flag = Blazor3.GetBitmapAsync(koridorfile, kupefile);
-                    //    }
-                    //    Console.WriteLine("Поверх шпал дата ОК");
-                    //}
-                    //catch (Exception e)
-                    //{
-                    //    Console.WriteLine("Поверх шпал ERROR! " + e.Message);
-                    //}
+                    try
+                    {
+                        GetBolt(trip, km); //�����
+                        _logger.LogInformation("BOLT OK!");
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.LogInformation("BOLT ERROR! " + e.Message);
+                    }
 
-                    //try
-                    //{
-                    //    GetTestData(km.Number, trip.Id); //волны и импульсы
-                    //    Console.WriteLine("волны ОК!");
-                    //}
-                    //catch (Exception e)
-                    //{
-                    //    Console.WriteLine("волны ERROR! " + e.Message);
-                    //}
+                    try
+                    {
+                        GetBalast(trip, km); //������
+                        _logger.LogInformation("BALLAST OK!");
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.LogInformation("BALLAST ERROR! " + e.Message);
+                    }
 
-                    //try
-                    //{
-                    //    GetCrossAdditional(trip, km); //стыки
-                    //    Console.WriteLine("Поверхность рельса ОК!");
-                    //}
-                    //catch (Exception e)
-                    //{
-                    //    Console.WriteLine("Поверхность рельса ERROR! " + e.Message);
-                    //}
+                    try
+                    {
+                        GetPerpen(trip, km);
+                        _logger.LogInformation("Perpen OK!");
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.LogInformation("Perpen ERROR! " + e.Message);
+                    }
 
-                    //try
-                    //{
-                    //    GetBolt(trip, km); //стыки
-                    //    Console.WriteLine("болт ок!");
-                    //}
-                    //catch (Exception e)
-                    //{
-                    //    Console.WriteLine("болт error! " + e.Message);
-                    //}
-                    //try
-                    //{
-                    //    GetGaps(trip, km); //стыки
-                    //    Console.WriteLine("болт ок!");
-                    //}
-                    //catch (Exception e)
-                    //{
-                    //    Console.WriteLine("болт error! " + e.Message);
-                    //}
-                    //try
-                    //{
-                    //    GetBalast(trip, km); //баласт
-                    //    Console.WriteLine("Баласт ОК!");
-                    //}
-                    //catch (Exception e)
-                    //{
-                    //    Console.WriteLine("Баласт ERROR! " + e.Message);
-                    //}
+                    try
+                    {
+                        GetSleepers(trip, km);
+                        _logger.LogInformation("SLEEPERS OK!");
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.LogInformation("SLEEPERS ERROR! " + e.Message);
+                    }
 
-                    //try
-                    //{
-                    //    GetPerpen(trip, km);
-                    //    Console.WriteLine("Perpen ОК!");
-                    //}
-                    //catch (Exception e)
-                    //{
-                    //    Console.WriteLine("Perpen ERROR! " + e.Message);
-                    //}
+                    try
+                    {
+                        GetdeviationsinSleepers(trip, km); //��� �����
+                        _logger.LogInformation("DEVIATION SLEEPER OK!");
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.LogInformation("DEVIATION SLEEPERS ERROR! " + e.Message);
+                    }
 
-                    //try
-                    //{
-                    //    GetSleepers(trip, km);
-                    //    Console.WriteLine("Шпалы ОК!");
-                    //}
-                    //catch (Exception e)
-                    //{
-                    //    Console.WriteLine("Шпалы ERROR! " + e.Message);
-                    //}
-
-                    //try
-                    //{
-                    //    GetdeviationsinSleepers(trip, km); //Огр шпалы
-                    //    Console.WriteLine("Огр шпалы ОК!");
-                    //}
-                    //catch (Exception e)
-                    //{
-                    //    Console.WriteLine("Огр шпалы ERROR! " + e.Message);
-                    //}
-
-                    //try
-                    //{
-                    //    Getbadfasteners(trip, km); //Скрепление
-                    //    Console.WriteLine("Скрепление ОК!");
-                    //}
-                    //catch (Exception e)
-                    //{
-                    //    Console.WriteLine("Скрепление ERROR! " + e.Message);
-                    //}
-                    //try
-                    //{
-                    //    Getdeviationsinfastening(trip, km); //огр в скреп
-                    //    Console.WriteLine("Огр скор Скрепление ОК!");
-                    //}
-                    //catch (Exception e)
-                    //{
-                    //    Console.WriteLine("Огр скор Скрепление ERROR! " + e.Message);
-                    //}
-                    //}
+                    try
+                    {
+                        Getbadfasteners(trip, km); //����������
+                        _logger.LogInformation("BADFASTENER OK!");
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.LogInformation("BADFASTENER ERROR! " + e.Message);
+                    }
+                    try
+                    {
+                        Getdeviationsinfastening(trip, km); //��� � �����
+                        _logger.LogInformation("deviationsinfastening OK!");
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.LogInformation("deviationsinfastening ERROR! " + e.Message);
+                    }
                 };
                 _channel.BasicConsume(queue: QueueName,
                                       autoAck: true,
@@ -334,479 +207,28 @@ namespace GapService
 
                 return base.StartAsync(cancellationToken);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 StartAsync(cancellationToken);
                 return base.StartAsync(cancellationToken);
             }
         }
 
-        /// <summary>
-        /// Сервис по доппараметрам
-        /// </summary>
-        /// <param name="trip"></param>
-        /// <param name="km"></param>
-        /// <param name="distId"></param>
-
-
-        private void PutKilometers(int trip_id)
-        {
-            var con = new NpgsqlConnection(Helper.ConnectionString());
-            con.Open();
-            List<string> files = con.Query<string>($@"SELECT file_name as filename FROM trip_files WHERE trip_id={trip_id}").ToList();
-            foreach (string file in files)
-            {
-
-                using (BinaryReader reader = new BinaryReader(File.Open(file, FileMode.Open)))
-                {
-                    try
-                    {
-                        int width = reader.ReadInt32();
-                        int height = reader.ReadInt32();
-                        int frameSize = width * height;
-                        reader.BaseStream.Seek(8, SeekOrigin.Begin);
-                        byte[] by = reader.ReadBytes(frameSize);
-                        int km = BitConverter.ToInt32(by.Skip(40).Take(4).ToArray(), 0);
-                            
-                        var cmd = new NpgsqlCommand();
-                        cmd.Connection = con;
-                        cmd.CommandText = $@"UPDATE trip_files SET km_num={km} WHERE file_name='{file}'";
-                        cmd.ExecuteNonQuery();
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("Не получилось прочитать файл ", file, e.Message);
-                    }
-                }
-                
-            }
-        }
-
-        private void ClearServiceTables(int trip_id)
-        {
-            //"testdata_242", "profiledata_242"
-            string[] tables = {
-                "report_badfasteners",
-                "report_bolts",
-                "report_defshpal",
-                "report_deviationsinballast",
-                "report_deviationsinrails",
-                "report_fasteningunderrailsole",
-                "report_gaps",
-                "report_violperpen",
-                "s3_additional"
-            };
-
-            var con = new NpgsqlConnection(Helper.ConnectionString());
-            con.Open();
-
-            var cmd = new NpgsqlCommand();
-            cmd.Connection = con;
-            foreach (string tablename in tables)
-            {
-                try
-                {
-                    var qrStr = $@"DELETE FROM {tablename} WHERE trip_id = {trip_id};";
-                    cmd.CommandText = qrStr;
-                    cmd.ExecuteNonQuery();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("Ошибка записи в БД " + e.Message);
-                }
-            }
-            
-
-        }
-        private string GetTestData(int number, long trip_id)
-        {
-            try
-            {
-                List<int> Meters = new List<int>();
-                List<double> ShortWavesLeft = new List<double>();
-                List<double> ShortWavesRight = new List<double>();
-                List<double> MediumWavesLeft = new List<double>();
-                List<double> MediumWavesRight = new List<double>();
-                List<double> LongWavesLeft = new List<double>();
-                List<double> LongWavesRight = new List<double>();
-                List<double> LongWavesLeft_m = new List<double>();
-                List<double> MediumWavesLeft_m = new List<double>();
-                List<double> ShortWavesLeft_m = new List<double>();
-                List<double> LongWavesRight_m = new List<double>();
-                List<double> MediumWavesRight_m = new List<double>();
-                List<double> ShortWavesRight_m = new List<double>();
-                List<Digression> Impuls = new List<Digression>();
-                List<Digression> ImpulsRight = new List<Digression>();
-                List<Digression> ImpulsLeft = new List<Digression>();
-                List<int> METERS_long_M = new List<int>();
-                var Dr = new List<double> { };
-                var Dl = new List<double> { };
-                var Count = 0;
-                for (int i = 0; i < 5; i++)
-                {
-                    Dr.Add(0.0);
-                    Dl.Add(0.0);
-                }
-
-                var ShortData = AdditionalParametersService.GetShortRough(trip_id, number);
-                var shortl = ShortData.Select(o => o.Diff_l / 8.0 < 1 / 8.0 ? 0 : o.Diff_l / 10.0).ToList();
-                var shortr = ShortData.Select(o => o.Diff_r / 8.0 < 1 / 8.0 ? 0 : o.Diff_r / 10.0).ToList();
-                var flag = true;
-                var short_meter = ShortData.Select(o => o.Meter).ToList();
-                Meters.AddRange(ShortData.Select(o => o.Meter).ToList());
-
-                var val = new List<double> { };
-                var val_ind = new List<int> { };
-                var bolshe0 = new List<DATA0> { };
-                var inn = false;
-
-                //left
-                for (int i = 0; i < shortl.Count() - 1; i++)
-                {
-                    var temp = shortl[i];
-                    var next_temp = shortl[i + 1];
-
-                    if (!inn && 0 < next_temp)
-                    {
-                        val.Add(temp);
-                        val_ind.Add(i);
-
-                        val.Add(next_temp);
-                        val_ind.Add(i + 1);
-
-                        inn = true;
-                    }
-                    else if (inn && 0 < next_temp)
-                    {
-                        val.Add(next_temp);
-                        val_ind.Add(i + 1);
-
-                    }
-                    else if (inn && 0 == next_temp)
-                    {
-                        if (val.Any())
-                        {
-                            val.Add(next_temp);
-                            val_ind.Add(i + 1);
-
-                            var d = new DATA0
-                            {
-                                Count = val.Count,
-                                H = val.Max() * 0.8,
-                                H_ind = val_ind[val.IndexOf(val.Max())],
-                            };
-
-                            bolshe0.Add(d);
-
-                            inn = false;
-                            val.Clear();
-                            val_ind.Clear();
-                        }
-                    }
-                }
-
-
-                var val_r = new List<double> { };
-                var val_ind_r = new List<int> { };
-                var bolshe0_r = new List<DATA0> { };
-                var inn_r = false;
-                //right
-                for (int i = 0; i < shortr.Count() - 1; i++)
-                {
-                    var temp = shortr[i];
-                    var next_temp = shortr[i + 1];
-
-                    if (!inn_r && 0 < next_temp)
-                    {
-                        val_r.Add(temp);
-                        val_ind_r.Add(i);
-
-                        val_r.Add(next_temp);
-                        val_ind_r.Add(i + 1);
-
-                        inn_r = true;
-                    }
-                    else if (inn_r && 0 < next_temp)
-                    {
-                        val_r.Add(next_temp);
-                        val_ind_r.Add(i + 1);
-
-                    }
-                    else if (inn_r && 0 == next_temp)
-                    {
-                        if (val_r.Any())
-                        {
-                            val_r.Add(next_temp);
-                            val_ind_r.Add(i + 1);
-
-                            var d = new DATA0
-                            {
-                                Count = val_r.Count,
-                                H = val_r.Max() * 0.8,
-                                H_ind = val_ind_r[val_r.IndexOf(val_r.Max())],
-                            };
-
-                            bolshe0_r.Add(d);
-
-                            inn_r = false;
-                            val_r.Clear();
-                            val_ind_r.Clear();
-                        }
-                    }
-                }
-
-                for (int j = 0; j < shortl.Count(); j++)
-                {
-                    var m = 0.0;
-                    var l = 0.0;
-                    var s = 0.0;
-
-                    var mr = 0.0;
-                    var lr = 0.0;
-                    var sr = 0.0;
-
-                    for (int i = 0; i < 4; i++)
-                    {
-                        Dr[i] = Dr[i + 1];
-                        Dl[i] = Dl[i + 1];
-
-                    }
-                    Dr[4] = shortr[j];
-                    Dl[4] = shortl[j];
-                    for (int i = 0; i < bolshe0.Count; i++)
-                    {
-                        l += bolshe0[i].H * Math.Exp(-0.003 * Math.Pow(bolshe0[i].H_ind - j, 2) / bolshe0[i].Count);
-                        m += bolshe0[i].H * Math.Exp(-0.02 * Math.Pow(bolshe0[i].H_ind - j, 2) / bolshe0[i].Count);
-                        s += bolshe0[i].H * Math.Exp(-0.3 * Math.Pow(bolshe0[i].H_ind - j, 2) / bolshe0[i].Count);
-                    }
-
-                    for (int i = 0; i < bolshe0_r.Count; i++)
-                    {
-                        lr += bolshe0_r[i].H * Math.Exp(-0.003 * Math.Pow(bolshe0_r[i].H_ind - j, 2) / bolshe0_r[i].Count);
-                        mr += bolshe0_r[i].H * Math.Exp(-0.02 * Math.Pow(bolshe0_r[i].H_ind - j, 2) / bolshe0_r[i].Count);
-                        sr += bolshe0_r[i].H * Math.Exp(-0.3 * Math.Pow(bolshe0_r[i].H_ind - j, 2) / bolshe0_r[i].Count);
-
-
-                    }
-
-
-                    // Коэфиценты увеличены с 0.15 до 1.15
-                    var koef_long = 0.15;
-                    var koef_medium = 0.15;
-                    var koef_short = 0.15;
-
-                    LongWavesLeft.Add(l * koef_long);
-                    MediumWavesLeft.Add(m * koef_medium);
-                    ShortWavesLeft.Add(s * koef_short);
-
-                    LongWavesRight.Add(lr * koef_long);
-                    MediumWavesRight.Add(mr * koef_medium);
-                    ShortWavesRight.Add(sr * koef_short);
-
-
-                    Count += Count;
-                    if (j / 5 == j / 5.0 || (Math.Abs(short_meter[j] - short_meter[j - 1]) > 1 && j > 1) && Count < 5)
-                    {
-
-                        Count = 0;
-                        LongWavesLeft_m.Add(l * koef_long);
-                        MediumWavesLeft_m.Add(m * koef_medium);
-                        ShortWavesLeft_m.Add(s * koef_short);
-
-                        LongWavesRight_m.Add(lr * koef_long);
-                        MediumWavesRight_m.Add(mr * koef_medium);
-                        ShortWavesRight_m.Add(sr * koef_short);
-
-                        METERS_long_M.Add(short_meter[j]);
-                    }
-
-
-
-                }
-                //импульсы
-                for (int i = 0; i < bolshe0.Count; i++)
-                {
-                    if (bolshe0[i].H < 0.8)
-                    {
-                        ImpulsLeft.Add(new Digression
-                        {
-                            Km = number,
-                            Length = 0,
-                            Len = 0,
-                            Intensity_ra = 0,
-                            Meter = Meters[bolshe0[i].H_ind],
-                            Threat = Threat.Left
-                        });
-                    }
-                    else
-                    {
-                        ImpulsLeft.Add(new Digression
-                        {
-                            Km = number,
-                            Length = (int)bolshe0[i].Count,
-                            Len = (int)bolshe0[i].Count,
-                            Intensity_ra = bolshe0[i].H,
-                            Meter = Meters[bolshe0[i].H_ind],
-                            Threat = Threat.Left
-                        });
-                    }
-
-
-                }
-                for (int i = 0; i < bolshe0_r.Count; i++)
-                {
-                    if (bolshe0_r[i].H < 0.6)
-                    {
-                        ImpulsRight.Add(new Digression
-                        {
-                            Km = number,
-                            Length = 0,
-                            Len = 0,
-                            Intensity_ra = 0,
-                            Meter = Meters[bolshe0_r[i].H_ind],
-                            Threat = Threat.Right
-                        });
-                    }
-                    else
-                    {
-                        ImpulsRight.Add(new Digression
-                        {
-                            Km = number,
-                            Length = (int)bolshe0_r[i].Count,
-                            Len = (int)bolshe0_r[i].Count,
-                            Intensity_ra = bolshe0_r[i].H,
-                            Meter = Meters[bolshe0_r[i].H_ind],
-                            Threat = Threat.Right
-                        });
-                    }
-
-                }
-
-                var cs = "Host=DESKTOP-EMAFC5J;Username=postgres;Password=alhafizu;Database=Aniyar_COpy";
-
-                var con = new NpgsqlConnection(cs);
-                con.Open();
-
-                var cmd = new NpgsqlCommand();
-                cmd.Connection = con;
-                //WAVES
-                try
-                {
-                    for (int i = 0; i < METERS_long_M.Count; i++)
-                    {
-                        var qrStr = $@"UPDATE  profiledata_{trip_id}
-                                   SET  longwavesleft = {(LongWavesLeft_m[i]).ToString("0.0000").Replace(",", ".")},
-                                   mediumwavesleft =  {(MediumWavesLeft_m[i]).ToString("0.0000").Replace(",", ".")},shortwavesleft = {(ShortWavesLeft_m[i]).ToString("0.0000").Replace(",", ".")},
-                                   longwavesright =   {(LongWavesRight_m[i]).ToString("0.0000").Replace(",", ".")},mediumwavesright =  {(MediumWavesRight_m[i]).ToString("0.0000").Replace(",", ".")}
-                                 ,shortwavesright = {(ShortWavesRight_m[i]).ToString("0.0000").Replace(",", ".")}
-                                   where km = {number} and meter = {METERS_long_M[i]}";
-
-                        cmd.CommandText = qrStr;
-                        cmd.ExecuteNonQuery();
-                    }
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("Ошибка записи в БД " + e.Message);
-                }
-
-                //IMPULS
-                try
-                {
-                    for (int i = 0; i < ImpulsLeft.Count; i++)
-                    {
-                        var qrStr = $@"UPDATE  profiledata_{trip_id}
-                                   SET   imp_left ={(ImpulsLeft[i].Intensity_ra).ToString("0.0000").Replace(",", ".")},
-                                   implen_left = {ImpulsLeft[i].Length},impthreat_left = '{ImpulsLeft[i].Threat}'
-                                   where km = {ImpulsLeft[i].Km} and meter = {ImpulsLeft[i].Meter}";
-                        cmd.CommandText = qrStr;
-                        cmd.ExecuteNonQuery();
-                    }
-                    for (int i = 0; i < ImpulsRight.Count; i++)
-                    {
-                        var qrStr = $@"UPDATE  profiledata_{trip_id}
-                                   SET   imp_right ={(ImpulsRight[i].Intensity_ra).ToString("0.0000").Replace(",", ".")},
-                                   implen_right = {ImpulsRight[i].Length},impthreat_right = '{ImpulsRight[i].Threat}'
-                                   where km = {ImpulsRight[i].Km} and meter = {ImpulsRight[i].Meter}";
-                        cmd.CommandText = qrStr;
-                        cmd.ExecuteNonQuery();
-                    }
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("Ошибка записи в БД " + e.Message);
-                }
-
-
-                var shortRoughness = new ShortRoughness { };
-
-                shortRoughness.ShortWaveRight.AddRange(ShortWavesRight.Select(o => (float)o).ToList());
-                shortRoughness.MediumWaveRight.AddRange(MediumWavesRight.Select(o => (float)o).ToList());
-                shortRoughness.LongWaveRight.AddRange(LongWavesRight.Select(o => (float)o).ToList());
-
-                shortRoughness.ShortWaveLeft.AddRange(ShortWavesLeft.Select(o => (float)o).ToList());
-                shortRoughness.MediumWaveLeft.AddRange(MediumWavesLeft.Select(o => (float)o).ToList());
-                shortRoughness.LongWaveLeft.AddRange(LongWavesLeft.Select(o => (float)o).ToList());
-
-                shortRoughness.MetersLeft.AddRange(Meters);
-                shortRoughness.MetersRight.AddRange(Meters);
-                List<Digression> addDigressions = shortRoughness.GetDigressions_new(number);
-                AdditionalParametersService.Insert_additional_param_state_aslan(addDigressions, trip_id);
-
-                con.Close();
-                return "Success";
-
-
-
-            }
-            catch (Exception e)
-            {
-                return "Error " + e.Message;
-            }
-        }
 
 
 
         /// <summary>
-        /// Сервис по стыкам
+        /// ������ �� ������
         /// </summary>
         /// <param name="trip"></param>
         /// <param name="km"></param>
         /// <param name="distId"></param>
-        private string GetCrossAdditional(Trips trip, Kilometer km)
+        private string GetBalast(Trips trip, Kilometer km,  string query = "")
         {
             try
             {
                 var mainProcess = new MainParametersProcess { Trip_id = trip.Id };
-                //данные
-                var DBcrossRailProfile = AdditionalParametersService.GetCrossRailProfileFromDBbyKm(km.Number, trip.Id);
-                if (DBcrossRailProfile == null) return "NULL CrossRailProfile";
-
-                var sortedData = DBcrossRailProfile.OrderByDescending(d => d.Meter).ToList();
-                var crossRailProfile = AdditionalParametersService.GetCrossRailProfileFromDBParse(sortedData);
-                List<Digression> addDigressions = crossRailProfile.GetDigressions();
-                AdditionalParametersService.Insert_additional_param_state(addDigressions, km.Number);
-                return "Success";
-            }
-            catch (Exception e)
-            {
-                return "Error " + e.Message;
-            }
-        }
-
-
-        /// <summary>
-        /// Сервис по стыкам
-        /// </summary>
-        /// <param name="trip"></param>
-        /// <param name="km"></param>
-        /// <param name="distId"></param>
-        private string GetBalast(Trips trip, Kilometer km, string query = "")
-        {
-            try
-            {
-                var mainProcess = new MainParametersProcess { Trip_id = trip.Id };
-                //var distance = AdmStructureService.GetUnit(AdmStructureConst.AdmDistance, distId) as AdmUnit;
+               // var distance = AdmStructureService.GetUnit(AdmStructureConst.AdmDistance, distId) as AdmUnit;
                 var trackName = AdmStructureService.GetTrackName(km.Track_id);
                 var digressions = RdStructureService.GetBadRailFasteners(trip.Id, false, trackName);
                 // if (badFasteners.Count == 0) continue;
@@ -815,7 +237,7 @@ namespace GapService
                 RailFastener prev_fastener = null;
                 foreach (var fastener in digressions)
                 {
-                    //string amount = (int)finddeg.Typ == 1025 ? finddeg.Length.ToString() + " шп.ящиков" : finddeg.Length.ToString() + "%";
+                    //string amount = (int)finddeg.Typ == 1025 ? finddeg.Length.ToString() + " ��.������" : finddeg.Length.ToString() + "%";
                     //string meter = (int)finddeg.Typ == 1025 ? (finddeg.Meter).ToString() : "";
                     //string piket = (int)finddeg.Typ != 1026 ? (finddeg.Meter / 100 + 1).ToString() : "";
                     var sector = "";
@@ -857,18 +279,29 @@ namespace GapService
 
 
 
+
+
+
+
+
+
+
+
+
+
+
         /// <summary>
-        /// Сервис по стыкам
+        /// ������ �� ������
         /// </summary>
         /// <param name="trip"></param>
         /// <param name="km"></param>
         /// <param name="distId"></param>
-        private string GetGaps(Trips trip, Kilometer km, int distId, string query = "")
+        private string GetGaps(Trips trip, Kilometer km, string query = "")
         {
             try
             {
                 var mainProcess = new MainParametersProcess { Trip_id = trip.Id };
-                var distance = AdmStructureService.GetUnit(AdmStructureConst.AdmDistance, distId) as AdmUnit;
+                //var distance = AdmStructureService.GetUnit(AdmStructureConst.AdmDistance, distId) as AdmUnit;
                 var trackName = AdmStructureService.GetTrackName(km.Track_id);
 
                 var gaps = AdditionalParametersService.GetFullGapsByNN(km.Number, trip.Id);
@@ -876,9 +309,9 @@ namespace GapService
 
                 var pass_speed = km.PdbSection.Count > 0 ? km.Speeds.First().Passenger : -1;
                 var fr_speed = km.PdbSection.Count > 0 ? km.Speeds.First().Freight : -1;
-                //var pdb = km.PdbSection.Count > 0 ? km.PdbSection[0].ToString() : " ПЧ-/ПЧУ-/ПД-/ПДБ-";
+                //var pdb = km.PdbSection.Count > 0 ? km.PdbSection[0].ToString() : " ��-/���-/��-/���-";
                 //var sector = km.StationSection != null && km.StationSection.Count > 0 ?
-                //                "Станция: " + km.StationSection[0].Station : (km.Sector != null ? km.Sector.ToString() : "");
+                //                "�������: " + km.StationSection[0].Station : (km.Sector != null ? km.Sector.ToString() : "");
                 var temperature = MainTrackStructureService.GetTemp(trip.Id, km.Track_id, km.Number);
                 var temp = (temperature.Count != 0 ? temperature[0].Kupe.ToString() : " ") + "°";
 
@@ -900,6 +333,7 @@ namespace GapService
 
                     gap.Pdb_section = pdb;
                     gap.Fragment = sector1;
+                    
                     gap.temp = temp;
 
                     gap.PassSpeed = pass_speed;
@@ -923,20 +357,20 @@ namespace GapService
                     //        double k = (double)gap.H / (double)r.First().H;
                     //        gap.Zazor = (int)(r.First().Zazor * k);
                     //        gap.GetDigressions436();
-                    //        if (gap.DigName.Name.Equals("З?"))
-                    //            gap.DigName.Name = "З?Л";
-                    //        if (gap.DigName.Name.Equals("З"))
-                    //            gap.DigName.Name = "ЗЛ";
+                    //        if (gap.DigName.Name.Equals("�?"))
+                    //            gap.DigName.Name = "�?�";
+                    //        if (gap.DigName.Name.Equals("�"))
+                    //            gap.DigName.Name = "��";
                     //   // }
                     //    //if (r.First().Zazor == -1)
                     //    //{
                     //    //    double k = (double)r.First().H / (double)gap.H;
                     //    //    r.First().Zazor = (int)(gap.Zazor * k);
                     //    //    r.First().GetDigressions436();
-                    //    //    if (gap.DigName.Equals("З?"))
-                    //    //        gap.DigName.Name = "З?П";
-                    //    //    if (gap.DigName.Equals("З"))
-                    //    //        gap.DigName.Name = "ЗП";
+                    //    //    if (gap.DigName.Equals("�?"))
+                    //    //        gap.DigName.Name = "�?�";
+                    //    //    if (gap.DigName.Equals("�"))
+                    //    //        gap.DigName.Name = "��";
                     //    //}
 
                     //}
@@ -948,10 +382,10 @@ namespace GapService
                     //    double k = (double)r.First().H / (double)gap.H;
                     //    r.First().Zazor = (int)(gap.Zazor * k);
                     //    r.First().GetDigressions436();
-                    //    if (gap.DigName.Name.Equals("З?"))
-                    //        gap.DigName.Name = "З?Л";
-                    //    if (gap.DigName.Name.Equals("З"))
-                    //        gap.DigName.Name = "ЗЛ";
+                    //    if (gap.DigName.Name.Equals("�?"))
+                    //        gap.DigName.Name = "�?�";
+                    //    if (gap.DigName.Name.Equals("�"))
+                    //        gap.DigName.Name = "��";
 
 
                     //}
@@ -969,8 +403,9 @@ namespace GapService
         }
 
 
+        
         /// <summary>
-        /// Сервис Негодных  Скреплений  
+        /// ������ ��������  ����������  
         /// </summary>
         /// <param name="trip"></param>
         /// <param name="km"></param>
@@ -995,12 +430,12 @@ namespace GapService
                 }
 
                 var sector1 = km.StationSection != null && km.StationSection.Count > 0 ?
-                                "Станция: " + km.StationSection[0].Station : (km.Sector != null ? km.Sector.ToString() : "");
+                                 "Станция: " + km.StationSection[0].Station : (km.Sector != null ? km.Sector.ToString() : "");
 
                 fastener.Pchu = pdb;
                 fastener.Station = sector1;
                 //fastener.Fastening =(string)GetName(fastener.Digressions[0].DigName);
-                //fastener.Fastening = km.RailsBrace.Any() ? km.RailsBrace.First().Name : "нет данных";
+                //fastener.Fastening = km.RailsBrace.Any() ? km.RailsBrace.First().Name : "��� ������";
                 fastener.Fastening = fastener.ToString();
 
                 fastener.Otst = fastener.Digressions[0].GetName();
@@ -1011,7 +446,7 @@ namespace GapService
         }
 
         /// <summary>
-        /// Сервис огр скор Шпалы
+        /// ������ ��� ���� �����
         /// </summary>
         /// <param name="trip"></param>
         /// <param name="km"></param>
@@ -1020,7 +455,7 @@ namespace GapService
         {
             var mainProcess = new MainParametersProcess { Trip_id = trip.Id };
             var trackName = AdmStructureService.GetTrackName(km.Track_id);
-           // var AbsSleepersList= RdStructureService.GetDigSleepers(mainProcess, MainTrackStructureConst.GetDigSleepers) as List<Digression>;
+            //var AbsSleepersList= RdStructureService.GetDigSleepers(mainProcess, MainTrackStructureConst.GetDigSleepers) as List<Digression>;
             var AbsSleepersList = RdStructureService.GetShpal(mainProcess, new int[] { 7 }, km.Number);
 
             AbsSleepersList = AbsSleepersList.OrderBy(o => o.Km).ThenBy(o => o.Meter).ToList();
@@ -1070,7 +505,7 @@ namespace GapService
             {
                 var KM = item.Km;
 
-                //фильтр по выбранным км
+                //������ �� ��������� ��
                 var curves2 = curves1.Where(
                     o => item.Km + item.Meter / 10000.0 >= o.RealStartCoordinate && o.RealFinalCoordinate >= item.Km + item.Meter / 10000.0).ToList();
 
@@ -1178,24 +613,22 @@ namespace GapService
         }
 
         /// <summary>
-        /// Сервис Ведомость отсутствующих болтов
+        /// ������ ��������� ������������� ������
         /// </summary>
-        /// <param name="trip">Данные поездки</param>
-        /// <param name="km">Километр</param>
-        /// <param name="DistId">ПЧ id</param>
+        /// <param name="trip">������ �������</param>
+        /// <param name="km">��������</param>
+        /// <param name="DistId">�� id</param>
         public void GetBolt(Trips trip, Kilometer km)
         {
-            km.LoadTrackPasport(MainTrackStructureRepository, trip.Trip_date);
             var mainProcess = new MainParametersProcess { Trip_id = trip.Id };
-            //левая сторона
+            //����� �������
             var AbsBoltListLeft = RdStructureService.NoBolt(mainProcess, Threat.Left, km.Number);
-            //правая сторона
+            //������ �������
             var AbsBoltListRight = RdStructureService.NoBolt(mainProcess, Threat.Right, km.Number);
             List<Digression> AbsBoltList = new List<Digression>(AbsBoltListLeft);
             AbsBoltList.AddRange(AbsBoltListRight);
             AbsBoltList = AbsBoltList.OrderBy(o => o.Km).ThenBy(o => o.Meter).ToList();
-        
-            this.MainTrackStructureRepository = MainTrackStructureService.GetRepository();
+
             foreach (var item in AbsBoltList)
             {
                 var pdb = km.PdbSection.Count > 0 ? km.PdbSection[0].ToString() : " ПЧ-/ПЧУ-/ПД-/ПДБ-";
@@ -1223,17 +656,15 @@ namespace GapService
         {
             var mainProcess = new MainParametersProcess { Trip_id = trip.Id };
             var trackName = AdmStructureService.GetTrackName(km.Track_id);
-            //var skreplenie = MainTrackStructureService.GetMtoObjectsByCoord(trip.Trip_date, km.Number,
-            //    MainTrackStructureConst.MtoRailsBrace, trip.Direction, trackName.ToString()) as List<RailsBrace>;
             var skreplenie = MainTrackStructureService.GetMtoObjectsByCoord(trip.Trip_date, km.Number,
-              MainTrackStructureConst.MtoRailsBrace, "Петропавловск - Шу", trackName.ToString()) as List<RailsBrace>;
-            
+                MainTrackStructureConst.MtoRailsBrace, trip.Direction, trackName.ToString()) as List<RailsBrace>;
+
             var ViolPerpen = RdStructureService.GetViolPerpen((int)trip.Id, new int[] { 7 }, km.Number);
 
             AdditionalParametersService.Insert_ViolPerpen(km, skreplenie, ViolPerpen);
         }
         /// <summary>
-        /// Сервис по деф шпалам
+        /// ������ �� ��� ������
         /// </summary>
         /// <param name="trip"></param>
         /// <param name="km"></param>
@@ -1281,14 +712,14 @@ namespace GapService
                     if ((previousKm == -1) || (previousKm != digressions[i].Km))
                     {
                         //sector = MainTrackStructureService.GetSector(km.Track_id, digressions[i].Km, trip.Trip_date);
-                        //sector = sector == null ? "Нет данных" : sector;
+                        //sector = sector == null ? "��� ������" : sector;
                         //pdbSection = MainTrackStructureService.GetMtoObjectsByCoord(trip.Trip_date, digressions[i].Km, MainTrackStructureConst.MtoPdbSection, trip.Direction, trackName.ToString()) as List<PdbSection>;
-                        skreplenie = MainTrackStructureService.GetMtoObjectsByCoord(trip.Trip_date, digressions[i].Km, MainTrackStructureConst.MtoRailsBrace, "Петропавловск - Шу", trackName.ToString()) as List<RailsBrace>;
+                        skreplenie = MainTrackStructureService.GetMtoObjectsByCoord(trip.Trip_date, digressions[i].Km, MainTrackStructureConst.MtoRailsBrace, trip.Direction, trackName.ToString()) as List<RailsBrace>;
                     }
 
                     var pdb = km.PdbSection.Count > 0 ? km.PdbSection[0].ToString() : " ПЧ-/ПЧУ-/ПД-/ПДБ-";
 
-                    var data = pdb.Split($"/").ToList(); 
+                    var data = pdb.Split($"/").ToList();
                     if (data.Any())
                     {
                         pdb = $"{data[1]}/{data[2]}/{data[3]}";
@@ -1391,7 +822,7 @@ namespace GapService
             }
         }
         /// <summary>
-        /// Сервис по стыкам
+        /// ������ �� ������
         /// </summary>
         /// <param name="trip"></param>
         /// <param name="km"></param>
@@ -1412,24 +843,24 @@ namespace GapService
                 RailFastener prev_fastener = null;
                 var sector = "";
                 int countSl = 1;
-                int prevM = -1;
+                int prevKoord = -1;
                 int prevThreat = -1;
                 var digList = new List<RailFastener>();
 
-                for (int i = 0; i <= getdeviationfastening.Count - 2; i++)
+                for (int i = 0; i < getdeviationfastening.Count - 1; i++)
                 {
-                    prevM = prevM == -1 ? getdeviationfastening[i].Km * 1000 + getdeviationfastening[i].Mtr : prevM;
+                    prevKoord = prevKoord == -1 ? getdeviationfastening[i].Koord : prevKoord;
                     prevThreat = prevThreat == -1 ? (int)getdeviationfastening[i].Threat : prevThreat;
 
-                    var nextM = getdeviationfastening[i + 1].Km * 1000 + getdeviationfastening[i + 1].Mtr;
+                    var nextKoord = getdeviationfastening[i + 1].Koord;
                     var nextThreat = (int)getdeviationfastening[i + 1].Threat;
 
 
-                    if (Math.Abs(prevM - nextM) < 2)
+                    if (Math.Abs(prevKoord - nextKoord) < 500)
                     {
                         if (prevThreat == nextThreat)
                         {
-                            prevM = nextM;
+                            prevKoord = nextKoord;
                             countSl++;
                         }
                         else
@@ -1440,7 +871,7 @@ namespace GapService
                                 digList[digList.Count - 1].Count = countSl;
                                 digList[digList.Count - 1].Ots = "КНС";
 
-                                prevM = nextM;
+                                prevKoord = nextKoord;
                                 countSl = 1;
                             }
                         }
@@ -1451,13 +882,13 @@ namespace GapService
                         digList[digList.Count - 1].Count = countSl;
                         digList[digList.Count - 1].Ots = "КНС";
 
-                        prevM = nextM;
+                        prevKoord = nextKoord;
                         countSl = 1;
 
                     }
                     else
                     {
-                        prevM = nextM;
+                        prevKoord = nextKoord;
                         countSl = 1;
                     }
                 }
@@ -1471,8 +902,8 @@ namespace GapService
 
                     if ((prev_digression == null) || (prev_digression.Km != digression.Km))
                     {
-                        //tripplan = digression.Location == Location.OnCurveSection ? $"кривая R-{digression.CurveRadius}" : (digression.Location == Location.OnStrightSection ? "прямой" : "стрелочный перевод");
-                        //amount = digression.DigName == DigressionName.KNS ? $"{digression.Count} шт" : $"{digression.Length} %";
+                        //tripplan = digression.Location == Location.OnCurveSection ? $"������ R-{digression.CurveRadius}" : (digression.Location == Location.OnStrightSection ? "������" : "���������� �������");
+                        //amount = digression.DigName == DigressionName.KNS ? $"{digression.Count} ��" : $"{digression.Length} %";
                         speed = MainTrackStructureService.GetMtoObjectsByCoord(trip.Trip_date, km.Number, MainTrackStructureConst.MtoSpeed, trip.Direction, trackName.ToString()) as List<Speed>;
                         //pdbSection = MainTrackStructureService.GetMtoObjectsByCoord(trip.Trip_date, km.Number, MainTrackStructureConst.MtoPdbSection, trip.Direction, trackName.ToString()) as List<PdbSection>;
                         //sector = MainTrackStructureService.GetSector(km.Track_id, km.Number, trip.Trip_date);
@@ -1578,4 +1009,33 @@ namespace GapService
             _logger.LogInformation("RabbitMQ connection is closed.");
         }
     }
- }
+    public enum Rails { r75 = 192, r65 = 180, r50 = 152, r43 = 140 }
+
+    public class ProfileCalcParameter
+    {
+        public double DownParam { get; set; } = -1;
+        public double Radius { get; set; } = -1;
+        public double LittleRadius { get; set; } = -1;
+        public double AngleG { get; set; } = -1;
+        public double HeadCoef { get; set; } = 0;
+        public double TopSideCoef { get; set; } = 0;
+        public double BottomSideCoef { get; set; } = 0;
+        public double DistBigRad { get; set; } = 0;
+        public double DistLitRad { get; set; } = 0;
+        public double DistParam { get; set; } = 0;
+        public ProfileCalcParameter(double downParam, double radius, double l_radius, double angle_g, double coefHead, double coefSideBot, double coefSideTop, double dist_big_rad, double dist_lit_rad, double dist_param)
+        {
+            DownParam = downParam;
+            Radius = radius;
+            LittleRadius = l_radius;
+            AngleG = angle_g;
+            HeadCoef = coefHead;
+            TopSideCoef = coefSideTop;
+            BottomSideCoef = coefSideBot;
+            DistLitRad = dist_lit_rad;
+            DistBigRad = dist_big_rad;
+            DistParam = dist_param;
+        }
+    }
+
+}
