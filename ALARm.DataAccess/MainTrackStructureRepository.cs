@@ -668,7 +668,7 @@ namespace ALARm.DataAccess
                             and startcoords.km <= @ncurkm and finalcoords.km >= @ncurkm ", new { ncurkm = nkm, travelDate = date, trackNum = trackNumber, directCode = directionCode }).ToList();
                     //шпалы
                     case MainTrackStructureConst.MtoCrossTie:
-                        
+
                         var txt = $@"SELECT
 	                                    aac.* ,cct.name
                                     FROM

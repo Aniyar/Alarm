@@ -160,7 +160,7 @@
 
                                 </tr>
                                 rowIndex++;
-                                
+
                             }
                         }
                     }
@@ -173,7 +173,8 @@
                         digression.value.Put = kilometer.Track_name;
                         digression.value.Ball = kilometer.Point;
                         digression.value.Pdb_section = kilometer.PdbSection.Count > 0 ? kilometer.PdbSection[0].ToString() : "";
-                        digression.value.Date = DateTime.Today.ToShortDateString();
+                        digression.value.Date = DateTime.Today;
+                        //ToShortDateString()
                         digression.value.Direction = (kilometer.Direction == ALARm.Core.Direction.Direct) ? 1 : -1;
                         @*digression.value.Trip_Type = kilometer.Trip.Trip_Type.ToString();*@
                         int metre = kilometer.Direction == ALARm.Core.Direction.Direct ? digression.value.Meter : kilometer.Length - digression.value.Meter;

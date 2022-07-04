@@ -345,8 +345,7 @@ namespace ALARm.Core.Report
                 int start = crossTie.Start_Km == kilometer.Number ? crossTie.Start_M : y1;
                 int final = crossTie.Final_Km == kilometer.Number ? crossTie.Final_M : y2;
 
-
-                string ctype = "1.8";
+                string ctype = "1,8";
                 string color = "black";
                 switch (crossTie.Crosstie_type_id)
                 {

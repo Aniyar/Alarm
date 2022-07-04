@@ -90,26 +90,11 @@ namespace ALARm_Report.Forms
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                     XElement xeCurve = new XElement("curve",
 
-                         new XAttribute("wear", "* - "),//to DO Пороговое значение износа
+                        new XAttribute("wear", "* - "),//to DO Пороговое значение износа
                         new XAttribute("road", roadName),
-                           new XAttribute("chief", trip.Chief),
+                        new XAttribute("chief", trip.Chief),
                         new XAttribute("type", trip.GetProcessTypeName),
                         new XAttribute("period", current.Period),
                         new XAttribute("date_trip", trip.Trip_date),

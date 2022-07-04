@@ -53,7 +53,7 @@ namespace ALARm_Report.Forms
 
                 progressBar.Maximum = videoProcesses.Count;
 
-                foreach (var videoProcess in videoProcesses.Where(o=>o.Id == 240).ToList())
+                foreach (var videoProcess in videoProcesses)
                 {
                     progressBar.Value = videoProcesses.IndexOf(videoProcess) + 1;
 
@@ -76,7 +76,7 @@ namespace ALARm_Report.Forms
 
                         List<Digression> Check_badfastening_state = AdditionalParametersService.Check_badfastening_state(videoProcess.Trip_id, template.ID);
 
-                        Check_badfastening_state = Check_badfastening_state.Where(o => o.Km.Between(710, 720)).ToList();
+                        //Check_badfastening_state = Check_badfastening_state.Where(o => o.Km.Between(710, 720)).ToList();
 
                         //Check_badfastening_state = Check_badfastening_state.Where(o => o.Km > 128).ToList();
                         for (int index = 0; index < Check_badfastening_state.Count(); index++)
@@ -118,7 +118,7 @@ namespace ALARm_Report.Forms
             {
                 //htReport.Save(@"\\DESKTOP-EMAFC5J\sntfi\BadFastening.html");
                 htReport.Save(Path.GetTempPath() + "/BadFastening.html");
-                htReport.Save($@"G:\form\4.Выходные формы Видеоконтроля ВСП\1.Ведомость негодных скреплений.html");
+           //     htReport.Save($@"G:\form\4.Выходные формы Видеоконтроля ВСП\1.Ведомость негодных скреплений.html");
             }
             catch
             {

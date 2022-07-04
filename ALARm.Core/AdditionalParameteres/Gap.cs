@@ -1,4 +1,5 @@
 ﻿using ALARm.Core.Report;
+using System;
 
 namespace ALARm.Core.AdditionalParameteres
 {
@@ -14,6 +15,12 @@ namespace ALARm.Core.AdditionalParameteres
         public string Fastening { get; set; }
         public string Threat_id { get; set; }
         public string Temp { get; set; }
+
+
+        public string Roadcode { get; set; }
+        public string Directcode { get; set; }
+        public string Pscode { get; set; }
+        public string Nput { get; set; }
         //public string PCHU { get; set; }
 
 
@@ -92,7 +99,7 @@ namespace ALARm.Core.AdditionalParameteres
 
         //aniyar
       
-        public string Date { get; set; }
+        public DateTime Date { get; set; }
         public string EditReason { get; set; }
         public string Editor { get; set; }
         //

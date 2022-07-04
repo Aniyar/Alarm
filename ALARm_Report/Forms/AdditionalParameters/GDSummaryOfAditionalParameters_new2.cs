@@ -183,8 +183,8 @@ namespace ALARm_Report.Forms
 
                             XElement addParam = new XElement("addparam",
                                 new XAttribute("top-title",
-                                    (direction != null ? $"{direction.Name} ({direction.Code} )" : "Неизвестный") + " Путь: " + kilometer.Track_name + 
-                                    $" Класс: {(trackclasses.Any() ? trackclasses.First().Class_Id.ToString() : "-")} Км:" + kilometer.Number + " " + 
+                                    (direction != null ? $"{direction.Name} ({direction.Code} )" : "Неизвестный") + " Путь: " + kilometer.Track_name +
+                                    $" Класс: {(trackclasses.Any() ? trackclasses.First().Class_Id.ToString() : "-")} Км:" + kilometer.Number + " " +
                                     (kilometer.PdbSection.Count > 0 ? kilometer.PdbSection[0].ToString() : " ПЧ-/ПЧУ-/ПД-/ПДБ-") + " Уст: " + " " +
                                     (kilometer.Speeds.Count > 0 ? $"{kilometer.Speeds.First().Passenger}/{kilometer.Speeds.First().Freight}" : "-/-")),
 
@@ -205,7 +205,7 @@ namespace ALARm_Report.Forms
                                 new XAttribute("topx1", -kilometer.Start_m - svgLength - 30),
                                 new XAttribute("topx2", -kilometer.Start_m - svgLength - 15),
                                 new XAttribute("RailType", "1    🠕Тип рельсов: " + (kilometer.RailSection.Any() ? kilometer.RailSection.First().Name : "")),
-                                new XAttribute("fragment", (kilometer.StationSection != null && kilometer.StationSection.Count > 0 ? 
+                                new XAttribute("fragment", (kilometer.StationSection != null && kilometer.StationSection.Count > 0 ?
                                     "Станция: " + kilometer.StationSection[0].Station : (kilometer.Sector != null ? kilometer.Sector.ToString() : "")) + " Км:" + kilometer.Number),
                                 new XAttribute("viewbox", $"-20 {-kilometer.Start_m - svgLength - 50} 830 {svgLength + 105}"),
                                 new XAttribute("minY", -kilometer.Start_m),
@@ -317,7 +317,7 @@ namespace ALARm_Report.Forms
                             string sideWearRight = string.Empty;
 
                             string sideWear = string.Empty;
-                            
+
                             gauge = string.Empty;
                             string otzh = string.Empty;
 
@@ -326,9 +326,10 @@ namespace ALARm_Report.Forms
 
                             if (crossRailProfile.SideWearLeft.Any())
                             {
-                                if (crossRailProfile.SideWearLeft.Average() > crossRailProfile.SideWearRight.Average()) {
+                                if (crossRailProfile.SideWearLeft.Average() > crossRailProfile.SideWearRight.Average())
+                                {
                                     side_bok = true;
-                                } 
+                                }
                             }
 
                             for (int i = 0; i < kilometer.meter.Count - 1; i++)
@@ -394,7 +395,7 @@ namespace ALARm_Report.Forms
                             }
 
                             List<Digression> addDigressions = crossRailProfile.GetDigressions();
-                            
+
 
 
 
@@ -410,7 +411,7 @@ namespace ALARm_Report.Forms
                             var tempG = gaps.Where(o => o.Otst == "З" || o.Otst == "З?").ToList();
                             if (tempG.Any())
                             {
-                                if(tempG.Where(o=> o.Otst == "З").Count() > 0)
+                                if (tempG.Where(o => o.Otst == "З").Count() > 0)
                                 {
                                     ballGap = 50;
                                     SpeedLimitGap = tempG.Where(o => o.Otst == "З").Count();
@@ -499,14 +500,14 @@ namespace ALARm_Report.Forms
                                 digression.AllowSpeed = gap.Vdop;
                                 digression.Velich = Math.Max(gap.Zazor, gap.R_zazor);
 
-                                digression.DigName = gap.Otst =="З" ? DigressionName.Gap : gap.Otst == "З?" ? DigressionName.GapSimbol : DigressionName.Undefined;
+                                digression.DigName = gap.Otst == "З" ? DigressionName.Gap : gap.Otst == "З?" ? DigressionName.GapSimbol : DigressionName.Undefined;
 
                                 addDigressions.Add(digression);
                             }
                             addParam.Add(gapElements);
 
 
-                            
+
                             foreach (var dig in addDigressions)
                             {
                                 if (dig.DigName == DigressionName.ReducedWearLeft) continue;
@@ -533,7 +534,7 @@ namespace ALARm_Report.Forms
                                     dig.DigName == DigressionName.GapSimbol ||
                                     dig.DigName == DigressionName.Gap)
                                 {
-                                    
+
                                     dignatur.Add(
                                         new DigressionMark()
                                         {
@@ -564,7 +565,7 @@ namespace ALARm_Report.Forms
 
                                     if (dig.Length < 4 && (int)dig.Typ == 3) continue;
 
-                                    if ((new[] { DigressionName.VertIznosL, DigressionName.VertIznosR,}).Contains(dig.DigName))
+                                    if ((new[] { DigressionName.VertIznosL, DigressionName.VertIznosR, }).Contains(dig.DigName))
                                     {
                                     }
                                     else
@@ -593,14 +594,14 @@ namespace ALARm_Report.Forms
                                     //if (picket != null)
                                     //{
                                     //    picket.Digression.Add(Digressions.First());
-                                        
+
                                     //}
                                 }
                             }
 
 
                             kilometer.Digressions.AddRange(dignatur);
-                            kilometer.LoadDigresions(RdStructureRepository, MainTrackStructureRepository, trip, AdditionalParam:true);
+                            kilometer.LoadDigresions(RdStructureRepository, MainTrackStructureRepository, trip, AdditionalParam: true);
 
 
                             var digElemenets = new XElement("digressions");
@@ -629,7 +630,7 @@ namespace ALARm_Report.Forms
 
 
                             addParam.Add(
-                                new XAttribute("speedlimit", $"Балл - {ballGap} Кол.огр. {SpeedLimitGap} Огр.{(speedGapPass == -1? "" :speedGapPass.ToString())}/{(speedGapFrei == -1 ? "" : speedGapFrei.ToString())} Скор.{(int)kilometer.Speed.Average()} [паспорт]")
+                                new XAttribute("speedlimit", $"Балл - {ballGap} Кол.огр. {SpeedLimitGap} Огр.{(speedGapPass == -1 ? "" : speedGapPass.ToString())}/{(speedGapFrei == -1 ? "" : speedGapFrei.ToString())} Скор.{(int)kilometer.Speed.Average()} [паспорт]")
                                 );
 
                             addParam.Add(digElemenets);
@@ -651,7 +652,7 @@ namespace ALARm_Report.Forms
             {
                 htReport.Save(Path.GetTempPath() + "/report.html");
                 htReport.Save($@"G:\form\G:\form\1.Основные и дополнительные параметры геометрии рельсовой колеи (ГРК)\3.Графическая диаграмма доп.параметров с результатами оценки отступлений.html");
-                
+
             }
             catch
             {

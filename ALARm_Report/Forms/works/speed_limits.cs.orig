@@ -210,9 +210,13 @@ namespace ALARm_Report.Forms
                             {
                                 if (item.Digression == DigressionName.SideWearLeft || item.Digression == DigressionName.SideWearRight)
                                 {
+<<<<<<< HEAD
+                                    var c = curves.Where(o => o.RealStartCoordinate <= km.Number + item.Meter / 10000.0 && o.RealFinalCoordinate >= km.Number + item.Meter / 10000.0).ToList();
+=======
                                     if (km.Curves == null)
                                         continue;
                                     var c = km.Curves.Where(o => o.RealStartCoordinate <= km.Number + item.Meter / 10000.0 && o.RealFinalCoordinate >= km.Number + item.Meter / 10000.0).ToList();
+>>>>>>> 9477f93b3db305eeab750fb056a6360dae1f0fd3
 
                                     if (c.Any())
                                     {

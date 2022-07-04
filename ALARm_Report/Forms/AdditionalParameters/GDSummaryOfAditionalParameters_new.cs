@@ -426,15 +426,42 @@ namespace ALARm_Report.Forms
 
                                 digression.Meter = gap.Meter;
 
-                                if (gap.Otst == "З")
+                                if (gap.Otst_r == "З")
+                                {
+                                    digression.PassengerSpeedLimit = int.Parse(gap.Vdop.Split('/')[0]);
+                                    digression.FreightSpeedLimit = int.Parse(gap.Vdop.Split('/')[1]);
+                                }
+                                else
+                                {
+                                    digression.PassengerSpeedLimit = -1;
+                                    digression.FreightSpeedLimit = -1;
+                                }
+                                if (gap.Otst_l == "З")
                                 {
                                     digression.PassengerSpeedLimit = int.Parse(gap.Vdop.Split('/')[0]);
                                     digression.FreightSpeedLimit = int.Parse(gap.Vdop.Split('/')[1]);
 
-                                    //speedGapPass = speedGapPass == -1 ? int.Parse(gap.Vdop.Split('/')[0]) :
-                                    //                          speedGapPass > int.Parse(gap.Vdop.Split('/')[0]) ? int.Parse(gap.Vdop.Split('/')[0]) : speedGapPass;
-                                    //speedGapFrei = speedGapFrei == -1 ? int.Parse(gap.Vdop.Split('/')[1]) :
-                                    //                         speedGapFrei > int.Parse(gap.Vdop.Split('/')[1]) ? int.Parse(gap.Vdop.Split('/')[1]) : speedGapFrei;
+                                }
+                                else
+                                {
+                                    digression.PassengerSpeedLimit = -1;
+                                    digression.FreightSpeedLimit = -1;
+                                }
+                                if (gap.Otst_r == "СЗ")
+                                {
+                                    digression.PassengerSpeedLimit = int.Parse(gap.Vpz.Split('/')[0]);
+                                    digression.FreightSpeedLimit = int.Parse(gap.Vpz.Split('/')[1]);
+                                }
+                                else
+                                {
+                                    digression.PassengerSpeedLimit = -1;
+                                    digression.FreightSpeedLimit = -1;
+                                }
+                                if (gap.Otst_l == "СЗ")
+                                {
+                                    digression.PassengerSpeedLimit = int.Parse(gap.Vpz.Split('/')[0]);
+                                    digression.FreightSpeedLimit = int.Parse(gap.Vpz.Split('/')[1]);
+
                                 }
                                 else
                                 {
@@ -444,8 +471,15 @@ namespace ALARm_Report.Forms
                                 digression.AllowSpeed = gap.Vdop;
                                 digression.Velich = Math.Max(gap.Zazor, gap.R_zazor);
 
-                                digression.DigName = gap.Otst == "З" ? DigressionName.Gap : gap.Otst_l == "З?" ? DigressionName.GapSimbol_left : gap.Otst_r == "З?" ? DigressionName.GapSimbol_right : DigressionName.Undefined;
-
+                                if (digression.Meter == 631)
+                                {
+                                    digression.Meter = digression.Meter;
+                                }
+                                digression.DigName = gap.Otst_l == "З" ? DigressionName.GapL : gap.Otst_l == "З?" ? DigressionName.GapSimbolL :
+                                                     gap.Otst_r == "З" ? DigressionName.GapR : gap.Otst_r == "З?" ? DigressionName.GapSimbolR :
+                                                     gap.Otst_l == "СЗ" ? DigressionName.FusingGapL : gap.Otst_r == "СЗ" ? DigressionName.FusingGapR : DigressionName.Undefined;
+                            
+                               
                                 addDigressions.Add(digression);
                             }
                             addParam.Add(gapElements);
@@ -454,42 +488,52 @@ namespace ALARm_Report.Forms
 
                             foreach (var dig in addDigressions)
                             {
-                                if (dig.Meter == 974)
+                                if (dig.Meter == 631) 
                                 {
-                                    dig.DigName = dig.DigName;
+                                    dig.Meter = dig.Meter;
                                 }
                                 if (dig.DigName == DigressionName.ReducedWearLeft) continue;
                                 if (dig.DigName == DigressionName.ReducedWearRight) continue;
                                 if (dig.DigName == DigressionName.VertIznosR) continue;
-                                if (dig.DigName == DigressionName.GapSimbol_left)
-                                {
-                                    dig.DigName = dig.DigName;
-                                }
                                 if (dig.DigName == DigressionName.VertIznosL) continue;
+
                                 if (dig.Length < 1)
                                 {
-                                    if (dig.DigName != DigressionName.FusingGap)
+                                    if (dig.DigName != DigressionName.FusingGapL)
                                     {
+                                        if (dig.DigName != DigressionName.FusingGapR)
                                         {
-                                            dig.DigName = dig.DigName;
-                                        }
-                                        if (dig.DigName != DigressionName.GapSimbol_left)
-                                        {
-                                            if (dig.DigName != DigressionName.GapSimbol_right)
+                                            if (dig.DigName != DigressionName.GapSimbolL)
                                             {
-                                                if (dig.DigName != DigressionName.Gap)
+                                                if (dig.DigName != DigressionName.GapSimbolR)
                                                 {
-                                                    continue;
+                                                    if (dig.DigName != DigressionName.GapL)
+                                                    {
+                                                        if (dig.DigName != DigressionName.GapR)
+                                                        {
+                                                            continue;
+                                                        }
+                                                    }
                                                 }
+                                            
                                             }
                                         }
                                     }
                                 }
-
-                                if (dig.DigName == DigressionName.FusingGap ||
-                                    dig.DigName == DigressionName.GapSimbol_left ||
-                                    dig.DigName == DigressionName.GapSimbol_right ||
-                                    dig.DigName == DigressionName.Gap)
+                                if (dig.DigName == DigressionName.FusingGapL)
+                                {
+                                    dig.Meter = dig.Meter;
+                                }
+                                if (dig.DigName == DigressionName.FusingGapR)
+                                {
+                                    dig.Meter = dig.Meter;
+                                }
+                                if (dig.DigName == DigressionName.FusingGapL ||
+                                    dig.DigName == DigressionName.FusingGapR ||
+                                    dig.DigName == DigressionName.GapSimbolL ||
+                                    dig.DigName == DigressionName.GapSimbolR ||
+                                    dig.DigName == DigressionName.GapL ||
+                                    dig.DigName == DigressionName.GapR)
                                 {
                                     //if (dig.Velich > 35) continue;
 
@@ -537,7 +581,10 @@ namespace ALARm_Report.Forms
                                     {
                                         continue;
                                     }
-
+                                    if (dig.DigName == DigressionName.FusingGapL)
+                                    {
+                                        dig.Meter = dig.Meter;
+                                    }
                                     dignatur.Add(
                                         new DigressionMark()
                                         {

@@ -386,7 +386,7 @@ namespace ALARm_Report.Forms
             }
             try
             {
-                htReport.Save($@"G:\form\5.Графические диаграммы ГД\ГД-И - износов рельса.html");
+                //htReport.Save($@"G:\form\5.Графические диаграммы ГД\ГД-И - износов рельса.html");
                 htReport.Save(Path.GetTempPath() + "/report.html");
 
             }
