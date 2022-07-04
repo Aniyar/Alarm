@@ -955,7 +955,12 @@ namespace ALARm.Core.AdditionalParameteres
 
                     if ((TreadTiltLeft[i] >= OneDiv60) && (found4Left))
                     {
+
                         dig4Left.Length = Math.Abs(dig4Left.Meter - (int)Meters[i]);
+                        if (dig4Left.Length > 100)
+                        {
+                            //test
+                        }
                         dig4Left.Kmetr = (int)Meters[i];
                         dig4Left.Value = dig4LeftValue;
 

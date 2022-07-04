@@ -104,7 +104,7 @@ namespace ALARm_Report.Forms
                             new XAttribute("direction", curvesAdmUnit.Direction),
                            
                             new XAttribute("check", tripProcess.GetProcessTypeName),
-                            new XAttribute("track", curvesAdmUnit.Track),
+                            new XAttribute("track", trackName),
                             new XAttribute("road", road),
                             new XAttribute("distance", distance.Code),
                             new XAttribute("periodDate", period.Period),

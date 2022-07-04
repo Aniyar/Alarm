@@ -382,7 +382,7 @@ namespace ALARm_Report.Forms
             }
             try
             {
-                htReport.Save($@"G:\form\5.Графические диаграммы ГД\ГД-ПР - подуклонка рельсов, наклон поверхности катания.html");
+               // htReport.Save($@"G:\form\5.Графические диаграммы ГД\ГД-ПР - подуклонка рельсов, наклон поверхности катания.html");
                 htReport.Save(Path.GetTempPath() + "/report.html");
 
             }

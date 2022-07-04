@@ -207,6 +207,13 @@ namespace ALARm_Report.Forms
                                 }
                                 else
                                 {
+<<<<<<< HEAD
+                                  
+                                       dig.Ovp = int.Parse(item.Vdop.Split('/')[1]);
+                                        dig.Ogp = int.Parse(item.Vdop.Split('/')[1]);
+                                   
+                                 
+=======
                                     try
                                     {
                                         dig.Ovp = int.Parse(item.Vdop.Split('/')[1]);
@@ -217,6 +224,7 @@ namespace ALARm_Report.Forms
                                         Console.WriteLine("Скорости не были получены и расчитаны");
                                     }
                                     
+>>>>>>> 9477f93b3db305eeab750fb056a6360dae1f0fd3
                                 }
 
                                 dig.Uv = int.Parse(item.Vpz.Split('/')[0]);
@@ -752,7 +760,11 @@ namespace ALARm_Report.Forms
                                             new XAttribute("pch", distance.Code),
                                             new XAttribute("checkDate", s3.Date.ToString("dd/MM/yyyy")),
                                             new XAttribute("nomerPS", s3.Pscode == null ? "" : s3.Pscode),
+<<<<<<< HEAD
                                             new XAttribute("nomerPuti", trackName),
+=======
+                                            new XAttribute("nomerPuti", trackName /*s3.Nput*/ ),
+>>>>>>> 9477f93b3db305eeab750fb056a6360dae1f0fd3
                                             new XAttribute("km", s3.Km),
                                             new XAttribute("m", s3.Meter),
                                             new XAttribute("vidOts", s3.Ots == null ? "" : s3.Ots),
@@ -773,9 +785,14 @@ namespace ALARm_Report.Forms
                                             new XAttribute("radius", radius),
                                             new XAttribute("elevation", vozvihenie),
                                             new XAttribute("strelka", s3.Primech.Contains("Стр.;") ? 1 : s3.Strelka),
-                                            new XAttribute("primech", s3.Primech.Contains("м;") ? "м" : s3.Primech.Contains("ис") ? "ис" : s3.Primech.Contains("гр") ? "гр" : "-"));
+                                            new XAttribute("primech", s3.Primech.Contains("м;") ? "м" : s3.Primech.Contains("ис") ? "ис" : s3.Primech.Contains("гр") ? "гр" : "-")
+<<<<<<< HEAD
+                                            );
                                 
 
+=======
+                                            ); ;
+>>>>>>> 9477f93b3db305eeab750fb056a6360dae1f0fd3
 
 
                                     tripElem.Add(xeNote);

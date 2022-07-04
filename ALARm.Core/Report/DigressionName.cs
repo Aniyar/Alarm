@@ -63,7 +63,11 @@
         public static DigName FusingGapR = new DigName() { Name = "СЗ.п", Value = 111 };//слепой стык
 
         public static DigName Gap = new DigName() { Name = "З", Value = 110 };
+        public static DigName GapL = new DigName() { Name = "З.л", Value = 1101 };
+        public static DigName GapR = new DigName() { Name = "З.п", Value = 1102 };
         public static DigName GapSimbol = new DigName() { Name = "З?", Value = 1100 };
+        public static DigName GapSimbolL = new DigName() { Name = "З?л", Value = 1103 };
+        public static DigName GapSimbolR = new DigName() { Name = "З?п", Value = 1104 };
 
         public static DigName GapSimbol_left = new DigName() { Name = "З?Л", Value = 1101 };
         public static DigName GapSimbol_right = new DigName() { Name = "З?П", Value = 1102 };
