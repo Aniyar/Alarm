@@ -1026,15 +1026,48 @@ namespace ALARm.DataAccess
                     db.Open();
                 try
                 {
-                    var gaps = db.Query<Gap>($@"SELECT
-	                                            * , zazor_r as r_zazor, zazor_l as zazor, m as meter, vpz as fullSpeed
-                                            FROM
-	                                            report_gaps
+                    //var gaps = db.Query<Gap>($@"SELECT
+                    //                         * , zazor_r as r_zazor, zazor_l as zazor, m as meter, vpz as fullSpeed
+                    //                        FROM
+                    //                         report_gaps
+                    //                        WHERE
+                    //                         trip_id = {trip_id} 
+                    //                         --AND template_id = {templ_id}
+                    //                        order by km, meter
+                    //                        ", commandType: CommandType.Text).ToList();
+
+
+                    var gaps = db.Query<Gap>($@"
+                                    SELECT DISTINCT
+	                                        road.code AS roadcode,
+	                                        direct.code AS directcode,
+	                                        trips.trip_date AS DATE,
+	                                        trips.car AS pscode,
+	                                        s3.put AS nput,
+	                                        rg.zazor_r as r_zazor, rg.zazor_l as zazor, rg.m as meter, rg.vpz as fullSpeed,
+	                                        rg.*
+                                        FROM
+	                                        report_gaps rg
+                                        INNER JOIN s3 ON s3.trip_id = rg.trip_id AND s3.km = rg.km
+                                        INNER JOIN trips ON trips.ID = s3.trip_id
+                                        INNER JOIN adm_direction direct ON direct.ID = trips.direction_id
+                                        INNER JOIN adm_distance dist ON dist.code = s3.pch
+                                        INNER JOIN adm_nod nod ON nod.ID = dist.adm_nod_id
+                                        INNER JOIN adm_road road ON road.ID = nod.adm_road_id
                                             WHERE
-	                                            trip_id = {trip_id} 
-	                                            --AND template_id = {templ_id}
-                                            order by km, meter
+	                                            s3.trip_id ={trip_id}
+                                            ORDER BY
+	                                            	road.code,
+	                                                directcode,
+	                                                DATE,
+	                                                pscode,
+	                                                nput,
+	                                                rg.km,
+	                                                meter  
+                                    
                                             ", commandType: CommandType.Text).ToList();
+
+
 
                     gaps = gaps.Where(o => Math.Abs(o.Zabeg) < 500).ToList();
                     /*foreach (Gap gap in gaps){

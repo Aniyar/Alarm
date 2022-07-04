@@ -88,6 +88,7 @@ namespace ALARm_Report.Forms
                     int outstandingaccelerationcountoutstandingaccelerationcount = 0;//?Анп
                     int gapCount = 0;//зазор
 
+                    bool founddigression = false;
 
                     foreach (var track_id in admTracksId)
                     {
@@ -132,6 +133,10 @@ namespace ALARm_Report.Forms
                                                                                                                                           // запрос ОСнов параметров с бд
 
                         var ListS3 = RdStructureService.GetS3(kilometers.First().Trip.Id) as List<S3>; //пру
+                        if (ListS3 != null && ListS3.Count > 0)
+                        {
+                            founddigression = true;
+                        }
                         //var ListS3 = RdStructureService.GetDigressionMarks(kilometers.First().Trip.Id, kilometers.First().Track_id, kilometers.First().nb) as List<S3>; //пру
                         var PRU = ListS3.Where(o => o.Ots == "ПрУ").ToList();
                         var gapV = check_gap_state.Where(o => o.Vdop != "" && o.Vdop != "-/-").ToList();
@@ -205,10 +210,11 @@ namespace ALARm_Report.Forms
                             {
                                 if (item.Digression == DigressionName.SideWearLeft || item.Digression == DigressionName.SideWearRight)
                                 {
-                                    var c = km.Curves.Where(o => o.RealStartCoordinate <= km.Number + item.Meter / 10000.0 && o.RealFinalCoordinate >= km.Number + item.Meter / 10000.0).ToList();
+                                    var c = curves.Where(o => o.RealStartCoordinate <= km.Number + item.Meter / 10000.0 && o.RealFinalCoordinate >= km.Number + item.Meter / 10000.0).ToList();
 
                                     if (c.Any())
                                     {
+                                        if (km.Speeds ==null) continue; 
                                         item.GetAllowSpeedAddParam(km.Speeds.First(), c.First().Straightenings[0].Radius, item.Value);
 
                                         if (item.PassengerSpeedLimit != -1 && item.PassengerSpeedLimit < pas)
@@ -494,7 +500,10 @@ namespace ALARm_Report.Forms
 
 
                     tripElem.Add(new XAttribute("countDistance", ItogMain + ItogADD));
-                    report.Add(tripElem);
+                    if (founddigression == true)
+                    {
+                        report.Add(tripElem);
+                    }
 
                 }
                 xdReport.Add(report);

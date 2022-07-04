@@ -39,6 +39,8 @@ namespace ALARm_Report.Forms
             XDocument htReport = new XDocument();
             using (XmlWriter writer = htReport.CreateWriter())
             {
+                XElement report = new XElement("report");
+                XElement tripElem = new XElement("trip");
                 XDocument xdReport = new XDocument();
 
                 var distance = AdmStructureService.GetUnit(AdmStructureConst.AdmDistance, parentId) as AdmUnit;
@@ -51,10 +53,12 @@ namespace ALARm_Report.Forms
                     MessageBox.Show(Properties.Resources.paramDataMissing);
                     return;
                 }
+                progressBar.Maximum = videoProcesses.Count;
                 int iter = 1;
-                XElement report = new XElement("report");
+               
                 foreach (var tripProcess in videoProcesses)
                 {
+                    progressBar.Value = videoProcesses.IndexOf(tripProcess) + 1;
                     foreach (var track_id in admTracksId)
                     {
                         var trackName = AdmStructureService.GetTrackName(track_id);
@@ -62,7 +66,7 @@ namespace ALARm_Report.Forms
 
                         var ttt = tripProcess.Date_Vrem.ToString("dd.MM.yyyy_hh:mm");
 
-                        XElement tripElem = new XElement("trip",
+                         tripElem = new XElement("trip",
                             new XAttribute("date_statement", ttt),
                             new XAttribute("check", tripProcess.GetProcessTypeName), //ToDo
                             new XAttribute("road", road),
@@ -76,6 +80,7 @@ namespace ALARm_Report.Forms
                         XElement Direct = new XElement("direction",
                             new XAttribute("name", tripProcess.DirectionName + " (" + tripProcess.DirectionCode + ")" + " / Путь: " + trackName + " / ПЧ: " + distance.Code)
                         );
+                        progressBar.Value = videoProcesses.IndexOf(tripProcess) + 1;
                         //check_gap_state = check_gap_state.Where(o => o.Km.Between(710, 720)).ToList();
 
                         foreach (var gap in check_gap_state)
@@ -127,7 +132,7 @@ namespace ALARm_Report.Forms
                                     new XAttribute("T", gap.Temp),//ToDo
                                     new XAttribute("Zabeg", gap.Zabeg == -1 ? "" : gap.Zabeg.ToString()),
                                     new XAttribute("Vdop", gap.Vdop),
-                                    new XAttribute("Otst", gap.Otst_l  ),
+                                    new XAttribute("Otst", gap.Otst_l.Count()>0 ? gap.Otst_l: gap.Otst_r),
                                     new XAttribute("Primech", ""),//ToDo
 
 
@@ -146,6 +151,7 @@ namespace ALARm_Report.Forms
 
                     }
                 }
+                progressBar.Value = 0;
                 xdReport.Add(report);
                 XslCompiledTransform transform = new XslCompiledTransform();
                 transform.Load(XmlReader.Create(new StringReader(template.Xsl)));
@@ -170,7 +176,7 @@ namespace ALARm_Report.Forms
             }
             finally
             {
-                htReport.Save($@"G:\form\4.Выходные формы Видеоконтроля ВСП\21.Ведомость состояния стыковых зазоров.html");
+                //htReport.Save($@"G:\form\4.Выходные формы Видеоконтроля ВСП\21.Ведомость состояния стыковых зазоров.html");
                 if (template.ID == 50)
                 {
                     //System.Diagnostics.Process.Start(@"http://Desktop-tolegen:5500/ogr_gapreport.html");

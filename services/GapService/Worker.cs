@@ -230,93 +230,102 @@ namespace GapService
                     //    Console.WriteLine("Поверх шпал ERROR! " + e.Message);
                     //}
 
-                    try
-                    {
-                        GetTestData(km.Number, trip.Id); //волны и импульсы
-                        Console.WriteLine("волны ОК!");
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("волны ERROR! " + e.Message);
-                    }
+                    //try
+                    //{
+                    //    GetTestData(km.Number, trip.Id); //волны и импульсы
+                    //    Console.WriteLine("волны ОК!");
+                    //}
+                    //catch (Exception e)
+                    //{
+                    //    Console.WriteLine("волны ERROR! " + e.Message);
+                    //}
 
-                    try
-                    {
-                        GetCrossAdditional(trip, km); //стыки
-                        Console.WriteLine("Поверхность рельса ОК!");
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("Поверхность рельса ERROR! " + e.Message);
-                    }
+                    //try
+                    //{
+                    //    GetCrossAdditional(trip, km); //стыки
+                    //    Console.WriteLine("Поверхность рельса ОК!");
+                    //}
+                    //catch (Exception e)
+                    //{
+                    //    Console.WriteLine("Поверхность рельса ERROR! " + e.Message);
+                    //}
 
-                    try
-                    {
-                        GetBolt(trip, km); //стыки
-                        Console.WriteLine("болт ок!");
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("болт error! " + e.Message);
-                    }
-                    try
-                    {
-                        GetBalast(trip, km); //баласт
-                        Console.WriteLine("Баласт ОК!");
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("Баласт ERROR! " + e.Message);
-                    }
+                    //try
+                    //{
+                    //    GetBolt(trip, km); //стыки
+                    //    Console.WriteLine("болт ок!");
+                    //}
+                    //catch (Exception e)
+                    //{
+                    //    Console.WriteLine("болт error! " + e.Message);
+                    //}
+                    //try
+                    //{
+                    //    GetGaps(trip, km); //стыки
+                    //    Console.WriteLine("болт ок!");
+                    //}
+                    //catch (Exception e)
+                    //{
+                    //    Console.WriteLine("болт error! " + e.Message);
+                    //}
+                    //try
+                    //{
+                    //    GetBalast(trip, km); //баласт
+                    //    Console.WriteLine("Баласт ОК!");
+                    //}
+                    //catch (Exception e)
+                    //{
+                    //    Console.WriteLine("Баласт ERROR! " + e.Message);
+                    //}
 
-                    try
-                    {
-                        GetPerpen(trip, km);
-                        Console.WriteLine("Perpen ОК!");
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("Perpen ERROR! " + e.Message);
-                    }
+                    //try
+                    //{
+                    //    GetPerpen(trip, km);
+                    //    Console.WriteLine("Perpen ОК!");
+                    //}
+                    //catch (Exception e)
+                    //{
+                    //    Console.WriteLine("Perpen ERROR! " + e.Message);
+                    //}
 
-                    try
-                    {
-                        GetSleepers(trip, km);
-                        Console.WriteLine("Шпалы ОК!");
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("Шпалы ERROR! " + e.Message);
-                    }
+                    //try
+                    //{
+                    //    GetSleepers(trip, km);
+                    //    Console.WriteLine("Шпалы ОК!");
+                    //}
+                    //catch (Exception e)
+                    //{
+                    //    Console.WriteLine("Шпалы ERROR! " + e.Message);
+                    //}
 
-                    try
-                    {
-                        GetdeviationsinSleepers(trip, km); //Огр шпалы
-                        Console.WriteLine("Огр шпалы ОК!");
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("Огр шпалы ERROR! " + e.Message);
-                    }
+                    //try
+                    //{
+                    //    GetdeviationsinSleepers(trip, km); //Огр шпалы
+                    //    Console.WriteLine("Огр шпалы ОК!");
+                    //}
+                    //catch (Exception e)
+                    //{
+                    //    Console.WriteLine("Огр шпалы ERROR! " + e.Message);
+                    //}
 
-                    try
-                    {
-                        Getbadfasteners(trip, km); //Скрепление
-                        Console.WriteLine("Скрепление ОК!");
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("Скрепление ERROR! " + e.Message);
-                    }
-                    try
-                    {
-                        Getdeviationsinfastening(trip, km); //огр в скреп
-                        Console.WriteLine("Огр скор Скрепление ОК!");
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("Огр скор Скрепление ERROR! " + e.Message);
-                    }
+                    //try
+                    //{
+                    //    Getbadfasteners(trip, km); //Скрепление
+                    //    Console.WriteLine("Скрепление ОК!");
+                    //}
+                    //catch (Exception e)
+                    //{
+                    //    Console.WriteLine("Скрепление ERROR! " + e.Message);
+                    //}
+                    //try
+                    //{
+                    //    Getdeviationsinfastening(trip, km); //огр в скреп
+                    //    Console.WriteLine("Огр скор Скрепление ОК!");
+                    //}
+                    //catch (Exception e)
+                    //{
+                    //    Console.WriteLine("Огр скор Скрепление ERROR! " + e.Message);
+                    //}
                     //}
                 };
                 _channel.BasicConsume(queue: QueueName,
@@ -1011,7 +1020,7 @@ namespace GapService
         {
             var mainProcess = new MainParametersProcess { Trip_id = trip.Id };
             var trackName = AdmStructureService.GetTrackName(km.Track_id);
-            //var AbsSleepersList= RdStructureService.GetDigSleepers(mainProcess, MainTrackStructureConst.GetDigSleepers) as List<Digression>;
+           // var AbsSleepersList= RdStructureService.GetDigSleepers(mainProcess, MainTrackStructureConst.GetDigSleepers) as List<Digression>;
             var AbsSleepersList = RdStructureService.GetShpal(mainProcess, new int[] { 7 }, km.Number);
 
             AbsSleepersList = AbsSleepersList.OrderBy(o => o.Km).ThenBy(o => o.Meter).ToList();
@@ -1185,20 +1194,8 @@ namespace GapService
             List<Digression> AbsBoltList = new List<Digression>(AbsBoltListLeft);
             AbsBoltList.AddRange(AbsBoltListRight);
             AbsBoltList = AbsBoltList.OrderBy(o => o.Km).ThenBy(o => o.Meter).ToList();
-
-
-        
         
             this.MainTrackStructureRepository = MainTrackStructureService.GetRepository();
-
-
-         
-
-
-
-
-
-
             foreach (var item in AbsBoltList)
             {
                 var pdb = km.PdbSection.Count > 0 ? km.PdbSection[0].ToString() : " ПЧ-/ПЧУ-/ПД-/ПДБ-";

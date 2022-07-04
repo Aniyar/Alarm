@@ -339,14 +339,14 @@ namespace GapService
             {
                 try
                 {
-                    if (Kilometer == kmnum && FoundRight == false)
-                    {
-                        FoundRight = true;
-                    }
-                    if (Kilometer == kmnum && FoundRight == true)
-                    {
-                        return false;
-                    }
+                    //if (Kilometer == kmnum && FoundRight == false)
+                    //{
+                    //    FoundRight = true;
+                    //}
+                    //if (Kilometer == kmnum && FoundRight == true)
+                    //{
+                    //    return false;
+                    //}
 
                     long ll = CurrentFrameIndex * (long)in_kupe_size + 8;
                     reader.BaseStream.Seek(ll, SeekOrigin.Begin);
@@ -1824,7 +1824,7 @@ namespace GapService
 
                 pu_l_str = pu_l_str + $"{(RolAver0l * WearCoef * 10).ToString("0.00").Replace(",", ".")},{CurrentFrameIndex} ";
                 pu_l.Add(fi);
-                var fi_npl = 3.0 / 40.0 + 1.051 * (RolAver0l - 1.0 / 20.0) + d_vert_left / 300.0; ;// + vert_l[vert_l.Count-1]/400; 
+                var fi_npl = 3.0 / 40.0 + 1.051 * (RolAver0l - 1.0 / 20.0)  ;// + vert_l[vert_l.Count-1]/400; 
 
                 npk_aArr.Add(fi_npl);
                 npk_l.Add(fi_npl);
@@ -1924,7 +1924,7 @@ namespace GapService
                         var e = Math.Exp(ExponentCoef * 50 * Math.Abs(fi - 1 / 20.0));
                         var e1 = Math.Exp(ExponentCoef * 50 * Math.Abs(RolAver - 1 / 20.0));
 
-                        fi = 1 / 20.0 + (fi - 1 / 20.0) * e - 0.006;
+                        fi = 1 / 20.0 + (fi - 1 / 20.0) * e ;
                     }
 
                     var RolAver0 = 1.0 / 20.0;
@@ -1940,7 +1940,7 @@ namespace GapService
                     pu_r_str = pu_r_str + $"{((RolAver0) * WearCoef * 10).ToString("0.00").Replace(",", ".")},{CurrentFrameIndex} ";
                     pu_r.Add(RolAver0);
 
-                    var fi_npr = 3.0 / 40.0 + 1.051 * (RolAver0 - 1.0 / 20.0) + d_vert_rigt / 300.0;
+                    var fi_npr = 3.0 / 40.0 + 1.051 * (RolAver0 - 1.0 / 20.0) ;
 
                     npk_aArr_r.Add(fi_npr);
                     npk_r.Add(fi_npr);

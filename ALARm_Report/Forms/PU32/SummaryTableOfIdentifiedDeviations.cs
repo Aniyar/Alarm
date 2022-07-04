@@ -105,7 +105,7 @@ namespace ALARm_Report.Forms
                         progressBar.Maximum = kms.Count;
 
                         var check_gap_state = AdditionalParametersService.Check_gap_state(tripProcess.Id, template.ID); //стыки
-                        var Pu32_gap = check_gap_state.Where(o => o.Otst_l.Contains("З") || o.Otst_r.Contains("З?")).ToList();
+                        var Pu32_gap = check_gap_state.Where(o => (o.Otst_l.Any() || o.Otst_r.Any()) || (o.Otst_l.Any() && o.Otst_r.Any())).ToList(); // || o.Otst_l.Contains("З?") || o.Otst_r.Contains("З") || o.Otst_r.Contains("З?")).ToList();
 
                         foreach (var km in kms)
                         {
@@ -151,6 +151,7 @@ namespace ALARm_Report.Forms
                             //--------------------------------------------
                             //стыки на километр
                             var kmGap = Pu32_gap.Where(o => o.Km == km.Number).ToList();
+
                             foreach (var item in kmGap)
                             {
                                 
@@ -158,19 +159,62 @@ namespace ALARm_Report.Forms
 
                                 dig.Km = item.Km;
                                 dig.Meter = item.Meter;
-                                dig.Ots = item.Otst;
+                                if (item.Otst_l.Any())
+                                {
+                                    dig.Ots = item.Otst_l+ ".л";
+                                    //dig.Pscode = item.c
+                                    //dig.Date = item.Date.ToString("dd/MM/yyyy");
+                                }
+                                else if (item.Otst_r.Any())
+                                {
+
+                                    dig.Ots = item.Otst_r + ".п";
+                                }
+                                else if (item.Otst_r.Any() && item.Otst_l.Any())
+                                {
+                                    dig.Ots = item.Otst_l + ".л" +item.Otst_r + ".п";
+
+                                }
+                                else
+                                {
+                                    dig.Ots = "";
+                                }
+                              
                                 dig.Otkl = Math.Max(item.Zazor, item.R_zazor);
                                 dig.Primech = item.Temp;
+                                dig.Roadcode = item.Roadcode;
+                                dig.Pscode = item.Pscode;
+                                dig.Date = item.Date;
+                                dig.Directcode = item.Directcode;
+                                dig.Nput = item.Nput;
+                                if (item.Otst_l == "")
+                                {
+                                    dig.Ovp = -1;
+                                    dig.Ogp = -1;
+                                }
+                                else if (item.Otst_r == "")
+                                {
+                                    dig.Ovp = -1;
+                                    dig.Ogp = -1;
+                                }
 
-                                if (item.Otst == "З?")
+                                else if (item.Otst_l == "З?")
+                                {
+                                    dig.Ovp = -1;
+                                    dig.Ogp = -1;
+                                }
+                                else if (item.Otst_r == "З?")
                                 {
                                     dig.Ovp = -1;
                                     dig.Ogp = -1;
                                 }
                                 else
                                 {
-                                    dig.Ovp = int.Parse(item.Vdop.Split('/')[1]);
-                                    dig.Ogp = int.Parse(item.Vdop.Split('/')[1]);
+                                  
+                                       dig.Ovp = int.Parse(item.Vdop.Split('/')[1]);
+                                        dig.Ogp = int.Parse(item.Vdop.Split('/')[1]);
+                                   
+                                 
                                 }
 
                                 dig.Uv = int.Parse(item.Vpz.Split('/')[0]);
@@ -251,7 +295,7 @@ namespace ALARm_Report.Forms
                                     XElement xeNote = new XElement("Note",
                                         new XAttribute("codDorogi", temp.Any() ? temp.First().Roadcode : "-"),
                                         new XAttribute("codNapr", temp.Any() ? temp.First().Directcode : "-"),
-                                        new XAttribute("classput", trackclasses.First().Class_Id),
+                                            new XAttribute("classput", trackclasses.Count == 0 ? "" : trackclasses.First().Class_Id.ToString()),
 
                                         new XAttribute("pch", distance.Code),
                                         new XAttribute("checkDate", temp.Any() ? temp.First().Date.ToString("dd/MM/yyyy") : "-"),
@@ -301,7 +345,8 @@ namespace ALARm_Report.Forms
                                     XElement xeNote = new XElement("Note",
                                             new XAttribute("codDorogi", s3.Roadcode),
                                             new XAttribute("codNapr", s3.Directcode == null ? "" : s3.Directcode),
-                                            new XAttribute("classput", trackclasses.First().Class_Id),
+                                                new XAttribute("classput", trackclasses.Count == 0 ? "" : trackclasses.First().Class_Id.ToString()),
+
 
                                             new XAttribute("pch", distance.Code),
                                             new XAttribute("checkDate", s3.Date.ToString("dd/MM/yyyy")),
@@ -337,7 +382,8 @@ namespace ALARm_Report.Forms
                                     XElement xeNote = new XElement("Note",
                                             new XAttribute("codDorogi", s3.Roadcode),
                                             new XAttribute("codNapr", s3.Directcode == null ? "" : s3.Directcode),
-                                            new XAttribute("classput", trackclasses.First().Class_Id),
+                                               new XAttribute("classput", trackclasses.Count == 0 ? "" : trackclasses.First().Class_Id.ToString()),
+
 
                                             new XAttribute("pch", distance.Code),
                                             new XAttribute("checkDate", s3.Date.ToString("dd/MM/yyyy")),
@@ -372,7 +418,8 @@ namespace ALARm_Report.Forms
                                     XElement xeNote = new XElement("Note",
                                             new XAttribute("codDorogi", s3.Roadcode),
                                             new XAttribute("codNapr", s3.Directcode == null ? "" : s3.Directcode),
-                                            new XAttribute("classput", trackclasses.First().Class_Id),
+                                              new XAttribute("classput", trackclasses.Count == 0 ? "" : trackclasses.First().Class_Id.ToString()),
+
 
                                             new XAttribute("pch", distance.Code),
                                             new XAttribute("checkDate", s3.Date.ToString("dd/MM/yyyy")),
@@ -407,7 +454,8 @@ namespace ALARm_Report.Forms
                                     XElement xeNote = new XElement("Note",
                                             new XAttribute("codDorogi", s3.Roadcode),
                                             new XAttribute("codNapr", s3.Directcode == null ? "" : s3.Directcode),
-                                            new XAttribute("classput", trackclasses.First().Class_Id),
+                                               new XAttribute("classput", trackclasses.Count == 0 ? "" : trackclasses.First().Class_Id.ToString()),
+
 
                                             new XAttribute("pch", distance.Code),
                                             new XAttribute("checkDate", s3.Date.ToString("dd/MM/yyyy")),
@@ -442,7 +490,8 @@ namespace ALARm_Report.Forms
                                     XElement xeNote = new XElement("Note",
                                             new XAttribute("codDorogi", s3.Roadcode),
                                             new XAttribute("codNapr", s3.Directcode == null ? "" : s3.Directcode),
-                                            new XAttribute("classput", trackclasses.First().Class_Id),
+                                                new XAttribute("classput", trackclasses.Count == 0 ? "" : trackclasses.First().Class_Id.ToString()),
+
 
                                             new XAttribute("pch", distance.Code),
                                             new XAttribute("checkDate", s3.Date.ToString("dd/MM/yyyy")),
@@ -477,7 +526,8 @@ namespace ALARm_Report.Forms
                                     XElement xeNote = new XElement("Note",
                                             new XAttribute("codDorogi", s3.Roadcode),
                                             new XAttribute("codNapr", s3.Directcode == null ? "" : s3.Directcode),
-                                            new XAttribute("classput", trackclasses.First().Class_Id),
+                                               new XAttribute("classput", trackclasses.Count == 0 ? "" : trackclasses.First().Class_Id.ToString()),
+
 
                                             new XAttribute("pch", distance.Code),
                                             new XAttribute("checkDate", s3.Date.ToString("dd/MM/yyyy")),
@@ -512,7 +562,7 @@ namespace ALARm_Report.Forms
                                     XElement xeNote = new XElement("Note",
                                             new XAttribute("codDorogi", s3.Roadcode),
                                             new XAttribute("codNapr", s3.Directcode == null ? "" : s3.Directcode),
-                                            new XAttribute("classput", trackclasses.First().Class_Id),
+                                               new XAttribute("classput", trackclasses.Count == 0 ? "" : trackclasses.First().Class_Id.ToString()),
 
                                             new XAttribute("pch", distance.Code),
                                             new XAttribute("checkDate", s3.Date.ToString("dd/MM/yyyy")),
@@ -547,7 +597,8 @@ namespace ALARm_Report.Forms
                                     XElement xeNote = new XElement("Note",
                                             new XAttribute("codDorogi", s3.Roadcode),
                                             new XAttribute("codNapr", s3.Directcode == null ? "" : s3.Directcode),
-                                            new XAttribute("classput", trackclasses.First().Class_Id),
+                                               new XAttribute("classput", trackclasses.Count == 0 ? "" : trackclasses.First().Class_Id.ToString()),
+
 
                                             new XAttribute("pch", distance.Code),
                                             new XAttribute("checkDate", s3.Date.ToString("dd/MM/yyyy")),
@@ -582,7 +633,8 @@ namespace ALARm_Report.Forms
                                     XElement xeNote = new XElement("Note",
                                             new XAttribute("codDorogi", s3.Roadcode),
                                             new XAttribute("codNapr", s3.Directcode == null ? "" : s3.Directcode),
-                                            new XAttribute("classput", trackclasses.First().Class_Id),
+                                              new XAttribute("classput", trackclasses.Count == 0 ? "" : trackclasses.First().Class_Id.ToString()),
+
 
                                             new XAttribute("pch", distance.Code),
                                             new XAttribute("checkDate", s3.Date.ToString("dd/MM/yyyy")),
@@ -619,7 +671,8 @@ namespace ALARm_Report.Forms
                                     XElement xeNote = new XElement("Note",
                                             new XAttribute("codDorogi", s3.Roadcode),
                                             new XAttribute("codNapr", s3.Directcode == null ? "" : s3.Directcode),
-                                            new XAttribute("classput", trackclasses.First().Class_Id),
+                                              new XAttribute("classput", trackclasses.Count == 0 ? "" : trackclasses.First().Class_Id.ToString()),
+
 
                                             new XAttribute("pch", distance.Code),
                                             new XAttribute("checkDate", s3.Date.ToString("dd/MM/yyyy")),
@@ -649,17 +702,55 @@ namespace ALARm_Report.Forms
 
                                     tripElem.Add(xeNote);
                                 }
+                                //else if (s3.Ots == "СЗ.л")
+                                //{
+
+
+
+                                //    XElement xeNote = new XElement("Note",
+                                //            new XAttribute("codDorogi", s3.Roadcode == null ? "" : s3.Roadcode),
+                                //            new XAttribute("codNapr", s3.Directcode == null ? "" : s3.Directcode),
+                                //            new XAttribute("classput", trackclasses.First().Class_Id),
+
+                                //            new XAttribute("pch", distance.Code),
+                                //            new XAttribute("checkDate", s3.Date.ToString("dd/MM/yyyy")),
+                                //            new XAttribute("nomerPS", s3.Pscode == null ? "" : s3.Pscode),
+                                //            new XAttribute("nomerPuti", s3.Nput),
+                                //            new XAttribute("km", s3.Km),
+                                //            new XAttribute("m", s3.Meter),
+                                //            new XAttribute("vidOts", s3.Ots),
+                                //            new XAttribute("norma", "0.65"),
+                                //            new XAttribute("velichOts", s3.Otkl),
+                                //            new XAttribute("len", s3.Len),
+                                //            new XAttribute("stepen", s3.Typ.ToString() == "5" ? "-" : s3.Typ.ToString()),
+                                //            new XAttribute("ball", ball),
+                                //            new XAttribute("count", count),
+                                //            new XAttribute("Vust",/* s3.Us.ToString().Max().ToString() == "-1" ? "-" : s3.Us.ToString()*/"-"),//to doo
+                                //            new XAttribute("vPass", s3.Uv.ToString() == "-1" ? "-" : s3.Uv.ToString()),
+                                //            new XAttribute("vGruz", s3.Uvg.ToString() == "-1" ? "-" : s3.Uvg.ToString()),
+                                //            new XAttribute("Vogr", /*s3.Ogp.ToString().Max().ToString() == "-1" ? "-" : s3.Ogp.ToString()*/"-"),//to doo
+                                //            new XAttribute("vOgrPass", s3.Ovp.ToString() == "-1" ? "-" : s3.Ovp.ToString() == "0" ? "-" : s3.Ovp.ToString()),
+                                //            new XAttribute("vOgrGruz", s3.Ogp.ToString() == "-1" ? "-" : s3.Ogp.ToString() == "0" ? "-" : s3.Ogp.ToString()),
+                                //            new XAttribute("vOgrPorozh", "-"),
+                                //            new XAttribute("radius", radius),
+                                //            new XAttribute("elevation", vozvihenie),
+                                //            new XAttribute("strelka", s3.Primech.Contains("Стр.;") ? 1 : s3.Strelka),
+                                //            new XAttribute("primech", s3.Primech.Contains("м;") ? "м" : s3.Primech.Contains("ис") ? "ис" : s3.Primech.Contains("гр") ? "гр" : "-")
+                                //            );
+
+                                //    tripElem.Add(xeNote);
+                                //}
                                 else
                                 {
                                     XElement xeNote = new XElement("Note",
-                                            new XAttribute("codDorogi", s3.Roadcode),
+                                            new XAttribute("codDorogi", s3.Roadcode == null ? "" : s3.Roadcode),
                                             new XAttribute("codNapr", s3.Directcode == null ? "" : s3.Directcode),
-                                            new XAttribute("classput", trackclasses.First().Class_Id),
+                                            new XAttribute("classput", trackclasses.Count == 0 ? "" : trackclasses.First().Class_Id.ToString()),
 
                                             new XAttribute("pch", distance.Code),
                                             new XAttribute("checkDate", s3.Date.ToString("dd/MM/yyyy")),
                                             new XAttribute("nomerPS", s3.Pscode == null ? "" : s3.Pscode),
-                                            new XAttribute("nomerPuti", s3.Nput),
+                                            new XAttribute("nomerPuti", trackName),
                                             new XAttribute("km", s3.Km),
                                             new XAttribute("m", s3.Meter),
                                             new XAttribute("vidOts", s3.Ots),
@@ -682,6 +773,8 @@ namespace ALARm_Report.Forms
                                             new XAttribute("strelka", s3.Primech.Contains("Стр.;") ? 1 : s3.Strelka),
                                             new XAttribute("primech", s3.Primech.Contains("м;") ? "м" : s3.Primech.Contains("ис") ? "ис" : s3.Primech.Contains("гр") ? "гр" : "-")
                                             );
+                                
+
 
 
                                     tripElem.Add(xeNote);

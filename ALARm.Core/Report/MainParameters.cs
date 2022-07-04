@@ -665,7 +665,7 @@ namespace ALARm.Core.Report
                                 }
                             }
 
-
+                            //надо проверить на ошибки
                             var start_lvl_kmc = lvl_circular.First().Km;
                             var start_lvl_mc = lvl_circular.First().M;
                             var final_lvl_kmc = lvl_circular.Last().Km;
@@ -924,6 +924,9 @@ namespace ALARm.Core.Report
 
                 if (pru_dig_list.Any())
                     MainTrackStructureRepository.Pru_write(kilometer.Track_id, kilometer, pru_dig_list);
+
+                if (curve_bpd_list.Any())
+                    MainTrackStructureRepository.Bpd_write(kilometer.Track_id, kilometer, curve_bpd_list);
 
                 // добавление ПрУ и натурные значения кривой
                 kilometer.Digressions = Curve_nature_value;
@@ -1410,6 +1413,7 @@ namespace ALARm.Core.Report
                 //ПРУ
                 var PasSpeed = kilometer.Speeds.Any() ? kilometer.Speeds.First().Passenger : -1;
                 var pru_dig_list = new List<DigressionMark> { };
+                var curve_bpd_list = new List<DigressionMark> { };
                 var Curve_nature_value = new List<DigressionMark>();
 
                 foreach (var bpd_curve in kilometer.Curves)
@@ -1582,17 +1586,16 @@ namespace ALARm.Core.Report
                         }
                     }
 
-                    //if (!curve_bpd_list.Any())
-                    //{
-                    //    curve_bpd_list.Add(new DigressionMark()
-                    //    {
-                    //        Km = -999,
-                    //        Meter = first_pmeter,
+                   //if (!curve_bpd_list.Any())
+                   {
+                        curve_bpd_list.Add(new DigressionMark()
+                        {
+                            Km = -999,
+                            Meter = first_pmeter,
 
-                    //        Alert = $"{first_pmeter - 30}  Паспорт R:{ str} h:{lvl}"
-                    //    });
-                    //}
-
+                            Alert = $"{first_pmeter - 30}  Паспорт R:{ str} h:{lvl}"
+                        });
+                    }
 
                     //if (curve_bpd_list.Any())
                     // curve_bpd_list.Select()
@@ -1603,6 +1606,8 @@ namespace ALARm.Core.Report
 
                 if (pru_dig_list.Any())
                     MainTrackStructureRepository.Pru_write(kilometer.Track_id, kilometer, pru_dig_list);
+                if (curve_bpd_list.Any())
+                    MainTrackStructureRepository.Bpd_write(kilometer.Track_id, kilometer, curve_bpd_list);
 
                 // добавление ПрУ и натурные значения кривой
                 kilometer.Digressions = Curve_nature_value;

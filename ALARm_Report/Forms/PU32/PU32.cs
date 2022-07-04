@@ -2308,6 +2308,7 @@ namespace ALARm_Report.Forms
 				Oshk = t1.Oshk + t2.Oshk,
 				Iznos = t1.Iznos + t2.Iznos,
 				NerProf = t1.NerProf + t2.NerProf,
+				
 				Zazor = t1.Zazor + t2.Zazor,
 
 				DirectionCode = t1.DirectionCode,
