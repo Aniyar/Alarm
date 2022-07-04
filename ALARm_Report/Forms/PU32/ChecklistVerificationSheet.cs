@@ -1,4 +1,4 @@
-﻿using ALARm.Core;
+using ALARm.Core;
 using ALARm.Core.Report;
 using ALARm.Services;
 using ALARm_Report.controls;
