@@ -2979,16 +2979,11 @@ begin
 
       if (1548 <= D_sh) and (D_sh < 1549) then
         D_sh := 1548; // 11.03.2012
-           if (D_sh <1535 )then
-          begin
+
            F_sh11[U_IND] := D_sh;
                 F_sh[U_IND] := D_sh;
-            end;
-               if (D_sh >1535 )then
-          begin
-           F_sh11[U_IND] := 1535+D_ur2/4;
-                F_sh[U_IND] := 1535+D_ur2/4;
-            end;
+
+
       F_Wear[U_IND] := 0;
       F_Pr2[U_IND] := round(kfPro * D_ur2); //
       F_Pr1[U_IND] := round(kfPro * D_ur1); //

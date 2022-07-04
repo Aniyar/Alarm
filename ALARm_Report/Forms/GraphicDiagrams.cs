@@ -266,11 +266,18 @@ namespace ALARm_Report.Forms
                 switch (crossTie.Crosstie_type_id)
                 {
                     case (int)CrosTieType.Before96:
+                        //ctype = "1";
                         ctype = "1,8,1,2,1,2";
                         break;
-                    case (int)CrosTieType.Concrete:
+                    case (int)CrosTieType.After96:
+                        // ctype = "2";
                         ctype = "1,8,1,2";
                         break;
+                    case (int)CrosTieType.Woody:
+                        // ctype = "2";
+                        ctype = "1,8";
+                        break;
+
                 }
                 result.Add(new XElement("crosstie",
                     new XAttribute("sw", ctype),

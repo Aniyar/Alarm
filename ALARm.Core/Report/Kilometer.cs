@@ -658,8 +658,6 @@ namespace ALARm.Core
 
             //birinshi
             var outData = rdStructureRepository.GetNextOutDatas(Start_Index - 1, GetLength() - 1, Trip.Id);
-            if (this.Number == 707)
-                this.Number = this.Number;
             GetZeroLines(outData, Trip, mainTrackStructureRepository);
             //var profileData = rdStructureRepository.GetNextProfileDatas(Start_Index - 1, GetLength() - 1, Trip.Id);
 
@@ -1124,7 +1122,7 @@ namespace ALARm.Core
                            {
                                NotMoveAlert = true,
                                Meter = coord,
-                               Alert = $"{coord} Привязка координат: {(CorrectionType == CorrectionType.Manual ? "РП" : "АП")} коррекция; начальной привязки на {CorrectionValue}   метр"
+                               Alert = $"{coord} Привязка координат: {(CorrectionType == CorrectionType.Manual ? "РП" : "АП")} коррекция;  привязка на {CorrectionValue}   м."
                            }) ;
                         var ANIAYRAMOLODEC = rdStructureRepository.InsertCorrection(trip.Id, Track_id, Number, coord, CorrectionValue);
 
@@ -1150,13 +1148,13 @@ namespace ALARm.Core
                     if (RepairProjects[0].Start_Km == Number)
                     {
                         Sector = mainTrackStructureRepository.GetSector(Track_id, Number - 1, trip.Trip_date) ?? "";
-                        Digressions.Add(new DigressionMark() { NotMoveAlert = true, Meter = RepairProjects[0].Start_M, Alert = $"{RepairProjects[0].Start_M} {RepairProjects[0].Repair_date.ToString("dd.MM.yyyy")} {RepairProjects[0].Type_id };" });
+                        Digressions.Add(new DigressionMark() { NotMoveAlert = true, Meter = RepairProjects[0].Start_M, Alert = $" {"↑"}{RepairProjects[0].Start_M}  {(RepairProjects[0].Type_id == 1 ? "Кап.ремонт" : RepairProjects[0].Type_id == 2 ? "Сред.ремонт" : RepairProjects[0].Type_id == 3 ? "Кап.Ус.ремонт " : "Не определенно") }  {RepairProjects[0].Repair_date.ToString("MM.yyyy")} ;" });
                     }
                     else
                     if (RepairProjects[0].Final_Km == Number)
                     {
                         Sector = mainTrackStructureRepository.GetSector(Track_id, Number + 1, trip.Trip_date) ?? "";
-                        Digressions.Add(new DigressionMark() { NotMoveAlert = true, Meter = RepairProjects[0].Final_M, Alert = $"{RepairProjects[0].Repair_date.ToString("dd.MM.yyyy")} {RepairProjects[0].Type_id} " });
+                        Digressions.Add(new DigressionMark() { NotMoveAlert = true, Meter = RepairProjects[0].Final_M, Alert = $"{"↓"} {RepairProjects[0].Final_M}   {(RepairProjects[0].Type_id==1 ?"Кап.ремонт": RepairProjects[0].Type_id==2?"Сред.ремонт": RepairProjects[0].Type_id == 3? "Кап.Ус.ремонт ":"Не определенно")}  {RepairProjects[0].Repair_date.ToString("MM.yyyy")}; " });
                     }
                 }
                 //if (Runninin.Count > 0)
