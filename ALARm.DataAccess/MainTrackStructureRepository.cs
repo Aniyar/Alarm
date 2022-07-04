@@ -2410,7 +2410,7 @@ namespace ALARm.DataAccess
                             INNER JOIN ADM_TRACK as atr on atr.ID = tp.ADM_TRACK_ID 
                             WHERE @travelDate BETWEEN tp.START_DATE and tp.FINAL_DATE 
                             and atr.id = @trackId 
-                            and aac.START_KM <= @ncurkm and aac.FINAL_KM >= @ncurkm ", new { ncurkm = nkm, travelDate = date, trackId = track_id }).ToList();
+                            and aac.START_KM <= @ncurkm and aac.FINAL_KM > @ncurkm ", new { ncurkm = nkm, travelDate = date, trackId = track_id }).ToList();
                     case MainTrackStructureConst.MtoLongRails:
                         return db.Query<LongRails>(@"Select acu.* from APR_LONG_RAILS as acu 
                             INNER JOIN TPL_PERIOD as tp on tp.ID = acu.PERIOD_ID 
