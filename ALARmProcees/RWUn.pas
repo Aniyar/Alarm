@@ -1719,7 +1719,7 @@ var
     psiStep, pro1, pro2, psiLen: INTEGER;
   Vogr, xVogr: INTEGER;
   x1, x11, x12, x2, x3, x4, kij, kij2, km1, km2, m1, m2, a0, b0, ab, c, d,
-    current_coord, x1_psi, x2_psi, x3_psi, x4_psi: real;
+ pp,   current_coord, x1_psi, x2_psi, x3_psi, x4_psi: real;
   jal1, jal2, jal3, jal4, KrivHaving: boolean;
   PsiRanges: array of PsiAnp;
   ots: string;
@@ -1728,6 +1728,7 @@ begin
   Vmx := GlobPassSkorost;
   k := 0;
   R_i := 100000;
+
   min_Vdps := 10000;
   min_Vdps2 := 10000;
   min_Vd_psi := 10000;
@@ -1781,8 +1782,8 @@ begin
       setlength(ANP_GUs2, high(Fsr_rh1) + 1);
 
 
-      F_Vmax := MaxIntValue(F_V);
-      F_Vgmax := MaxIntValue(F_Vg);
+      F_Vmax := MaxIntValue(F_V)*MaxIntValue(F_V);
+      F_Vgmax := MaxIntValue(F_Vg)*MaxIntValue(F_Vg);
       for i := 0 to high(Fsr_rh1) - 20 do
       begin
         current_coord := CoordinateToReal(GlbKmTrue, F_Mtr[i]);
@@ -1802,6 +1803,7 @@ begin
 
         ANP_Hi := abs(TrapezLevel[i]); // abs(Fsr_Urb[i]);
             R_i := 17860 / (abs(ST_AVG[i]+F_fluk[i]/2.0) + 0.01);
+
         ANP_R_i := 17860 / (abs(TrapezStr[i]) + 0.00000001);
 
         Vdps := trunc(sqrt((CNepUsk + abs(kfforAnp * Hi)) * 13 * R_i) / 5) * 5;
@@ -1833,10 +1835,10 @@ begin
           An[k] := F_Mtr[i];
           setlength(V_psi, k + 1);
           V_psi[k] := F_V[i];
-          Us[k] := (F_Vmax / (13.0 * R_i) - kfforAnp * abs(Fsr_Urb[i]));
+          Us[k] := F_Vmax / (13.0 * R_i) - kfforAnp*Hi;
           // abs(Fsr_Urb[i]);
 
-          Us2[k] := (F_Vgmax / (13.0 * R_i) - kfforAnp * abs(Fsr_Urb[i]));
+          Us2[k] := F_Vgmax / (13.0 * R_i) - kfforAnp*Hi;
           // abs(Fsr_Urb[i]);
 
           k := k + 1;
@@ -2977,10 +2979,16 @@ begin
 
       if (1548 <= D_sh) and (D_sh < 1549) then
         D_sh := 1548; // 11.03.2012
-
-      F_sh11[U_IND] := D_sh;
-      F_sh[U_IND] := D_sh;
-
+           if (D_sh <1535 )then
+          begin
+           F_sh11[U_IND] := D_sh;
+                F_sh[U_IND] := D_sh;
+            end;
+               if (D_sh >1535 )then
+          begin
+           F_sh11[U_IND] := 1535+D_ur2/4;
+                F_sh[U_IND] := 1535+D_ur2/4;
+            end;
       F_Wear[U_IND] := 0;
       F_Pr2[U_IND] := round(kfPro * D_ur2); //
       F_Pr1[U_IND] := round(kfPro * D_ur1); //

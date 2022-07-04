@@ -42,7 +42,7 @@ namespace ALARm_Report.Forms
             XDocument htReport = new XDocument();
             using (XmlWriter writer = htReport.CreateWriter())
             {
-                
+                }
 
                 var distance = AdmStructureService.GetUnit(AdmStructureConst.AdmDistance, distanceId) as AdmUnit;
                 var road = AdmStructureService.GetRoadName(distance.Id, AdmStructureConst.AdmDistance, true);
@@ -81,7 +81,7 @@ namespace ALARm_Report.Forms
                         filters.Add(new INTFilter() { Name = "KM", Value = km });
                         filters.Add(new INTFilter() { Name = "meter", Value = meter });
                         filterForm.SetDataSource(filters);
-                        
+
                         if (filterForm.ShowDialog() == DialogResult.Cancel)
                             return;
 
@@ -108,13 +108,12 @@ namespace ALARm_Report.Forms
                         data = Blazor_prov_data.in_kupe.ReadBytes(8);
                         Blazor_prov_data.in_kupe_count = BitConverter.ToSingle(data, 0);
                         Blazor_prov_data.in_kupe_size = BitConverter.ToSingle(data, 4);
+                        
 
                         Blazor_prov_data.GetBitmapAsync(km, meter);
 
                         var DB_gauge = AdditionalParametersService.GetGaugeFromDBkmmter(km,meter, process.Trip_id);
 
-                        //var ProfileData = AdditionalParametersService.GetProfileDataByKmMeter(km, meter, process.Trip_id);
-                        //var railstype = "";
 
 
                         XElement xePages = new XElement("pages",
@@ -211,9 +210,10 @@ namespace ALARm_Report.Forms
                                     xePages.Add(PointsRight);
                                 }
                             }
+                        }
 
-                            report.Add(xePages);
-                      
+                        report.Add(xePages);
+
                     }
                 }
 
@@ -549,7 +549,7 @@ namespace ALARm_Report.Forms
 
                     PointsLeft = vector.ToArray();
                     ViewBoxLeft = viewBox;
-                    
+
                     Kms.Add(Kilometer);
                     Meters.Add(Meter);
                 }
@@ -1024,7 +1024,7 @@ namespace ALARm_Report.Forms
                 default:
                     return;
             }
-           
+
 
 
             double maxY = arrY.Max();
