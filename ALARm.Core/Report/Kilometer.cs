@@ -1670,7 +1670,27 @@ namespace ALARm.Core
                 }
                 
             }
-      
+
+            //var kright = 0;
+            //var kleft = 0;
+            //var dx1 = flvl0.Count() - 1;
+            //var dx2 = flvl0.Count() - 10;
+            //int ik = 0;
+            //if (flvl0.Count() > 100)
+            //{
+            //    for (int i = flvl0.Count() - 1; i < flvl0.Count() + 50; i++)
+            //    {
+            //        ik =
+            //        flvl0.Add(flvl0((dx1 - dx2) / 10));
+            //    }
+
+
+            //    for (int i = 1; i < 100; i++)
+            //    {
+
+
+            //    }
+            //}
 
 
             for (int i = 0; i < fsh0.Count - 1; i++)
@@ -2291,9 +2311,11 @@ namespace ALARm.Core
                                     }
                                 }
                                 
+                                  //  if ((ModifiedCurveLvl.Count() > InternalIndex + prevCurveDataDiv + 2) && (InternalIndex + prevCurveDataDiv > 0) && (j < sign.Count) && (j < flvl0.Count))
                                     if ((ModifiedCurveLvl.Count() > InternalIndex + prevCurveDataDiv + 2) && (InternalIndex + prevCurveDataDiv > 0) && (j < sign.Count) && (j < flvl0.Count))
-                                {
-                                    //flvl0[j] = 0;
+
+                                    {
+
                                     flvl0[j] = sign[j] * Math.Abs(ModifiedCurveLvl[InternalIndex + prevCurveDataDiv]);
                                     InternalIndex++;
                                 }
