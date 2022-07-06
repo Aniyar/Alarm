@@ -1714,7 +1714,7 @@ namespace ALARm_Report.Forms
 					new XAttribute("PRU", distanceTotal.Pru),
 					new XAttribute("OSHK", distanceTotal.Oshk),
 					new XAttribute("IZNOS", distanceTotal.Iznos),
-					new XAttribute("ZAZOR", distanceTotal.ZazorV.ToString() + "(" + distanceTotal.Zazor.ToString() + ")"), //
+					new XAttribute("ZAZOR", distanceTotal.Zazor.ToString() + "(" + distanceTotal.ZazorV.ToString() + ")"), //
 					new XAttribute("NEROVNOSTY", distanceTotal.NerProf),
 					//
 
@@ -1941,7 +1941,7 @@ namespace ALARm_Report.Forms
 					new XAttribute("PRU", sectionTotal.Pru),
 					new XAttribute("OSHK", sectionTotal.Oshk),
 					new XAttribute("IZNOS", sectionTotal.Iznos),
-					new XAttribute("ZAZOR", sectionTotal.ZazorV.ToString() + "(" + sectionTotal.Zazor.ToString() + ")"), //
+					new XAttribute("ZAZOR", sectionTotal.Zazor.ToString() + "(" + sectionTotal.ZazorV.ToString() + ")"), //
 					new XAttribute("NEROVNOSTY", sectionTotal.NerProf),
 					//
 					new XAttribute("other", (sectionTotal.Combination + sectionTotal.Curves + sectionTotal.Other)),

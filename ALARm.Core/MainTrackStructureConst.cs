@@ -33,6 +33,7 @@
         public const int MtoStationSection = 10;
         //кривые участки қисық жолдар
         public const int MtoCurve = 11;
+        
         //кривой участок уровень
         public const int MtoElCurve = 12;
         //рихтовочная нить
@@ -84,6 +85,8 @@
         public const int MtoBallastType = 36;
         public const int MtoDimension = 37;
         public const int MtoFragment = 28;
+        //кривые участки по пасспорту қисық жолдар
+        public const int MtoCurveBPD = 38;
 
 
         public const int CatSide = 1000;

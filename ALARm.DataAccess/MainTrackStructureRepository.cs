@@ -2322,12 +2322,12 @@ namespace ALARm.DataAccess
 
                     case MainTrackStructureConst.MtoDistSection:
                     case MainTrackStructureConst.MtoCurve:
-                        var curves = db.Query<Curve>(@"Select cs.NAME as Side, acu.*, curve.radius 
+                        var curves = db.Query<Curve>(@"Select acu.*, cs.NAME as Side , curve.radius
                             from APR_CURVE as acu 
                             INNER JOIN CAT_SIDE as cs on cs.ID = acu.SIDE_ID 
                             INNER JOIN TPL_PERIOD as tp on tp.ID = acu.PERIOD_ID 
                             INNER JOIN ADM_TRACK as atr on atr.ID = tp.ADM_TRACK_ID
-	                        INNER JOIN apr_stcurve as curve ON curve.curve_id = acu.id
+	                          INNER JOIN apr_stcurve as curve ON curve.curve_id = acu.id
                             WHERE @travelDate BETWEEN tp.START_DATE and tp.FINAL_DATE 
                             and atr.id = @trackId 
                             and acu.START_KM <= @ncurkm and acu.FINAL_KM >= @ncurkm order by acu.START_KM, acu.START_M", new { ncurkm = nkm, travelDate = date, trackId = track_id }).ToList();
@@ -2354,6 +2354,41 @@ namespace ALARm.DataAccess
                                 order by elcurve.start_km * 10000 + elcurve.start_m").ToList();
                         }
                         return curves;
+
+                    case MainTrackStructureConst.MtoCurveBPD:
+                        var curvesBPD = db.Query<Curve>(@"Select acu.curve_id as id, acu.start_km, acu.start_m, acu.final_km, acu.final_m, acu.radius, curve.period_id, curve.side_id, cs.NAME as Side
+                            from apr_stcurve as acu 
+														INNER JOIN APR_CURVE as curve ON curve.id = acu.curve_id
+														INNER JOIN CAT_SIDE as cs on cs.ID = curve.SIDE_ID 
+														INNER JOIN TPL_PERIOD as tp on tp.ID = curve.PERIOD_ID 
+														INNER JOIN ADM_TRACK as atr on atr.ID = tp.ADM_TRACK_ID
+														WHERE @travelDate BETWEEN tp.START_DATE and tp.FINAL_DATE
+													and atr.id = @trackId 	
+                            and acu.START_KM = @ncurkm and acu.FINAL_KM = @ncurkm order by acu.START_KM, acu.START_M
+														", new { ncurkm = nkm, travelDate = date, trackId = track_id }).ToList();
+                        foreach (var curve in curvesBPD)
+                        {
+                            curve.Straightenings = db.Query<StCurve>($@"
+                             select stcurve.*, 
+                                getcoordbylen(stcurve.start_km, stcurve.start_m, stcurve.transition_1, period.adm_track_id, '{date:dd.MM.yyyy}') as firsttransitionend,
+                                getcoordbylen(stcurve.final_km, stcurve.final_m, -stcurve.transition_2, period.adm_track_id, '{date:dd.MM.yyyy}') as secondtransitionstart
+                             from apr_stcurve stcurve
+                                inner join apr_curve curve on curve.id = stcurve.curve_id
+                                inner join tpl_period period on period.id = curve.period_id
+                             where curve.id = {curve.Id}
+                                order by stcurve.start_km * 10000 + stcurve.start_m").ToList();
+
+                            curve.Elevations = db.Query<ElCurve>($@"
+                            select elcurve.*,
+                                getcoordbylen(elcurve.start_km, elcurve.start_m, elcurve.transition_1, period.adm_track_id, '{date.ToString("dd.MM.yyyy")}') as firsttransitionend,
+                                getcoordbylen(elcurve.final_km, elcurve.final_m, -elcurve.transition_2, period.adm_track_id, '{date.ToString("dd.MM.yyyy")}') as secondtransitionstart
+                             from apr_elcurve elcurve
+                                inner join apr_curve curve on curve.id = elcurve.curve_id
+                                inner join tpl_period period on period.id = curve.period_id
+                                where curve.id = {curve.Id}
+                                order by elcurve.start_km * 10000 + elcurve.start_m").ToList();
+                        }
+                        return curvesBPD;
            
                     case MainTrackStructureConst.MtoTempSpeed:
                         var ttt1 = $@"
