@@ -6259,8 +6259,15 @@ begin
     end;
 
     // --------------2 st ---------------------------------
+
+        if is2to3OnJoint then
+      begin
+        stv := 2;
+        WRih[ns].isEqualTo3 := true;
+      end  ;
     if ((s1 < belv) and (belv <= s2) and (0 < s1) and (0 < s2) and (delta <= D))
-      and not(is2to3OnJoint) then
+       then
+       //  and not(is2to3OnJoint) then
           //then
     begin
      // if isriht and ( ns>0)and   (  abs(WRih[ns].L0-Lmv ) >75) and  ( abs(WRih[ns].Lm-L0v ) >75  )
@@ -6302,19 +6309,27 @@ begin
       end
 
     end;
+
+    if Lmv >830then
+           belv := belv;
+
     is3onJoint := ((s2 < belv) and (belv <= s3) and (0 < s2) and (0 < s3) and
       (delta <= D)) and jointless;
     // ------------------3 st---------------------------------
-    if (((s2 < belv) and (belv <= s3) and (0 < s2) and (0 < s3) and (delta <= D)
-      ) and (not(is3onJoint)) or is2to3OnJoint) then
+    //if (((s2 < belv) and (belv <= s3) and (0 < s2) and (0 < s3) and (delta <= D)
+     // ) and (not(is3onJoint)) or is2to3OnJoint) then
+      if (((s2 < belv) and (belv <= s3) and (0 < s2) and (0 < s3) and (delta <= D)
+      )  ) then
+
+
     begin
-      GetV_Remont(3, L0v, Lmv, vt, vtg, belv);
-      if is2to3OnJoint then
-      begin
-        stv := 2;
-        WRih[ns].isEqualTo3 := true;
-      end
-      else
+     // GetV_Remont(3, L0v, Lmv, vt, vtg, belv);
+     // if is2to3OnJoint then
+      //begin
+       // stv := 2;
+       // WRih[ns].isEqualTo3 := true;
+      //end
+      //else
         stv := 3;
       WRih[ns].st := stv;
       WRih[ns].bel := belv;
@@ -6329,6 +6344,34 @@ begin
       WRih[ns].flg := GlbFlagRihtUbed;
       WRih[ns].isLong := temp[tempIndex].isLong;
       WRih[ns].isriht := isriht;
+
+      //    if (((s2 < belv) and (belv <= s3) and (0 < s2) and (0 < s3) and (delta <= D)
+      //) and (not(is3onJoint)) or is2to3OnJoint) then
+
+   // begin
+    //  GetV_Remont(3, L0v, Lmv, vt, vtg, belv);
+    //  if is2to3OnJoint then
+    //  begin
+    //    stv := 2;
+    //    WRih[ns].isEqualTo3 := true;
+    ///  end
+    //  else
+     //   stv := 3;
+     // WRih[ns].st := stv;
+     // WRih[ns].bel := belv;
+     // WRih[ns].L0 := L0v;
+     // WRih[ns].Lm := Lmv; // Lmv;     ////////bx3   Lmv;
+     // WRih[ns].v := vt;
+     // WRih[ns].vg := vtg;
+     // WRih[ns].vop := -1;
+     // WRih[ns].vog := -1;
+     // WRih[ns].Vrp := vr;
+     // WRih[ns].Vrg := Vrg;
+     // WRih[ns].flg := GlbFlagRihtUbed;
+      //WRih[ns].isLong := temp[tempIndex].isLong;
+      //WRih[ns].isriht := isriht;
+
+
 
 
       //if isriht and not(WRih[ns].onswitch) then
@@ -6504,7 +6547,7 @@ begin
       end;
 
 
-    if (belv >= s0) and (belv <= s1) then
+    if (belv >= s0) and (belv < s1) then
     begin
       fdDrawdown := fdDrawdown + 1;
       WPro[ns].st := 1;
@@ -6525,7 +6568,7 @@ begin
 
 
 
-    if (((s1 < belv) and (belv <= s2) and not(iso_joint)) or
+    if (((s1 <= belv) and (belv <= s2) and not(iso_joint)) or
       (iso_joint and (s1 < belv) and (belv <= s2) and (s1 <= belv + 2) and
       (belv + 2 <= s2))) and (Ln <= D) then
     begin
@@ -7187,11 +7230,11 @@ begin
 
 
             popr:=exp(-2*abs(h-10))  ;
-            if H <11 then     H:=H+popr;
-               if H2 <11 then     H2:=H2+popr;
+            if H <11 then     H:=H+1;
+               if H2 <11 then     H2:=H2+1;
                 h0:= abs(TrapezLevel[e1.index]- TrapezLevel[e2.index]  );
             //if (h>13)and (h0<=1)  then  H:=H/1.15;
-              if (h2>13)and (h0<=1)   then  H2:=H2/1.15;
+              if (h2>15)and (h0<=1)   then  H2:=H2/1.15;
 
 
 //      if H2>H then
@@ -8417,7 +8460,8 @@ begin
           isLong := false;
     i1 := e1.index;
     i2 := e2.index;
-
+      if  i1 >300 then
+          L0v := FmK[i1];
     if (i1 >= 0) and (i2 >= 0) and (0 < Ln) and (Ln <= D) then
     begin
       vt := F_V[i1];
@@ -8451,7 +8495,7 @@ begin
       //  belv := belv;
       // ln := ln div 2;
 
-      if (s0 > belv) then
+      if (s0 > belv +5) then
         continue;
 
       if ((length(temp) > 0) and ((temp[length(temp) - 1].bel > belv) or
@@ -9386,4 +9430,5 @@ end;
 
 end.
   ///  Aset
+
 
