@@ -453,8 +453,8 @@ namespace ALARm.Core.Report
 
                 if (sw.Start_Km != kilometer.Number && sw.Final_Km != kilometer.Number)
                     continue;
-                if (kilometer.Number.ToDoubleCoordinate(Math.Max(kilometer.Start_m, kilometer.Final_m)) < Math.Max(sw.RealStartCoordinate, sw.RealFinalCoordinate))
-                    continue;
+                //if (kilometer.Number.ToDoubleCoordinate(Math.Max(kilometer.Start_m, kilometer.Final_m)) < Math.Max(sw.RealStartCoordinate, sw.RealFinalCoordinate))
+                //    continue;
 
                 if (sw.Start_M > kilometer.Final_m)
                     continue;
@@ -829,7 +829,7 @@ namespace ALARm.Core.Report
 
                     int meter = note.Meter.RoundTo10();
                     if (!((meter >= Start.RoundTo10()) && (meter < Number * 100)))
-                        meter = Start + 10;
+                        meter = Start + 30;
                     if (kilometer.StationSection.Any())
                         meter = Start + 20;
                     if (meter <= Start.RoundTo10() + 10)
