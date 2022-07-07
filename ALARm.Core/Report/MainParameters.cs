@@ -68,10 +68,10 @@ namespace ALARm.Core.Report
                 //if (previous != null)
                 // result.AddRange(previous.Curve.s);
 
-                result.AddRange(kilometer.CurvesBPD);
+                result.AddRange(kilometer.Curves.GroupBy(p => p.Id).Select(g => g.First()).ToList());
                 if (next != null)
                 {
-                    // result.AddRange(next.Curves);
+                    // result.AddRange(next.Curves); nb     
                     // var intersect = kilometer.Curves.Intersect(next.Curves);
                     //result.AddRange(intersect);
                 }
@@ -83,37 +83,24 @@ namespace ALARm.Core.Report
                     //var StrPoins = rdcs.Where(o => o.Point_str > 0).ToList();
                     var nn = kilometer.Number;
                     var curve_center_ind = rdcs.Count / 2;
-                    var rightCurve = new List<RDCurve>();
-                    var leftCurve = new List<RDCurve>();
                     //басын аяғын тауып алу Рихтовка
-                    for (int cInd = curve_center_ind; cInd < rdcs.Count; cInd++)
+                    RDCurve rightbound = rdcs[curve_center_ind], leftbound = rdcs[curve_center_ind];
+                    for (int cInd = rdcs.Count-1; cInd > curve_center_ind; cInd--)
                     {
-                        rightCurve.Add(rdcs[cInd]);
                         if (Math.Abs(rdcs[cInd].Trapez_str) < 0.1)
-                            break;
+                            continue;
+                        rightbound = rdcs[cInd];
+                        break;
                     }
-                    for (int cInd = curve_center_ind; cInd > 0; cInd--)
+                    for (int cInd = 0; cInd < curve_center_ind; cInd++)
                     {
-                        leftCurve.Add(rdcs[cInd]);
                         if (Math.Abs(rdcs[cInd].Trapez_str) < 0.1)
-                            break;
+                            continue;
+                        leftbound = rdcs[cInd];
+                        break;
                     }
-                    var strData = rdcs.Where(o => leftCurve.Last().X <= o.X && o.X <= rightCurve.Last().X).ToList();
+                    var strData = rdcs.Where(o => leftbound.X <= o.X && o.X <= rightbound.X).ToList();
 
-                    //кривойдан баска жерлерды тазалау
-                    for (int clearInd = 0; clearInd < rdcs.Count; clearInd++)
-                    {
-                        if (rdcs[clearInd].X < leftCurve.Last().X)
-                        {
-                            rdcs[clearInd].Trapez_str = 0;
-                            rdcs[clearInd].Avg_str = 0;
-                        }
-                        if (rdcs[clearInd].X > rightCurve.Last().X)
-                        {
-                            rdcs[clearInd].Trapez_str = 0;
-                            rdcs[clearInd].Avg_str = 0;
-                        }
-                    }
 
                     // трапециядан туынды алу
                     for (int fi = 0; fi < strData.Count - 4; fi++)
@@ -180,48 +167,22 @@ namespace ALARm.Core.Report
 
 
                     curve_center_ind = rdcs.Count / 2;
-                    var rightCurveLvl = new List<RDCurve>();
-                    var leftCurveLvl = new List<RDCurve>();
-                    //басын аяғын тауып алу Уровень
-                    for (int cInd = curve_center_ind; cInd < rdcs.Count; cInd++)
+                    RDCurve rightboundlvl = rdcs[curve_center_ind], leftboundlvl = rdcs[curve_center_ind];
+                    for (int cInd = rdcs.Count - 1; cInd > curve_center_ind; cInd--)
                     {
-                        rightCurveLvl.Add(rdcs[cInd]);
                         if (Math.Abs(rdcs[cInd].Trapez_level) < 0.1)
-                            break;
+                            continue;
+                        rightboundlvl = rdcs[cInd];
+                        break;
                     }
-                    for (int cInd = curve_center_ind; cInd > 0; cInd--)
+                    for (int cInd = 0; cInd < curve_center_ind; cInd++)
                     {
-                        leftCurveLvl.Add(rdcs[cInd]);
                         if (Math.Abs(rdcs[cInd].Trapez_level) < 0.1)
-                            break;
+                            continue;
+                        leftboundlvl = rdcs[cInd];
+                        break;
                     }
-                    var LvlData = rdcs.Where(o => leftCurveLvl.Last().X <= o.X && o.X <= rightCurveLvl.Last().X).ToList();
-                    //кривойдан баска жерлерды тазалау
-                    for (int clearInd = 0; clearInd < rdcs.Count; clearInd++)
-                    {
-                        if (rdcs[clearInd].X < leftCurveLvl.Last().X)
-                        {
-                            rdcs[clearInd].Trapez_level = 0;
-                            rdcs[clearInd].Avg_level = 0;
-                            rdcs[clearInd].Level = 0;
-
-                            rdcs[clearInd].PassBoost_anp = 0;
-                            rdcs[clearInd].PassBoost = 0;
-                            rdcs[clearInd].FreightBoost_anp = 0;
-                            rdcs[clearInd].FreightBoost = 0;
-                        }
-                        if (rdcs[clearInd].X > rightCurveLvl.Last().X)
-                        {
-                            rdcs[clearInd].Trapez_level = 0;
-                            rdcs[clearInd].Avg_level = 0;
-                            rdcs[clearInd].Level = 0;
-
-                            rdcs[clearInd].PassBoost = 0;
-                            rdcs[clearInd].PassBoost_anp = 0;
-                            rdcs[clearInd].FreightBoost = 0;
-                            rdcs[clearInd].FreightBoost_anp = 0;
-                        }
-                    }
+                    var LvlData = rdcs.Where(o => leftboundlvl.X <= o.X && o.X <= rightboundlvl.X).ToList();
 
                     // трапециядан туынды алу
                     for (int fi = 0; fi < LvlData.Count - 4; fi++)
@@ -313,9 +274,9 @@ namespace ALARm.Core.Report
                     List<List<RDCurve>> vershl = flaglvl ? vershListLVL : vershList;
                     for (int i=1; i < vershl.Count; i = i+2)
                     {
-                        var item = vershl[i];
-                        var r = item.Select(o => o.Trapez_str).Average();
-                        var h = item.Select(o => o.Trapez_level).Average();
+                        var item = vershl[i];  
+                        var r = item.Select(o => o.Trapez_str).Max();
+                        var h = item.Select(o => o.Trapez_level).Max();
                         var avgmeterbyItem = item.Select(o => o.M).Average();
                         xx = xx + 1;
                         // var metr= item.Select(o => o.Trapez_level).;
@@ -333,66 +294,65 @@ namespace ALARm.Core.Report
                             maxAnp = item;
                         }
 
-
-                        if (kilometer.Number == 715)
-                        {
-                            h = item.Select(o => o.Trapez_level).Average();
-                            avgmeterbyItem = item.Select(o => o.M).Average();
-                        }
-
-                        if (kilometer.Number != rdcs[curve_center_ind].Km)
-                            continue;
+                        //if (kilometer.Number != rdcs[curve_center_ind].Km)
+                        //    continue;
 
                         if (Math.Abs(h) < 4)
                             continue;
 
+                        int curvestrindex = result.IndexOf(bpd_curve) < bpd_curve.Straightenings.Count ? result.IndexOf(bpd_curve) : 0;
+                        var passportcurves = kilometer.CurvesBPD.Where(o => o.Id == bpd_curve.Id).ToList();
+                        Curve curvepass = passportcurves.Count() > i / 2 ? passportcurves[i / 2] : passportcurves.First();
+                        int startm = (int)curvepass.Start_M + (int)curvepass.Elevations[0].Transition_1;
+
                         pru_dig_list.Add(new DigressionMark()
                         {
                             Km = item.First().Km,
-                            Meter = (int)avgmeterbyItem,
-
+                            Meter = (item.First().Km == item.Last().Km) ? (int)avgmeterbyItem : startm,
                             Alert = $"кривая факт. R:{ (17860 / Math.Abs(r)):0} H:{ Math.Abs(h):0}"
                         });
 
 
-                        if (!curve_bpd_list.Any())
+                        var curvelistitem = new DigressionMark()
                         {
-                            curve_bpd_list.Add(new DigressionMark()
-                            {
-                                Km = item.First().Km,
-                                lvl = (int)bpd_curve.Elevations[0].Lvl,
-                                Radius = bpd_curve.Radius,
-                                Meter = (int)bpd_curve.Start_M + (int)bpd_curve.Elevations[0].Transition_1,
-                                Alert = $" { (int)bpd_curve.Start_M + (int)bpd_curve.Elevations[0].Transition_1 } R:{bpd_curve.Radius} h:{bpd_curve.Elevations[0].Lvl} Ш:{bpd_curve.Straightenings[result.IndexOf(bpd_curve)].Width} И:{bpd_curve.Straightenings[result.IndexOf(bpd_curve)].Wear} "
-                            });
+                            Km = item.First().Km,
+                            lvl = (int)bpd_curve.Elevations[0].Lvl,
+                            Radius = bpd_curve.Radius,
+                            Meter = (item.First().Km == item.Last().Km) ? (int)avgmeterbyItem - 30 : startm- 30,
+                            Alert = $" { startm } R:{bpd_curve.Radius} h:{bpd_curve.Elevations[0].Lvl} Ш:{bpd_curve.Straightenings[curvestrindex].Width} И:{bpd_curve.Straightenings[curvestrindex].Wear} "
+                        };
+
+                        if (!curve_bpd_list.Contains(curvelistitem))
+                        {
+                            curve_bpd_list.Add(curvelistitem);
                         }
 
 
-                        bool pr1 = false;
-                        bool pr2 = false;
-                        int prMeter = 0;
-                        int prlvl = 0;
-                        int prrad = 0;
+                        //bool pr1 = false;
+                        //bool pr2 = false;
+                        //int prMeter = 0;
+                        //int prlvl = 0;
+                        //int prrad = 0;
 
-                        var prr1 = false;
+                        //var prr1 = false;
 
-                        var prr2 = false;
-                        var newrad = false;
-                        if (curve_bpd_list[curve_bpd_list.Count - 1].Meter != (int)avgmeterbyItem - 30) prr1 = true;
-                        if (curve_bpd_list[0].Meter != (int)avgmeterbyItem - 30) prr2 = true;
+                        //var prr2 = false;
+                        //var newrad = false;
+                        //if (curve_bpd_list[curve_bpd_list.Count - 1].Meter != (int)avgmeterbyItem - 30) prr1 = true;
+                        //if (curve_bpd_list[0].Meter != (int)avgmeterbyItem - 30) prr2 = true;
                         //  (curve_bpd_list[0].lvl != (int)bpd_curve.Elevations[0].Lvl)||
                      
-                        if (((prr1 && prr2)) && curve_bpd_list.Any())
-                        {
-                            curve_bpd_list.Add(new DigressionMark()
-                            {
-                                lvl = (int)bpd_curve.Elevations[0].Lvl,
-                                Km = item.First().Km,
-                                Radius = bpd_curve.Radius,
-                                Meter = (int)bpd_curve.Start_M + (int)bpd_curve.Elevations[0].Transition_1,
-                                Alert = $" {(int)bpd_curve.Start_M + (int)bpd_curve.Elevations[0].Transition_1 } R:{bpd_curve.Radius} h:{bpd_curve.Elevations[0].Lvl} Ш:{bpd_curve.Straightenings[result.IndexOf(bpd_curve)].Width} И:{bpd_curve.Straightenings[result.IndexOf(bpd_curve)].Wear} "
-                            });
-                        }
+                        //if (((prr1 && prr2)) && curve_bpd_list.Any())
+                        //{
+                        //    curve_bpd_list.Add(new DigressionMark()
+                        //    {
+                        //        lvl = (int)bpd_curve.Elevations[0].Lvl,
+                        //        Km = item.First().Km,
+                        //        Radius = bpd_curve.Radius,
+                        //        Meter = (int)curvepass.Start_M + (int)curvepass.Elevations[0].Transition_1,
+                        //        Alert = $" {(int)curvepass.Start_M + (int)curvepass.Elevations[0].Transition_1 } R:{bpd_curve.Radius} h:{bpd_curve.Elevations[0].Lvl} Ш:{bpd_curve.Straightenings[curvestrindex].Width} И:{bpd_curve.Straightenings[curvestrindex].Wear} "
+                        //    });
+                        //}
 
                         lvl = (int)h;
 

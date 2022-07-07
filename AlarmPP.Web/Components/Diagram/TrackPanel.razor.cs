@@ -675,7 +675,7 @@ namespace AlarmPP.Web.Components.Diagram
                 var mainParameters = new ALARm.Core.Report.MainParameters(RdStructureRepository, MainTrackStructureRepository, AdmStructureRepository);
                 var template = RdStructureRepository.GetReportTemplate("MainParametersOnline");
                 mainParameters.diagramName = "Дубликат";
-                mainParameters.ProcessRegion(template, AppData.Kilometers[prevIndex], AppData.Trip, false, AppData.CurrentKmMeter);
+                //mainParameters.ProcessRegion(template, AppData.Kilometers[prevIndex], AppData.Trip, false, AppData.CurrentKmMeter);
             }
             await JSRuntime.InvokeVoidAsync("loader", false);
         }

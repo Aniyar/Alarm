@@ -2322,7 +2322,7 @@ namespace ALARm.DataAccess
 
                     case MainTrackStructureConst.MtoDistSection:
                     case MainTrackStructureConst.MtoCurve:
-                        var curves = db.Query<Curve>(@"Select acu.*, cs.NAME as Side , curve.radius
+                        var curves = db.Query<Curve>(@"Select distinct acu.*, cs.NAME as Side , curve.radius
                             from APR_CURVE as acu 
                             INNER JOIN CAT_SIDE as cs on cs.ID = acu.SIDE_ID 
                             INNER JOIN TPL_PERIOD as tp on tp.ID = acu.PERIOD_ID 
@@ -2356,7 +2356,7 @@ namespace ALARm.DataAccess
                         return curves;
 
                     case MainTrackStructureConst.MtoCurveBPD:
-                        var curvesBPD = db.Query<Curve>(@"Select acu.curve_id as id, acu.start_km, acu.start_m, acu.final_km, acu.final_m, acu.radius, curve.period_id, curve.side_id, cs.NAME as Side
+                        var curvesBPD = db.Query<Curve>(@"Select distinct acu.curve_id as id, acu.start_km, acu.start_m, acu.final_km, acu.final_m, acu.radius, curve.period_id, curve.side_id, cs.NAME as Side
                             from apr_stcurve as acu 
 														INNER JOIN APR_CURVE as curve ON curve.id = acu.curve_id
 														INNER JOIN CAT_SIDE as cs on cs.ID = curve.SIDE_ID 
@@ -2364,7 +2364,7 @@ namespace ALARm.DataAccess
 														INNER JOIN ADM_TRACK as atr on atr.ID = tp.ADM_TRACK_ID
 														WHERE @travelDate BETWEEN tp.START_DATE and tp.FINAL_DATE
 													and atr.id = @trackId 	
-                            and acu.START_KM = @ncurkm and acu.FINAL_KM = @ncurkm order by acu.START_KM, acu.START_M
+                            and acu.START_KM <= @ncurkm and acu.FINAL_KM >= @ncurkm order by acu.START_KM, acu.START_M
 														", new { ncurkm = nkm, travelDate = date, trackId = track_id }).ToList();
                         foreach (var curve in curvesBPD)
                         {
