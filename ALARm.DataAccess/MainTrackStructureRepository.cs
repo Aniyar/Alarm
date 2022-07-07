@@ -468,7 +468,6 @@ namespace ALARm.DataAccess
                             where {coord} between pdb.start_km * 10000 + pdb.start_m and pdb.final_km * 10000 + pdb.final_m").ToList();
 
                     case MainTrackStructureConst.MtoStCurve:
-
                         return db.Query<StCurve>(@"Select cs.NAME as Side, stcurve.* from apr_stcurve as stcurve
                             INNER JOIN APR_CURVE as acu on acu.id = stcurve.curve_id
                             INNER JOIN CAT_SIDE as cs on cs.ID = acu.SIDE_ID 

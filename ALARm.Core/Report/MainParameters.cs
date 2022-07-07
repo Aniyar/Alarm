@@ -99,6 +99,7 @@ namespace ALARm.Core.Report
                         leftbound = rdcs[cInd];
                         break;
                     }
+
                     var strData = rdcs.Where(o => leftbound.X <= o.X && o.X <= rightbound.X).ToList();
 
 

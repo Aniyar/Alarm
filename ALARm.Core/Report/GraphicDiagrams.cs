@@ -443,11 +443,6 @@ namespace ALARm.Core.Report
             {
                 // if (kilometer.Number.ToDoubleCoordinate(Math.Max(kilometer.Start_m, kilometer.Final_m)) < Math.Max(sw.RealStartCoordinate, sw.RealFinalCoordinate))
                 //     continue;
-
-                if (sw.Km == 711 && sw.Meter > 860 && sw.Meter < 900)
-                {
-
-                }
                 //if (sw.Start_Km != kilometer.Number && sw.Final_Km != kilometer.Number)
                 //    continue;
 
