@@ -366,8 +366,8 @@ namespace ALARm.Core.Report
                 result.Add(new XElement("crosstie",
                     new XAttribute("sw", ctype),
                     new XAttribute("st", color),
-                    new XAttribute("y1", -y1),
-                    new XAttribute("y2", -y2)
+                    new XAttribute("y1", -start),
+                    new XAttribute("y2", -final)
                     ));
             }
             var longRailses = MainTrackStructureRepository.GetMtoObjectsByCoord(travelDate, kilometer.Number, MainTrackStructureConst.MtoLongRails, trackId) as List<LongRails>;
@@ -380,8 +380,8 @@ namespace ALARm.Core.Report
 
                 result.Add(
                     new XElement("longRails",
-                    new XAttribute("y1", -y1),
-                    new XAttribute("y2", -y2))
+                    new XAttribute("y1", -start),
+                    new XAttribute("y2", -final))
                     );
             }
             //рисуем Изостыки
@@ -435,6 +435,8 @@ namespace ALARm.Core.Report
 
 
             }
+
+
             //рисуем стрелочные переводы
             var switches = MainTrackStructureRepository.GetMtoObjectsByCoord(travelDate, kilometer.Number,
                 MainTrackStructureConst.MtoSwitch, trackId) as List<Switch>;
@@ -444,7 +446,7 @@ namespace ALARm.Core.Report
                 // if (kilometer.Number.ToDoubleCoordinate(Math.Max(kilometer.Start_m, kilometer.Final_m)) < Math.Max(sw.RealStartCoordinate, sw.RealFinalCoordinate))
                 //     continue;
 
-                if (sw.Km == 711 && sw.Meter > 860 && sw.Meter < 900)
+                if (sw.Km == 711)
                 {
 
                 }
@@ -458,7 +460,7 @@ namespace ALARm.Core.Report
 
                 if (sw.Start_M > kilometer.Final_m)
                     continue;
-                if (sw.Start_M < kilometer.Start_m)
+                if (sw.Start_M + 10 < kilometer.Start_m)
                     continue;
                 var txtX = -sw.Length / 2;
                 int ostryak = kilometer.Number == sw.Start_Km ? sw.Start_M : 0;
@@ -508,10 +510,6 @@ namespace ALARm.Core.Report
                 string points = null;
 
 
-                if (sw.Km == 709 && sw.Meter > 598)
-                {
-                    sw.Km = 709;
-                }
                 //Стрелка онга карап туру
 
                 if (sw.Side_Id == Side.Right && sw.Dir_Id == SwitchDirection.Reverse)
@@ -964,7 +962,7 @@ namespace ALARm.Core.Report
                         }
                         continue;
                     }
-                    if (note.Note().Contains("Стрелка") && note.Meter > kilometer.Start_m)
+                    if (note.Note().Contains("Стрелка") && note.Meter + 10 > kilometer.Start_m)
                     {
                         digElements.Add(new XElement("rect",
                                                     new XAttribute("top", -meter - 9),
