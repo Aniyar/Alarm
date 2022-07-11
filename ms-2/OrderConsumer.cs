@@ -473,7 +473,7 @@ namespace ms_2
             var trackName = AdmStructureService.GetTrackName(km.Track_id);
 
             //var getdeviationfastening = RdStructureService.GetBadRailFasteners(trip.Id, false, distance.Code, trackName);
-            var getdeviationfastening = RdStructureService.GetBadRailFasteners(trip.Id, false, distance.Code, trackName, km.Number);
+            var getdeviationfastening = RdStructureService.GetBadRailFasteners(trip.Id, false, trackName, km.Number);
             // if (badFasteners.Count == 0) continue;
 
             RailFastener prev_fastener = null;

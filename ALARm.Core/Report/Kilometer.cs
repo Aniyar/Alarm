@@ -716,6 +716,10 @@ namespace ALARm.Core
 
             try
             {
+                if (Number == 727)
+                {
+
+                }
                 using StreamWriter writetext = new StreamWriter(fileName, false, Encoding.GetEncoding(1251));
                 writetext.WriteLine($@"{trip.Id}");
                 writetext.WriteLine($@"{trip.Direction_Name}");
@@ -945,7 +949,10 @@ namespace ALARm.Core
                 Pickets.Add(new Picket() { Number = p, Start = (Start_m / 100) + 1 == p ? Start_m.RoundTo10() : (p - 1) * 100 });
             }
 
+            if (Number == 727)
+            {
 
+            }
 
 
         }
@@ -1151,13 +1158,17 @@ namespace ALARm.Core
                     if (RepairProjects[0].Start_Km == Number)
                     {
                         Sector = mainTrackStructureRepository.GetSector(Track_id, Number - 1, trip.Trip_date) ?? "";
-                        Digressions.Add(new DigressionMark() { NotMoveAlert = true, Meter = RepairProjects[0].Start_M, Alert = $" {"↑"}{RepairProjects[0].Start_M}  {(RepairProjects[0].Type_id == 1 ? "Кап.ремонт" : RepairProjects[0].Type_id == 2 ? "Сред.ремонт" : RepairProjects[0].Type_id == 3 ? "Кап.Ус.ремонт " : "Не определенно") }  {RepairProjects[0].Repair_date.ToString("MM.yyyy")} ;" });
+                        Digressions.Add(new DigressionMark() { NotMoveAlert = true, Meter = Start_m, Alert = $"{"↑"} {RepairProjects[0].Start_M}  {RepairProjects[0].Name + " ремонт" }  {RepairProjects[0].Repair_date.ToString("MM.yyyy")} ;" });
                     }
-                    else
-                    if (RepairProjects[0].Final_Km == Number)
+                    else if (RepairProjects[0].Final_Km == Number)
                     {
                         Sector = mainTrackStructureRepository.GetSector(Track_id, Number + 1, trip.Trip_date) ?? "";
-                        Digressions.Add(new DigressionMark() { NotMoveAlert = true, Meter = RepairProjects[0].Final_M, Alert = $"{"↓"} {RepairProjects[0].Final_M}   {(RepairProjects[0].Type_id==1 ?"Кап.ремонт": RepairProjects[0].Type_id==2?"Сред.ремонт": RepairProjects[0].Type_id == 3? "Кап.Ус.ремонт ":"Не определенно")}  {RepairProjects[0].Repair_date.ToString("MM.yyyy")}; " });
+                        Digressions.Add(new DigressionMark() { NotMoveAlert = true, Meter = RepairProjects[0].Final_M, Alert = $"{"↓"} {RepairProjects[0].Final_M}   {(RepairProjects[0].Type_id == 1 ? "Кап.ремонт" : RepairProjects[0].Type_id == 2 ? "Сред.ремонт" : RepairProjects[0].Type_id == 3 ? "Кап.Ус.ремонт " : "Не определенно")}  {RepairProjects[0].Repair_date.ToString("MM.yyyy")}; " });
+                    }
+                    else if (RepairProjects[0].Start_Km < Number && RepairProjects[0].Final_Km > Number)
+                    {
+                        Sector = mainTrackStructureRepository.GetSector(Track_id, Number - 1, trip.Trip_date) ?? "";
+                        Digressions.Add(new DigressionMark() { NotMoveAlert = true, Meter = Start_m, Alert = $"{RepairProjects[0].Name + " ремонт" }  {RepairProjects[0].Repair_date.ToString("MM.yyyy")} ;" });
                     }
                 }
                 //if (Runninin.Count > 0)
@@ -1731,7 +1742,7 @@ namespace ALARm.Core
 
             //fZeroStright - данные пасспорта рихтовки
             //flvl0 - данные пасспорта уровня
-            if (this.Number == 725)
+            if (this.Number == 727)
                 Number = Number;
             if ((outdatas == null) || (outdatas.Count < 1))
                 return;
@@ -1849,16 +1860,21 @@ namespace ALARm.Core
                                             }
                                         }
                                     }
-
-                                    //flvl0[j] = ModifiedCurveSrt[InternalIndex + prevCurveDataDiv];
-                                    flvl0[j] =0;
+                                    if ((ModifiedCurveSrt.Count() > InternalIndex + prevCurveDataDiv) && (InternalIndex + prevCurveDataDiv >= 0))
+                                    {
+                                        flvl0[j] = ModifiedCurveSrt[InternalIndex + prevCurveDataDiv];
+                                    }
+                                    else
+                                    {
+                                        flvl0[j] = 0;
+                                    }
 
                                     InternalIndex++;
                                 }
                             }
-                            catch (Exception)
+                            catch (Exception e)
                             {
-                                //Console.WriteLine("Ошибка при записи возв 6мм ");
+                                Console.WriteLine("Ошибка при записи возв 6мм " + e.Message);
                             }
 
                             j++;
@@ -2075,7 +2091,10 @@ namespace ALARm.Core
                 {
                     Console.WriteLine("Ошибка интерполяция точек кривой Рихтовка");
                 }
-            
+                if (Number == 727)
+                {
+
+                }
 
                 var countzero = 0;
                 var valstr = 0.0;
@@ -2234,7 +2253,6 @@ namespace ALARm.Core
 
                 vremY_lvl.Add(ListY_lvl.First());
                 vremX_lvl.Add(ListX_lvl.First());
-
                 for (int i = 1; i < ListY_lvl.Count - 1; i++)
                 {
                     if (ListY_lvl[i] == 0 && ListY_lvl[i + 1] == 0 || ListY_lvl[i - 1] == 0 && ListY_lvl[i] == 0)
@@ -2251,11 +2269,14 @@ namespace ALARm.Core
 
                 ListY_lvl = vremY_lvl;
                 ListX_lvl = vremX_lvl;
+                if (Number == 727)
+                {
 
+                }
                 try
                 {
                     var ModifiedCurveLvl = new List<double>();
-
+                    
                     //интерполяция кривой                
                     for (int t = 0; t < ListY_lvl.Count() - 1; t++)
                     {
@@ -2273,7 +2294,10 @@ namespace ALARm.Core
                     //{
                     //    ModifiedCurveLvl.Reverse();
                     //}
+                    if (Number == 727)
+                    {
 
+                    }
                     var InternalIndex = 0;
                     //егер кривойдын жартысы текущии километр алдында калып койса
                     var prevCurveDataDiv = 0;
@@ -2310,7 +2334,10 @@ namespace ALARm.Core
                                         }
                                     }
                                 }
-                                
+                                if (Number == 727)
+                                {
+                                    
+                                }
                                   //  if ((ModifiedCurveLvl.Count() > InternalIndex + prevCurveDataDiv + 2) && (InternalIndex + prevCurveDataDiv > 0) && (j < sign.Count) && (j < flvl0.Count))
                                     if ((ModifiedCurveLvl.Count() > InternalIndex + prevCurveDataDiv + 2) && (InternalIndex + prevCurveDataDiv > 0) && (j < sign.Count) && (j < flvl0.Count))
 
@@ -2339,7 +2366,8 @@ namespace ALARm.Core
 
 
 
-
+                if (Number == 727)
+                { }
                 var flvl0F = new List<double> { };
                 flvl0F = flvl0;
                 countzero = 0;
@@ -2347,7 +2375,7 @@ namespace ALARm.Core
                 perstr = 0.0;
                 x_perstr = 0;
                 flag = true;
-                if (trip.Travel_Direction == Direction.Reverse)///&& trip.Travel_Direction == Direction.Direct
+                if (trip.Travel_Direction == Direction.Reverse  )///&& trip.Travel_Direction == Direction.Direct
                 {
                     int i_start = 0;
                     for (int ii = 0; ii < flvl0.Count; ii++)
