@@ -837,22 +837,22 @@ namespace ALARm.Core.Report
                         meter = usedTops.GetNextTop(Start, meter, Number);
                     if (note.NotMoveAlert)
                     {
-                        addParam.Add(new XElement("speedline",
+                        var speedline = new XElement("speedline",
                             new XAttribute("y1", -(meter + 10)),
                             new XAttribute("y2", -(meter)),
-                                                    new XAttribute("Meter", note.Meter),
                             new XAttribute("y3", -(meter + 20)),
+                            new XAttribute("Meter", note.Meter),
                             new XAttribute("points", $"188,-{ meter + 10} 195,-{ meter + 10} 195,-{note.Meter} 730,-{note.Meter}"),
                             new XAttribute("note1", $"{note.Note().Split(';')[0]}"),
-                            new XAttribute("note2", note.Note().Split(';')[1])));
-
+                            new XAttribute("note2", note.Note().Split(';')[1]));
+                        if (note.NoSquare == true)
+                        {
+                            XAttribute att = speedline.Attribute("y3");
+                            att.Remove();
+                        }
+                        addParam.Add(speedline);
                         usedTops.Add(meter + 10);
-
                         usedTops.Add(meter);
-
-
-
-
                     }
 
                     //if (note.DigName.Contains("гр"))

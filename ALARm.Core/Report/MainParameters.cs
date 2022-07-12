@@ -67,7 +67,7 @@ namespace ALARm.Core.Report
 
                 //if (previous != null)
                 // result.AddRange(previous.Curve.s);
-                if (kilometer.Number ==727)
+                if (kilometer.Number ==717)
                 { }
                 result.AddRange(kilometer.Curves.GroupBy(p => p.Id).Select(g => g.First()).ToList());
                 if (next != null)
@@ -278,7 +278,7 @@ namespace ALARm.Core.Report
                     for (int i = 1; i < vershl.Count; i = i + 2)
                     {
                         var item = vershl[i];
-                        if (item.Count() < 20) continue;
+                        if (item.Count() == 1) continue;
                         var r = item.Select(o => Math.Abs(o.Trapez_str)).Max();
                         var h = item.Select(o => Math.Abs(o.Trapez_level)).Max();
                         var avgmeterbyItem = item.Select(o => o.M).Average();
@@ -305,11 +305,12 @@ namespace ALARm.Core.Report
                         int curvestrindex = result.IndexOf(bpd_curve) < bpd_curve.Straightenings.Count ? result.IndexOf(bpd_curve) : 0;
                         var passportcurves = kilometer.CurvesBPD.Where(o => o.Id == bpd_curve.Id).ToList();
                         Curve curvepass = passportcurves.Count() > i / 2 ? passportcurves[i / 2] : passportcurves.First();
+                        int wearind = passportcurves.IndexOf(curvepass);
                         int startm = (int)curvepass.Start_M + (int)curvepass.Elevations[0].Transition_1;
 
-                        if (kilometer.Number == item[item.Count() / 2].Km || 
-                            ((kilometer.Direction == Direction.Reverse && kilometer.Number == item.First().Km) || 
-                            (kilometer.Direction == Direction.Direct && kilometer.Number == item.Last().Km)))
+                        if (bpd_curve.Start_Km == bpd_curve.Final_Km || 
+                            (kilometer.Direction == Direction.Reverse && kilometer.Number == item.First().Km) || 
+                            (kilometer.Direction == Direction.Direct && kilometer.Number == item.Last().Km))
                         {
                             pru_dig_list.Add(new DigressionMark()
                             {
@@ -319,7 +320,10 @@ namespace ALARm.Core.Report
                             });
                         }
 
-                        if (kilometer.Number == item.First().Km)
+                        if (kilometer.Number == 714)
+                        {
+                        }
+                            if (kilometer.Number == item.First().Km)
                         {
                             var curvelistitem = new DigressionMark()
                             {
@@ -327,7 +331,8 @@ namespace ALARm.Core.Report
                                 lvl = (int)bpd_curve.Elevations[0].Lvl,
                                 Radius = bpd_curve.Radius,
                                 Meter = (item.First().Km == item.Last().Km) ? (int)avgmeterbyItem - 30 : (startm + kilometer.Final_m) / 2 - 30,
-                                Alert = $"{startm} R:{curvepass.Radius} h:{curvepass.Elevations[0].Lvl} Ш:{curvepass.Straightenings[curvestrindex].Width} И:{curvepass.Straightenings[curvestrindex].Wear} "
+                                Alert = $"{startm} R:{curvepass.Radius} h:{curvepass.Elevations[curvestrindex].Lvl} Ш:{curvepass.Straightenings[wearind].Width} И:{curvepass.Straightenings[wearind].Wear} "
+
                             };
 
                             if (curve_bpd_list.Where(o => o.Alert == curvelistitem.Alert).Count() == 0)

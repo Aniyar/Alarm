@@ -1168,7 +1168,7 @@ namespace ALARm.Core
                     else if (RepairProjects[0].Start_Km < Number && RepairProjects[0].Final_Km > Number)
                     {
                         Sector = mainTrackStructureRepository.GetSector(Track_id, Number - 1, trip.Trip_date) ?? "";
-                        Digressions.Add(new DigressionMark() { NotMoveAlert = true, Meter = Start_m, Alert = $"{RepairProjects[0].Name + " ремонт" }  {RepairProjects[0].Repair_date.ToString("MM.yyyy")} ;" });
+                        Digressions.Add(new DigressionMark() { NotMoveAlert = true, NoSquare = true, Meter = Start_m, Alert = $"{RepairProjects[0].Name + " ремонт" }  {RepairProjects[0].Repair_date.ToString("MM.yyyy")} ;" });
                     }
                 }
                 //if (Runninin.Count > 0)
@@ -1957,6 +1957,9 @@ namespace ALARm.Core
                             0.0
                         };
 
+                        if (Number == 717)
+                        {
+                        }
                         tempY.AddRange(ListY_str);
                         ListY_str = tempY;
 
