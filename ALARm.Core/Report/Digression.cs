@@ -299,6 +299,7 @@ namespace ALARm.Core.Report
             //return $"{Meter} {DigName} {Comment} {Degree} {Value} {Length} ";
         }
         public bool NotMoveAlert { get; set; } = false;
+        public bool NoSquare { get; set; } = false;
 
         public int GetCurvePoint(Kilometer km)
         {
@@ -1491,7 +1492,7 @@ namespace ALARm.Core.Report
                             case int val when val.Between(24, 25): index = 9; break;
                             case int val when val >= 26: index = 10; break;
                         }
-                    else if (Length.Between(21, 40))
+                    else if (Length.Between(21, 60))
                         switch ((int)Value)
                         {
                             case 21: index = 0; break;
@@ -1523,7 +1524,7 @@ namespace ALARm.Core.Report
                             case int val when val.Between(34, 35): index = 9; break;
                             case int val when val >= 36: index = 10; break;
                         }
-                    else if (Length.Between(21, 40))
+                    else if (Length.Between(21, 60))
                         switch ((int)Value)
                         {
                             case int val when val.Between(21, 23): index = 0; break;
@@ -1555,7 +1556,7 @@ namespace ALARm.Core.Report
                             case 40: index = 9; break;
                             case int val when val >= 41: index = 10; break;
                         }
-                    else if (Length.Between(21, 40))
+                    else if (Length.Between(21, 60))
                         switch ((int)Value)
                         {
                             case int val when val.Between(31, 32): index = 0; break;
@@ -1587,7 +1588,7 @@ namespace ALARm.Core.Report
                             case int val when val.Between(49, 50): index = 9; break;
                             case int val when val >= 51: index = 10; break;
                         }
-                    else if (Length.Between(21, 40))
+                    else if (Length.Between(21, 60))
                         switch ((int)Value)
                         {
                             case int val when val.Between(31, 34): index = 0; break;
@@ -1619,8 +1620,9 @@ namespace ALARm.Core.Report
                             case int val when val.Between(63, 65): index = 9; break;
                             case int val when val >= 66: index = 10; break;
                         }
-                    else if (Length.Between(21, 40))
-                        switch ((int)Value)
+                    //else if (Length.Between(21, 40))
+                          else if (Length.Between(21, 60))
+                                switch ((int)Value)
                         {
                             case int val when val.Between(41, 45): index = 0; break;
                             case int val when val.Between(46, 50): index = 1; break;
@@ -1640,7 +1642,7 @@ namespace ALARm.Core.Report
             {
                 if (Length <= 20)
                     point = to20[index];
-                else if (Length.Between(21,40))
+                else if (Length.Between(21,60))
                     point = f20to40[index];
             }
             return point;
