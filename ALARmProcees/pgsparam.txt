@@ -1,6 +1,6 @@
 DriverID=PG
 User_Name=postgres
-Database=Aniyar_COpy
+Database=krg2022
 Password=alhafizu
 Server=DESKTOP-EMAFC5J
 Port=5432

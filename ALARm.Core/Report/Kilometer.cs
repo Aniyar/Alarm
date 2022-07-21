@@ -1570,8 +1570,6 @@ namespace ALARm.Core
                     if ((1524 < snorm[j]) && (snorm[j] <= 1529))
                         nrm = 1524;
                     double zxu = nrm;
-                    if (this.Number == 725)
-                        Number = Number;
                     foreach (var curve in Curves)
                     {
                         foreach (var stright in curve.Straightenings)

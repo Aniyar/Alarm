@@ -3804,8 +3804,7 @@ namespace ALARm.DataAccess
 	                            freightspeed,
 	                            km,
 	                            M,
-	
-	                            point_level,
+point_level,
 	                            point_str,
 	                            trapez_level,
 	                            trapez_str,
