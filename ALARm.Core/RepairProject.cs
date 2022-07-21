@@ -13,6 +13,7 @@ namespace ALARm.Core
         public string Accept { get; set; }
         public int Type_id { get; set; }
         public int Name { get; set; }
+
         public string Type { get; set; }
         public DateTime Repair_date { get; set; }
         public string Repair_short_date {

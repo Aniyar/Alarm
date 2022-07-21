@@ -1,7 +1,6 @@
 /*
  * author: Zulkhazhav Altanbek, Sultan Beibarys
  */
-
 //diagram page functions
 function GetDgScrollLeft(elemid) {
 

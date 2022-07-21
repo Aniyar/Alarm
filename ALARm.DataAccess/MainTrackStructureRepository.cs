@@ -588,7 +588,6 @@ namespace ALARm.DataAccess
                                 where curve.id = {curve.Id}
                                 order by elcurve.start_km * 10000 + elcurve.start_m").ToList();
                         }
-
                         return curves;
                     //Кривые участки пути по рихтовке (лист объектов)
                     case MainTrackStructureConst.MtoStCurve:
@@ -794,7 +793,7 @@ namespace ALARm.DataAccess
                             INNER JOIN ADM_TRACK as atr on atr.ID = tp.ADM_TRACK_ID 
                             INNER JOIN ADM_DIRECTION as adn on adn.ID = atr.ADM_DIRECTION_ID 
                             WHERE @travelDate BETWEEN tp.START_DATE and tp.FINAL_DATE 
-                           -- and atr.CODE = @trackNum 
+                            and atr.CODE = @trackNum 
                             and adn.NAME = @directCode 
                             and @ncurkm between tcs.start_km and tcs.final_km ", new { ncurkm = nkm, travelDate = date, trackNum = trackNumber, directCode = directionCode }).ToList();
                     case MainTrackStructureConst.MtoPdbSection:
@@ -2384,7 +2383,7 @@ namespace ALARm.DataAccess
                              from apr_elcurve elcurve
                                 inner join apr_curve curve on curve.id = elcurve.curve_id
                                 inner join tpl_period period on period.id = curve.period_id
-                                where curve.id = {curve.Id}
+                                where curve.id = {curve.Id} AND ((elcurve.start_m BETWEEN {curve.Start_M} AND {curve.Final_M}) OR (elcurve.final_m BETWEEN {curve.Start_M} AND {curve.Final_M}) OR (elcurve.start_m <= {curve.Start_M} AND elcurve.final_m >= {curve.Final_M}))
                                 order by elcurve.start_km * 10000 + elcurve.start_m").ToList();
                         }
                         return curvesBPD;
@@ -2444,7 +2443,7 @@ namespace ALARm.DataAccess
                             INNER JOIN ADM_TRACK as atr on atr.ID = tp.ADM_TRACK_ID 
                             WHERE @travelDate BETWEEN tp.START_DATE and tp.FINAL_DATE 
                             and atr.id = @trackId 
-                            and aac.START_KM <= @ncurkm and aac.FINAL_KM > @ncurkm ", new { ncurkm = nkm, travelDate = date, trackId = track_id }).ToList();
+                            and aac.START_KM <= @ncurkm and aac.FINAL_KM >= @ncurkm ", new { ncurkm = nkm, travelDate = date, trackId = track_id }).ToList();
                     case MainTrackStructureConst.MtoLongRails:
                         return db.Query<LongRails>(@"Select acu.* from APR_LONG_RAILS as acu 
                             INNER JOIN TPL_PERIOD as tp on tp.ID = acu.PERIOD_ID 
@@ -2472,7 +2471,7 @@ namespace ALARm.DataAccess
                             WHERE 
 	                            '{date:dd-MM-yyyy}' BETWEEN tp.START_DATE and tp.FINAL_DATE and 
 	                            atr.id = {track_id} and  {nkm} in (plus.km,  tsw.km, minus.km)) AS sw 
-                            WHERE sw.start_km = {nkm} or sw.final_km = {nkm}";
+                            WHERE sw.start_km <= {nkm} and sw.final_km >= {nkm}";
 
                         return db.Query<Switch>(sqll).ToList();
 
@@ -2506,6 +2505,9 @@ namespace ALARm.DataAccess
                             {(meter > 0 ? $"isbelong({nkm}, {meter}, aps.start_km, aps.start_m, aps.final_km, aps.final_m)" : $"{nkm} between aps.start_km and aps.final_km order by aps.start_km, aps.start_m") }
                             ", new { travelDate = date, trackId = track_id }).ToList();
                     case MainTrackStructureConst.MtoCheckSection:
+                        if (nkm == 705)
+                        {
+                        }
                         return db.Query<CheckSection>(@"Select tcs.* from tpl_check_sections as tcs 
                             INNER JOIN TPL_PERIOD as tp on tp.ID = tcs.PERIOD_ID 
                             INNER JOIN ADM_TRACK as atr on atr.ID = tp.ADM_TRACK_ID 
@@ -2559,11 +2561,12 @@ namespace ALARm.DataAccess
                             ", new { ncurkm = nkm, travelDate = date, trackId = track_id }).ToList();
                     case MainTrackStructureConst.MtoRepairProject:
                         return db.Query<RepairProject>($@"
-                            select * from repair_project 
+                            select repair_project.*, crt.name from repair_project
+                        INNER JOIN cat_repair_type as crt on crt.id = repair_project.type_id
                             where 
 	                            adm_track_id = {track_id} 
 	                            and ('{date:dd-MM-yyyy}' BETWEEN repair_date and accepted_at or ('{date:dd-MM-yyyy}'> repair_date and accepted_at is null ))
-	                            and {nkm} BETWEEN start_km and final_km
+	                            and start_km <= {nkm} and final_km >= {nkm}
                             ").ToList();
 
                     default: return new List<MainTrackObject>();
