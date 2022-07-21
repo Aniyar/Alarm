@@ -85,10 +85,8 @@ namespace AlarmPP.Web
                 endpoints.MapFallbackToPage("/_Host");
             });
 
-
-           
-            
-            Task.Run(async () => await Electron.WindowManager.CreateWindowAsync(new BrowserWindowOptions() { WebPreferences = new() { DevTools = false }, Fullscreen = true, MinWidth = 1920, MinHeight = 1080, AutoHideMenuBar = true})); ;
+            Task.Run(async () => await Electron.WindowManager.CreateWindowAsync());
+            //Task.Run(async () => await Electron.WindowManager.CreateWindowAsync(new BrowserWindowOptions() { WebPreferences = new() { DevTools = false }, Fullscreen = true, MinWidth = 1920, MinHeight = 1080, AutoHideMenuBar = false})); ;
         }
     }
 }

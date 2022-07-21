@@ -186,7 +186,7 @@ namespace ALARm.Core
         }
         public static int GetNextTop(this List<int> tops, int start, int top, int number)
         {
-
+            top = top.RoundTo10();
             for (int i = top; i < number * 100; i += 10)
             {
                 if (!tops.Contains(i))

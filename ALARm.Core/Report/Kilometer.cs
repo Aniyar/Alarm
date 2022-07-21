@@ -640,6 +640,23 @@ namespace ALARm.Core
 
             StrightAvgTrapezoid = StrightAvg.GetTrapezoid(prevStrightAvgPart, nextStrightAvgPart, 4, ref Curves);
             LevelAvgTrapezoid = LevelAvg.GetTrapezoid(prev50, next50, 10, ref Curves);
+            int startgap = 0, fingap = 0; bool foundgap = false;
+            for (int ii = 20; ii < LevelAvgTrapezoid.Count - 20; ii++)
+            {
+                if (Math.Abs(LevelAvgTrapezoid[ii]) < 0.01 && Math.Abs(LevelAvgTrapezoid[ii + 20]) > 10 && Math.Abs(LevelAvgTrapezoid[ii - 20]) > 10 && !foundgap)
+                {
+                    startgap = ii - 20;
+                    fingap = ii + 20;
+                    foundgap = true;
+                }
+            }
+            if (foundgap)
+            {
+                for (int ii = startgap; ii < fingap; ii++)
+                {
+                    LevelAvgTrapezoid[ii] = LevelAvgTrapezoid[startgap] + (LevelAvgTrapezoid[fingap] - LevelAvgTrapezoid[startgap]) / (fingap - startgap) * (ii - startgap);
+                }
+            }
             return ShifrovkaGenerated;
         }
 
@@ -690,6 +707,25 @@ namespace ALARm.Core
 
             StrightAvgTrapezoid = StrightAvg.GetTrapezoid(prevStrightAvgPart, nextStrightAvgPart, 4, ref Curves, naprav: trip.Travel_Direction, strRealData: StrightRight);
             LevelAvgTrapezoid = LevelAvg.GetTrapezoid(prev50, next50, 10, ref Curves, naprav: trip.Travel_Direction);
+
+            int startgap=0, fingap=0; bool foundgap = false;
+            for (int ii = 20; ii < LevelAvgTrapezoid.Count - 20; ii++)
+            {
+                if (Math.Abs(LevelAvgTrapezoid[ii]) < 0.01 && Math.Abs(LevelAvgTrapezoid[ii + 20]) > 10 && Math.Abs(LevelAvgTrapezoid[ii - 20]) > 10 && !foundgap)
+                {
+                    startgap = ii - 20;
+                    fingap = ii + 20;
+                    foundgap = true;
+                }
+            }
+            if (foundgap)
+            {
+                for (int ii = startgap; ii < fingap; ii++)
+                {
+                    LevelAvgTrapezoid[ii] = LevelAvgTrapezoid[startgap] + (LevelAvgTrapezoid[fingap] - LevelAvgTrapezoid[startgap]) / (fingap - startgap) * (ii - startgap);
+                }
+            }
+            
 
 
             //-------------------------------------------------
@@ -969,7 +1005,11 @@ namespace ALARm.Core
                 {
                     //if ((sw.Km == Number ) && (sw.Final_Km == Number ) && (sw.Start_Km == Number))
                     //    Digressions.Add(new DigressionMark() { Meter = sw.Meter, Alert = $"{sw.Meter} Стрелка № {sw.Num} {(sw.Dir_Id == SwitchDirection.Direct ? "ПШ" : "ПРШ")} {(sw.Side_Id == Side.Left ? "Лев." : "Прав.")} {sw.Mark}" });
-                    
+
+
+                    if (Number == 719)
+                    { 
+                    }
                     if ((sw.Km == Number)/* && (sw.Final_Km == Number)*/ && (sw.Start_Km == Number))
                         Digressions.Add(new DigressionMark()
                         {
@@ -977,6 +1017,18 @@ namespace ALARm.Core
                             Alert = $"{sw.Meter} Стрелка № {sw.Num} {(sw.Dir_Id == SwitchDirection.Direct ? "ПШ" : "ПРШ")}" +
                             $" {(sw.Side_Id == Side.Left ? "Лев." : (sw.Side_Id == Side.Right) ? "Прав." : "?") } {sw.Mark}"
                         });
+
+                    if ((sw.Km == Number)/* && (sw.Final_Km == Number)*/ && (sw.Start_Km+1 == Number))
+                        Digressions.Add(new DigressionMark()
+                        {
+                            Meter = 10,
+                            Alert = $"{sw.Meter} Стрелка № {sw.Num} {(sw.Dir_Id == SwitchDirection.Direct ? "ПШ" : "ПРШ")}" +
+                            $" {(sw.Side_Id == Side.Left ? "Лев." : (sw.Side_Id == Side.Right) ? "Прав." : "?") } {sw.Mark}"
+                        });
+
+
+
+
                 }
 
                 //foreach (var curve in Curves)
@@ -995,7 +1047,7 @@ namespace ALARm.Core
                 //            {
                 //                h = (int)temp.First().Lvl;
                 //            }
-                          
+
                 //            if (Number == Math.Round(trip.Travel_Direction == Direction.Reverse ? item.FirstTransitionEnd : item.SecondTransitionStart))
                 //            {
                 //                Digressions.Add(
@@ -1028,7 +1080,7 @@ namespace ALARm.Core
                 //                Width = (int)temp.First().Width;
                 //                Wear = (int)temp.First().Wear;
                 //            }
-                         
+
                 //               // if (   Number == Math.Round(trip.Travel_Direction == Direction.Reverse ? item.FirstTransitionEnd : item.SecondTransitionStart) )
                 //                if (Number == Math.Round( item.FirstTransitionEnd ))
                 //                {
@@ -1047,10 +1099,10 @@ namespace ALARm.Core
                 //                    });
 
                 //                }
-                               
+
 
                 //                if (item.Start_M > item.Final_M  )
-                             
+
 
                 //                {
                 //                    Digressions.Add(
@@ -1061,7 +1113,7 @@ namespace ALARm.Core
                 //                         });
                 //                }
 
-                             
+
                 //            }
 
                 //            //if ( (Number != item.Lvl_final_km)  && Number== item.Lvl_start_km)
@@ -1155,20 +1207,23 @@ namespace ALARm.Core
                 }
                 if (RepairProjects.Count > 0)
                 {
-                    if (RepairProjects[0].Start_Km == Number)
+                    for (int i = 0; i < RepairProjects.Count(); i++ )
                     {
-                        Sector = mainTrackStructureRepository.GetSector(Track_id, Number - 1, trip.Trip_date) ?? "";
-                        Digressions.Add(new DigressionMark() { NotMoveAlert = true, Meter = Start_m, Alert = $"{"↑"} {RepairProjects[0].Start_M}  {RepairProjects[0].Name + " ремонт" }  {RepairProjects[0].Repair_date.ToString("MM.yyyy")} ;" });
-                    }
-                    else if (RepairProjects[0].Final_Km == Number)
-                    {
-                        Sector = mainTrackStructureRepository.GetSector(Track_id, Number + 1, trip.Trip_date) ?? "";
-                        Digressions.Add(new DigressionMark() { NotMoveAlert = true, Meter = RepairProjects[0].Final_M, Alert = $"{"↓"} {RepairProjects[0].Final_M}   {(RepairProjects[0].Type_id == 1 ? "Кап.ремонт" : RepairProjects[0].Type_id == 2 ? "Сред.ремонт" : RepairProjects[0].Type_id == 3 ? "Кап.Ус.ремонт " : "Не определенно")}  {RepairProjects[0].Repair_date.ToString("MM.yyyy")}; " });
-                    }
-                    else if (RepairProjects[0].Start_Km < Number && RepairProjects[0].Final_Km > Number)
-                    {
-                        Sector = mainTrackStructureRepository.GetSector(Track_id, Number - 1, trip.Trip_date) ?? "";
-                        Digressions.Add(new DigressionMark() { NotMoveAlert = true, NoSquare = true, Meter = Start_m, Alert = $"{RepairProjects[0].Name + " ремонт" }  {RepairProjects[0].Repair_date.ToString("MM.yyyy")} ;" });
+                        if (RepairProjects[i].Start_Km == Number)
+                        {
+                            Sector = mainTrackStructureRepository.GetSector(Track_id, Number - 1, trip.Trip_date) ?? "";
+                            Digressions.Add(new DigressionMark() { NotMoveAlert = true, Meter = RepairProjects[i].Start_M, Alert = $"{"↑"} {RepairProjects[i].Start_M}  {RepairProjects[i].Name + " ремонт" }  {RepairProjects[i].Repair_date.ToString("MM.yyyy")} ;" });
+                        }
+                        else if (RepairProjects[i].Final_Km == Number)
+                        {
+                            Sector = mainTrackStructureRepository.GetSector(Track_id, Number + 1, trip.Trip_date) ?? "";
+                            Digressions.Add(new DigressionMark() { NotMoveAlert = true, Meter = RepairProjects[i].Final_M, Alert = $"{"↓"} {RepairProjects[i].Final_M}  {RepairProjects[i].Name + " ремонт" }  {RepairProjects[i].Repair_date.ToString("MM.yyyy")} ;" });
+                        }
+                        else if (RepairProjects[i].Start_Km < Number && RepairProjects[i].Final_Km > Number)
+                        {
+                            Sector = mainTrackStructureRepository.GetSector(Track_id, Number - 1, trip.Trip_date) ?? "";
+                            Digressions.Add(new DigressionMark() { NotMoveAlert = true, Meter = Start_m, Alert = $"{"↑"} {Start_m} {RepairProjects[0].Name + " ремонт" }  {RepairProjects[0].Repair_date.ToString("MM.yyyy")} ;" });
+                        }
                     }
                 }
                 //if (Runninin.Count > 0)
@@ -2074,11 +2129,6 @@ namespace ALARm.Core
 
                             }
                             prevCurveDataDivF = InternalIndex;
-
-
-
-
-
                         }
                         catch (Exception)
                         {
@@ -2185,11 +2235,10 @@ namespace ALARm.Core
 
 
                     fZeroStright = fZeroStrightF;
-
-
-
                 }
-                             //fZeroStright[j] = sign[j] * Math.Abs(ModifiedCurveSrt[InternalIndex + prevCurveDataDiv]);
+
+                //fZeroStright[j] = sign[j] * Math.Abs(ModifiedCurveSrt[InternalIndex + prevCurveDataDiv]);
+
                 //Уровень
                 var startLvl = -1.0;
                 foreach (var elevations in curve.Elevations)
@@ -2297,10 +2346,6 @@ namespace ALARm.Core
                     //{
                     //    ModifiedCurveLvl.Reverse();
                     //}
-                    if (Number == 727)
-                    {
-
-                    }
                     var InternalIndex = 0;
                     //егер кривойдын жартысы текущии километр алдында калып койса
                     var prevCurveDataDiv = 0;
@@ -2342,10 +2387,8 @@ namespace ALARm.Core
                                     
                                 }
                                   //  if ((ModifiedCurveLvl.Count() > InternalIndex + prevCurveDataDiv + 2) && (InternalIndex + prevCurveDataDiv > 0) && (j < sign.Count) && (j < flvl0.Count))
-                                    if ((ModifiedCurveLvl.Count() > InternalIndex + prevCurveDataDiv + 2) && (InternalIndex + prevCurveDataDiv > 0) && (j < sign.Count) && (j < flvl0.Count))
-
-                                    {
-
+                                if ((ModifiedCurveLvl.Count() > InternalIndex + prevCurveDataDiv + 2) && (InternalIndex + prevCurveDataDiv > 0) && (j < sign.Count) && (j < flvl0.Count))
+                                {
                                     flvl0[j] = sign[j] * Math.Abs(ModifiedCurveLvl[InternalIndex + prevCurveDataDiv]);
                                     InternalIndex++;
                                 }

@@ -26,7 +26,7 @@ begin
     FileName := ParamStr(1);
     if FileName = '' then
 
-       FileName := 'g:\work_shifrovka\km_730_4816.svgpdat';
+       FileName := 'g:\work_shifrovka\km_702_4816.svgpdat';
 //        FileName := 'g:\work_shifrovka\km_717_4820.svgpdat'  ;
 
     writeln(FileName);
