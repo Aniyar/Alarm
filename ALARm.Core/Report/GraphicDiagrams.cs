@@ -342,8 +342,9 @@ namespace ALARm.Core.Report
             //рисуем шпалы
             foreach (var crossTie in kilometer.CrossTies)
             {
-                int start = crossTie.Start_Km == kilometer.Number ? crossTie.Start_M : y1;
-                int final = crossTie.Final_Km == kilometer.Number ? crossTie.Final_M : y2;
+                int start = crossTie.Start_Km == kilometer.Number ? crossTie.Start_M : 0;
+                int final = crossTie.Final_Km == kilometer.Number ? crossTie.Final_M : kilometer.GetLength();
+
 
                 string ctype = "1,8";
                 string color = "black";
@@ -363,11 +364,16 @@ namespace ALARm.Core.Report
                         break;
 
                 }
+                if (kilometer.Direction == ALARm.Core.Direction.Reverse)
+                {
+                    start = kilometer.GetLength() - start;
+                    final = kilometer.GetLength() - final;
+                }
                 result.Add(new XElement("crosstie",
                     new XAttribute("sw", ctype),
                     new XAttribute("st", color),
-                    new XAttribute("y1", -y1),
-                    new XAttribute("y2", -y2)
+                    new XAttribute("y1", -start),
+                    new XAttribute("y2", -final)
                     ));
             }
             var longRailses = MainTrackStructureRepository.GetMtoObjectsByCoord(travelDate, kilometer.Number, MainTrackStructureConst.MtoLongRails, trackId) as List<LongRails>;

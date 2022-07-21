@@ -82,7 +82,7 @@ namespace ALARm_Report.Forms
                         new XAttribute("chief", tripProcess.Chief),
                         new XAttribute("ps", tripProcess.Car)
                         );
-
+                    bool founddigression = false;
                     foreach (var track_id in admTracksId)
                     {
                         
@@ -121,6 +121,10 @@ namespace ALARm_Report.Forms
                             return;
 
                         List<Curve> curves = RdStructureService.GetCurvesInTrip(tripProcess.Trip_id) as List<Curve>;
+                        if (curves != null && curves.Count > 0)
+                        {
+                            founddigression = true;
+                        }
                         //фильтр по выбранным км
                         var filter_curves = curves.Where(o => ((float)(float)filters[0].Value <= o.Start_Km && o.Final_Km <= (float)(float)filters[1].Value)).ToList();
 
@@ -1483,7 +1487,11 @@ namespace ALARm_Report.Forms
                         tripElem.Add(trackElem);
                         
                     }
-                    report.Add(tripElem);
+                    if (founddigression == true)
+                    {
+                        report.Add(tripElem);
+                    }
+                  
                 }
                 xdReport.Add(report);
                 XslCompiledTransform transform = new XslCompiledTransform();

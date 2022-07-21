@@ -9,6 +9,7 @@ namespace ALARm.Core.Report
     {
         //public int PassengerSpeedLimit { get; set; }
         //public int FreightSpeedLimit { get; set; }
+        public long Trip_id { get; set; }
         public int impulses { get; set; }
         public int Id { get; set; }
         public int X { get; set; }

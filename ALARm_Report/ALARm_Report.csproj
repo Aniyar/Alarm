@@ -632,7 +632,9 @@
     <Content Include="xls\DeviationsPassportPositionPlan.xslt" />
     <Content Include="xls\PatternDrawdown.xslt" />
     <Content Include="xls\Level.xslt" />
-    <Content Include="xls\MainParameters.xslt" />
+    <Content Include="xls\MainParameters.xslt">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="xls\AdditionalParameters_new.xslt" />
     <Content Include="xls\MainParametersOnline.xslt" />
     <Content Include="xls\AdditionalParameters.xslt" />

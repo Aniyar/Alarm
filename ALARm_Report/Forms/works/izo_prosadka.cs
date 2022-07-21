@@ -415,10 +415,10 @@ namespace ALARm_Report.Forms
                                                     tripElem.Add(xeDirection);
                                                 }
                                                 xeDirection = new XElement("directions",
-                                                    new XAttribute("direction", s3.Directcode),
+                                                       new XAttribute("direction", s3.Directcode),
                                                        new XAttribute("track", s3.Put));
                                                 xeTracks = new XElement("tracks",
-                                                    new XAttribute("track", s3.Put));
+                                                       new XAttribute("track", s3.Put));
 
                                                 lastDirection = s3.Naprav;
                                                 lastTrack = s3.Put;
@@ -428,18 +428,18 @@ namespace ALARm_Report.Forms
                                                 lastKm = s3.Km;
 
                                                 XElement xeMain = new XElement("main",
-                                                       new XAttribute("pchu", s3.Pchu),
-                                                new XAttribute("pd", s3.Pd),
-                                                new XAttribute("pdb", s3.Pdb),
-                                                new XAttribute("km", s3.Km),
-                                                new XAttribute("m", s3.Meter),
-                                                new XAttribute("data", s3.TripDateTime.ToString("dd.MM.yyyy")),
-                                                new XAttribute("Ots", s3.Ots),
-                                                new XAttribute("Otkl", s3.Otkl),
-                                                new XAttribute("len", s3.Len),
-                                                new XAttribute("vpz", s3.Uv + "/" + s3.Uvg),
-                                                new XAttribute("vogr", s3.Ovp + "/" + s3.Ogp),
-                                                new XAttribute("Primech", s3.Primech));
+                                                        new XAttribute("pchu", s3.Pchu),
+                                                        new XAttribute("pd", s3.Pd),
+                                                        new XAttribute("pdb", s3.Pdb),
+                                                        new XAttribute("km", s3.Km),
+                                                        new XAttribute("m", s3.Meter),
+                                                        new XAttribute("data", s3.TripDateTime.ToString("dd.MM.yyyy")),
+                                                        new XAttribute("Ots", s3.Ots),
+                                                        new XAttribute("Otkl", s3.Otkl),
+                                                        new XAttribute("len", s3.Len),
+                                                        new XAttribute("vpz", s3.Uv + "/" + s3.Uvg),
+                                                        new XAttribute("vogr", s3.Ovp + "/" + s3.Ogp),
+                                                        new XAttribute("Primech", s3.Primech));
 
                                                 if (totals.Any(t => t.Name == s3.Ots))
                                                 {

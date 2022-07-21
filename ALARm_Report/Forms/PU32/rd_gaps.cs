@@ -62,6 +62,24 @@ namespace ALARm_Report.Forms
                     foreach (var track_id in admTracksId)
                     {
                         var trackName = AdmStructureService.GetTrackName(track_id);
+                        var trip = RdStructureService.GetTrip(tripProcess.Id);
+                        var kms = RdStructureService.GetKilometersByTrip(trip);
+                        if (!kms.Any())
+                        {
+                            {
+                                MessageBox.Show("Нет отчетных данных по выбранным параметрам");
+                                return;
+                            }
+                            continue;
+                        }
+                        
+                        kms = kms.Where(o => o.Track_id == track_id).ToList();
+
+                        trip.Track_Id = track_id;
+                        var lkm = kms.Select(o => o.Number).ToList();
+
+                        if (lkm.Count() == 0) continue;
+                      
                         List<Gap> check_gap_state = AdditionalParametersService.Check_gap_state(tripProcess.Trip_id, template.ID);
 
                         var ttt = tripProcess.Date_Vrem.ToString("dd.MM.yyyy_hh:mm");

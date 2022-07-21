@@ -93,7 +93,7 @@ namespace ALARm_Report.Forms
                           new XAttribute("ps", tripProcess.Car));
 
                     var Itog = 0;
-
+                    bool founddigression = false;
                     foreach (var track_id in admTracksId)
                     {
                         var trips = RdStructureService.GetTrips();
@@ -161,6 +161,10 @@ namespace ALARm_Report.Forms
                                 km.Number = km.Number;
                             }
                             var ListS3 = RdStructureService.GetS3(kilometers.First().Trip.Id) as List<S3>; //пру
+                            if (ListS3 != null && ListS3.Count > 0)
+                            {
+                                founddigression = true;
+                            }
                             ListS3 = ListS3.Where(o => o.Km == km.Number).ToList();
                             var closeToDanger = new List<string>() { DigressionName.RampNear.Name, DigressionName.IzoGapNear.Name, DigressionName.SpeedUpNear.Name, DigressionName.PatternRetractionNear.Name,
                                 DigressionName.LevelReverse.Name, DigressionName.Level150.Name, DigressionName.Level75.Name, DigressionName.GapSimbol.Name };
@@ -338,8 +342,11 @@ namespace ALARm_Report.Forms
                     }
                  
                     tripElem.Add(new XAttribute("countDistance", drawdownCount + anpquestiomCount + IBLCount+  skewnessCount +  PMCount +  anpCount));
-
-                    report.Add(tripElem);
+                    if (founddigression == true)
+                    {
+                        report.Add(tripElem);
+                    }
+               
                 }
                 xdReport.Add(report);
                 XslCompiledTransform transform = new XslCompiledTransform();
