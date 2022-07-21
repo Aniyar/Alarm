@@ -71,6 +71,7 @@ namespace ALARm_Report.Forms
                     leveltotal.Count = 0;
                     shaplontotal.Count = 0;
                     digressionTotal.Count = 0;
+                    bool founddigression = false;
                     foreach (var track in admTracksId)
                     {
                         
@@ -93,6 +94,10 @@ namespace ALARm_Report.Forms
                                 {
                                    
                                     var CheckVerifyKm = RdStructureService.CheckVerify(tripProcess.Trip_id, sect.Start_Km * 1000 + sect.Start_M,sect.Final_Km * 1000 + sect.Final_M);
+                                    if (CheckVerifyKm != null && CheckVerifyKm.Count > 0)
+                                    {
+                                        founddigression = true;
+                                    }
 
                                     //CheckVerifyKm = CheckVerifyKm.Where(ckm => ckm.Track_Id == track.Id).ToList();
 
@@ -154,7 +159,10 @@ namespace ALARm_Report.Forms
                     tripElem.Add(new XAttribute("totals", digressionTotal.Count));
                     tripElem.Add(new XAttribute("totalslevel", leveltotal.Count));
                     tripElem.Add(new XAttribute("totalsshablon", shaplontotal.Count));
-                    report.Add(tripElem);
+                    if (founddigression == true)
+                    {
+                        report.Add(tripElem);
+                    }
                 }
                 xdReport.Add(report);
                 XslCompiledTransform transform = new XslCompiledTransform();

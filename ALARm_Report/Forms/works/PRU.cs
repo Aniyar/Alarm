@@ -56,6 +56,7 @@ namespace ALARm_Report.Forms
                 
                     foreach (var tripProces in tripProcess)
                     {
+                    bool founddigression = false;
                     foreach (var track_id in admTracksId)
                     {
                         var trackName = AdmStructureService.GetTrackName(track_id);
@@ -99,7 +100,10 @@ namespace ALARm_Report.Forms
                         XElement xeTracks = new XElement("tracks");
 
                         var ListS3 = RdStructureService.GetS3(kilometers.First().Trip.Id, "ПрУ") as List<S3>; //пру
-                      
+                        if (ListS3 != null && ListS3.Count > 0)
+                        {
+                            founddigression = true;
+                        }
                         if (ListS3.Any())
                         {
                             foreach (var km in kilometers)
@@ -149,8 +153,11 @@ namespace ALARm_Report.Forms
                             }
                         }
 
-                      
-                        report.Add(tripElem);
+                        if (founddigression == true)
+                        {
+                            report.Add(tripElem);
+                        }
+                        
                     }
                 }
                 

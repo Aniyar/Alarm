@@ -52,6 +52,7 @@ namespace ALARm_Report.Forms
                 foreach (var tripProcess in tripProcesses)
                 {
 
+                    bool founddigression = false;
 
                     List<Digression> notes = RdStructureService.GetDigressions3and4(tripProcess.Trip_id, distance.Code, new int[] { 3, 4 });
                     var curvesAdmUnits = AdmStructureService.GetCurvesAdmUnits(curves[0].Id) as List<CurvesAdmUnits>;
@@ -104,7 +105,10 @@ namespace ALARm_Report.Forms
                         var ListS3 = RdStructureService.GetS3(tripProcess.Trip_id, 3, distance.Name) as List<S3>;
                         
                             ListS3 = ListS3.Where(o => o.track_id == track_id).ToList();
-                        
+                        if (ListS3 != null && ListS3.Count > 0)
+                        {
+                            founddigression = true;
+                        }
 
 
                         //Участки дист коррекция
@@ -494,8 +498,11 @@ namespace ALARm_Report.Forms
                     tripElem.Add(new XAttribute("countDistance", drawdownCount + constrictionCount + broadeningCount + levelCount + skewnessCount + straighteningCount + RSTCount));
 
 
-                  
-                    report.Add(tripElem);
+
+                    if (founddigression == true)
+                    {
+                        report.Add(tripElem);
+                    }
 
 
                 }

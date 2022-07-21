@@ -50,6 +50,7 @@ namespace ALARm_Report.Forms
                 XElement report = new XElement("report");
                 foreach (var tripProcess in tripProcesses)
                 {
+                    bool founddigression = false;
                     foreach (var track_id in admTracksId)
                     {
                         var kms = RdStructureService.GetKilometerTrip(tripProcess.Trip_id);
@@ -62,6 +63,10 @@ namespace ALARm_Report.Forms
                         if (gaps == null || gaps.Count == 0)
                         {
                             continue;
+                        }
+                        if (gaps != null && gaps.Count > 0)
+                        {
+                            founddigression = true;
                         }
 
                         XElement tripElem = new XElement("trip",
@@ -159,7 +164,11 @@ namespace ALARm_Report.Forms
                             new XAttribute("boleeFourth", boleeFourth)
                             );
                         tripElem.Add(lev);
-                        report.Add(tripElem);
+                   
+                        if (founddigression == true)
+                        {
+                            report.Add(tripElem);
+                        }
                     }
                 }
                 xdReport.Add(report);

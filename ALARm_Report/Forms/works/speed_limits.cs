@@ -439,7 +439,9 @@ namespace ALARm_Report.Forms
                         
                         xeTracks.Add(new XAttribute("track", trackName));
                         xeTracks.Add(new XAttribute("direction", curvesAdmUnit.Direction));
-                        xeTracks.Add(new XAttribute("countbyput", digressionTotal.Count));
+                        //xeTracks.Add(new XAttribute("countbyput", digressionTotal.Count));
+                        xeTracks.Add(new XAttribute("countbyput", ItogMain + ItogADD));
+                     
                         xeTracks.Add(new XAttribute("distance", distance.Code));
                         xeDirection.Add(xeTracks);
                         tripElem.Add(xeDirection);
