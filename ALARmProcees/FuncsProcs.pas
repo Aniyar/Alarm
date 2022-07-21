@@ -6170,11 +6170,11 @@ begin
     Lmv := temp[tempIndex].Lm;
     Ln := abs(L0v - Lmv);
        delta := abs(Lmv - L0v);
-          if temp[tempIndex].isLong   then
-          begin
-             Ln := 20;
-       delta := 20;
-                  end;
+         // if temp[tempIndex].isLong   then
+         // begin
+           //  Ln := 20;
+       //delta := 20;
+                //  end;
 
     s0 := Velich_table_3dot3(Ln*2, vt, 0);
    s1 := Velich_table_3dot3(Ln*2, vt, 1);
@@ -6797,7 +6797,8 @@ begin
           end;
           Setlength(temp, 0);
         end;
-
+              if ( Lmv >= 600) then
+          Lmv:=Lmv;
         tempIndex := length(temp);
         Setlength(temp, tempIndex + 1);
         temp[tempIndex].bel := belv;
@@ -8368,7 +8369,7 @@ begin
             transitions[tran_length - 1]);
           e2 := GetExtremum(Fm, transitions[tran_length - 1],
             transitions[tran_length]);
-        if( abs(Fm[transitions[tran_length]] - Fm[transitions[tran_length - 1]])  < 10 )and ( abs(e1.value)<10) and ( abs(e2.value)<10)
+        if( abs(Fm[transitions[tran_length]] - Fm[transitions[tran_length - 1]])  < 20 )and ( abs(e1.value)<30) and ( abs(e2.value)<30)
         then
         begin                                                                           //  and ( abs(e1.value)<3) and ( abs(e2.value)<3)
           e1 := GetExtremum(Fm, transitions[tran_length - 2],
@@ -8377,7 +8378,7 @@ begin
             transitions[tran_length]);
          // if (abs(e1.value) < 10) or  (abs(e2.value) < 10   then
              if (( abs(FmK[e1.index] - FmK[e2.index])<7 )
-             or (abs(transitions[tran_length - 2] -transitions[tran_length - 1] ) <10  ))  and ( abs(e1.value)<10) and ( abs(e2.value)<10)
+             or (abs(transitions[tran_length - 2] -transitions[tran_length - 1] ) <20  ))  and ( abs(e1.value)<10) and ( abs(e2.value)<10)
               then
             tran_length := tran_length - 2;
         end;
@@ -8413,7 +8414,7 @@ begin
           h20:=  abs(FmTrapez[e3.index]-FmTrapez[e4.index]);
             Ln:= abs(FmK[e1.index] -FmK[e2.index]) ;
                 Ln2:= abs(FmK[e3.index] - FmK[e4.index]);
-              if ( (e1.sign*e2.sign<0)and (Ln<=30)  ) then   H:= (abs(Fm[e1.index])+ abs(Fm[e2.index]) ) ; // and (h0<=1)
+             // if ( (e1.sign*e2.sign<0)and (Ln<=30)  ) then   H:= (abs(Fm[e1.index])+ abs(Fm[e2.index]) ) ; // and (h0<=1)
                  if ( (Fm[e1.index]*Fm[e2.index]<0)and (Ln<=20)  ) then   H:= (abs(Fm[e1.index])+ abs(Fm[e2.index]) ) ;
 
                       if ( (e3.sign*e4.sign<0)and (Ln2<=20) and (h20<=1) ) then  H2:= (abs(Fm[e3.index])+ abs(Fm[e4.index]) ) ;
@@ -8453,11 +8454,11 @@ begin
     i02 := e2.index;
       if  i01 >390 then
           L0v := FmK[i01];
-         if (i1 >= 0) and (i2 >= 0) and (20 < Ln) and (Ln <= 30) then
-         begin
-            isLong := true;
-           Ln:=20;
-         end;
+        // if (i1 >= 0) and (i2 >= 0) and (20 < Ln) and (Ln <= 30) then
+       //  begin
+       //     isLong := true;
+       //    Ln:=20;
+       //  end;
     if (i1 >= 0) and (i2 >= 0) and (0 < Ln) and (Ln <= D) then
     begin
       vt := F_V[i01];

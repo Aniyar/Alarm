@@ -446,10 +446,6 @@ namespace ALARm.Core.Report
                 // if (kilometer.Number.ToDoubleCoordinate(Math.Max(kilometer.Start_m, kilometer.Final_m)) < Math.Max(sw.RealStartCoordinate, sw.RealFinalCoordinate))
                 //     continue;
 
-                if (sw.Km == 711)
-                {
-
-                }
                 //if (sw.Start_Km != kilometer.Number && sw.Final_Km != kilometer.Number)
                 //    continue;
 
@@ -800,12 +796,17 @@ namespace ALARm.Core.Report
             ref int fourStepOgrCoun,
             ref int otherfourStepOgrCoun)
         {
-            if (kilometer.StationSection.Any())
-            {
-
-            }
+            
             Digression = Digression.OrderBy(o => o.Meter).ToList();
-
+            for (int i=0; i< Digression.Count(); i++)
+            {
+                if (Digression[i].Note().Contains("Уст.ск:"))
+                {
+                    var temp = Digression[0];
+                    Digression[0] = Digression[i];
+                    Digression[i] = temp;
+                }
+            }
             foreach (var note in Digression)
             {
                 ////если занчения Speedline выходят за границу линиий начала и конца
@@ -820,10 +821,6 @@ namespace ALARm.Core.Report
 
                 try
                 {
-                    if (note.DigName == DigressionName.PatternRetraction.Name)
-                    {
-                        note.DigName = note.DigName;
-                    }
 
                     int meter = note.Meter.RoundTo10();
                     if (!((meter >= Start.RoundTo10()) && (meter < Number * 100)))
@@ -845,11 +842,7 @@ namespace ALARm.Core.Report
                             new XAttribute("points", $"188,-{ meter + 10} 195,-{ meter + 10} 195,-{note.Meter} 730,-{note.Meter}"),
                             new XAttribute("note1", $"{note.Note().Split(';')[0]}"),
                             new XAttribute("note2", note.Note().Split(';')[1]));
-                        if (note.NoSquare == true)
-                        {
-                            XAttribute att = speedline.Attribute("y3");
-                            att.Remove();
-                        }
+
                         addParam.Add(speedline);
                         usedTops.Add(meter + 10);
                         usedTops.Add(meter);
@@ -883,6 +876,7 @@ namespace ALARm.Core.Report
                             new XAttribute("points", $"188,-{ meter + 10} 195,-{ meter + 10} 195,-{note.Meter} 730,-{note.Meter}"),
                             new XAttribute("note1", $"{note.Meter} {note.Note().Split(' ')[1]}"),
                             new XAttribute("note2", "       " + note.Note().Split(' ')[2])));
+                        usedTops.Add(meter.RoundTo10() + 20);
                         usedTops.Add(meter.RoundTo10() + 10);
                         usedTops.Add(meter.RoundTo10());
                         continue;
@@ -1033,10 +1027,6 @@ namespace ALARm.Core.Report
                         usedTops.Add(meter);
                         continue;
                     }
-                    if (note.Meter == 327 && note.Km == 712)
-                    {
-                        note.Km = note.Km;
-                    }
                     if (note.DigName.Contains("Р+") || note.DigName.Contains("Рнр+"))
                     {
                         digElements.Add(new XElement("m",
@@ -1091,10 +1081,6 @@ namespace ALARm.Core.Report
 
                         var primech2 = note.Comment.Any() ? note.Comment : "";
                         var primech3 = GetMarkByNoteType("Анп");
-                        if (note.Km == 706 && note.Meter > 170 && note.Meter < 200)
-                        {
-                            primech3 = GetMarkByNoteType("Анп");
-                        }
                         digElements.Add(new XElement("m",
                                             new XAttribute("top", -(meter + 10)),
                                             new XAttribute("x", 1),
@@ -1144,7 +1130,7 @@ namespace ALARm.Core.Report
                             otherfourStepOgrCoun += 1;
                         }
 
-
+                        usedTops.Add(meter+10);
                         continue;
                     }
 

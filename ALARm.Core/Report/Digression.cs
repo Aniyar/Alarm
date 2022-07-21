@@ -299,7 +299,6 @@ namespace ALARm.Core.Report
             //return $"{Meter} {DigName} {Comment} {Degree} {Value} {Length} ";
         }
         public bool NotMoveAlert { get; set; } = false;
-        public bool NoSquare { get; set; } = false;
 
         public int GetCurvePoint(Kilometer km)
         {

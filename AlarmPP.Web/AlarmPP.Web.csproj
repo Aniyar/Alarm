@@ -18,7 +18,7 @@
     <PackageReference Include="Accord" Version="3.8.2-alpha" />
     <PackageReference Include="Accord.Math" Version="3.8.2-alpha" />
     <PackageReference Include="Blazor.ContextMenu" Version="1.10.0" />
-    <PackageReference Include="ElectronNET.API" Version="13.5.1" />
+    <PackageReference Include="ElectronNET.API" Version="11.5.1" />
     <PackageReference Include="MatBlazor" Version="2.8.0" />
     <PackageReference Include="Microsoft.Windows.Compatibility" Version="5.0.2" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="5.0.0" />

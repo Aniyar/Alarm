@@ -2384,7 +2384,7 @@ namespace ALARm.DataAccess
                              from apr_elcurve elcurve
                                 inner join apr_curve curve on curve.id = elcurve.curve_id
                                 inner join tpl_period period on period.id = curve.period_id
-                                where curve.id = {curve.Id}
+                                where curve.id = {curve.Id} AND ((elcurve.start_m BETWEEN {curve.Start_M} AND {curve.Final_M}) OR (elcurve.final_m BETWEEN {curve.Start_M} AND {curve.Final_M}) OR (elcurve.start_m <= {curve.Start_M} AND elcurve.final_m >= {curve.Final_M}))
                                 order by elcurve.start_km * 10000 + elcurve.start_m").ToList();
                         }
                         return curvesBPD;
